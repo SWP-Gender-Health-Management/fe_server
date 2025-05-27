@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Carousel, Button, Input, Select, Form, Card, Row, Col } from "antd";
 import {
   LeftOutlined,
@@ -40,6 +41,9 @@ const LandingPage = () => {
           <div>
             <div style={contentStyle}>ẢNH BỆNH VIỆN SLIDE 2</div>
           </div>
+          <div>
+            <div style={contentStyle}>ẢNH BỆNH VIỆN SLIDE 3</div>
+          </div>
         </Carousel>
         <Button
           style={{ ...customArrowStyle, position: "absolute", top: "50%", left: 10 }}
@@ -57,13 +61,13 @@ const LandingPage = () => {
       <div style={{ background: "#1e40af", color: "white", padding: 20 }}>
         <h2 style={{ color: "white" }}>ĐĂNG KÍ NHẬN TƯ VẤN</h2>
         <Form layout="vertical" style={{ maxWidth: 400, margin: "auto" }}>
-          <Form.Item label="Email của bạn">
-            <Input placeholder="youname@gmail.com" />
+          <Form.Item label={<span style={{ color: "white" }}>Email của bạn</span>}>
+            <Input placeholder="yourname@gmail.com" />
           </Form.Item>
-          <Form.Item label="Số điện thoại">
+          <Form.Item label={<span style={{color: "white"}}>Số điện thoại</span>}>
             <Input placeholder="Nhập SĐT" />
           </Form.Item>
-          <Form.Item label="Chọn dịch vụ">
+          <Form.Item label={<span style={{color: "white"}}>Chọn dịch vụ</span>}>
             <Select defaultValue="Dịch vụ 1">
               <Option value="1">Dịch vụ 1</Option>
               <Option value="2">Dịch vụ 2</Option>
@@ -89,8 +93,8 @@ const LandingPage = () => {
                 hoverable
                 cover={<img alt="news" src="https://via.placeholder.com/200" />}
               >
-                <p>Ngày 10 tháng 5 năm 2023</p>
-                <p>It is a long established fact that a reader will be distracted</p>
+                <p>Ngày 23 tháng 11 năm 2005</p>
+                <p>Nhật Minh đẹp trai vl</p>
               </Card>
             </Col>
           ))}
@@ -130,9 +134,9 @@ const LandingPage = () => {
 
       {/* Footer */}
       <div style={{ background: "#1e40af", color: "white", padding: 20, textAlign: "center" }}>
-        <h3>MEDBROS</h3>
-        <p>Better together</p>
-        <p>© 2023 Medbros</p>
+        <h3>GENDERCARE</h3>
+        <p>SHARING IS CARING</p>
+        <p>© 2025 SWP391-G05</p>
       </div>
     </div>
   );

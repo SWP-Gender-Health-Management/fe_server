@@ -1,6 +1,8 @@
 import React from "react";
 import Navbar from "@components/Navbar";
-import LandingPage from '@pages/LandingPage'  
+import LandingPage from '@pages/LandingPage';
+import "./reset.css";
+
 
 function App() {
 
