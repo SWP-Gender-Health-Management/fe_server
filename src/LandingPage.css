@@ -1,0 +1,179 @@
+/* Main container */
+.landing-container {
+  font-family: 'Arial', sans-serif;
+}
+
+/* Carousel styles */
+.carousel-container {
+  position: relative;
+}
+
+.carousel-slide {
+  height: 300px;
+  color: #000;
+  line-height: 300px;
+  text-align: center;
+  background: #69c0ff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.carousel-arrow {
+  font-size: 24px;
+  color: #000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+}
+
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
+
+/* Consultation section */
+.consultation-section {
+  background: #1e40af;
+  color: white;
+  padding: 20px;
+}
+
+.consultation-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.consultation-form label {
+  color: white !important;
+}
+
+.disclaimer {
+  font-size: 12px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* News section styles */
+.news-section {
+  padding: 40px;
+  background: #fff;
+}
+
+.about-us-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.about-us-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
+}
+
+.about-us-header h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 2px;
+  background: #1890ff;
+}
+
+.news-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  transition: transform 0.3s;
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+}
+
+.news-date {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.news-content {
+  color: #333;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.news-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Contact section styles */
+.contact-section {
+  padding: 40px;
+  background: #f8f9fa;
+}
+
+.contact-card {
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.contact-icon {
+  font-size: 24px;
+  color: #1890ff;
+  margin-top: 4px;
+}
+
+.contact-item h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.contact-item p {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Footer */
+.footer {
+  background: #1e40af;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer h3 {
+  margin-bottom: 10px;
+}
+
+.footer p {
+  margin: 5px 0;
+}

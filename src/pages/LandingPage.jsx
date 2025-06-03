@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Carousel, Button, Input, Select, Form, Card, Row, Col } from 'antd';
 import {
   LeftOutlined,
@@ -9,81 +8,51 @@ import {
   EnvironmentOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
+import '@/LandingPage.css'; // Import CSS file
 
 const { Option } = Select;
-
-const contentStyle = {
-  height: '300px',
-  color: '#000',
-  lineHeight: '300px',
-  textAlign: 'center',
-  background: '#69c0ff',
-  fontSize: 24,
-  fontWeight: 'bold',
-};
-
-const customArrowStyle = {
-  fontSize: '24px',
-  color: '#000',
-};
 
 const LandingPage = () => {
   const carouselRef = React.useRef();
 
   return (
-    <div>
+    <div className="landing-container">
       {/* Banner with arrows */}
-      <div style={{ position: 'relative' }}>
+      <div className="carousel-container">
         <Carousel ref={carouselRef} dots={false}>
           <div>
-            <div style={contentStyle}>ẢNH BỆNH VIỆN SLIDE 1</div>
+            <div className="carousel-slide">ẢNH BỆNH VIỆN SLIDE 1</div>
           </div>
           <div>
-            <div style={contentStyle}>ẢNH BỆNH VIỆN SLIDE 2</div>
+            <div className="carousel-slide">ẢNH BỆNH VIỆN SLIDE 2</div>
           </div>
           <div>
-            <div style={contentStyle}>ẢNH BỆNH VIỆN SLIDE 3</div>
+            <div className="carousel-slide">ẢNH BỆNH VIỆN SLIDE 3</div>
           </div>
         </Carousel>
         <Button
-          style={{
-            ...customArrowStyle,
-            position: 'absolute',
-            top: '50%',
-            left: 10,
-          }}
+          className="carousel-arrow left-arrow"
           icon={<LeftOutlined />}
           onClick={() => carouselRef.current.prev()}
         />
         <Button
-          style={{
-            ...customArrowStyle,
-            position: 'absolute',
-            top: '50%',
-            right: 10,
-          }}
+          className="carousel-arrow right-arrow"
           icon={<RightOutlined />}
           onClick={() => carouselRef.current.next()}
         />
       </div>
 
-      {/* Tư vấn form */}
-      <div style={{ background: '#1e40af', color: 'white', padding: 20 }}>
-        <h2 style={{ color: 'white' }}>ĐĂNG KÍ NHẬN TƯ VẤN</h2>
-        <Form layout="vertical" style={{ maxWidth: 400, margin: 'auto' }}>
-          <Form.Item
-            label={<span style={{ color: 'white' }}>Email của bạn</span>}
-          >
+      {/* Consultation form */}
+      <div className="consultation-section">
+        <h2>ĐĂNG KÍ NHẬN TƯ VẤN</h2>
+        <Form layout="vertical" className="consultation-form">
+          <Form.Item label="Email của bạn">
             <Input placeholder="yourname@gmail.com" />
           </Form.Item>
-          <Form.Item
-            label={<span style={{ color: 'white' }}>Số điện thoại</span>}
-          >
+          <Form.Item label="Số điện thoại">
             <Input placeholder="Nhập SĐT" />
           </Form.Item>
-          <Form.Item
-            label={<span style={{ color: 'white' }}>Chọn dịch vụ</span>}
-          >
+          <Form.Item label="Chọn dịch vụ">
             <Select defaultValue="Dịch vụ 1">
               <Option value="1">Dịch vụ 1</Option>
               <Option value="2">Dịch vụ 2</Option>
@@ -96,73 +65,89 @@ const LandingPage = () => {
             </Button>
           </Form.Item>
         </Form>
-        <p style={{ fontSize: 12 }}>
-          *Thông tin của quý khách đảm bảo được bảo mật
-        </p>
+        <p className="disclaimer">*Thông tin của quý khách đảm bảo được bảo mật</p>
       </div>
 
-      {/* Tin tức */}
-      <div style={{ padding: 40, background: '#f9f9f9' }}>
-        <h2 style={{ textAlign: 'center' }}>Tin tức</h2>
-        <Row gutter={16} justify="center">
-          {[1, 2, 3, 4].map((item) => (
-            <Col key={item} xs={24} sm={12} md={6}>
-              <Card
-                hoverable
-                cover={<img alt="news" src="https://via.placeholder.com/200" />}
-              >
-                <p>Ngày 23 tháng 11 năm 2005</p>
-                <p>Nhật Minh đẹp trai vl</p>
+      {/* News section */}
+      <div className="news-section">
+        <h2 className="section-title">Tin tức</h2>
+        <div className="about-us-header">
+          <h3>THÔNG TIN VỀ CHÚNG TÔI</h3>
+        </div>
+        <Row gutter={[16, 24]} justify="center">
+          {[1, 2, 3].map((item) => (
+            <Col key={item} xs={24} sm={12} md={8}>
+              <Card className="news-card">
+                <p className="news-date">Ngày 10 tháng 5 năm 2023</p>
+                <p className="news-content">
+                  It is a long established fact that a reader will be distracted
+                </p>
+                <div className="news-stats">
+                  <span className="stat-item">⏰ 68</span>
+                  <span className="stat-item">⏰ 86</span>
+                </div>
               </Card>
             </Col>
           ))}
         </Row>
       </div>
 
-      {/* Liên hệ */}
-      <div style={{ padding: 40, background: '#e0f7fa' }}>
-        <h2 style={{ textAlign: 'center' }}>Liên hệ</h2>
+      {/* Contact section */}
+      <div className="contact-section">
+        <h2 className="section-title">Liên hệ</h2>
         <Row gutter={16} justify="center">
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <PhoneOutlined /> HOTLINE
-              <br />
-              (237) 681-812-255
+            <Card className="contact-card">
+              <div className="contact-item">
+                <PhoneOutlined className="contact-icon" />
+                <div>
+                  <h3>HOTLINE</h3>
+                  <p>(237) 681-812-255</p>
+                  <p>(237) 666-331-894</p>
+                </div>
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <EnvironmentOutlined /> ĐỊA ĐIỂM
-              <br />
-              Hà Nội, TP HCM
+            <Card className="contact-card">
+              <div className="contact-item">
+                <EnvironmentOutlined className="contact-icon" />
+                <div>
+                  <h3>ĐỊA ĐIỂM</h3>
+                  <p>Hà Nội</p>
+                  <p>TP HCM</p>
+                </div>
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <MailOutlined /> EMAIL
-              <br />
-              example@gmail.com
+            <Card className="contact-card">
+              <div className="contact-item">
+                <MailOutlined className="contact-icon" />
+                <div>
+                  <h3>EMAIL</h3>
+                  <p>fildineeesoe@gmail.com</p>
+                  <p>abcxyz@gmail.com</p>
+                </div>
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <ClockCircleOutlined /> GIỜ LÀM VIỆC
-              <br />
-              T2-T6: 08:00–17:00
+            <Card className="contact-card">
+              <div className="contact-item">
+                <ClockCircleOutlined className="contact-icon" />
+                <div>
+                  <h3>GIỜ LÀM VIỆC</h3>
+                  <p>T2-T6 08:00-17:00</p>
+                </div>
+              </div>
             </Card>
           </Col>
         </Row>
       </div>
 
       {/* Footer */}
-      <div
-        style={{
-          background: '#1e40af',
-          color: 'white',
-          padding: 20,
-          textAlign: 'center',
-        }}
-      >
+      <div className="footer">
         <h3>GENDERCARE</h3>
         <p>SHARING IS CARING</p>
         <p>© 2025 SWP391-G05</p>
