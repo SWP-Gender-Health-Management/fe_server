@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
-import Navbar from '@components/Navbar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
-import '@styles/reset.css';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
+import '@styles/reset.css';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
+
   return (
-    <div>
+    <Router>
       <Navbar onLoginClick={() => setShowLogin(true)} />
-      <LandingPage />
-      <UserAccount />
+
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/tai-khoan" element={<UserAccount />} />
+        {/* thêm route khác nếu cần */}
+      </Routes>
+
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
-    </div>
+    </Router>
   );
 }
+
 export default App;
