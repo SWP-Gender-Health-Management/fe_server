@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Navbar from '@components/Navbar';
-import LandingPage from '@pages/LandingPage';
-import './reset.css';
-import Login from '@pages/Login';
-import UserAccount from '@pages/UserAccount';
+import LandingPage from '@pages/LandingPage/LandingPage';
+import '@styles/reset.css';
+import Login from '@pages/Login/Login';
+import UserAccount from '@pages/UserAccount/UserAccount';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -11,7 +11,7 @@ function App() {
     <div>
       <Navbar onLoginClick={() => setShowLogin(true)} />
       <LandingPage />
-      {/* <UserAccount /> */}
+      <UserAccount />
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
     </div>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Table, List, Typography, Divider } from 'antd';
-import '@/UserAccount.css';
+import './UserAccount.css';
 
 const { Title, Text } = Typography;
 
