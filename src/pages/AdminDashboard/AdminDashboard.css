@@ -1,0 +1,17 @@
+.admin-dashboard {
+  padding: 24px;
+}
+
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.ant-card-head-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.ant-table-thead > tr > th {
+  font-weight: 600;
+  background-color: #fafafa !important;
+}
