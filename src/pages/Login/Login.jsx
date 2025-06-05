@@ -7,7 +7,7 @@ import {
   FontColorsOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
-import '@/login.css';
+import './login.css';
 
 const { TabPane } = Tabs;
 
