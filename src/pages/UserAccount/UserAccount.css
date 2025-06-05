@@ -1,0 +1,77 @@
+/* Main container */
+.account-container {
+  padding: 24px;
+  background-color: #f5f5f5;
+}
+
+/* Card styling */
+.account-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+/* Text styles */
+.section-title {
+  color: #333;
+  margin-bottom: 16px !important;
+}
+
+.subsection-title {
+  color: #555;
+  margin-bottom: 16px !important;
+}
+
+.greeting-text {
+  font-size: 16px;
+  color: #666;
+}
+
+.info-title {
+  font-weight: 500;
+  color: #444;
+}
+
+.info-value {
+  color: #222;
+}
+
+.empty-text {
+  color: #999 !important;
+}
+
+.address-count {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Divider */
+.divider {
+  margin: 16px 0 !important;
+  background-color: #f0f0f0;
+}
+
+/* Table styles */
+.orders-table {
+  margin-top: 16px;
+}
+
+.orders-table .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #555;
+}
+
+/* List styles */
+.account-list {
+  margin-top: 16px;
+}
+
+.account-list-item {
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.account-list-item:last-child {
+  border-bottom: none !important;
+}
