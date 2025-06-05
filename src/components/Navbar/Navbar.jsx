@@ -9,7 +9,8 @@ import {
   SearchOutlined,
   ClockCircleOutlined,
   EnvironmentOutlined,
-  UserOutlined
+  UserOutlined,
+  BellOutlined
 } from '@ant-design/icons';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -18,6 +19,15 @@ const Navbar = ({ onLoginClick }) => {
   const location = useLocation();
   const navigate = useNavigate();
   
+  // Custom mapping for breadcrumb display names
+  const pathDisplayNames = {
+    'dich-vu': 'Dịch vụ',
+    'tin-tuc': 'Tin tức',
+    've-chung-toi': 'Về chúng tôi',
+    'lien-he': 'Liên hệ',
+    'tai-khoan': 'Tài khoản'
+  };
+
   // Generate breadcrumb from pathname
   const pathnames = location.pathname.split('/').filter(x => x);
   
@@ -71,33 +81,35 @@ const Navbar = ({ onLoginClick }) => {
           >
             Tài khoản
           </Button>
+          <Button
+            className="noti-button"
+            icon={<BellOutlined />}
+            >
+          </Button>
         </div>
       </div>
 
       {/* Breadcrumb navigation */}
       <div className="breadcrumb-bar">
-        <Breadcrumb>
-          <Breadcrumb.Item>
-            <Link to="/">Trang chủ</Link>
-          </Breadcrumb.Item>
-          {pathnames.map((name, index) => {
-            const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-            const isLast = index === pathnames.length - 1;
-            const displayName = name.split('-').map(word => 
-              word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ');
-
-            return isLast ? (
-              <Breadcrumb.Item key={name}>
-                {displayName}
-              </Breadcrumb.Item>
-            ) : (
-              <Breadcrumb.Item key={name}>
+      <Breadcrumb>
+        <Breadcrumb.Item>
+          <Link to="/">Trang chủ</Link>
+        </Breadcrumb.Item>
+        {pathnames.map((name, index) => {
+          const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
+          const displayName = pathDisplayNames[name] || name.replace(/-/g, ' ');
+          
+          return (
+            <Breadcrumb.Item key={name}>
+              {index === pathnames.length - 1 ? (
+                displayName
+              ) : (
                 <Link to={routeTo}>{displayName}</Link>
-              </Breadcrumb.Item>
-            );
-          })}
-        </Breadcrumb>
+              )}
+            </Breadcrumb.Item>
+          );
+        })}
+      </Breadcrumb>
       </div>
     </div>
   );
