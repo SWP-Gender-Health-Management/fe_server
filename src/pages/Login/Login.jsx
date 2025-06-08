@@ -1,4 +1,8 @@
 import React from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
 import { Modal, Tabs, Form, Input, Button, Checkbox } from 'antd';
 import {
   UserOutlined,
@@ -12,8 +16,25 @@ import './login.css';
 const { TabPane } = Tabs;
 
 const Login = ({ visible, onCancel }) => {
-  const handleLogin = (values) => {
-    console.log('Login', values);
+  const navigate = useNavigate();
+  const handleLogin = async (values) => {
+    try {
+      const response = await axios.post('http://localhost:3000/account/login', {
+        email: values.email, // hoặc values.email tuỳ theo name trong form
+        password: values.password,
+      });
+
+      // Lưu token hoặc thông tin user
+      const { accessToken, refreshToken } = response.data;
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      // Hiển thị tên người dùng nếu cần
+      console.log('Đăng nhập thành công');
+      navigate('/tai-khoan'); // Chuyển hướng đến trang tài khoản sau khi đăng nhập thành công
+    } catch (error) {
+      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+    }
   };
 
   const handleRegister = (values) => {
@@ -43,7 +64,7 @@ const Login = ({ visible, onCancel }) => {
                   }
                 />
                 <Form.Item
-                  name="username"
+                  name="email"
                   rules={[
                     {
                       required: true,

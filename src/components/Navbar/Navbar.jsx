@@ -12,12 +12,12 @@ import {
   UserOutlined,
   BellOutlined
 } from '@ant-design/icons';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, Link,} from 'react-router-dom';
+import Logo from '@assets/blue-logo.svg?react'; // Vite's SVG as component syntax
 import './Navbar.css';
 
 const Navbar = ({ onLoginClick }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   
   // Custom mapping for breadcrumb display names
   const pathDisplayNames = {
@@ -62,8 +62,8 @@ const Navbar = ({ onLoginClick }) => {
 
       {/* Main navigation bar */}
       <div className="main-nav">
+        <Logo className="logo" />
         <div className="nav-left">
-          <div className="logo" onClick={() => navigate('/')}>🌐</div>
           <Menu
             mode="horizontal"
             items={menuItems}
