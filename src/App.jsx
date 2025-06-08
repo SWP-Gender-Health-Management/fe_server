@@ -35,11 +35,11 @@ function App() {
         />
       </div>
       <div class= "test">
-        <Navbar />
-        <LandingPage />
+        {/* <Navbar />
+        <LandingPage /> */}
         <UserAccount />
-        <Login />
-        <AdminDashboard />
+        {/* <Login />
+        <AdminDashboard /> */}
       </div>
     </Router>
   );
