@@ -19,7 +19,7 @@ import './Navbar.css';
 const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const fullname = localStorage.getItem('fullname') || 'Người dùng';
+  const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
 
   const pathDisplayNames = {
     'dich-vu': 'Dịch vụ',
@@ -42,15 +42,13 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
   const handleConfirmLogout = () => {
     Modal.confirm({
       title: `Đăng xuất khỏi tài khoản ${fullname}?`,
-      okText: 'Yes',
-      cancelText: 'No',
+      okText: 'Đăng xuất',
+      cancelText: 'Hủy',
       centered: true,
       onOk: () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('fullname');
-        onLogout();  // gọi hàm ở App để cập nhật UI
-        navigate('/'); // về trang chủ
+        sessionStorage.clear();
+        onLogout();
+        navigate('/');
       }
     });
   };
@@ -103,17 +101,17 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
         <div className="nav-right">
           <SearchOutlined className="search-icon" />
 
-          {isLoggedIn ? (
-            <Dropdown menu={accountMenu} placement="bottomRight">
-              <Button className="login-button" icon={<UserOutlined />}>
-                {fullname}
-              </Button>
-            </Dropdown>
-          ) : (
-            <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
-              Tài khoản
+        {isLoggedIn ? (
+          <Dropdown menu={accountMenu} placement="bottomRight">
+            <Button className="login-button" icon={<UserOutlined />}>
+              {fullname}
             </Button>
-          )}
+          </Dropdown>
+        ) : (
+          <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
+            Tài khoản
+          </Button>
+        )}
 
           <Button className="noti-button" icon={<BellOutlined />} />
         </div>

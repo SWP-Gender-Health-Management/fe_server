@@ -17,31 +17,37 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
   const navigate = useNavigate();
 
   const handleLogin = async (values) => {
-    try {
-      const response = await axios.post('http://localhost:3000/account/login', {
-        email: values.email,
-        password: values.password,
-      });
+  try {
+    const response = await axios.post('http://localhost:3000/account/login', {
+      email: values.email,
+      password: values.password,
+    });
 
-      const { accessToken, refreshToken } = response.data;
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('fullname', response.data.fullname || 'Người dùng');
+    console.log('Phản hồi từ API:', response.data);
 
-      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+    const { accessToken, refreshToken, fullname } = response.data.result;
 
-      onCancel(); // Tắt modal
-      onLoginSuccess(); // Cập nhật trạng thái
-      navigate('/tai-khoan'); // Điều hướng đến trang tài khoản
-    } catch (error) {
-      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-
-      Modal.error({
-        title: 'Đăng nhập thất bại',
-        content: error.response?.data?.message || 'Có lỗi xảy ra',
-      });
+    if (!accessToken || !refreshToken) {
+      throw new Error('Thiếu token trong phản hồi');
     }
-  };
+
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('fullname', fullname || 'Người dùng');
+
+    Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+
+    onCancel(); // Tắt modal
+    onLoginSuccess(); // Cập nhật trạng thái login
+    navigate('/tai-khoan'); // Điều hướng
+  } catch (error) {
+    console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+    Modal.error({
+      title: 'Đăng nhập thất bại',
+      content: error.response?.data?.message || 'Có lỗi xảy ra',
+    });
+  }
+};
 
   const handleRegister = async (values) => {
     try {
@@ -153,6 +159,14 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
                 <Form.Item>
                   <Button type="primary" htmlType="submit" block>
                     Đăng ký ngay!
+                  </Button>
+                </Form.Item>
+                <Form.Item><div className="or-divider"><span>Hoặc</span></div></Form.Item>
+                <Form.Item>
+                  <Button block className="google-button" icon={
+                    <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" className="google-icon" />
+                  }>
+                    Đăng nhập với Google
                   </Button>
                 </Form.Item>
               </Form>

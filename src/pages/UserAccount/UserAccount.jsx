@@ -1,61 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Card, Table, List, Typography, Divider } from 'antd';
 import './UserAccount.css';
 
 const { Title, Text } = Typography;
 
 const UserAccount = () => {
-  // Orders table data
-  const ordersColumns = [
-    { title: 'Đơn hàng', dataIndex: 'order', key: 'order', 
-      render: (text) => <Text className="empty-text">{text}</Text> },
-    { title: 'Ngày', dataIndex: 'date', key: 'date' },
-    { title: 'Giá trị đơn hàng', dataIndex: 'amount', key: 'amount' },
-    { title: 'Trạng thái thanh toán', dataIndex: 'paymentStatus', key: 'paymentStatus' },
-    { title: 'Trạng thái giao hàng', dataIndex: 'deliveryStatus', key: 'deliveryStatus' },
-  ];
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const ordersData = [
-    { key: '1', order: 'Không có đơn hàng nào.', date: '', amount: '', paymentStatus: '', deliveryStatus: '' },
-  ];
+  useEffect(() => {
+    const fetchAccountInfo = async () => {
+      const account_id = localStorage.getItem('account_id');
+      if (!account_id) {
+        setLoading(false);
+        return;
+      }
 
-  // Account information data
+      try {
+        const res = await axios.post('http://localhost:3000/account/get-account-from-redis', {
+          account_id
+        });
+        setUserInfo(res.data.result);
+      } catch (err) {
+        console.error('Lỗi khi lấy thông tin tài khoản:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccountInfo();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="account-container">
+        <Card className="account-card">
+          <Title level={4}>Đang tải thông tin tài khoản...</Title>
+        </Card>
+      </div>
+    );
+  }
+
   const accountInfoData = [
-    { title: 'Tên tài khoản', value: '1' },
-    { title: 'Địa chỉ', value: '' },
-    { title: 'Điện thoại', value: '' },
-    { title: 'Địa chỉ 1', value: '' },
-    { title: 'Công ty', value: '' },
-    { title: 'Quốc gia', value: 'Vietnam' },
-    { title: 'Zip code', value: '70000' },
+    { title: 'Tên tài khoản', value: userInfo?.full_name || '' },
+    { title: 'Email', value: userInfo?.email || '' },
+    { title: 'Số điện thoại', value: userInfo?.phone || '' },
+    { title: 'Ngày sinh', value: userInfo?.dob || '' },
+    { title: 'Giới tính', value: userInfo?.gender || '' }
   ];
 
   return (
     <div className="account-container">
-      {/* Orders Section */}
       <Card className="account-card">
         <Title level={4} className="section-title">Thông tin tài khoản</Title>
-        <Text strong className="greeting-text">Xin chào, I</Text>
-        
-        <Divider className="divider" />
-        
-        <Title level={5} className="subsection-title">Đơn hàng</Title>
-        <Table
-          columns={ordersColumns}
-          dataSource={ordersData}
-          pagination={false}
-          bordered
-          className="orders-table"
-        />
-      </Card>
+        <Text strong className="greeting-text">
+          {userInfo ? `Xin chào, ${userInfo.full_name}` : 'Không tìm thấy người dùng'}
+        </Text>
 
-      {/* Account Info Section */}
-      <Card className="account-card" style={{ marginTop: 24 }}>
-        <Title level={4} className="section-title">Thông tin tài khoản</Title>
-        <Text strong className="greeting-text">Xin chào, I</Text>
-        
         <Divider className="divider" />
-        
+
         <List
           itemLayout="horizontal"
           dataSource={accountInfoData}
@@ -63,16 +67,16 @@ const UserAccount = () => {
             <List.Item className="account-list-item">
               <List.Item.Meta
                 title={<Text className="info-title">{item.title}</Text>}
-                description={<Text className={item.value ? "info-value" : "empty-text"}>{item.value || ' '}</Text>}
+                description={
+                  <Text className={item.value ? 'info-value' : 'empty-text'}>
+                    {item.value || 'Chưa cập nhật'}
+                  </Text>
+                }
               />
             </List.Item>
           )}
           className="account-list"
         />
-        
-        <Divider className="divider" />
-        
-        <Text className="address-count">Số địa chỉ (1)</Text>
       </Card>
     </div>
   );
