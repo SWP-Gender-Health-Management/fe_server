@@ -5,7 +5,8 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
-import BlogPage from './pages/Blog/BlogPage';
+// import BlogPage from './pages/Blog/BlogPage';
+import Footer from '@components/Footer/Footer';
 import '@styles/reset.css';
 
 function App() {
@@ -58,6 +59,9 @@ function App() {
         onCancel={() => setShowLogin(false)}
         onLoginSuccess={handleLoginSuccess} // ✅ Đã sửa đúng cách gọi
       />
+
+      <Footer />
+      <div className="footer-spacer" /> 
     </div>
   );
 }
