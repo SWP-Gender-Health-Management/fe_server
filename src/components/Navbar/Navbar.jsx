@@ -13,7 +13,7 @@ import {
   BellOutlined
 } from '@ant-design/icons';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import Logo from '@assets/blue-logo.svg?react';
+import Logo from '@assets/Blue-full.svg?react';
 import './Navbar.css';
 
 const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
