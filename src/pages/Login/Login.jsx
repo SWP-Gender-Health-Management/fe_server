@@ -1,8 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-
 import { Modal, Tabs, Form, Input, Button, Checkbox } from 'antd';
 import {
   UserOutlined,
@@ -15,30 +13,63 @@ import './login.css';
 
 const { TabPane } = Tabs;
 
-const Login = ({ visible, onCancel }) => {
+const Login = ({ visible, onCancel, onLoginSuccess }) => {
   const navigate = useNavigate();
+
   const handleLogin = async (values) => {
+  try {
+    const response = await axios.post('http://localhost:3000/account/login', {
+      email: values.email,
+      password: values.password,
+    });
+
+    console.log('Phản hồi từ API:', response.data);
+
+    const { accessToken, refreshToken, fullname } = response.data.result;
+
+    if (!accessToken || !refreshToken) {
+      throw new Error('Thiếu token trong phản hồi');
+    }
+
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('fullname', fullname || 'Người dùng');
+
+    Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+
+    onCancel(); // Tắt modal
+    onLoginSuccess(); // Cập nhật trạng thái login
+    navigate('/tai-khoan'); // Điều hướng
+  } catch (error) {
+    console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+    Modal.error({
+      title: 'Đăng nhập thất bại',
+      content: error.response?.data?.message || 'Có lỗi xảy ra',
+    });
+  }
+};
+
+  const handleRegister = async (values) => {
     try {
-      const response = await axios.post('http://localhost:3000/account/login', {
-        email: values.email, // hoặc values.email tuỳ theo name trong form
+      await axios.post('http://localhost:3000/account/register', {
+        email: values.email,
+        fullname: values.fullname,
         password: values.password,
+        confirmPassword: values.confirmPassword,
       });
 
-      // Lưu token hoặc thông tin user
-      const { accessToken, refreshToken } = response.data;
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-
-      // Hiển thị tên người dùng nếu cần
-      console.log('Đăng nhập thành công');
-      navigate('/tai-khoan'); // Chuyển hướng đến trang tài khoản sau khi đăng nhập thành công
+      Modal.success({
+        title: 'Thành công!',
+        content: 'Đăng ký thành công. Bạn có thể đăng nhập ngay.',
+      });
     } catch (error) {
-      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-    }
-  };
+      console.error('Lỗi đăng ký:', error.response?.data || error.message);
 
-  const handleRegister = (values) => {
-    console.log('Register', values);
+      Modal.error({
+        title: 'Đăng ký thất bại',
+        content: error.response?.data?.message || 'Có lỗi xảy ra',
+      });
+    }
   };
 
   return (
@@ -56,137 +87,85 @@ const Login = ({ visible, onCancel }) => {
           <Tabs defaultActiveKey="1" centered>
             <TabPane tab="Đăng nhập" key="1">
               <Form layout="vertical" onFinish={handleLogin}>
-                <Form.Item
-                  label={
-                    <div style={{ color: 'black' }}>
-                      Đăng nhập để nhận thêm các thông tin khác!
-                    </div>
-                  }
-                />
+                <Form.Item label="Đăng nhập để nhận thêm các thông tin khác!" />
                 <Form.Item
                   name="email"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Nhập email hoặc số điện thoại',
-                    },
-                  ]}
+                  rules={[{ required: true, message: 'Nhập email hoặc số điện thoại' }]}
                 >
-                  <Input
-                    prefix={<UserOutlined />}
-                    placeholder="Email hoặc SĐT"
-                  />
+                  <Input prefix={<UserOutlined />} placeholder="Email hoặc SĐT" />
                 </Form.Item>
                 <Form.Item
                   name="password"
                   rules={[{ required: true, message: 'Nhập mật khẩu' }]}
                 >
-                  <Input.Password
-                    prefix={<LockOutlined />}
-                    placeholder="Mật khẩu"
-                  />
+                  <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
                 </Form.Item>
+                <Form.Item><Checkbox>Ghi nhớ tôi</Checkbox></Form.Item>
+                <Form.Item><Button type="primary" htmlType="submit" block>Đăng nhập</Button></Form.Item>
+                <Form.Item><div className="or-divider"><span>Hoặc</span></div></Form.Item>
                 <Form.Item>
-                  <Checkbox>Ghi nhớ tôi</Checkbox>
-                </Form.Item>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit" block>
-                    Đăng nhập
-                  </Button>
-                </Form.Item>
-                <Form.Item>
-                  <div className="or-divider">
-                    <span>Hoặc</span>
-                  </div>
-                </Form.Item>
-                <Form.Item>
-                  <Button
-                    block
-                    className="google-button"
-                    icon={
-                      <img
-                        src="https://img.icons8.com/color/20/google-logo.png"
-                        alt="Google"
-                        className="google-icon"
-                      />
-                    }
-                  >
+                  <Button block className="google-button" icon={
+                    <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" className="google-icon" />
+                  }>
                     Đăng nhập với Google
                   </Button>
                 </Form.Item>
               </Form>
             </TabPane>
-
-            <TabPane tab="Đăng kí" key="2">
+            <TabPane tab="Đăng ký" key="2">
               <Form layout="vertical" onFinish={handleRegister}>
-                <Form.Item
-                  label={
-                    <div style={{ color: 'black' }}>Đăng kí miễn phí !</div>
-                  }
-                />
+                <Form.Item label="Đăng ký miễn phí!" />
                 <Form.Item
                   name="email"
                   rules={[
-                    {
-                      required: true,
-                      message: 'Nhập email hoặc số điện thoại',
-                    },
+                    { required: true, message: 'Nhập email' },
+                    { type: 'email', message: 'Email không hợp lệ' },
                   ]}
                 >
-                  <Input
-                    prefix={<MailOutlined />}
-                    placeholder="Email hoặc SĐT"
-                  />
+                  <Input prefix={<MailOutlined />} placeholder="Email" />
                 </Form.Item>
                 <Form.Item
-                  name="username"
-                  rules={[{ required: true, message: 'Nhập tên tài khoản' }]}
+                  name="fullname"
+                  rules={[{ required: true, message: 'Nhập họ và tên' }]}
                 >
-                  <Input
-                    prefix={<FontColorsOutlined />}
-                    placeholder="Tên tài khoản"
-                  />
+                  <Input prefix={<FontColorsOutlined />} placeholder="Họ và tên" />
                 </Form.Item>
                 <Form.Item
                   name="password"
-                  rules={[{ required: true, message: 'Nhập mật khẩu' }]}
+                  rules={[
+                    { required: true, message: 'Nhập mật khẩu' },
+                    { min: 6, message: 'Tối thiểu 6 ký tự' },
+                  ]}
                 >
-                  <Input.Password
-                    prefix={<LockOutlined />}
-                    placeholder="Mật khẩu"
-                  />
+                  <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
                 </Form.Item>
                 <Form.Item
                   name="confirmPassword"
-                  rules={[{ required: true, message: 'Xác nhận mật khẩu' }]}
+                  dependencies={['password']}
+                  rules={[
+                    { required: true, message: 'Xác nhận mật khẩu' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('Mật khẩu không khớp!'));
+                      },
+                    }),
+                  ]}
                 >
-                  <Input.Password
-                    prefix={<LockOutlined />}
-                    placeholder="Xác nhận mật khẩu"
-                  />
+                  <Input.Password prefix={<LockOutlined />} placeholder="Xác nhận mật khẩu" />
                 </Form.Item>
                 <Form.Item>
                   <Button type="primary" htmlType="submit" block>
-                    Đăng kí ngay!
+                    Đăng ký ngay!
                   </Button>
                 </Form.Item>
+                <Form.Item><div className="or-divider"><span>Hoặc</span></div></Form.Item>
                 <Form.Item>
-                  <div className="or-divider">
-                    <span>Hoặc</span>
-                  </div>
-                </Form.Item>
-                <Form.Item>
-                  <Button
-                    block
-                    className="google-button"
-                    icon={
-                      <img
-                        src="https://img.icons8.com/color/20/google-logo.png"
-                        alt="Google"
-                        className="google-icon"
-                      />
-                    }
-                  >
+                  <Button block className="google-button" icon={
+                    <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" className="google-icon" />
+                  }>
                     Đăng nhập với Google
                   </Button>
                 </Form.Item>

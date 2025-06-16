@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Button, Row, Col, Breadcrumb } from 'antd';
+import { Menu, Button, Row, Col, Breadcrumb, Dropdown, Modal } from 'antd';
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -12,14 +12,15 @@ import {
   UserOutlined,
   BellOutlined
 } from '@ant-design/icons';
-import { useLocation, Link,} from 'react-router-dom';
-import Logo from '@assets/blue-logo.svg?react'; // Vite's SVG as component syntax
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import Logo from '@assets/Blue-full.svg?react';
 import './Navbar.css';
 
-const Navbar = ({ onLoginClick }) => {
+const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
   const location = useLocation();
-  
-  // Custom mapping for breadcrumb display names
+  const navigate = useNavigate();
+  const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
+
   const pathDisplayNames = {
     'dich-vu': 'Dịch vụ',
     'tin-tuc': 'Tin tức',
@@ -28,10 +29,8 @@ const Navbar = ({ onLoginClick }) => {
     'tai-khoan': 'Tài khoản'
   };
 
-  // Generate breadcrumb from pathname
   const pathnames = location.pathname.split('/').filter(x => x);
-  
-  // Menu items with navigation
+
   const menuItems = [
     { label: <Link to="/">Trang Chủ</Link>, key: 'home', icon: <HomeOutlined /> },
     { label: <Link to="/dich-vu">Dịch vụ</Link>, key: 'services', icon: <AppstoreOutlined /> },
@@ -40,9 +39,36 @@ const Navbar = ({ onLoginClick }) => {
     { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
   ];
 
+  const handleConfirmLogout = () => {
+    Modal.confirm({
+      title: `Đăng xuất khỏi tài khoản ${fullname}?`,
+      okText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      centered: true,
+      onOk: () => {
+        sessionStorage.clear();
+        onLogout();
+        navigate('/');
+      }
+    });
+  };
+
+  const accountMenu = {
+    items: [
+      {
+        key: 'account',
+        label: <Link to="/tai-khoan">Tài khoản</Link>,
+      },
+      {
+        key: 'logout',
+        label: <span onClick={handleConfirmLogout}>Đăng xuất</span>,
+      },
+    ]
+  };
+
   return (
     <div className="navbar-container">
-      {/* Top contact info bar */}
+      {/* Top bar */}
       <div className="top-bar">
         <Row justify="space-between" className="top-bar-content">
           <Col>
@@ -60,7 +86,7 @@ const Navbar = ({ onLoginClick }) => {
         </Row>
       </div>
 
-      {/* Main navigation bar */}
+      {/* Main nav */}
       <div className="main-nav">
         <Logo className="logo" />
         <div className="nav-left">
@@ -74,42 +100,40 @@ const Navbar = ({ onLoginClick }) => {
 
         <div className="nav-right">
           <SearchOutlined className="search-icon" />
-          <Button
-            className="login-button"
-            icon={<UserOutlined />}
-            onClick={onLoginClick}
-          >
+
+        {isLoggedIn ? (
+          <Dropdown menu={accountMenu} placement="bottomRight">
+            <Button className="login-button" icon={<UserOutlined />}>
+              {fullname}
+            </Button>
+          </Dropdown>
+        ) : (
+          <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
             Tài khoản
           </Button>
-          <Button
-            className="noti-button"
-            icon={<BellOutlined />}
-            >
-          </Button>
+        )}
+
+          <Button className="noti-button" icon={<BellOutlined />} />
         </div>
       </div>
 
-      {/* Breadcrumb navigation */}
+      {/* Breadcrumb */}
       <div className="breadcrumb-bar">
-      <Breadcrumb>
-        <Breadcrumb.Item>
-          <Link to="/">Trang chủ</Link>
-        </Breadcrumb.Item>
-        {pathnames.map((name, index) => {
-          const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-          const displayName = pathDisplayNames[name] || name.replace(/-/g, ' ');
-          
-          return (
-            <Breadcrumb.Item key={name}>
-              {index === pathnames.length - 1 ? (
-                displayName
-              ) : (
-                <Link to={routeTo}>{displayName}</Link>
-              )}
-            </Breadcrumb.Item>
-          );
-        })}
-      </Breadcrumb>
+        <Breadcrumb
+          items={[
+            { title: <Link to="/">Trang chủ</Link> },
+            ...pathnames.map((name, index) => {
+              const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
+              const displayName = pathDisplayNames[name] || name.replace(/-/g, ' ');
+              return {
+                title:
+                  index === pathnames.length - 1
+                    ? displayName
+                    : <Link to={routeTo}>{displayName}</Link>,
+              };
+            }),
+          ]}
+        />
       </div>
     </div>
   );
