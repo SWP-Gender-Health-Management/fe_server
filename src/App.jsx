@@ -5,7 +5,7 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
-// import BlogPage from '@pages/Blog/BlogPage'; // Example additional page
+import BlogPage from '@pages/Blog/BlogPage';
 import '@styles/reset.css';
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
     <Router>
       <div className="app-container">
         <Navbar onLoginClick={() => setShowLogin(true)} />
-        
+
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/tai-khoan" element={<UserAccount />} />
@@ -24,9 +24,9 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           {/* Add more routes as needed */}
         </Routes>
-        
-        <Login 
-          visible={showLogin} 
+
+        <Login
+          visible={showLogin}
           onCancel={() => setShowLogin(false)}
           onLoginSuccess={() => {
             setShowLogin(false);
@@ -34,12 +34,13 @@ function App() {
           }}
         />
       </div>
-      <div class= "test">
+      <div class="test">
         <Navbar />
         <LandingPage />
         <UserAccount />
         <Login />
         <AdminDashboard />
+        <BlogPage />
       </div>
     </Router>
   );

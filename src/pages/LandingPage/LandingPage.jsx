@@ -1,8 +1,8 @@
 import React from 'react';
 import { Carousel, Button, Input, Select, Form, Card, Row, Col } from 'antd';
 import {
-  LeftOutlined,
-  RightOutlined,
+  LeftCircleOutlined,
+  RightCircleOutlined,
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
@@ -32,12 +32,12 @@ const LandingPage = () => {
         </Carousel>
         <Button
           className="carousel-arrow left-arrow"
-          icon={<LeftOutlined />}
+          icon={<LeftCircleOutlined />}
           onClick={() => carouselRef.current.prev()}
         />
         <Button
           className="carousel-arrow right-arrow"
-          icon={<RightOutlined />}
+          icon={<RightCircleOutlined />}
           onClick={() => carouselRef.current.next()}
         />
       </div>
@@ -65,7 +65,9 @@ const LandingPage = () => {
             </Button>
           </Form.Item>
         </Form>
-        <p className="disclaimer">*Thông tin của quý khách đảm bảo được bảo mật</p>
+        <p className="disclaimer">
+          *Thông tin của quý khách đảm bảo được bảo mật
+        </p>
       </div>
 
       {/* News section */}
