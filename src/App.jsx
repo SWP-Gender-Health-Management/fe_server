@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -42,40 +42,29 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="app-container">
-        <Navbar
-          onLoginClick={() => setShowLogin(true)}
-          isLoggedIn={isLoggedIn}
-          onLogout={handleLogout}
-        />
+    <div className="app-container">
+      <Navbar
+        onLoginClick={() => setShowLogin(true)}
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+      />
 
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/tai-khoan" element={<UserAccount />} />
-          {<Route path="/tin-tuc" element={<BlogPage />} />}
-          <Route path="*" element={<NotFoundPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/customer" element={<MenstrualPredictorPage />} />
-          {/* Add more routes as needed */}
-        </Routes>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/tai-khoan" element={<UserAccount />} />
+        <Route path="/tin-tuc" element={<BlogPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/customer" element={<MenstrualPredictorPage />} />
+      </Routes>
 
-        <Login
-          visible={showLogin}
-          onCancel={() => setShowLogin(false)}
-          onLoginSuccess={handleLoginSuccess}
-        />
-      </div>
-      <div class="test">
-        <Navbar />
-        <LandingPage />
-        <UserAccount />
-        <Login />
-        <AdminDashboard />
-        <BlogPage />
-        <MenstrualPredictorPage />
-      </div>
-    </Router>
+      <Login
+        visible={showLogin}
+        onCancel={() => setShowLogin(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
+      <Footer />
+    </div>
   );
 }
 

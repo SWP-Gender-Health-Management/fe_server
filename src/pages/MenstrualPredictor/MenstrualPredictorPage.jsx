@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './MenstrualPredictorPage.css';
 
-const MenstrualTracker = () => {
+const MenstrualPredictorPage = () => {
   const today = new Date();
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
@@ -218,4 +218,4 @@ const MenstrualTracker = () => {
   );
 };
 
-export default MenstrualTracker;
+export default MenstrualPredictorPage;
