@@ -140,20 +140,22 @@ const LandingPage = () => {
   ];
 
   const onConsultationSubmit = async (values) => {
+    console.log("Form values:", values); // sử dụng values
     setLoading(true);
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
       message.success(
         'Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.'
       );
       consultationForm.resetFields();
     } catch (error) {
+      console.error("Lỗi khi gửi form:", error); // sử dụng error
       message.error('Đã có lỗi xảy ra, vui lòng thử lại!');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="landing-container">

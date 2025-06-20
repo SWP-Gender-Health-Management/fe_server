@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Row, Col, Typography, Space, Divider, Button } from 'antd';
 import {
   PhoneOutlined,
@@ -16,25 +16,16 @@ import {
   ArrowUpOutlined,
 } from '@ant-design/icons';
 import './Footer.css';
-import Logo from '@assets/white-logo.svg?react';
+import Logo from '@assets/Logo-full.svg?react';
 
 const { Title, Text, Paragraph } = Typography;
 
 const Footer = () => {
-  const [expandedSections, setExpandedSections] = useState({});
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     });
-  };
-
-  const toggleSection = (section) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
   };
 
   return (
@@ -48,9 +39,6 @@ const Footer = () => {
               <div className="footer-section">
                 <div className="footer-logo-section">
                   <Logo className="footer-logo" />
-                  <Title level={4} className="footer-brand">
-                    Gender Care
-                  </Title>
                 </div>
                 <Paragraph className="footer-description">
                   Chăm sóc sức khỏe sinh sản toàn diện với đội ngũ chuyên gia

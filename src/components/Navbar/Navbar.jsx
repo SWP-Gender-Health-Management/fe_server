@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Menu,
   Button,
@@ -10,12 +10,9 @@ import {
   Modal,
   Badge,
   Tooltip,
+  List, 
+  Spin,
 } from 'antd';
-
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Menu, Button, Row, Col, Breadcrumb, Dropdown, Modal, Badge, List, Spin } from 'antd';
-
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -27,7 +24,6 @@ import {
   EnvironmentOutlined,
   UserOutlined,
   BellOutlined,
-
   MailOutlined,
   FacebookOutlined,
   TwitterOutlined,
@@ -66,7 +62,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     've-chung-toi': 'Về chúng tôi',
     'lien-he': 'Liên hệ',
     'tai-khoan': 'Tài khoản',
-    customer: 'Theo dõi chu kỳ',
+    'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
 
   };
@@ -74,59 +70,12 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const menuItems = [
-
-    {
-      label: (
-        <Link to="/" className="nav-link">
-          Trang Chủ
-        </Link>
-      ),
-      key: 'home',
-      icon: <HomeOutlined />,
-    },
-    {
-      label: (
-        <Link to="/customer" className="nav-link">
-          Theo dõi chu kỳ
-        </Link>
-      ),
-      key: 'customer',
-      icon: <AppstoreOutlined />,
-    },
-    {
-      label: (
-        <Link to="/tin-tuc" className="nav-link">
-          Tin tức
-        </Link>
-      ),
-      key: 'tin-tuc',
-      icon: <ReadOutlined />,
-    },
-    {
-      label: (
-        <Link to="/ve-chung-toi" className="nav-link">
-          Về chúng tôi
-        </Link>
-      ),
-      key: 've-chung-toi',
-      icon: <TeamOutlined />,
-    },
-    {
-      label: (
-        <Link to="/lien-he" className="nav-link">
-          Liên hệ
-        </Link>
-      ),
-      key: 'lien-he',
-      icon: <PhoneOutlined />,
-    },
     { label: <Link to="/">Trang Chủ</Link>, key: 'home', icon: <HomeOutlined /> },
     { label: <Link to="/dich-vu">Dịch vụ</Link>, key: 'services', icon: <AppstoreOutlined /> },
     { label: <Link to="/tin-tuc">Tin tức</Link>, key: 'news', icon: <ReadOutlined /> },
     { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
     { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
     { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
-
   ];
 
   const handleConfirmLogout = () => {
@@ -233,37 +182,20 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
       {/* Top contact bar - hidden on mobile */}
       <div className="top-bar desktop-only">
         <div className="top-bar-content">
-          <Row justify="space-between" align="middle" className="top-bar-row">
-            <Col xs={0} sm={24}>
-              <div className="contact-info">
-                <div className="contact-item">
-                  <PhoneOutlined className="top-bar-icon" />
-                  <span>Hotline: (024) 3926 1234</span>
-                </div>
-                <div className="contact-item">
-                  <ClockCircleOutlined className="top-bar-icon" />
-                  <span>7:00 - 18:00 Hằng ngày</span>
-                </div>
-                <div className="contact-item">
-                  <MailOutlined className="top-bar-icon" />
-                  <span>support@gendercare.vn</span>
-                </div>
-              </div>
-            </Col>
-            <Col>
-              <div className="social-links">
-                <Tooltip title="Facebook">
-                  <FacebookOutlined className="social-icon" />
-                </Tooltip>
-                <Tooltip title="Twitter">
-                  <TwitterOutlined className="social-icon" />
-                </Tooltip>
-                <Tooltip title="Instagram">
-                  <InstagramOutlined className="social-icon" />
-                </Tooltip>
-              </div>
-            </Col>
-          </Row>
+          <div className="contact-info">
+            <div className="contact-item">
+              <PhoneOutlined className="top-bar-icon" />
+              <span>Hotline: (024) 3926 1234</span>
+            </div>
+            <div className="contact-item">
+              <ClockCircleOutlined className="top-bar-icon" />
+              <span>7:00 - 18:00 Hằng ngày</span>
+            </div>
+            <div className="contact-item">
+              <MailOutlined className="top-bar-icon" />
+              <span>support@gendercare.vn</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -411,6 +343,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
         </div>
       )}
     </div>
+  </div>
   );
 };
 
