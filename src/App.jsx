@@ -10,6 +10,8 @@ import BlogPage from '@pages/Blog/BlogPage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
 import Payment from '@pages/PaymentPage/PaymentPage';
+import AboutUs from '@pages/AboutUs/AboutUs';
+import Contact from '@pages/Contact/Contact';
 import Footer from '@components/Footer/Footer';
 import '@styles/reset.css';
 
@@ -43,6 +45,8 @@ const AppLayout = () => {
           element={isLoggedIn ? <UserAccount /> : <Navigate to="/login" />}
         />
         <Route path="/tin-tuc" element={<BlogPage />} />
+        <Route path="/ve-chung-toi" element={<AboutUs />} />
+        <Route path="/lien-he" element={<Contact />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/customer" element={<MenstrualPredictorPage />} />
         <Route path="/hoi-dap" element={<Question />} />
