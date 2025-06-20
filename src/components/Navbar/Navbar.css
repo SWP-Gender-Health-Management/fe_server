@@ -17,7 +17,6 @@
   backdrop-filter: blur(25px);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
 }
-
 /* Top contact bar */
 .top-bar {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -194,15 +193,38 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-.mobile-contact {
-  text-align: center;
-  font-weight: 600;
+.contact-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.top-bar-icon {
-  font-size: 14px;
-  margin-right: 6px;
+/* CSS cho Row Direction (mặc định) */
+.contact-info.row-direction .contact-item:nth-child(1),
+.contact-info:not([class*='direction']) .contact-item:nth-child(1) {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 0;
 }
+
+.contact-info.row-direction .contact-item:nth-child(2),
+.contact-info:not([class*='direction']) .contact-item:nth-child(2) {
+  justify-content: center;
+  text-align: center;
+}
+
+.contact-info.row-direction .contact-item:nth-child(3),
+.contact-info:not([class*='direction']) .contact-item:nth-child(3) {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
+
 
 .social-links {
   display: flex;
@@ -211,19 +233,66 @@
   justify-content: flex-start;
 }
 
-.social-icon {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 4px;
-  border-radius: 50%;
+/* CSS cho Column Direction */
+.contact-info.column-direction .contact-item,
+.contact-info.column-reverse-direction .contact-item {
+justify-content: center;
+  text-align: center;
+  padding: 4px 0;
+  width: 100%;
 }
 
-.social-icon:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+/* Border cho Column Direction */
+.contact-info.column-direction .contact-item:not(:last-child)::after,
+.contact-info.column-reverse-direction .contact-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* CSS cho Row Reverse Direction */
+.contact-info.row-reverse-direction .contact-item:nth-child(1) {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
+
+.contact-info.row-reverse-direction .contact-item:nth-child(2) {
+  justify-content: center;
+  text-align: center;
+}
+
+.contact-info.row-reverse-direction .contact-item:nth-child(3) {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 0;
+}
+
+/* Border cho Row Reverse Direction */
+.contact-info.row-reverse-direction .contact-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.mobile-contact {
+  text-align: center;
+  font-weight: 600;
+}
+
+.top-bar-icon {
+  font-size: 14px;
+  margin-right: 6px;
 }
 
 /* Main navigation */
