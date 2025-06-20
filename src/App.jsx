@@ -5,13 +5,10 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
-<<<<<<< HEAD
 import BlogPage from '@pages/Blog/BlogPage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
-=======
 // import BlogPage from './pages/Blog/BlogPage';
 import Footer from '@components/Footer/Footer';
->>>>>>> cf8b5dcaeee73cc5a86813c6ab979199824063d3
 import '@styles/reset.css';
 
 function App() {
@@ -45,7 +42,6 @@ function App() {
   };
 
   return (
-<<<<<<< HEAD
     <Router>
       <div className="app-container">
         <Navbar onLoginClick={() => setShowLogin(true)} />
@@ -78,31 +74,6 @@ function App() {
         <MenstrualPredictorPage />
       </div>
     </Router>
-=======
-    <div className="app-container">
-      <Navbar
-        onLoginClick={() => setShowLogin(true)}
-        isLoggedIn={isLoggedIn}
-        onLogout={handleLogout}
-      />
-
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/tai-khoan" element={<UserAccount />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        {/* <Route path="/tin-tuc" element={<BlogPage />} /> */}
-      </Routes>
-
-      <Login
-        visible={showLogin}
-        onCancel={() => setShowLogin(false)}
-        onLoginSuccess={handleLoginSuccess} // ✅ Đã sửa đúng cách gọi
-      />
-
-      <Footer />
-      <div className="footer-spacer" /> 
-    </div>
->>>>>>> cf8b5dcaeee73cc5a86813c6ab979199824063d3
   );
 }
 
