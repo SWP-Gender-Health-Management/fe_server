@@ -34,6 +34,7 @@ import {
   ArrowRightOutlined,
 } from '@ant-design/icons';
 import './LandingPage.css';
+import '@styles/reset.css'; // Reset CSS for consistent styling
 
 const { Option } = Select;
 const { Title, Paragraph, Text } = Typography;
