@@ -182,18 +182,38 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
       {/* Top contact bar - hidden on mobile */}
       <div className="top-bar desktop-only">
         <div className="top-bar-content">
-          <div className="contact-info">
-            <div className="contact-item">
-              <PhoneOutlined className="top-bar-icon" />
-              <span>Hotline: (024) 3926 1234</span>
+          <div className="top-bar-layout">
+            {/* Contact info row - 3 parts equal */}
+            <div className="contact-1">
+              <div className="contact-info row-direction">
+                <div className="contact-item">
+                  <PhoneOutlined className="top-bar-icon" />
+                  <span>Hotline: (024) 3926 1234</span>
+                </div>
+                <div className="contact-item">
+                  <ClockCircleOutlined className="top-bar-icon" />
+                  <span>7:00 - 18:00 Hằng ngày</span>
+                </div>
+                <div className="contact-item">
+                  <MailOutlined className="top-bar-icon" />
+                  <span>support@gendercare.vn</span>
+                </div>
+              </div>
             </div>
-            <div className="contact-item">
-              <ClockCircleOutlined className="top-bar-icon" />
-              <span>7:00 - 18:00 Hằng ngày</span>
-            </div>
-            <div className="contact-item">
-              <MailOutlined className="top-bar-icon" />
-              <span>support@gendercare.vn</span>
+
+            {/* Social links row */}
+            <div className="contact-2">
+              <div className="social-links">
+                <Tooltip title="Facebook">
+                  <FacebookOutlined className="social-icon" />
+                </Tooltip>
+                <Tooltip title="Twitter">
+                  <TwitterOutlined className="social-icon" />
+                </Tooltip>
+                <Tooltip title="Instagram">
+                  <InstagramOutlined className="social-icon" />
+                </Tooltip>
+              </div>
             </div>
           </div>
         </div>

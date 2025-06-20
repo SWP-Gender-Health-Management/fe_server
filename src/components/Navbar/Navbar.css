@@ -144,6 +144,98 @@
 /* CSS cho Column Direction */
 .contact-info.column-direction .contact-item,
 .contact-info.column-reverse-direction .contact-item {
+  justify-content: center;
+  text-align: center;
+  padding: 4px 0;
+  width: 100%;
+}
+
+/* Border cho Column Direction */
+.contact-info.column-direction .contact-item:not(:last-child)::after,
+.contact-info.column-reverse-direction .contact-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* CSS cho Row Reverse Direction */
+.contact-info.row-reverse-direction .contact-item:nth-child(1) {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
+
+.contact-info.row-reverse-direction .contact-item:nth-child(2) {
+  justify-content: center;
+  text-align: center;
+}
+
+.contact-info.row-reverse-direction .contact-item:nth-child(3) {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 0;
+}
+
+/* Border cho Row Reverse Direction */
+.contact-info.row-reverse-direction .contact-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.contact-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* CSS cho Row Direction (mặc định) */
+.contact-info.row-direction .contact-item:nth-child(1),
+.contact-info:not([class*='direction']) .contact-item:nth-child(1) {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 0;
+}
+
+.contact-info.row-direction .contact-item:nth-child(2),
+.contact-info:not([class*='direction']) .contact-item:nth-child(2) {
+  justify-content: center;
+  text-align: center;
+}
+
+.contact-info.row-direction .contact-item:nth-child(3),
+.contact-info:not([class*='direction']) .contact-item:nth-child(3) {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
+
+
+.social-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* CSS cho Column Direction */
+.contact-info.column-direction .contact-item,
+.contact-info.column-reverse-direction .contact-item {
 justify-content: center;
   text-align: center;
   padding: 4px 0;
@@ -519,8 +611,63 @@ justify-content: center;
     margin: 0 20px;
   }
 
+  .top-bar-layout {
+    gap: 4px;
+  }
+
   .contact-info {
-    gap: 20px;
+    max-width: 800px;
+  }
+
+  .contact-item {
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  /* Row Direction responsive */
+  .contact-info.row-direction .contact-item:nth-child(1),
+  .contact-info:not([class*='direction']) .contact-item:nth-child(1) {
+    padding-left: 0;
+  }
+
+  .contact-info.row-direction .contact-item:nth-child(3),
+  .contact-info:not([class*='direction']) .contact-item:nth-child(3) {
+    padding-right: 0;
+  }
+
+  .contact-info.row-direction .contact-item:not(:last-child)::after,
+  .contact-info:not([class*='direction'])
+    .contact-item:not(:last-child)::after {
+    display: none;
+  }
+
+  .contact-2 {
+    justify-content: flex-start;
+    padding-left: 0;
+  }
+
+  .social-links {
+    gap: 10px;
+  }
+
+  /* Column Direction responsive */
+  .contact-info.column-direction,
+  .contact-info.column-reverse-direction {
+    gap: 6px;
+  }
+
+  .contact-info.column-direction .contact-item,
+  .contact-info.column-reverse-direction .contact-item {
+    padding: 3px 0;
+  }
+
+  .contact-info.column-direction .contact-item:not(:last-child)::after,
+  .contact-info.column-reverse-direction .contact-item:not(:last-child)::after {
+    width: 50px;
+  }
+
+  .top-bar-icon {
+    font-size: 12px;
   }
 }
 
@@ -586,6 +733,7 @@ justify-content: center;
 
   .social-links {
     gap: 8px;
+    justify-content: flex-start;
   }
 
   .breadcrumb-content {
@@ -633,4 +781,31 @@ html {
   background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   border: 2px solid white;
   box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+/* Flex direction modifiers cho contact-info */
+.contact-info.row-direction {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 0;
+}
+
+.contact-info.column-direction {
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+}
+
+.contact-info.row-reverse-direction {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: 0;
+}
+
+.contact-info.column-reverse-direction {
+  flex-direction: column-reverse;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
 }
