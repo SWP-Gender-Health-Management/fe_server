@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
+import BlogPage from '@pages/Blog/BlogPage';
+import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
+
 // import BlogPage from './pages/Blog/BlogPage';
 import Payment from '@pages/PaymentPage/PaymentPage';
 import Footer from '@components/Footer/Footer';
@@ -52,7 +55,9 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/tai-khoan" element={<UserAccount />} />
+        <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/customer" element={<MenstrualPredictorPage />} />
         {/* <Route path="/tin-tuc" element={<BlogPage />} /> */}
         <Route path="/hoi-dap" element={<Question />} />
       </Routes>
@@ -60,10 +65,11 @@ function App() {
       <Login
         visible={showLogin}
         onCancel={() => setShowLogin(false)}
-        onLoginSuccess={handleLoginSuccess} // ✅ Đã sửa đúng cách gọi
+        onLoginSuccess={handleLoginSuccess}
       />
 
       <Footer />
+
       <div className="footer-spacer" /> 
 
       <Payment />
