@@ -1,39 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, List, Typography, Divider, Button, Checkbox, Input } from 'antd';
+import { Card, List, Typography, Divider, Button, Checkbox, Input, message } from 'antd';
+import { useAuth } from '../../context/AuthContext.jsx'; // Sử dụng .jsx
 import './UserAccount.css';
 
 const { Title, Text } = Typography;
 
 const UserAccount = () => {
-  const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState({});
+  const { isLoggedIn, userInfo } = useAuth();
 
   useEffect(() => {
     const fetchAccountInfo = async () => {
-      const account_id = localStorage.getItem('account_id');
-      if (!account_id) {
+      if (!isLoggedIn) {
         setLoading(false);
         return;
       }
 
+      const accessToken = sessionStorage.getItem('accessToken');
+      if (!accessToken) {
+        setLoading(false);
+        message.error('Vui lòng đăng nhập để xem thông tin tài khoản.');
+        return;
+      }
+
       try {
-        const res = await axios.post('http://localhost:3000/account/get-account-from-redis', {
-          account_id
-        });
-        setUserInfo(res.data.result);
-        setEditedInfo(res.data.result || {});
+        const response = await axios.post(
+          'http://localhost:3000/account/view-account',
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        setEditedInfo(response.data.result || {});
       } catch (err) {
         console.error('Lỗi khi lấy thông tin tài khoản:', err);
+        message.error('Không thể tải thông tin tài khoản. Vui lòng thử lại.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAccountInfo();
-  }, []);
+    if (isLoggedIn) fetchAccountInfo();
+  }, [isLoggedIn]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,15 +59,29 @@ const UserAccount = () => {
   };
 
   const handleSave = async () => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+      message.error('Vui lòng đăng nhập để lưu thông tin.');
+      return;
+    }
+
     try {
-      await axios.post('http://localhost:3000/account/update-profile', {
-        account_id: localStorage.getItem('account_id'),
-        ...editedInfo
-      });
-      setUserInfo({ ...userInfo, ...editedInfo });
+      const response = await axios.post(
+        'http://localhost:3000/account/update-profile',
+        { ...editedInfo },
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      setEditedInfo(response.data.result || {});
       setIsEditing(false);
+      message.success('Cập nhật thông tin thành công!');
     } catch (err) {
       console.error('Lỗi khi cập nhật thông tin:', err);
+      message.error('Không thể cập nhật thông tin. Vui lòng thử lại.');
     }
   };
 
@@ -80,7 +108,7 @@ const UserAccount = () => {
     { title: 'Email', value: 'email', editable: false },
     { title: 'Số điện thoại', value: 'phone', editable: true },
     { title: 'Ngày sinh', value: 'dob', editable: true },
-    { title: 'Giới tính', value: 'gender', editable: true, type: 'checkbox' }
+    { title: 'Giới tính', value: 'gender', editable: true, type: 'checkbox' },
   ];
 
   return (
@@ -88,7 +116,7 @@ const UserAccount = () => {
       <Card className="account-card">
         <Title level={4} className="section-title">Thông tin tài khoản</Title>
         <Text strong className="greeting-text">
-          {userInfo ? `Xin chào, ${userInfo.full_name}` : 'Không tìm thấy người dùng'}
+          {userInfo.full_name ? `Xin chào, ${userInfo.full_name}` : 'Không tìm thấy người dùng'}
         </Text>
 
         <Divider className="divider" />
@@ -103,12 +131,20 @@ const UserAccount = () => {
                 description={
                   isEditing ? (
                     item.type === 'checkbox' ? (
-                      <Checkbox
-                        checked={editedInfo[item.value] === 'Male'}
-                        onChange={handleGenderChange}
-                      >
-                        Nam
-                      </Checkbox>
+                      <>
+                        <Checkbox
+                          checked={editedInfo[item.value] === 'Male'}
+                          onChange={handleGenderChange}
+                        >
+                          Nam
+                        </Checkbox>
+                        <Checkbox
+                          checked={editedInfo[item.value] === 'Female'}
+                          onChange={handleGenderChange}
+                        >
+                          Nữ
+                        </Checkbox>
+                      </>
                     ) : (
                       <Input
                         name={item.value}
@@ -119,8 +155,8 @@ const UserAccount = () => {
                       />
                     )
                   ) : (
-                    <Text className={userInfo?.[item.value] ? 'info-value' : 'empty-text'}>
-                      {userInfo?.[item.value] || 'Chưa cập nhật'}
+                    <Text className={editedInfo[item.value] ? 'info-value' : 'empty-text'}>
+                      {editedInfo[item.value] || 'Chưa cập nhật'}
                     </Text>
                   )
                 }
@@ -129,7 +165,7 @@ const UserAccount = () => {
           )}
           className="account-list"
         />
-        {userInfo && (
+        {editedInfo && (
           <div style={{ marginTop: '16px' }}>
             {isEditing ? (
               <>
@@ -137,7 +173,7 @@ const UserAccount = () => {
                   Lưu & Xác nhận
                 </Button>
                 <Button type="default" onClick={handleDelete}>
-                  Xóa
+                  Hủy
                 </Button>
               </>
             ) : (

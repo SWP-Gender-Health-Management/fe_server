@@ -19,7 +19,7 @@
 }
 /* Top contact bar */
 .top-bar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   color: white;
   font-size: 12px;
   padding: 6px 0;
@@ -73,13 +73,6 @@
   width: 100%;
 }
 
-.contact-2 {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  padding-left: 0;
-}
-
 .contact-info {
   display: flex;
   flex-direction: row;
@@ -101,6 +94,8 @@
   padding: 0 15px;
   text-align: center;
   min-width: 0;
+  background: none ;
+  border: none;
 }
 
 .contact-item:not(:last-child)::after {
@@ -111,7 +106,7 @@
   transform: translateY(-50%);
   width: 1px;
   height: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  background:transparent;
 }
 
 /* CSS cho Row Direction (mặc định) */
@@ -160,7 +155,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.3);
+  background:transparent  ;
 }
 
 /* CSS cho Row Reverse Direction */
@@ -190,7 +185,7 @@
   transform: translateY(-50%);
   width: 1px;
   height: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  background: transparent;
 }
 
 .contact-item:not(:last-child)::after {
@@ -201,7 +196,7 @@
   transform: translateY(-50%);
   width: 1px;
   height: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  background: transparent;
 }
 
 /* CSS cho Row Direction (mặc định) */
@@ -252,7 +247,7 @@ justify-content: center;
   transform: translateX(-50%);
   width: 60px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.3);
+  background: transparent;
 }
 
 /* CSS cho Row Reverse Direction */
@@ -282,7 +277,7 @@ justify-content: center;
   transform: translateY(-50%);
   width: 1px;
   height: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  background: transparent;
 }
 
 .mobile-contact {
@@ -423,7 +418,7 @@ justify-content: center;
 }
 
 .user-button {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   color: white;
   border: none;
   border-radius: 20px;

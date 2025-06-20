@@ -200,21 +200,6 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
                 </div>
               </div>
             </div>
-
-            {/* Social links row */}
-            <div className="contact-2">
-              <div className="social-links">
-                <Tooltip title="Facebook">
-                  <FacebookOutlined className="social-icon" />
-                </Tooltip>
-                <Tooltip title="Twitter">
-                  <TwitterOutlined className="social-icon" />
-                </Tooltip>
-                <Tooltip title="Instagram">
-                  <InstagramOutlined className="social-icon" />
-                </Tooltip>
-              </div>
-            </div>
           </div>
         </div>
       </div>

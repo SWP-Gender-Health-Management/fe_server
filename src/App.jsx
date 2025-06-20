@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -8,41 +9,25 @@ import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
-
-// import BlogPage from './pages/Blog/BlogPage';
 import Payment from '@pages/PaymentPage/PaymentPage';
 import Footer from '@components/Footer/Footer';
 import '@styles/reset.css';
 
-function App() {
-  const [showLogin, setShowLogin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+// Layout chung cho tất cả trang
+const AppLayout = () => {
+  const { isLoggedIn, logout } = useAuth(); // Gọi useAuth một lần tại đây
+  const [showLogin, setShowLogin] = React.useState(false);
+  const location = useLocation();
 
-  // Kiểm tra nếu đã đăng nhập từ session
-  useEffect(() => {
-    const token = sessionStorage.getItem('accessToken');
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
+  // Hàm handleLogout không chứa Hook, chỉ gọi logout từ useAuth
   const handleLogout = () => {
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('refreshToken');
-    sessionStorage.removeItem('fullname');
-    setIsLoggedIn(false);
+    logout(); // Gọi logout đã được định nghĩa từ useAuth
   };
 
-  const handleLoginSuccess = (userData) => {
-    if (!userData || !userData.accessToken) return;
-
-    sessionStorage.setItem('accessToken', userData.accessToken);
-    sessionStorage.setItem('refreshToken', userData.refreshToken);
-    sessionStorage.setItem('fullname', userData.fullname || 'Người dùng');
-
-    setIsLoggedIn(true);
+  // Ẩn Login modal khi thay đổi route
+  React.useEffect(() => {
     setShowLogin(false);
-  };
+  }, [location]);
 
   return (
     <div className="app-container">
@@ -51,31 +36,30 @@ function App() {
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
       />
-
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/tai-khoan" element={<UserAccount />} />
+        <Route
+          path="/tai-khoan"
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/login" />}
+        />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/customer" element={<MenstrualPredictorPage />} />
-        {/* <Route path="/tin-tuc" element={<BlogPage />} /> */}
         <Route path="/hoi-dap" element={<Question />} />
       </Routes>
-
-      <Login
-        visible={showLogin}
-        onCancel={() => setShowLogin(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
-
+      <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />
-
-      <div className="footer-spacer" /> 
-
+      <div className="footer-spacer" />
       <Payment />
-
-      {/* Chỉ hiển thị Payment nếu đã đăng nhập */}
     </div>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppLayout />
+    </AuthProvider>
   );
 }
 
