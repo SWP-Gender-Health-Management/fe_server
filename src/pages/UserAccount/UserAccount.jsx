@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, Table, List, Typography, Divider } from 'antd';
+import { Card, List, Typography, Divider, Button, Checkbox, Input } from 'antd';
 import './UserAccount.css';
 
 const { Title, Text } = Typography;
@@ -8,6 +8,8 @@ const { Title, Text } = Typography;
 const UserAccount = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedInfo, setEditedInfo] = useState({});
 
   useEffect(() => {
     const fetchAccountInfo = async () => {
@@ -22,6 +24,7 @@ const UserAccount = () => {
           account_id
         });
         setUserInfo(res.data.result);
+        setEditedInfo(res.data.result || {});
       } catch (err) {
         console.error('Lỗi khi lấy thông tin tài khoản:', err);
       } finally {
@@ -31,6 +34,36 @@ const UserAccount = () => {
 
     fetchAccountInfo();
   }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedInfo({ ...editedInfo, [name]: value });
+  };
+
+  const handleGenderChange = (e) => {
+    setEditedInfo({ ...editedInfo, gender: e.target.checked ? 'Male' : 'Female' });
+  };
+
+  const handleSave = async () => {
+    try {
+      await axios.post('http://localhost:3000/account/update-profile', {
+        account_id: localStorage.getItem('account_id'),
+        ...editedInfo
+      });
+      setUserInfo({ ...userInfo, ...editedInfo });
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Lỗi khi cập nhật thông tin:', err);
+    }
+  };
+
+  const handleDelete = () => {
+    setEditedInfo(userInfo || {});
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
 
   if (loading) {
     return (
@@ -43,11 +76,11 @@ const UserAccount = () => {
   }
 
   const accountInfoData = [
-    { title: 'Tên tài khoản', value: userInfo?.full_name || '' },
-    { title: 'Email', value: userInfo?.email || '' },
-    { title: 'Số điện thoại', value: userInfo?.phone || '' },
-    { title: 'Ngày sinh', value: userInfo?.dob || '' },
-    { title: 'Giới tính', value: userInfo?.gender || '' }
+    { title: 'Tên tài khoản', value: 'full_name', editable: true },
+    { title: 'Email', value: 'email', editable: false },
+    { title: 'Số điện thoại', value: 'phone', editable: true },
+    { title: 'Ngày sinh', value: 'dob', editable: true },
+    { title: 'Giới tính', value: 'gender', editable: true, type: 'checkbox' }
   ];
 
   return (
@@ -68,15 +101,52 @@ const UserAccount = () => {
               <List.Item.Meta
                 title={<Text className="info-title">{item.title}</Text>}
                 description={
-                  <Text className={item.value ? 'info-value' : 'empty-text'}>
-                    {item.value || 'Chưa cập nhật'}
-                  </Text>
+                  isEditing ? (
+                    item.type === 'checkbox' ? (
+                      <Checkbox
+                        checked={editedInfo[item.value] === 'Male'}
+                        onChange={handleGenderChange}
+                      >
+                        Nam
+                      </Checkbox>
+                    ) : (
+                      <Input
+                        name={item.value}
+                        value={editedInfo[item.value] || ''}
+                        onChange={handleChange}
+                        disabled={!item.editable}
+                        className={editedInfo[item.value] ? 'info-value' : 'empty-text'}
+                      />
+                    )
+                  ) : (
+                    <Text className={userInfo?.[item.value] ? 'info-value' : 'empty-text'}>
+                      {userInfo?.[item.value] || 'Chưa cập nhật'}
+                    </Text>
+                  )
                 }
               />
             </List.Item>
           )}
           className="account-list"
         />
+        {userInfo && (
+          <div style={{ marginTop: '16px' }}>
+            {isEditing ? (
+              <>
+                <Button type="primary" onClick={handleSave} style={{ marginRight: '8px' }}>
+                  Lưu & Xác nhận
+                </Button>
+                <Button type="default" onClick={handleDelete}>
+                  Xóa
+                </Button>
+              </>
+            ) : (
+              <Button type="primary" onClick={handleEdit}>
+                Chỉnh sửa
+              </Button>
+            )}
+          </div>
+        )}
       </Card>
     </div>
   );
