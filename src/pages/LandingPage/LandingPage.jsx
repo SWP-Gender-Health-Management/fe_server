@@ -60,7 +60,7 @@ const LandingPage = () => {
             </Select>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" block>
+            <Button className='submitButton' type="primary" block>
               Tiếp theo
             </Button>
           </Form.Item>
@@ -146,13 +146,6 @@ const LandingPage = () => {
             </Card>
           </Col>
         </Row>
-      </div>
-
-      {/* Footer */}
-      <div className="footer">
-        <h3>GENDERCARE</h3>
-        <p>SHARING IS CARING</p>
-        <p>© 2025 SWP391-G05</p>
       </div>
     </div>
   );

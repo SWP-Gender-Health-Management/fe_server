@@ -41,6 +41,8 @@
   background: #1e40af;
   color: white;
   padding: 20px;
+  border-radius: 16px;
+  margin:  4rem;
 }
 
 .consultation-form {
@@ -56,6 +58,10 @@
   font-size: 12px;
   text-align: center;
   margin-top: 10px;
+}
+
+.submitButton{
+  background-color: #FEBB2A;
 }
 
 /* News section styles */
