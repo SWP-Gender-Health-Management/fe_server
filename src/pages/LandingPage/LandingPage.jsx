@@ -8,6 +8,7 @@ import {
   EnvironmentOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
+import '@styles/reset.css'; // Reset CSS for consistent styling
 import './LandingPage.css'; // Import CSS file
 
 const { Option } = Select;

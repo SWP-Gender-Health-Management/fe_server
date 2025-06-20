@@ -1,0 +1,13 @@
+.hospital-info {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.hospital-info h3 {
+  margin-bottom: 12px;
+}
+.hospital-info ul {
+  padding-left: 20px;
+}

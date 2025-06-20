@@ -1,0 +1,17 @@
+.question-page {
+  display: flex;
+  gap: 32px;
+  padding: 24px;
+}
+
+.question-left {
+  flex: 2;
+}
+
+.question-right {
+  flex: 1;
+  background-color: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
