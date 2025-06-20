@@ -176,9 +176,10 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
       {/* Top contact bar - hidden on mobile */}
       <div className="top-bar desktop-only">
         <div className="top-bar-content">
-          <Row justify="space-between" align="middle" className="top-bar-row">
-            <Col xs={0} sm={24}>
-              <div className="contact-info">
+          <div className="top-bar-layout">
+            {/* Contact info row - 3 parts equal */}
+            <div className="contact-1">
+              <div className="contact-info row-direction">
                 <div className="contact-item">
                   <PhoneOutlined className="top-bar-icon" />
                   <span>Hotline: (024) 3926 1234</span>
@@ -192,8 +193,10 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
                   <span>support@gendercare.vn</span>
                 </div>
               </div>
-            </Col>
-            <Col>
+            </div>
+
+            {/* Social links row */}
+            <div className="contact-2">
               <div className="social-links">
                 <Tooltip title="Facebook">
                   <FacebookOutlined className="social-icon" />
@@ -205,8 +208,8 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
                   <InstagramOutlined className="social-icon" />
                 </Tooltip>
               </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
       </div>
 
