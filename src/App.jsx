@@ -6,6 +6,7 @@ import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
+import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import '@styles/reset.css';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
         <Login />
         <AdminDashboard />
         <BlogPage />
+        <MenstrualPredictorPage />
       </div>
     </Router>
   );
