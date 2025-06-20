@@ -1,0 +1,17 @@
+.payment-details {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.payment-details label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.pay-button {
+  margin-top: 24px;
+  width: 100%;
+}
