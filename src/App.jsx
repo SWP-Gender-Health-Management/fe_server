@@ -54,7 +54,7 @@ function App() {
         <Route path="/tai-khoan" element={<UserAccount />} />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/customer" element={<MenstrualPredictorPage />} />
+        <Route path="/dich-vu" element={<MenstrualPredictorPage />} />
       </Routes>
 
       <Login

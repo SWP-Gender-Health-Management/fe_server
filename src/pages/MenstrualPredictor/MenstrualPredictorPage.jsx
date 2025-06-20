@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, Row, Col, Divider, Progress, Alert, Tooltip } from 'antd';
 import {
@@ -17,14 +17,14 @@ const MenstrualPredictorPage = () => {
 
   const [cycleLength, setCycleLength] = useState(28);
   const [periodLength, setPeriodLength] = useState(5);
-  const [lastPeriodStart, setLastPeriodStart] = useState('2024-01-05');
+  const [lastPeriodStart, setLastPeriodStart] = useState('');
 
   const [nextStartDate, setNextStartDate] = useState(null);
   const [ovulationDate, setOvulationDate] = useState(null);
   const [fertileRange, setFertileRange] = useState({ start: null, end: null });
 
   const accountId = localStorage.getItem('account_id');
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('accessToken');
 
   // Calculate cycle phase
   const getCurrentPhase = () => {
@@ -101,6 +101,20 @@ const MenstrualPredictorPage = () => {
   const daysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
   const getFirstDayOfMonth = (m, y) => new Date(y, m, 1).getDay();
 
+  const fetchLastPeriodData = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        `/customer/get-period?account_id=${accountId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = res.data.data;
+      setLastPeriodStart(data.start_date);
+      setPeriodLength(data.period);
+    } catch (err) {
+      console.error('Không thể lấy thông tin kỳ kinh:', err);
+    }
+  }, [accountId, token]);
+
   const calculatePeriodDays = () => {
     const periodDaysMap = {};
     const start = new Date(lastPeriodStart);
@@ -176,36 +190,39 @@ const MenstrualPredictorPage = () => {
     }
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = useCallback(async () => {
+    if (!lastPeriodStart || isNaN(new Date(lastPeriodStart))) {
+      alert('Vui lòng chọn ngày bắt đầu kỳ kinh hợp lệ!');
+      return;
+    }
+
     try {
       await axios.post(
         '/customer/track-period',
         {
           account_id: accountId,
           period: periodLength,
-          start_date: lastPeriodStart,
-          end_date: lastPeriodStart,
+          start_date: formatDate(lastPeriodStart),
+          end_date: formatDate(lastPeriodStart),
           note: 'Tự động nhập từ frontend',
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const res = await axios.get(
         `/customer/predict-period?account_id=${accountId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const data = res.data.data;
-      setNextStartDate(new Date(data.next_start_date));
-      const ovulation = new Date(data.next_start_date);
+      const nextDate = new Date(data.next_start_date);
+      setNextStartDate(nextDate);
+
+      const ovulation = new Date(nextDate);
       ovulation.setDate(ovulation.getDate() - 14);
       setOvulationDate(ovulation);
 
@@ -214,17 +231,24 @@ const MenstrualPredictorPage = () => {
       const fertileEnd = new Date(ovulation);
       fertileEnd.setDate(fertileEnd.getDate() + 2);
       setFertileRange({ start: fertileStart, end: fertileEnd });
+
+      alert('Cập nhật thành công!');
     } catch (err) {
-      console.error('Error tracking or predicting period:', err);
+      console.error(
+        'Lỗi khi cập nhật chu kỳ:',
+        err.response?.data || err.message
+      );
+      alert('Không thể cập nhật chu kỳ!');
     }
-  };
+  }, [accountId, token, lastPeriodStart, periodLength]);
 
   useEffect(() => {
     if (accountId && token) {
-      handleUpdate();
+      fetchLastPeriodData().then(() => {
+        handleUpdate(); // Gọi sau khi đã có lastPeriodStart
+      });
     }
-  }, [lastPeriodStart, cycleLength, periodLength]);
-
+  }, [accountId, token]);
   const currentPhase = getCurrentPhase();
   const phaseInfo = getPhaseInfo(currentPhase);
 
@@ -251,6 +275,13 @@ const MenstrualPredictorPage = () => {
     if (isToday) classes += ' today';
 
     return classes;
+  };
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -392,7 +423,9 @@ const MenstrualPredictorPage = () => {
                 />
               </div>
             </Card>
-
+            <button onClick={handleUpdate} className="update-button">
+              Cập nhật kỳ kinh
+            </button>
             {/* Predictions */}
             <Card title="Dự Báo" style={{ marginBottom: '16px' }}>
               <div className="prediction-item">

@@ -17,37 +17,37 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
   const navigate = useNavigate();
 
   const handleLogin = async (values) => {
-  try {
-    const response = await axios.post('http://localhost:3000/account/login', {
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      const response = await axios.post('http://localhost:3000/account/login', {
+        email: values.email,
+        password: values.password,
+      });
 
-    console.log('Phản hồi từ API:', response.data);
+      console.log('Phản hồi từ API:', response.data);
 
-    const { accessToken, refreshToken, fullname } = response.data.result;
+      const { accessToken, refreshToken, fullname } = response.data.result;
 
-    if (!accessToken || !refreshToken) {
-      throw new Error('Thiếu token trong phản hồi');
+      if (!accessToken || !refreshToken) {
+        throw new Error('Thiếu token trong phản hồi');
+      }
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('fullname', fullname || 'Người dùng');
+
+      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+
+      onCancel(); // Tắt modal
+      onLoginSuccess(); // Cập nhật trạng thái login
+      navigate('/tai-khoan'); // Điều hướng
+    } catch (error) {
+      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+      Modal.error({
+        title: 'Đăng nhập thất bại',
+        content: error.response?.data?.message || 'Có lỗi xảy ra',
+      });
     }
-
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('fullname', fullname || 'Người dùng');
-
-    Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
-
-    onCancel(); // Tắt modal
-    onLoginSuccess(); // Cập nhật trạng thái login
-    navigate('/tai-khoan'); // Điều hướng
-  } catch (error) {
-    console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-    Modal.error({
-      title: 'Đăng nhập thất bại',
-      content: error.response?.data?.message || 'Có lỗi xảy ra',
-    });
-  }
-};
+  };
 
   const handleRegister = async (values) => {
     try {
@@ -90,23 +90,52 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
                 <Form.Item label="Đăng nhập để nhận thêm các thông tin khác!" />
                 <Form.Item
                   name="email"
-                  rules={[{ required: true, message: 'Nhập email hoặc số điện thoại' }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Nhập email hoặc số điện thoại',
+                    },
+                  ]}
                 >
-                  <Input prefix={<UserOutlined />} placeholder="Email hoặc SĐT" />
+                  <Input
+                    prefix={<UserOutlined />}
+                    placeholder="Email hoặc SĐT"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="password"
                   rules={[{ required: true, message: 'Nhập mật khẩu' }]}
                 >
-                  <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
+                  <Input.Password
+                    prefix={<LockOutlined />}
+                    placeholder="Mật khẩu"
+                  />
                 </Form.Item>
-                <Form.Item><Checkbox>Ghi nhớ tôi</Checkbox></Form.Item>
-                <Form.Item><Button type="primary" htmlType="submit" block>Đăng nhập</Button></Form.Item>
-                <Form.Item><div className="or-divider"><span>Hoặc</span></div></Form.Item>
                 <Form.Item>
-                  <Button block className="google-button" icon={
-                    <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" className="google-icon" />
-                  }>
+                  <Checkbox>Ghi nhớ tôi</Checkbox>
+                </Form.Item>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" block>
+                    Đăng nhập
+                  </Button>
+                </Form.Item>
+                <Form.Item>
+                  <div className="or-divider">
+                    <span>Hoặc</span>
+                  </div>
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    block
+                    className="google-button"
+                    icon={
+                      <img
+                        src="https://img.icons8.com/color/20/google-logo.png"
+                        alt="Google"
+                        className="google-icon"
+                      />
+                    }
+                  >
                     Đăng nhập với Google
                   </Button>
                 </Form.Item>
@@ -128,7 +157,10 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
                   name="fullname"
                   rules={[{ required: true, message: 'Nhập họ và tên' }]}
                 >
-                  <Input prefix={<FontColorsOutlined />} placeholder="Họ và tên" />
+                  <Input
+                    prefix={<FontColorsOutlined />}
+                    placeholder="Họ và tên"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="password"
@@ -137,7 +169,10 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
                     { min: 6, message: 'Tối thiểu 6 ký tự' },
                   ]}
                 >
-                  <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
+                  <Input.Password
+                    prefix={<LockOutlined />}
+                    placeholder="Mật khẩu"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="confirmPassword"
@@ -149,23 +184,40 @@ const Login = ({ visible, onCancel, onLoginSuccess }) => {
                         if (!value || getFieldValue('password') === value) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Mật khẩu không khớp!'));
+                        return Promise.reject(
+                          new Error('Mật khẩu không khớp!')
+                        );
                       },
                     }),
                   ]}
                 >
-                  <Input.Password prefix={<LockOutlined />} placeholder="Xác nhận mật khẩu" />
+                  <Input.Password
+                    prefix={<LockOutlined />}
+                    placeholder="Xác nhận mật khẩu"
+                  />
                 </Form.Item>
                 <Form.Item>
                   <Button type="primary" htmlType="submit" block>
                     Đăng ký ngay!
                   </Button>
                 </Form.Item>
-                <Form.Item><div className="or-divider"><span>Hoặc</span></div></Form.Item>
                 <Form.Item>
-                  <Button block className="google-button" icon={
-                    <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google" className="google-icon" />
-                  }>
+                  <div className="or-divider">
+                    <span>Hoặc</span>
+                  </div>
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    block
+                    className="google-button"
+                    icon={
+                      <img
+                        src="https://img.icons8.com/color/20/google-logo.png"
+                        alt="Google"
+                        className="google-icon"
+                      />
+                    }
+                  >
                     Đăng nhập với Google
                   </Button>
                 </Form.Item>
