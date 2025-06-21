@@ -188,6 +188,30 @@ export default function BlogPage() {
   const featuredPost = posts[0];
 
   return (
+    <div className="blog-container">
+      {/* Sidebar */}
+      <aside className="blog-sidebar">
+        <div className="sidebar-section">
+          <h3 className="sidebar-title">Chuyên mục</h3>
+          <div className="category-list">
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                className={`category-item ${
+                  selectedCategory === category.id ? 'active' : ''
+                }`}
+                onClick={() => {
+                  setSelectedCategory(category.id);
+                  setCurrentPage(1);
+                }}
+              >
+                <span className="category-icon">{category.icon}</span>
+                <span className="category-name">{category.name}</span>
+                <span className="category-count">({category.count})</span>
+              </div>
+            ))}
+          </div>
+        </div>
     <div>
       <div className="blog-container">
         <div className="sidebar">
@@ -254,108 +278,155 @@ export default function BlogPage() {
             </div>
           </div>
 
-          {/* Featured Post */}
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">Bài viết nổi bật</h3>
-            <div className="featured-post">
-              <img
-                src={featuredPost.img}
-                alt={featuredPost.title}
-                className="featured-img"
-              />
-              <div className="featured-content">
-                <span className="featured-category">
-                  {featuredPost.category}
+        {/* Featured Post */}
+        <div className="sidebar-section">
+          <h3 className="sidebar-title">Bài viết nổi bật</h3>
+          <div className="featured-post">
+            <img
+              src={featuredPost.img}
+              alt={featuredPost.title}
+              className="featured-img"
+            />
+            <div className="featured-content">
+              <span className="featured-category">{featuredPost.category}</span>
+              <h4 className="featured-title">{featuredPost.title}</h4>
+              <div className="featured-meta">
+                <span className="featured-author">{featuredPost.author}</span>
+                <span className="featured-views">
+                  {featuredPost.views} lượt xem
                 </span>
-                <h4 className="featured-title">{featuredPost.title}</h4>
-                <div className="featured-meta">
-                  <span className="featured-author">{featuredPost.author}</span>
-                  <span className="featured-views">
-                    {featuredPost.views} lượt xem
-                  </span>
-                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Newsletter */}
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">Đăng ký nhận tin</h3>
-            <p className="newsletter-text">
-              Nhận tin tức sức khỏe mới nhất qua email
-            </p>
-            <div className="newsletter-form">
-              <Input placeholder="Email của bạn" className="newsletter-input" />
-              <Button className="newsletter-btn">Đăng ký</Button>
-            </div>
+        {/* Newsletter */}
+        <div className="sidebar-section">
+          <h3 className="sidebar-title">Đăng ký nhận tin</h3>
+          <p className="newsletter-text">
+            Nhận tin tức sức khỏe mới nhất qua email
+          </p>
+          <div className="newsletter-form">
+            <Input placeholder="Email của bạn" className="newsletter-input" />
+            <Button className="newsletter-btn">Đăng ký</Button>
           </div>
-        </aside>
+        </div>
+      </aside>
 
-        {/* Main Content */}
-        <main className="blog-main">
-          <div className="blog-header">
-            <div className="blog-stats">
-              <span className="stats-text">
-                Tìm thấy <strong>{filteredPosts.length}</strong> bài viết
-                {selectedCategory !== 'all' &&
-                  ` trong "${categories.find((c) => c.id === selectedCategory)?.name}"`}
-              </span>
-            </div>
+      {/* Main Content */}
+      <main className="blog-main">
+        <div className="blog-header">
+          <h1 className="page-title">Tin tức</h1>
+          <div className="search-bar">
+            <Input
+              type="text"
+              placeholder="Tìm kiếm bài viết, chủ đề..."
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="hero-search-input"
+            />
+            <Button className="hero-search-btn">
+              <i className="search-icon">🔍</i>
+            </Button>
           </div>
+          <div className="blog-stats">
+            <span className="stats-text">
+              Tìm thấy <strong>{filteredPosts.length}</strong> bài viết
+              {selectedCategory !== 'all' &&
+                ` trong "${categories.find((c) => c.id === selectedCategory)?.name}"`}
+            </span>
+          </div>
+        </div>
 
-          {currentPosts.length > 0 ? (
-            <div className="blog-grid">
-              {currentPosts.map((post) => (
-                <article key={post.id} className="blog-card">
-                  <div className="card-image">
-                    <img src={post.img} alt={post.title} />
-                    <div className="card-overlay">
-                      <span className="card-category">{post.category}</span>
+        {currentPosts.length > 0 ? (
+          <div className="blog-grid">
+            {currentPosts.map((post) => (
+              <article key={post.id} className="blog-card">
+                <div className="card-image">
+                  <img src={post.img} alt={post.title} />
+                  <div className="card-overlay">
+                    <span className="card-category">{post.category}</span>
+                  </div>
+                </div>
+                <div className="card-content">
+                  <div className="card-meta">
+                    <span className="card-author">{post.author}</span>
+                    <span className="meta-divider">•</span>
+                    <span className="card-time">{post.time}</span>
+                    <span className="meta-divider">•</span>
+                    <span className="card-read-time">{post.readTime}</span>
+                  </div>
+                  <h3 className="card-title">{post.title}</h3>
+                  <p className="card-excerpt">{post.excerpt}</p>
+                  <div className="card-footer">
+                    <div className="card-tags">
+                      {post.tags.slice(0, 2).map((tag, index) => (
+                        <span key={index} className="card-tag">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="card-stats">
+                      <span className="card-views">👁️ {post.views}</span>
                     </div>
                   </div>
-                  <div className="card-content">
-                    <div className="card-meta">
-                      <span className="card-author">{post.author}</span>
-                      <span className="meta-divider">•</span>
-                      <span className="card-time">{post.time}</span>
-                      <span className="meta-divider">•</span>
-                      <span className="card-read-time">{post.readTime}</span>
-                    </div>
-                    <h3 className="card-title">{post.title}</h3>
-                    <p className="card-excerpt">{post.excerpt}</p>
-                    <div className="card-footer">
-                      <div className="card-tags">
-                        {post.tags.slice(0, 2).map((tag, index) => (
-                          <span key={index} className="card-tag">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="card-stats">
-                        <span className="card-views">👁️ {post.views}</span>
-                      </div>
-                    </div>
-                    <Button className="read-more-btn">Đọc tiếp</Button>
-                  </div>
-                </article>
+                  <Button className="read-more-btn">Đọc tiếp</Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">📄</div>
+            <h3>Không tìm thấy bài viết</h3>
+            <p>Thử thay đổi từ khóa tìm kiếm hoặc chọn chuyên mục khác</p>
+            <Button
+              onClick={() => {
+                setSearchText('');
+                setSelectedCategory('all');
+              }}
+            >
+              Xem tất cả bài viết
+            </Button>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <Button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="pagination-btn"
+            >
+              Trước
+            </Button>
+            <div className="pagination-numbers">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  className={`pagination-number ${
+                    currentPage === index + 1 ? 'active' : ''
+                  }`}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
               ))}
             </div>
-          ) : (
-            <div className="empty-state">
-              <div className="empty-icon">📄</div>
-              <h3>Không tìm thấy bài viết</h3>
-              <p>Thử thay đổi từ khóa tìm kiếm hoặc chọn chuyên mục khác</p>
-              <Button
-                onClick={() => {
-                  setSearchText('');
-                  setSelectedCategory('all');
-                }}
-              >
-                Xem tất cả bài viết
-              </Button>
-            </div>
-          )}
-
+            <Button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="pagination-btn"
+            >
+              Sau
+            </Button>
+          </div>
+        )}
+      </main>
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="pagination">

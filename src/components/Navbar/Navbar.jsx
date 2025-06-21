@@ -38,7 +38,7 @@ import '@styles/reset.css'; // Reset CSS for consistent styling
 import './Navbar.css';
 import Logout from '@pages/Logout/Logout'; // Import Logout component
 
-const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
+const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const location = useLocation();
   const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
   const [isScrolled, setIsScrolled] = useState(false);
@@ -64,6 +64,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     'tai-khoan': 'Tài khoản',
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
+    'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -75,6 +76,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
     { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
     { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
+
   ];
 
   const accountMenu = {
@@ -153,6 +155,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
         backgroundColor: item.read ? '#fff' : '#f6f6f6',
       },
     })),
+
   };
 
   return (
