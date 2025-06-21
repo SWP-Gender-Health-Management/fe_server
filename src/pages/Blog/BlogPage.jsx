@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
-import Navbar from '@components/Navbar/Navbar';
 import './BlogPage.css';
 
 const posts = [
@@ -72,7 +71,6 @@ export default function BlogPage() {
 
   return (
     <div>
-      <Navbar />
       <div className="blog-container">
         <div className="sidebar">
           <h2 className="sidebar-title">Phân loại</h2>
@@ -138,11 +136,6 @@ export default function BlogPage() {
             </div>
           )}
         </div>
-      </div>
-      <div className="footer">
-        <h3>DIAG</h3>
-        <p>© 2025 DIAG</p>
-        <p>Hotline: 1900 1717</p>
       </div>
     </div>
   );
