@@ -13,6 +13,7 @@ import Payment from '@pages/PaymentPage/PaymentPage';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
 import Footer from '@components/Footer/Footer';
+import ServicePage from '@pages/ServicePage/ServicePage';
 import '@styles/reset.css';
 
 // Layout chung cho tất cả trang
@@ -50,9 +51,14 @@ const AppLayout = () => {
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/customer" element={<MenstrualPredictorPage />} />
+        <Route path="/dich-vu" element={<ServicePage />} />
+        <Route
+          path="/dich-vu/chu-ky-kinh-nguyet"
+          element={
+              <MenstrualPredictorPage />
+          }
+        />
         <Route path="/hoi-dap" element={<Question />} />
-        {/* Thêm route cho Payment nếu cần */}
         <Route path="/payment" element={<Payment />} />
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />

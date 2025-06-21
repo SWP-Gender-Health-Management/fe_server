@@ -1,108 +1,351 @@
-.menstrual-tracker-wrapper {
-  background-color: #e0f2fe; /* Light blue background */
+.menstrual-tracker-container {
+  background: linear-gradient(135deg, #fef3f3 0%, #f0f9ff 100%);
   min-height: 100vh;
-  padding: 1rem;
-  font-family: sans-serif;
-  color: #1e3a8a; /* Deep blue text */
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.calendar-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
 }
 
 .menstrual-calendar {
-  max-width: 400px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  width: 100%;
 }
 
 .menstrual-header {
   text-align: center;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #2563eb; /* Blue */
+  color: #1f2937;
+  margin: 0;
 }
 
 .menstrual-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0 10px;
 }
 
 .menstrual-button {
-  font-size: 1.25rem;
-  color: #2563eb;
-  background: none;
-  border: none;
+  font-size: 1.5rem;
+  color: #6366f1;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.menstrual-button:hover {
+  background: #6366f1;
+  color: white;
+  border-color: #6366f1;
+  transform: scale(1.05);
 }
 
 .menstrual-button:focus {
   outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
   text-align: center;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  margin: 0;
 }
 
 .calendar-day {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 46px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
-}
-
-.calendar-day.period {
-  background-color: #60a5fa; /* Soft blue for period days */
-  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 .calendar-day.normal {
-  background-color: white;
-  color: #1e3a8a;
-  border: 1px solid #cbd5e1;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  color: #64748b;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-day.normal:hover {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  color: #374151;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day.period {
+  background: linear-gradient(135deg, #fda4af, #f87171);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(248, 113, 113, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.calendar-day.ovulation {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.calendar-day.today {
+  border: 3px solid #818cf8;
+  background: linear-gradient(135deg, #a5b4fc, #818cf8);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 6px 24px rgba(129, 140, 248, 0.5);
+  transform: scale(1.1);
 }
 
 .calendar-header {
-  font-weight: bold;
-  color: #2563eb;
-}
-
-.info-box {
-  margin-top: 1.5rem;
+  font-weight: 700;
+  color: #64748b;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: none;
   font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-radius: 10px;
+  margin: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-legend {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.info-box label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 500;
-  color: #1e40af;
-}
-
-.info-box input {
-  padding: 0.25rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-.highlight-box {
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
   margin-top: 1rem;
-  background-color: #bfdbfe;
-  color: #1e3a8a;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.9),
+    rgba(241, 245, 249, 0.9)
+  );
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 6px;
+}
+
+.legend-color.period {
+  background: linear-gradient(135deg, #fda4af, #f87171);
+}
+
+.legend-color.ovulation {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+.legend-color.today {
+  background: linear-gradient(135deg, #a5b4fc, #818cf8);
+}
+
+.info-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.phase-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
+}
+
+.phase-card .ant-card-head {
+  border-bottom: none;
+  padding: 20px 24px 12px;
+}
+
+.phase-card .ant-card-body {
+  padding: 6px 12px 10px;
+}
+
+.setting-item {
+  margin-bottom: 16px;
+}
+
+.setting-item label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
   font-size: 0.875rem;
+}
+
+.date-input,
+.number-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.date-input:focus,
+.number-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.prediction-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  font-size: 0.875rem;
+}
+
+.tips-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.tip-item:hover {
+  background: #f1f5f9;
+  transform: translateX(4px);
+  transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .menstrual-tracker-container {
+    padding: 10px;
+  }
+
+  .calendar-day {
+    width: 46px;
+    height: 46px;
+    font-size: 0.875rem;
+  }
+
+  .calendar-grid {
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .calendar-legend {
+    gap: 16px;
+    padding: 1rem;
+  }
+
+  .legend-item {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .calendar-day {
+    width: 40px;
+    height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .calendar-grid {
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .menstrual-button {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .calendar-legend {
+    gap: 12px;
+    padding: 0.75rem;
+  }
+
+  .legend-item {
+    font-size: 0.7rem;
+  }
+}
+
+/* Ant Design overrides */
+.ant-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+.ant-card-head-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.ant-alert {
+  border-radius: 10px;
+  border: none;
+}
+.update-button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }

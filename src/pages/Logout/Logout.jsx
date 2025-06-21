@@ -29,6 +29,8 @@ const Logout = ({ visible, onCancel, onLogout }) => {
       // Dù lỗi, vẫn xóa local data để đảm bảo an toàn
       sessionStorage.clear();
       onLogout();
+    } finally {
+      onCancel(); // Đóng modal sau khi hoàn thành (thành công hoặc thất bại)
     }
   };
 

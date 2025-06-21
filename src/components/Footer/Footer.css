@@ -709,7 +709,7 @@ html {
 
 /* Quick Contact Card - Compact */
 .quick-contact-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(99, 91, 158, 0.171);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -723,6 +723,7 @@ html {
   gap: 10px;
   padding: 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(171, 182, 232, 0.212);
 }
 
 .quick-contact-item:last-child {
@@ -734,7 +735,7 @@ html {
   color: #667eea;
   font-size: 1rem;
   padding: 6px;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(0, 41, 224, 0.1);
   border-radius: 6px;
   width: 24px;
   height: 24px;
