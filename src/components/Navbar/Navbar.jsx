@@ -10,33 +10,53 @@ import {
   ClockCircleOutlined,
   EnvironmentOutlined,
   UserOutlined,
-  BellOutlined
+  BellOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import Logo from '@assets/Blue-full.svg?react';
 import './Navbar.css';
 
-const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
+const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
 
   const pathDisplayNames = {
     'dich-vu': 'Dịch vụ',
     'tin-tuc': 'Tin tức',
     've-chung-toi': 'Về chúng tôi',
     'lien-he': 'Liên hệ',
-    'tai-khoan': 'Tài khoản'
+    'tai-khoan': 'Tài khoản',
   };
 
-  const pathnames = location.pathname.split('/').filter(x => x);
+  const pathnames = location.pathname.split('/').filter((x) => x);
 
   const menuItems = [
-    { label: <Link to="/">Trang Chủ</Link>, key: 'home', icon: <HomeOutlined /> },
-    { label: <Link to="/dich-vu">Dịch vụ</Link>, key: 'services', icon: <AppstoreOutlined /> },
-    { label: <Link to="/tin-tuc">Tin tức</Link>, key: 'news', icon: <ReadOutlined /> },
-    { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
-    { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
+    {
+      label: <Link to="/">Trang Chủ</Link>,
+      key: 'home',
+      icon: <HomeOutlined />,
+    },
+    {
+      label: <Link to="/dich-vu">Dịch vụ</Link>,
+      key: 'services',
+      icon: <AppstoreOutlined />,
+    },
+    {
+      label: <Link to="/tin-tuc">Tin tức</Link>,
+      key: 'news',
+      icon: <ReadOutlined />,
+    },
+    {
+      label: <Link to="/ve-chung-toi">Về chúng tôi</Link>,
+      key: 'about',
+      icon: <TeamOutlined />,
+    },
+    {
+      label: <Link to="/lien-he">Liên hệ</Link>,
+      key: 'contact',
+      icon: <PhoneOutlined />,
+    },
   ];
 
   const handleConfirmLogout = () => {
@@ -47,23 +67,14 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
       centered: true,
       onOk: () => {
         sessionStorage.clear();
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('fullname');
+        sessionStorage.removeItem('account_id');
         onLogout();
         navigate('/');
-      }
+      },
     });
-  };
-
-  const accountMenu = {
-    items: [
-      {
-        key: 'account',
-        label: <Link to="/tai-khoan">Tài khoản</Link>,
-      },
-      {
-        key: 'logout',
-        label: <span onClick={handleConfirmLogout}>Đăng xuất</span>,
-      },
-    ]
   };
 
   return (
@@ -101,17 +112,35 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
         <div className="nav-right">
           <SearchOutlined className="search-icon" />
 
-        {isLoggedIn ? (
-          <Dropdown menu={accountMenu} placement="bottomRight">
-            <Button className="login-button" icon={<UserOutlined />}>
-              {fullname}
+          {isLoggedIn ? (
+            <>
+              {}
+              <Button
+                className="login-button"
+                icon={<UserOutlined />}
+                onClick={() => navigate('/tai-khoan')}
+              >
+                {fullname || 'Người dùng'}
+              </Button>
+
+              {}
+              <Button
+                className="logout-button"
+                icon={<LogoutOutlined />}
+                onClick={handleConfirmLogout}
+              >
+                Đăng xuất
+              </Button>
+            </>
+          ) : (
+            <Button
+              className="login-button"
+              icon={<UserOutlined />}
+              onClick={onLoginClick}
+            >
+              Đăng nhập
             </Button>
-          </Dropdown>
-        ) : (
-          <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
-            Tài khoản
-          </Button>
-        )}
+          )}
 
           <Button className="noti-button" icon={<BellOutlined />} />
         </div>
@@ -124,12 +153,15 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
             { title: <Link to="/">Trang chủ</Link> },
             ...pathnames.map((name, index) => {
               const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-              const displayName = pathDisplayNames[name] || name.replace(/-/g, ' ');
+              const displayName =
+                pathDisplayNames[name] || name.replace(/-/g, ' ');
               return {
                 title:
-                  index === pathnames.length - 1
-                    ? displayName
-                    : <Link to={routeTo}>{displayName}</Link>,
+                  index === pathnames.length - 1 ? (
+                    displayName
+                  ) : (
+                    <Link to={routeTo}>{displayName}</Link>
+                  ),
               };
             }),
           ]}
