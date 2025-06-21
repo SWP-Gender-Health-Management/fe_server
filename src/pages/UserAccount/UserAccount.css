@@ -1,12 +1,242 @@
 /* Main container */
 .account-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 24px;
-  background-color: #f5f5f5;
 }
 
-/* Card styling */
-.account-card {
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Header */
+.profile-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none !important;
+  border-radius: 20px !important;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3) !important;
+  color: white;
+}
+
+.profile-header .ant-card-body {
+  padding: 32px;
+}
+
+.avatar-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-avatar {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24) !important;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-edit-btn {
+  background: #667eea !important;
+  border: 2px solid white !important;
+  color: white !important;
+}
+
+.avatar-edit-btn:hover {
+  background: #5a67d8 !important;
+  transform: scale(1.1);
+}
+
+.profile-info {
+  text-align: left;
+}
+
+.user-name {
+  color: white !important;
+  margin-bottom: 8px !important;
+  font-weight: 700 !important;
+}
+
+.user-email {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 16px !important;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.profile-completion {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.profile-completion .ant-progress-bg {
+  background: linear-gradient(to right, #ff6b6b, #feca57) !important;
+}
+
+.profile-stats {
+  text-align: center;
+}
+
+.profile-stats .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 14px !important;
+}
+
+.profile-stats .ant-statistic-content {
+  color: white !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+.edit-profile-btn {
+  margin-top: 16px;
+  width: 100%;
+  height: 45px;
+  border-radius: 25px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease !important;
+}
+
+.edit-profile-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+}
+
+.main-content .ant-card-body {
+  padding: 0;
+}
+
+/* Tabs */
+.account-tabs {
+  margin: 0;
+}
+
+.account-tabs .ant-tabs-nav {
+  background: #f8f9fa;
+  margin: 0 !important;
+  padding: 0 32px;
+}
+
+.account-tabs .ant-tabs-tab {
+  padding: 16px 24px !important;
+  font-weight: 500 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  margin: 0 8px !important;
+}
+
+.account-tabs .ant-tabs-tab-active {
+  background: white !important;
+  color: #667eea !important;
+  position: relative;
+}
+
+.account-tabs .ant-tabs-tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #667eea, #764ba2);
+}
+
+.account-tabs .ant-tabs-content-holder {
+  padding: 32px;
+  background: white;
+}
+
+/* Tab Content */
+.tab-content {
+  min-height: 400px;
+}
+
+/* Form Styles */
+.ant-form-item-label > label {
+  font-weight: 600 !important;
+  color: #374151 !important;
+}
+
+.ant-input {
+  border-radius: 8px !important;
+  border: 2px solid #e5e7eb !important;
+  height: 45px !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-input:focus,
+.ant-input-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+.ant-input:disabled {
+  background: #f9fafb !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+}
+
+.ant-select-selector {
+  border-radius: 8px !important;
+  border: 2px solid #e5e7eb !important;
+  height: 45px !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+.ant-picker {
+  border-radius: 8px !important;
+  border: 2px solid #e5e7eb !important;
+  height: 45px !important;
+  width: 100%;
+}
+
+.ant-picker:hover,
+.ant-picker-focused {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+.ant-input.ant-input-disabled .ant-select-disabled .ant-select-selector {
+  background: #f9fafb !important;
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: right;
+}
+
+.form-actions .ant-btn {
+  height: 45px;
   border-radius: 8px;
+<<<<<<< HEAD
+=======
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: none;
 }
@@ -28,50 +258,211 @@
 }
 
 .info-title {
+>>>>>>> ee44b745e8b4d621643d33081640418eb348e0f1
   font-weight: 500;
-  color: #444;
+  min-width: 120px;
 }
 
-.info-value {
-  color: #222;
+.form-actions .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.empty-text {
-  color: #999 !important;
+.form-actions .ant-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.address-count {
-  color: #666;
+/* Appointment Cards */
+.appointment-item {
+  margin-bottom: 16px;
+  border: none !important;
+}
+
+.appointment-card {
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.3s ease !important;
+}
+
+.appointment-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.appointment-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.appointment-date .date-icon {
+  font-size: 24px;
+  color: #667eea;
+}
+
+.appointment-date .date {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.appointment-date .time {
+  color: #6b7280;
   font-size: 14px;
 }
 
-/* Divider */
-.divider {
-  margin: 16px 0 !important;
-  background-color: #f0f0f0;
+.appointment-info h5 {
+  margin-bottom: 4px !important;
+  color: #1f2937 !important;
 }
 
-/* Table styles */
-.orders-table {
-  margin-top: 16px;
+.appointment-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
 }
 
-.orders-table .ant-table-thead > tr > th {
-  background-color: #fafafa;
+/* Health Record Cards */
+.health-record-item {
+  margin-bottom: 16px;
+  border: none !important;
+}
+
+.health-record-card {
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.3s ease !important;
+}
+
+.health-record-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.record-date,
+.record-type,
+.record-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.record-date .anticon {
+  color: #667eea;
+}
+
+.record-type .anticon {
+  color: #f59e0b;
+}
+
+.record-notes {
+  padding-left: 24px;
+}
+
+/* Settings Cards */
+.settings-card {
+  margin-bottom: 24px;
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.settings-card .ant-card-head {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.settings-card .ant-card-head-title {
+  color: #374151;
   font-weight: 600;
-  color: #555;
 }
 
-/* List styles */
-.account-list {
-  margin-top: 16px;
+.settings-card .ant-btn {
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 500;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
-.account-list-item {
-  padding: 12px 0 !important;
-  border-bottom: 1px solid #f0f0f0 !important;
+.settings-card .ant-btn:last-child {
+  margin-bottom: 0;
 }
 
-.account-list-item:last-child {
-  border-bottom: none !important;
+/* Tags */
+.ant-tag {
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-weight: 500;
+  border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .account-container {
+    padding: 16px;
+  }
+
+  .profile-header .ant-card-body {
+    padding: 24px 16px;
+  }
+
+  .profile-info {
+    text-align: center;
+    margin: 16px 0;
+  }
+
+  .profile-stats {
+    margin-top: 16px;
+  }
+
+  .account-tabs .ant-tabs-nav {
+    padding: 0 16px;
+  }
+
+  .account-tabs .ant-tabs-content-holder {
+    padding: 24px 16px;
+  }
+
+  .appointment-date {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .form-actions {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-completion {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .profile-completion .ant-progress {
+    width: 100% !important;
+  }
+
+  .account-tabs .ant-tabs-tab {
+    padding: 12px 8px !important;
+    margin: 0 2px !important;
+    font-size: 12px;
+  }
+
+  .appointment-card .ant-row {
+    text-align: center;
+  }
+
+  .appointment-card .ant-col {
+    margin-bottom: 12px;
+  }
 }

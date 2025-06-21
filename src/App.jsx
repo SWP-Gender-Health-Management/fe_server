@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@context/AuthContext.jsx'; // Sử dụng .jsx
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -50,6 +50,7 @@ const AppLayout = () => {
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
+        <Route path="/dich-vu" element={<Services />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/dich-vu" element={<ServicePage />} />
         <Route
