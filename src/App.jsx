@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -9,61 +9,31 @@ import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
+import Question from '@pages/Question/Question';
+import Payment from '@pages/PaymentPage/PaymentPage';
+import AboutUs from '@pages/AboutUs/AboutUs';
+import Contact from '@pages/Contact/Contact';
 import Footer from '@components/Footer/Footer';
-import ProtectedRoute from '@components/libs/ProtectedRoute';
-
+import ServicePage from '@pages/ServicePage/ServicePage';
 import '@styles/reset.css';
 
-function App() {
-  const [showLogin, setShowLogin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [fullname, setFullname] = useState('');
-
-  const navigate = useNavigate();
+// Layout chung cho tất cả trang
+const AppLayout = () => {
+  const { isLoggedIn, logout } = useAuth(); // Gọi useAuth một lần tại đây
+  const [showLogin, setShowLogin] = React.useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const token =
-      sessionStorage.getItem('accessToken') ||
-      localStorage.getItem('accessToken');
-
-    if (token) {
-      setIsLoggedIn(true);
-      const storedName =
-        sessionStorage.getItem('fullname') || localStorage.getItem('fullname');
-      setFullname(storedName || 'Người dùng');
-    } else {
-      setIsLoggedIn(false);
-      setFullname('');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (location.state?.showLogin) {
-      setShowLogin(true);
-      // xoá flag để tránh mở lại khi back
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state?.showLogin, location.pathname, navigate]);
-
+  // Hàm handleLogout sử dụng navigate thay vì window.location.href
   const handleLogout = () => {
-    sessionStorage.clear();
-    localStorage.clear();
-    setIsLoggedIn(false);
-    setFullname('');
+    logout(); // Gọi logout từ useAuth để cập nhật trạng thái
+    navigate('/'); // Điều hướng về trang chủ
   };
 
-  const handleLoginSuccess = ({ accessToken, refreshToken, fullname }) => {
-    if (!accessToken) return;
-
-    sessionStorage.setItem('accessToken', accessToken);
-    sessionStorage.setItem('refreshToken', refreshToken);
-    sessionStorage.setItem('fullname', fullname || 'Người dùng');
-
-    setIsLoggedIn(true);
-    setFullname(fullname || 'Người dùng');
+  // Ẩn Login modal khi thay đổi route
+  useEffect(() => {
     setShowLogin(false);
-  };
+  }, [location]);
 
   return (
     <div className="app-container">
@@ -73,32 +43,41 @@ function App() {
         fullname={fullname}
         onLogout={handleLogout}
       />
-
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/tai-khoan" element={<UserAccount />} />
+        <Route
+          path="/tai-khoan"
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
+        />
         <Route path="/tin-tuc" element={<BlogPage />} />
+        <Route path="/ve-chung-toi" element={<AboutUs />} />
+        <Route path="/lien-he" element={<Contact />} />
+        <Route path="/dich-vu" element={<Services />} />
         <Route path="/admin" element={<AdminDashboard />} />
-
         <Route path="/dich-vu" element={<ServicePage />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
               <MenstrualPredictorPage />
-            </ProtectedRoute>
           }
         />
+        <Route path="/hoi-dap" element={<Question />} />
+        <Route path="/payment" element={<Payment />} />
+
       </Routes>
-
-      <Login
-        visible={showLogin}
-        onCancel={() => setShowLogin(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
-
+      <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />
+      <div className="footer-spacer" />
+      {/* Loại bỏ Payment khỏi layout cố định, thay bằng route */}
     </div>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppLayout />
+    </AuthProvider>
   );
 }
 
