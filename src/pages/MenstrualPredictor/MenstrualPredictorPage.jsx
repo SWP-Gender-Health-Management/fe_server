@@ -1,6 +1,16 @@
 import { useCallback, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import { Card, Row, Col, Divider, Progress, Alert, Tooltip } from 'antd';
+import {
+  Card,
+  Row,
+  Col,
+  Divider,
+  Progress,
+  Alert,
+  Tooltip,
+  message,
+} from 'antd';
 import {
   HeartOutlined,
   CalendarOutlined,
@@ -15,20 +25,33 @@ const MenstrualPredictorPage = () => {
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
 
-  const [cycleLength, setCycleLength] = useState(28);
-  const [periodLength, setPeriodLength] = useState(5);
+  const [cycleLength, setCycleLength] = useState(null);
+  const [periodLength, setPeriodLength] = useState(null);
   const [lastPeriodStart, setLastPeriodStart] = useState('');
 
   const [nextStartDate, setNextStartDate] = useState(null);
   const [ovulationDate, setOvulationDate] = useState(null);
   const [fertileRange, setFertileRange] = useState({ start: null, end: null });
+  const [accountId, setAccountId] = useState(null);
 
-  const accountId = localStorage.getItem('account_id');
-  const token = localStorage.getItem('accessToken');
+  useEffect(() => {
+    const idFromToken = getAccountIdFromToken();
+    if (idFromToken) {
+      setAccountId(idFromToken);
+    } else {
+      message.warning(
+        'Không thể tìm thấy account_id từ token. Vui lòng đăng nhập lại.'
+      );
+    }
+  }, []);
+
+  const token =
+    sessionStorage.getItem('accessToken') ||
+    localStorage.getItem('accessToken');
 
   // Calculate cycle phase
   const getCurrentPhase = () => {
-    if (!lastPeriodStart) return 'unknown';
+    if (!lastPeriodStart || !cycleLength || !periodLength) return 'unknown';
 
     const lastPeriod = new Date(lastPeriodStart);
     const daysDiff = Math.floor((today - lastPeriod) / (1000 * 60 * 60 * 24));
@@ -102,20 +125,49 @@ const MenstrualPredictorPage = () => {
   const getFirstDayOfMonth = (m, y) => new Date(y, m, 1).getDay();
 
   const fetchLastPeriodData = useCallback(async () => {
+    const api = axios.create({
+      baseURL: 'http://localhost:3000',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!accountId || !token) return;
+
     try {
-      const res = await axios.get(
-        `/customer/get-period?account_id=${accountId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const data = res.data.data;
+      const res = await api.get('/customer/get-period', {
+        params: { account_id: accountId },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = res.data?.data;
+      if (!data?.start_date) {
+        console.log('Người dùng chưa có dữ liệu kỳ kinh');
+        return;
+      }
       setLastPeriodStart(data.start_date);
       setPeriodLength(data.period);
+      setCycleLength(data.cycle_length);
     } catch (err) {
       console.error('Không thể lấy thông tin kỳ kinh:', err);
+      message.error('Lỗi tải dữ liệu, thử lại sau!');
     }
   }, [accountId, token]);
 
+  const getAccountIdFromToken = () => {
+    const token =
+      sessionStorage.getItem('accessToken') ||
+      localStorage.getItem('accessToken');
+    if (!token) return null;
+
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.account_id;
+    } catch (err) {
+      console.error('Không thể giải mã token:', err);
+      return null;
+    }
+  };
+
   const calculatePeriodDays = () => {
+    if (!lastPeriodStart || !cycleLength || !periodLength) return {};
     const periodDaysMap = {};
     const start = new Date(lastPeriodStart);
     const end = new Date(year + 1, 11, 31);
@@ -137,6 +189,7 @@ const MenstrualPredictorPage = () => {
   };
 
   const calculateOvulationDays = () => {
+    if (!lastPeriodStart || !cycleLength) return {};
     const ovulationDaysMap = {};
     const start = new Date(lastPeriodStart);
     const end = new Date(year + 1, 11, 31);
@@ -191,64 +244,74 @@ const MenstrualPredictorPage = () => {
   };
 
   const handleUpdate = useCallback(async () => {
-    if (!lastPeriodStart || isNaN(new Date(lastPeriodStart))) {
-      alert('Vui lòng chọn ngày bắt đầu kỳ kinh hợp lệ!');
-      return;
+    const token =
+      sessionStorage.getItem('accessToken') ||
+      localStorage.getItem('accessToken');
+
+    const api = axios.create({
+      baseURL: 'http://localhost:3000',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Kiểm tra hợp lệ trước khi gọi API
+    if (
+      !accountId ||
+      !lastPeriodStart ||
+      !cycleLength ||
+      !periodLength ||
+      isNaN(+cycleLength) ||
+      isNaN(+periodLength) ||
+      isNaN(new Date(lastPeriodStart).getTime())
+    ) {
+      return alert('Vui lòng nhập đầy đủ và hợp lệ!');
     }
 
     try {
-      await axios.post(
-        '/customer/track-period',
-        {
-          account_id: accountId,
-          period: periodLength,
-          start_date: formatDate(lastPeriodStart),
-          end_date: formatDate(lastPeriodStart),
-          note: 'Tự động nhập từ frontend',
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      // Gửi thông tin chu kỳ
+      await api.post('/customer/track-period', {
+        account_id: accountId,
+        period: Number(periodLength),
+        cycle_length: Number(cycleLength),
+        start_date: new Date(lastPeriodStart).toISOString(),
+        end_date: new Date(lastPeriodStart).toISOString(),
+        note: 'Nhập kỳ kinh lần đầu',
+      });
 
-      const res = await axios.get(
-        `/customer/predict-period?account_id=${accountId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      // Gọi API dự đoán
+      const res = await api.get('/customer/predict-period', {
+        params: { account_id: accountId },
+      });
 
-      const data = res.data.data;
-      const nextDate = new Date(data.next_start_date);
-      setNextStartDate(nextDate);
+      const { next_start_date } = res.data.data;
 
+      const nextDate = new Date(next_start_date);
       const ovulation = new Date(nextDate);
       ovulation.setDate(ovulation.getDate() - 14);
-      setOvulationDate(ovulation);
-
       const fertileStart = new Date(ovulation);
       fertileStart.setDate(fertileStart.getDate() - 2);
       const fertileEnd = new Date(ovulation);
       fertileEnd.setDate(fertileEnd.getDate() + 2);
+
+      setNextStartDate(nextDate);
+      setOvulationDate(ovulation);
       setFertileRange({ start: fertileStart, end: fertileEnd });
 
-      alert('Cập nhật thành công!');
+      message.success('Cập nhật thành công!');
     } catch (err) {
-      console.error(
-        'Lỗi khi cập nhật chu kỳ:',
-        err.response?.data || err.message
-      );
-      alert('Không thể cập nhật chu kỳ!');
+      console.error('Lỗi khi cập nhật chu kỳ:', err);
+      message.error('Không thể cập nhật chu kỳ!');
     }
-  }, [accountId, token, lastPeriodStart, periodLength]);
+  }, [accountId, lastPeriodStart, cycleLength, periodLength]);
 
   useEffect(() => {
-    if (accountId && token) {
-      fetchLastPeriodData().then(() => {
-        handleUpdate(); // Gọi sau khi đã có lastPeriodStart
-      });
+    if (accountId) {
+      fetchLastPeriodData();
     }
-  }, [accountId, token]);
+  }, [accountId, fetchLastPeriodData]);
+
   const currentPhase = getCurrentPhase();
   const phaseInfo = getPhaseInfo(currentPhase);
 
@@ -275,13 +338,6 @@ const MenstrualPredictorPage = () => {
     if (isToday) classes += ' today';
 
     return classes;
-  };
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -404,8 +460,12 @@ const MenstrualPredictorPage = () => {
                 <label>Độ dài chu kỳ (ngày):</label>
                 <input
                   type="number"
-                  value={cycleLength}
-                  onChange={(e) => setCycleLength(parseInt(e.target.value))}
+                  value={cycleLength || ''}
+                  onChange={(e) =>
+                    setCycleLength(
+                      e.target.value ? parseInt(e.target.value) : ''
+                    )
+                  }
                   min={20}
                   max={40}
                   className="number-input"
@@ -415,8 +475,12 @@ const MenstrualPredictorPage = () => {
                 <label>Số ngày hành kinh:</label>
                 <input
                   type="number"
-                  value={periodLength}
-                  onChange={(e) => setPeriodLength(parseInt(e.target.value))}
+                  value={periodLength || ''}
+                  onChange={(e) =>
+                    setPeriodLength(
+                      e.target.value ? parseInt(e.target.value) : ''
+                    )
+                  }
                   min={1}
                   max={10}
                   className="number-input"

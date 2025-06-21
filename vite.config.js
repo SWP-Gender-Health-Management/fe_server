@@ -8,10 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  plugins: [
-    react(),
-    svgr()
-  ],  
+  plugins: [react(), svgr()],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
@@ -19,6 +16,7 @@ export default defineConfig({
       '@pages': resolve(__dirname, './src/pages'),
       '@styles': resolve(__dirname, './src/styles'),
       '@assets': resolve(__dirname, './src/assets'),
+      '@context': resolve(__dirname, './src/context'),
     },
   },
   server: {
@@ -31,4 +29,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

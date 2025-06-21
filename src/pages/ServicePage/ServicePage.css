@@ -1,0 +1,32 @@
+.service-page {
+  text-align: center;
+  padding: 40px;
+  background-color: #fff;
+}
+
+.service-page h1 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.service-page p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.cycle-button {
+  background-color: #69b1ff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cycle-button:hover {
+  background-color: #4096ff;
+}
