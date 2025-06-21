@@ -7,6 +7,7 @@ import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
+import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
 import Payment from '@pages/PaymentPage/PaymentPage';
@@ -39,6 +40,7 @@ const AppLayout = () => {
       <Navbar
         onLoginClick={() => setShowLogin(true)}
         isLoggedIn={isLoggedIn}
+        fullname={fullname}
         onLogout={handleLogout}
       />
       <Routes>
@@ -61,6 +63,7 @@ const AppLayout = () => {
         />
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
+
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />

@@ -38,7 +38,7 @@ import '@styles/reset.css'; // Reset CSS for consistent styling
 import './Navbar.css';
 import Logout from '@pages/Logout/Logout'; // Import Logout component
 
-const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
+const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const location = useLocation();
   const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
   const [isScrolled, setIsScrolled] = useState(false);
@@ -155,6 +155,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
         backgroundColor: item.read ? '#fff' : '#f6f6f6',
       },
     })),
+
   };
 
   return (
