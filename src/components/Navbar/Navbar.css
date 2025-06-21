@@ -456,6 +456,7 @@ justify-content: center;
   color: white !important;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
 }
 
 .login-button:hover {
@@ -502,7 +503,6 @@ justify-content: center;
   transform: translateY(0);
   opacity: 1;
 }
-
 .mobile-menu-content {
   padding: 20px;
 }
