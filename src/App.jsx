@@ -13,6 +13,7 @@ import Payment from '@pages/PaymentPage/PaymentPage';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
 import Footer from '@components/Footer/Footer';
+import Services from '@pages/Services/Services';
 import '@styles/reset.css';
 
 // Layout chung cho tất cả trang
@@ -47,6 +48,7 @@ const AppLayout = () => {
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
+        <Route path="/dich-vu" element={<Services />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/customer" element={<MenstrualPredictorPage />} />
         <Route path="/hoi-dap" element={<Question />} />
@@ -54,7 +56,7 @@ const AppLayout = () => {
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />
       <div className="footer-spacer" />
-      <Payment />
+      {/* <Payment /> */}
     </div>
   );
 };
