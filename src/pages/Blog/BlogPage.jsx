@@ -227,7 +227,7 @@ export default function BlogPage() {
             </Button>
           </div>
         </div>
-      </section>
+      </div>
 
       <div className="blog-container">
         {/* Sidebar */}
@@ -386,7 +386,6 @@ export default function BlogPage() {
               </Button>
             </div>
           )}
-        </div>
         </main>
       </div>
     </div>
