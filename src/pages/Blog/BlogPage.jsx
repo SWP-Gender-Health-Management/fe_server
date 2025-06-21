@@ -188,15 +188,30 @@ export default function BlogPage() {
   const featuredPost = posts[0];
 
   return (
-    <div className="blog-page">
-      {/* Hero Section */}
-      <section className="blog-hero">
-        <div className="hero-content">
-          <h1 className="hero-title">Tin tức sức khỏe</h1>
-          <p className="hero-subtitle">
-            Cập nhật những thông tin y khoa mới nhất từ các chuyên gia hàng đầu
-          </p>
-          <div className="hero-search">
+    <div>
+      <div className="blog-container">
+        <div className="sidebar">
+          <h2 className="sidebar-title">Phân loại</h2>
+          <ul className="category-list">
+            {categories.map((category) => (
+              <li
+                key={category}
+                className={`category-item ${
+                  selectedCategory === category ? 'active' : ''
+                }`}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setCurrentPage(1);
+                }}
+              >
+                {category}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="main-content">
+          <h1 className="page-title">Tin tức</h1>
+          <div className="search-bar">
             <Input
               type="text"
               placeholder="Tìm kiếm bài viết, chủ đề..."
@@ -371,6 +386,7 @@ export default function BlogPage() {
               </Button>
             </div>
           )}
+        </div>
         </main>
       </div>
     </div>

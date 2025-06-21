@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Input, Button, message } from 'antd';
 import axios from 'axios';
+import { useAuth } from '../../../context/AuthContext.jsx'; // Điều chỉnh đường dẫn nếu cần
 import './QuestionForm.css';
 
 const QuestionForm = ({ onSubmitSuccess }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
     content: ''
   });
-
   const [loading, setLoading] = useState(false);
+  const { isLoggedIn, userInfo } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,20 +17,40 @@ const QuestionForm = ({ onSubmitSuccess }) => {
   };
 
   const handleSubmit = async () => {
-    const { name, email, content } = formData;
-    if (!name || !email || !content) {
-      return message.warning('Vui lòng điền đầy đủ thông tin');
+    if (!isLoggedIn) {
+      return message.warning('Vui lòng đăng nhập để gửi câu hỏi!');
     }
+
+    if (!formData.content) {
+      return message.warning('Vui lòng điền nội dung câu hỏi!');
+    }
+
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+      return message.warning('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!');
+    }
+
+    const customerId = userInfo.accountId || 'default_customer_id'; // Sử dụng accountId hoặc giá trị tạm thời
+    const payload = {
+      customer_id: customerId,
+      content: formData.content,
+      status: true,
+    };
 
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:3000/api/questions', formData);
-      onSubmitSuccess(res.data);
+      const res = await axios.post('http://localhost:3000/question/create-question', payload, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      onSubmitSuccess(res.data); // Truyền câu hỏi mới lên parent component
       message.success('Gửi câu hỏi thành công!');
-      setFormData({ name: '', email: '', content: '' });
+      setFormData({ content: '' });
     } catch (err) {
-      console.error(err);
-      message.error('Đã xảy ra lỗi, vui lòng thử lại');
+      console.error('Failed to submit question:', err);
+      message.error('Đã xảy ra lỗi, vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -39,26 +58,6 @@ const QuestionForm = ({ onSubmitSuccess }) => {
 
   return (
     <div className="question-form">
-      <div className="question-form-row">
-        <div className="question-form-field">
-          <label>Họ tên</label>
-          <Input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Vui lòng nhập Họ & tên"
-          />
-        </div>
-        <div className="question-form-field">
-          <label>Email</label>
-          <Input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Vui lòng nhập Email"
-          />
-        </div>
-      </div>
       <div className="question-form-field">
         <label>Nội dung</label>
         <Input.TextArea
@@ -67,6 +66,7 @@ const QuestionForm = ({ onSubmitSuccess }) => {
           onChange={handleChange}
           placeholder="Vui lòng nhập nội dung câu hỏi"
           rows={4}
+          disabled={!isLoggedIn}
         />
       </div>
       <Button
@@ -74,6 +74,7 @@ const QuestionForm = ({ onSubmitSuccess }) => {
         onClick={handleSubmit}
         loading={loading}
         style={{ marginTop: 16 }}
+        disabled={!isLoggedIn}
       >
         Gửi câu hỏi
       </Button>

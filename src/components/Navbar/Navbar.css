@@ -434,7 +434,7 @@ justify-content: center;
 }
 
 .user-button:hover {
-  color: white !important;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }

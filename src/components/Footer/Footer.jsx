@@ -233,7 +233,7 @@ const Footer = () => {
           <Row justify="space-between" align="middle" className="bottom-row">
             <Col xs={24} md={12}>
               <Text className="copyright">
-                © 2024 Gender Care - SWP391 Group 5. All rights reserved.
+                © 2025 Gender Care - SWP391 Group 5. All rights reserved.
               </Text>
             </Col>
             <Col xs={24} md={12} className="footer-right">
