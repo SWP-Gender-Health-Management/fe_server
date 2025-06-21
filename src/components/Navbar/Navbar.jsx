@@ -64,6 +64,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     'tai-khoan': 'Tài khoản',
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
+    'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -75,6 +76,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
     { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
     { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
+
   ];
 
   const accountMenu = {
