@@ -1,6 +1,6 @@
-import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from '@context/AuthContext.jsx'; // Sử dụng .jsx
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -18,14 +18,16 @@ const AppLayout = () => {
   const { isLoggedIn, logout } = useAuth(); // Gọi useAuth một lần tại đây
   const [showLogin, setShowLogin] = React.useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Hàm handleLogout không chứa Hook, chỉ gọi logout từ useAuth
+  // Hàm handleLogout sử dụng navigate thay vì window.location.href
   const handleLogout = () => {
-    logout(); // Gọi logout đã được định nghĩa từ useAuth
+    logout(); // Gọi logout từ useAuth để cập nhật trạng thái
+    navigate('/'); // Điều hướng về trang chủ
   };
 
   // Ẩn Login modal khi thay đổi route
-  React.useEffect(() => {
+  useEffect(() => {
     setShowLogin(false);
   }, [location]);
 
@@ -40,17 +42,19 @@ const AppLayout = () => {
         <Route path="/" element={<LandingPage />} />
         <Route
           path="/tai-khoan"
-          element={isLoggedIn ? <UserAccount /> : <Navigate to="/login" />}
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
         />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/customer" element={<MenstrualPredictorPage />} />
         <Route path="/hoi-dap" element={<Question />} />
+        {/* Thêm route cho Payment nếu cần */}
+        <Route path="/payment" element={<Payment />} />
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />
       <div className="footer-spacer" />
-      <Payment />
+      {/* Loại bỏ Payment khỏi layout cố định, thay bằng route */}
     </div>
   );
 };

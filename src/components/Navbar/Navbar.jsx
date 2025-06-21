@@ -10,7 +10,7 @@ import {
   Modal,
   Badge,
   Tooltip,
-  List, 
+  List,
   Spin,
 } from 'antd';
 import {
@@ -30,20 +30,20 @@ import {
   InstagramOutlined,
   MenuOutlined,
   CloseOutlined,
-  WechatWorkOutlined
-
+  WechatWorkOutlined,
 } from '@ant-design/icons';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom'; // Loại bỏ useNavigate
 import Logo from '@assets/Blue-full.svg?react';
 import '@styles/reset.css'; // Reset CSS for consistent styling
 import './Navbar.css';
+import Logout from '@pages/Logout/Logout'; // Import Logout component
 
 const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLogoutVisible, setIsLogoutVisible] = useState(false); // State để kiểm soát modal Logout
 
   // Handle scroll effect
   useEffect(() => {
@@ -64,7 +64,6 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     'tai-khoan': 'Tài khoản',
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
-
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -77,26 +76,6 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
     { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
   ];
-
-  const handleConfirmLogout = () => {
-    Modal.confirm({
-      title: `Đăng xuất khỏi tài khoản ${fullname}?`,
-      okText: 'Đăng xuất',
-      cancelText: 'Hủy',
-      centered: true,
-      okButtonProps: {
-        style: {
-          background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)',
-          border: 'none',
-        },
-      },
-      onOk: () => {
-        sessionStorage.clear();
-        onLogout();
-        navigate('/');
-      },
-    });
-  };
 
   const accountMenu = {
     items: [
@@ -125,10 +104,10 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
         key: 'logout',
         label: (
           <span
-            onClick={handleConfirmLogout}
+            onClick={() => setIsLogoutVisible(true)} // Mở modal Logout
             className="dropdown-link logout-link"
           >
-            <PhoneOutlined style={{ marginRight: '8px' }} />
+            <AppstoreOutlined style={{ marginRight: '8px' }} />
             Đăng xuất
           </span>
         ),
@@ -141,7 +120,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
   };
 
   const [notifications, setNotifications] = useState([]);
-  const [_loading, setLoading] = useState(false); //Thêm mục loading vào sau khi call api
+  const [_loading, setLoading] = useState(false); // Thêm mục loading vào sau khi call api
 
   const fetchNotifications = async () => {
     setLoading(true);
@@ -159,7 +138,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
     if (isLoggedIn) fetchNotifications();
   }, [isLoggedIn]);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const notiDropdown = {
     items: notifications.map((item, index) => ({
@@ -175,7 +154,6 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
       },
     })),
   };
-
 
   return (
     <div className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
@@ -235,12 +213,14 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
 
             {/* Notifications */}
             <Tooltip title="Thông báo">
-              <Badge count={3} size="small">
-                <Button
-                  type="text"
-                  icon={<BellOutlined />}
-                  className="action-button"
-                />
+              <Badge count={unreadCount} size="small">
+                <Dropdown menu={notiDropdown} placement="bottomRight" arrow trigger={['click']}>
+                  <Button
+                    type="text"
+                    icon={<BellOutlined />}
+                    className="action-button"
+                  />
+                </Dropdown>
               </Badge>
             </Tooltip>
 
@@ -289,66 +269,73 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
             ))}
           </div>
 
-        <div className="nav-right">
-          <SearchOutlined className="search-icon" />
+          <div className="nav-right">
+            <SearchOutlined className="search-icon" />
 
-          {isLoggedIn ? (
-            <Dropdown menu={accountMenu} placement="bottomRight">
-              <Button className="login-button" icon={<UserOutlined />}>
-                {fullname}
+            {isLoggedIn ? (
+              <Dropdown menu={accountMenu} placement="bottomRight">
+                <Button className="login-button" icon={<UserOutlined />}>
+                  {fullname}
+                </Button>
+              </Dropdown>
+            ) : (
+              <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
+                Tài khoản
               </Button>
+            )}
+
+            <Dropdown menu={notiDropdown} placement="bottomRight" arrow trigger={['click']}>
+              <Badge count={unreadCount} offset={[-2, 2]} size="small">
+                <Button shape="default" icon={<BellOutlined />} className="noti-button" />
+              </Badge>
             </Dropdown>
-          ) : (
-            <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
-              Tài khoản
-            </Button>
-          )}
-
-          <Dropdown menu={notiDropdown} placement="bottomRight" arrow trigger={['click']}>
-            <Badge count={unreadCount} offset={[-2, 2]} size="small">
-              <Button shape="default" icon={<BellOutlined />} className="noti-button" />
-            </Badge>
-          </Dropdown>
-        </div>
-      </div>
-
-      {/* Breadcrumb - only show on non-home pages */}
-      {pathnames.length > 0 && (
-        <div className="breadcrumb-bar">
-          <div className="breadcrumb-content">
-            <Breadcrumb
-              items={[
-                {
-                  title: (
-                    <Link to="/" className="breadcrumb-link">
-                      Trang chủ
-                    </Link>
-                  ),
-                },
-                ...pathnames.map((name, index) => {
-                  const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-                  const displayName =
-                    pathDisplayNames[name] || name.replace(/-/g, ' ');
-                  return {
-                    title:
-                      index === pathnames.length - 1 ? (
-                        <span className="breadcrumb-current">
-                          {displayName}
-                        </span>
-                      ) : (
-                        <Link to={routeTo} className="breadcrumb-link">
-                          {displayName}
-                        </Link>
-                      ),
-                  };
-                }),
-              ]}
-            />
           </div>
         </div>
-      )}
+
+        {/* Breadcrumb - only show on non-home pages */}
+        {pathnames.length > 0 && (
+          <div className="breadcrumb-bar">
+            <div className="breadcrumb-content">
+              <Breadcrumb
+                items={[
+                  {
+                    title: (
+                      <Link to="/" className="breadcrumb-link">
+                        Trang chủ
+                      </Link>
+                    ),
+                  },
+                  ...pathnames.map((name, index) => {
+                    const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
+                    const displayName =
+                      pathDisplayNames[name] || name.replace(/-/g, ' ');
+                    return {
+                      title:
+                        index === pathnames.length - 1 ? (
+                          <span className="breadcrumb-current">
+                            {displayName}
+                          </span>
+                        ) : (
+                          <Link to={routeTo} className="breadcrumb-link">
+                            {displayName}
+                          </Link>
+                        ),
+                    };
+                  }),
+                ]}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Modal Logout */}
+      <Logout
+        visible={isLogoutVisible}
+        onCancel={() => setIsLogoutVisible(false)}
+        onLogout={onLogout}
+      />
     </div>
-  </div>
   );
 };
 
