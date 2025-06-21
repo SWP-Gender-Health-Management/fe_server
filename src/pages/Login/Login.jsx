@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { Modal, Tabs, Form, Input, Button, Checkbox } from 'antd';
 import {
   UserOutlined,
@@ -9,45 +8,60 @@ import {
   FontColorsOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
+import { useAuth } from '../../context/AuthContext.jsx'; // Sử dụng .jsx
 import './login.css';
 
 const { TabPane } = Tabs;
 
-const Login = ({ visible, onCancel, onLoginSuccess }) => {
-  const navigate = useNavigate();
+const Login = ({ visible, onCancel }) => {
+  const { login, setUserInfo } = useAuth();
 
   const handleLogin = async (values) => {
-  try {
-    const response = await axios.post('http://localhost:3000/account/login', {
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      const response = await axios.post('http://localhost:3000/account/login', {
+        email: values.email,
+        password: values.password,
+      });
 
-    console.log('Phản hồi từ API:', response.data);
+      console.log('Phản hồi từ API login:', response.data);
 
-    const { accessToken, refreshToken, fullname } = response.data.result;
+      const { accessToken } = response.data.result || {};
 
-    if (!accessToken || !refreshToken) {
-      throw new Error('Thiếu token trong phản hồi');
+      if (!accessToken) {
+        throw new Error('Thiếu accessToken trong phản hồi');
+      }
+
+      // Lưu accessToken và giá trị mặc định ban đầu
+      login(accessToken, null, null, 'Người dùng');
+
+      // Gọi API /view-account để lấy thông tin người dùng
+      const viewResponse = await axios.post(
+        'http://localhost:3000/account/view-account',
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('Phản hồi từ API view-account:', viewResponse.data);
+
+      const { account_id, fullname } = viewResponse.data.result || {};
+      setUserInfo({ accountId: account_id || null, fullname: fullname || 'Người dùng' });
+
+      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+
+      onCancel(); // Tắt modal
+    } catch (error) {
+      console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
+      Modal.error({
+        title: 'Đăng nhập thất bại',
+        content: error.response?.data?.message || 'Có lỗi xảy ra',
+      });
     }
-
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('fullname', fullname || 'Người dùng');
-
-    Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
-
-    onCancel(); // Tắt modal
-    onLoginSuccess(); // Cập nhật trạng thái login
-    navigate('/tai-khoan'); // Điều hướng
-  } catch (error) {
-    console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-    Modal.error({
-      title: 'Đăng nhập thất bại',
-      content: error.response?.data?.message || 'Có lỗi xảy ra',
-    });
-  }
-};
+  };
 
   const handleRegister = async (values) => {
     try {
