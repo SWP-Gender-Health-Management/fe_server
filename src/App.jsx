@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@context/AuthContext.jsx'; // Sử dụng .jsx
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -60,11 +60,7 @@ const AppLayout = () => {
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />
       <div className="footer-spacer" />
-<<<<<<< HEAD
-      {/* <Payment /> */}
-=======
       {/* Loại bỏ Payment khỏi layout cố định, thay bằng route */}
->>>>>>> ee44b745e8b4d621643d33081640418eb348e0f1
     </div>
   );
 };
