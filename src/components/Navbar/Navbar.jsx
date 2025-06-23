@@ -40,7 +40,6 @@ import Logout from '@pages/Logout/Logout'; // Import Logout component
 
 const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const location = useLocation();
-  const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLogoutVisible, setIsLogoutVisible] = useState(false); // State để kiểm soát modal Logout
@@ -334,7 +333,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
 
       {/* Modal Logout */}
       <Logout
-        visible={isLogoutVisible}
+        open={isLogoutVisible}
         onCancel={() => setIsLogoutVisible(false)}
         onLogout={onLogout}
       />

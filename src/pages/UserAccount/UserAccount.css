@@ -39,6 +39,7 @@
   background: linear-gradient(45deg, #ff6b6b, #ee5a24) !important;
   border: 4px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 
 .avatar-edit-btn {
@@ -235,8 +236,6 @@
 .form-actions .ant-btn {
   height: 45px;
   border-radius: 8px;
-<<<<<<< HEAD
-=======
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: none;
 }
@@ -258,7 +257,6 @@
 }
 
 .info-title {
->>>>>>> ee44b745e8b4d621643d33081640418eb348e0f1
   font-weight: 500;
   min-width: 120px;
 }

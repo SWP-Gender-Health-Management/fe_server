@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button, message } from 'antd';
 import axios from 'axios';
 
-const Logout = ({ visible, onCancel, onLogout }) => {
+const Logout = ({ open, onCancel, onLogout }) => {
   const handleLogout = async () => {
     const accessToken = sessionStorage.getItem('accessToken');
     try {
@@ -37,7 +37,7 @@ const Logout = ({ visible, onCancel, onLogout }) => {
   return (
     <Modal
       title="Xác nhận đăng xuất"
-      visible={visible}
+      open={open}
       onCancel={onCancel}
       footer={[
         <Button key="no" onClick={onCancel}>

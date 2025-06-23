@@ -22,7 +22,6 @@ import {
   Switch,
   Divider,
   Space,
-  Modal,
 } from 'antd';
 import {
   UserOutlined,
@@ -40,9 +39,9 @@ import {
   FileTextOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  ExclamationCircleOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '@context/AuthContext.jsx';
 import dayjs from 'dayjs';
 import './UserAccount.css';
 
@@ -56,17 +55,18 @@ const UserAccount = () => {
   const [editedInfo, setEditedInfo] = useState({});
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
-  const { isLoggedIn, userInfo } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [appointments, setAppointments] = useState([]);
   const [healthRecords, setHealthRecords] = useState([]);
+  const [avatarUrl, setAvatarUrl] = useState(''); // State để lưu URL avatar
 
   // Mock data for demonstration
   const mockAppointments = [
     {
       id: 1,
       type: 'Tư vấn 1:1',
-      doctor: 'BS. Nguyễn Thị Lan',
+      doctor: 'BS. Nguyễn Thị Hạnh',
       date: '2024-01-20',
       time: '09:00',
       status: 'confirmed',
@@ -129,10 +129,12 @@ const UserAccount = () => {
         setEditedInfo(accountData);
         form.setFieldsValue(accountData);
 
-        // Calculate profile completion
-        calculateProfileCompletion(accountData);
+        // Cập nhật avatar nếu có từ server
+        if (accountData.avatar) {
+          setAvatarUrl(accountData.avatar); // Giả định avatar là URL
+        }
 
-        // Set mock data
+        calculateProfileCompletion(accountData);
         setAppointments(mockAppointments);
         setHealthRecords(mockHealthRecords);
       } catch (err) {
@@ -193,11 +195,35 @@ const UserAccount = () => {
     setIsEditing(false);
   };
 
-  const handleAvatarUpload = (info) => {
-    if (info.file.status === 'done') {
-      message.success('Cập nhật ảnh đại diện thành công!');
-    } else if (info.file.status === 'error') {
+  const handleAvatarUpload = async (options) => {
+    const { file, onSuccess, onError } = options;
+    const accessToken = sessionStorage.getItem('accessToken');
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/account/update-avatar', // Giả định endpoint
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setAvatarUrl(response.data.avatarUrl); // Cập nhật URL avatar từ server
+        message.success('Cập nhật ảnh đại diện thành công!');
+        onSuccess();
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Lỗi khi tải ảnh lên:', error);
       message.error('Lỗi khi tải ảnh lên!');
+      onError(error);
     }
   };
 
@@ -271,7 +297,7 @@ const UserAccount = () => {
               <Input
                 prefix={<MailOutlined />}
                 placeholder="Nhập email"
-                disabled={true} // Email thường không cho phép thay đổi
+                disabled={true}
               />
             </Form.Item>
           </Col>
@@ -282,9 +308,7 @@ const UserAccount = () => {
             <Form.Item
               label="Số điện thoại"
               name="phone"
-              rules={[
-                { required: true, message: 'Vui lòng nhập số điện thoại' },
-              ]}
+              rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
             >
               <Input
                 prefix={<PhoneOutlined />}
@@ -548,18 +572,26 @@ const UserAccount = () => {
             <div className="avatar-section">
               <Badge
                 count={
-                  <Button
-                    size="small"
-                    icon={<CameraOutlined />}
-                    shape="circle"
-                    className="avatar-edit-btn"
-                  />
+                  <Upload
+                    name="avatar"
+                    showUploadList={false}
+                    customRequest={handleAvatarUpload}
+                    accept="image/*"
+                  >
+                    <Button
+                      size="small"
+                      icon={<CameraOutlined />}
+                      shape="circle"
+                      className="avatar-edit-btn"
+                    />
+                  </Upload>
                 }
                 offset={[-10, 35]}
               >
                 <Avatar
                   size={80}
-                  icon={<UserOutlined />}
+                  src={avatarUrl || undefined} // Hiển thị avatar từ URL
+                  icon={!avatarUrl && <UserOutlined />} // Icon mặc định nếu không có avatar
                   className="user-avatar"
                 />
               </Badge>
