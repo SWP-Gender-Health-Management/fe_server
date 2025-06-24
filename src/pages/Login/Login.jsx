@@ -1,92 +1,107 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Modal, Tabs, Form, Input, Button, Checkbox } from 'antd';
+import { Modal, Tabs, Form, Input, Button, Checkbox, message } from 'antd';
 import {
   UserOutlined,
   LockOutlined,
   MailOutlined,
   FontColorsOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+  GoogleOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
-import { useAuth } from '../../context/AuthContext.jsx'; // Sử dụng .jsx
+import { useAuth } from '../../context/AuthContext.jsx';
 import './login.css';
+import { GoogleLogin } from '@react-oauth/google';
 
 const { TabPane } = Tabs;
 
 const Login = ({ visible, onCancel }) => {
   const { login, setUserInfo } = useAuth();
+  const [loginForm] = Form.useForm();
+  const [registerForm] = Form.useForm();
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('1');
 
   /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG NHẬP                                    */
   /* -------------------------------------------------- */
   const handleLogin = async (values) => {
+    setLoginLoading(true);
     try {
       const response = await axios.post('http://localhost:3000/account/login', {
         email: values.email,
         password: values.password,
       });
-      console.log('Phản hồi từ API login:', response.data);
 
-      const { accessToken } = response.data.result || {};
-
-      if (!accessToken) {
-        throw new Error('Thiếu accessToken trong phản hồi');
+      if (response.data && response.data.token) {
+        localStorage.setItem('app_token', response.data.token);
+        login(response.data.token);
+        setUserInfo(response.data.user);
       }
 
-      // Lưu accessToken và giá trị mặc định ban đầu
-      login(accessToken, null, null, 'Người dùng');
-
-      // Gọi API /view-account để lấy thông tin người dùng
-      const viewResponse = await axios.post(
-        'http://localhost:3000/account/view-account',
-        {},
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Phản hồi từ API view-account:', viewResponse.data);
-
-      const { account_id, fullname } = viewResponse.data.result || {};
-      setUserInfo({ accountId: account_id || null, fullname: fullname || 'Người dùng' });
-
-      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
-
-      onCancel(); // Tắt modal
+      message.success('Đăng nhập thành công!');
+      onCancel();
     } catch (error) {
-      console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
-      Modal.error({
-        title: 'Đăng nhập thất bại',
-        content: error.response?.data?.message || 'Có lỗi xảy ra',
-      });
+      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+      message.error(error.response?.data?.message || 'Đăng nhập thất bại!');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   /* -------------------------------------------------- */
-  /* XỬ LÝ ĐĂNG KÝ                                      */
+  /* XỬ LÝ ĐĂNG NHẬP VỚI GOOGLE                            */
+  /* -------------------------------------------------- */
+  const handleGoogleLogin = async (credentialResponse) => {
+    console.log('Đăng nhập Google thành công:', credentialResponse);
+    const idToken = credentialResponse.credential;
+
+    try {
+      const res = await axios.post(
+        'http://localhost:3000/account/google-verify',
+        {
+          idToken: idToken,
+        }
+      );
+
+      console.log('Backend response:', res.data);
+      localStorage.setItem('app_token', res.data.token);
+      message.success('Đăng nhập Google thành công!');
+      onCancel();
+    } catch (error) {
+      console.error('Lỗi xác thực với backend:', error);
+      message.error('Đăng nhập Google thất bại!');
+    }
+  };
+
+  const handleLoginError = () => {
+    console.log('Đăng nhập thất bại');
+    message.error('Đăng nhập Google thất bại!');
+  };
+
+  /* -------------------------------------------------- */
+  /* XỬ LÝ ĐĂNG KÝ                                       */
   /* -------------------------------------------------- */
   const handleRegister = async (values) => {
+    setRegisterLoading(true);
     try {
       await axios.post('http://localhost:3000/account/register', {
-        email: values.email,
         fullname: values.fullname,
+        email: values.email,
         password: values.password,
-        confirmPassword: values.confirmPassword,
       });
 
-      Modal.success({
-        title: 'Thành công!',
-        content: 'Đăng ký thành công. Bạn có thể đăng nhập ngay.',
-      });
+      message.success('Đăng ký thành công! Bạn có thể đăng nhập ngay.');
+      registerForm.resetFields();
+      setActiveTab('1');
     } catch (err) {
       console.error('Lỗi đăng ký:', err.response?.data || err.message);
-      Modal.error({
-        title: 'Đăng ký thất bại',
-        content: err.response?.data?.message || 'Có lỗi xảy ra',
-      });
+      message.error(err.response?.data?.message || 'Đăng ký thất bại!');
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
@@ -95,88 +110,275 @@ const Login = ({ visible, onCancel }) => {
       open={visible}
       onCancel={onCancel}
       footer={null}
-      width={800}
+      width={950}
       centered
-      className="custom-modal"
+      className="modern-auth-modal"
+      maskClosable={false}
+      destroyOnClose
     >
-      <div className="custom-modal-body">
-        {/* --------- FORM ---------- */}
-        <div className="form-container">
-          <Tabs defaultActiveKey="1" centered>
-            {/* ==== TAB ĐĂNG NHẬP ==== */}
-            <TabPane tab="Đăng nhập" key="1">
-              <Form layout="vertical" onFinish={handleLogin}>
-                <Form.Item label="Đăng nhập để nhận thêm thông tin!" />
+      <div className="auth-modal-container">
+        {/* Form Section */}
+        <div className="auth-form-section">
+          <div className="auth-header">
+            <div className="brand-logo">
+              <div className="logo-icon">
+                <MailOutlined />
+              </div>
+              <h1 className="brand-title">MediCare</h1>
+            </div>
+            <p className="auth-subtitle">
+              {activeTab === '1'
+                ? 'Chào mừng bạn trở lại! Đăng nhập để tiếp tục.'
+                : 'Tạo tài khoản mới để bắt đầu hành trình sức khỏe.'}
+            </p>
+          </div>
 
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            centered
+            className="auth-tabs"
+            size="large"
+          >
+            {/* Login Tab */}
+            <TabPane tab="Đăng nhập" key="1">
+              <Form
+                form={loginForm}
+                layout="vertical"
+                onFinish={handleLogin}
+                className="auth-form"
+                size="large"
+              >
                 <Form.Item
                   name="email"
-                  rules={[{ required: true, message: 'Nhập email hoặc SĐT' }]}
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập email!' },
+                    { type: 'email', message: 'Email không hợp lệ!' },
+                  ]}
                 >
                   <Input
-                    prefix={<UserOutlined />}
-                    placeholder="Email hoặc SĐT"
+                    prefix={<MailOutlined className="input-prefix-icon" />}
+                    placeholder="Địa chỉ email"
+                    className="modern-input"
                   />
                 </Form.Item>
 
                 <Form.Item
                   name="password"
-                  rules={[{ required: true, message: 'Nhập mật khẩu' }]}
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                  ]}
                 >
                   <Input.Password
-                    prefix={<LockOutlined />}
+                    prefix={<LockOutlined className="input-prefix-icon" />}
                     placeholder="Mật khẩu"
+                    className="modern-input"
+                    iconRender={(visible) =>
+                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                    }
                   />
                 </Form.Item>
 
-                {/* Ghi nhớ tôi */}
-                <Form.Item name="remember" valuePropName="checked">
-                  <Checkbox>Ghi nhớ tôi</Checkbox>
-                </Form.Item>
+                <div className="form-extras">
+                  <Form.Item
+                    name="remember"
+                    valuePropName="checked"
+                    className="remember-me"
+                  >
+                    <Checkbox>Ghi nhớ đăng nhập</Checkbox>
+                  </Form.Item>
+                  <Button type="link" className="forgot-link">
+                    Quên mật khẩu?
+                  </Button>
+                </div>
 
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" block>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    loading={loginLoading}
+                    className="submit-btn primary-btn"
+                    size="large"
+                  >
                     Đăng nhập
                   </Button>
                 </Form.Item>
 
-                <Form.Item>
-                  <div className="or-divider">
-                    <span>Hoặc</span>
-                  </div>
+                <div className="divider-section">
+                  <div className="divider-line"></div>
+                  <span className="divider-text">Hoặc</span>
+                  <div className="divider-line"></div>
+                </div>
+
+                <div className="google-login-container">
+                  <GoogleLogin
+                    onSuccess={handleGoogleLogin}
+                    onError={handleLoginError}
+                    theme="outline"
+                    size="large"
+                    text="signin_with"
+                    shape="rectangular"
+                    width="100%"
+                  />
+                </div>
+              </Form>
+            </TabPane>
+
+            {/* Register Tab */}
+            <TabPane tab="Đăng ký" key="2">
+              <Form
+                form={registerForm}
+                layout="vertical"
+                onFinish={handleRegister}
+                className="auth-form"
+                size="large"
+              >
+                <Form.Item
+                  name="fullname"
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập họ tên!' },
+                    { min: 2, message: 'Họ tên phải có ít nhất 2 ký tự!' },
+                  ]}
+                >
+                  <Input
+                    prefix={
+                      <FontColorsOutlined className="input-prefix-icon" />
+                    }
+                    placeholder="Họ và tên"
+                    className="modern-input"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="email"
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập email!' },
+                    { type: 'email', message: 'Email không hợp lệ!' },
+                  ]}
+                >
+                  <Input
+                    prefix={<MailOutlined className="input-prefix-icon" />}
+                    placeholder="Địa chỉ email"
+                    className="modern-input"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="password"
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                    { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
+                  ]}
+                >
+                  <Input.Password
+                    prefix={<LockOutlined className="input-prefix-icon" />}
+                    placeholder="Mật khẩu"
+                    className="modern-input"
+                    iconRender={(visible) =>
+                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                    }
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="confirmPassword"
+                  dependencies={['password']}
+                  rules={[
+                    { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error('Mật khẩu xác nhận không khớp!')
+                        );
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password
+                    prefix={<LockOutlined className="input-prefix-icon" />}
+                    placeholder="Xác nhận mật khẩu"
+                    className="modern-input"
+                    iconRender={(visible) =>
+                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                    }
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="agreement"
+                  valuePropName="checked"
+                  rules={[
+                    {
+                      validator: (_, value) =>
+                        value
+                          ? Promise.resolve()
+                          : Promise.reject(
+                              new Error('Vui lòng đồng ý với điều khoản!')
+                            ),
+                    },
+                  ]}
+                >
+                  <Checkbox className="agreement-checkbox">
+                    Tôi đồng ý với{' '}
+                    <Button type="link" className="terms-link">
+                      Điều khoản sử dụng
+                    </Button>{' '}
+                    và{' '}
+                    <Button type="link" className="terms-link">
+                      Chính sách bảo mật
+                    </Button>
+                  </Checkbox>
                 </Form.Item>
 
                 <Form.Item>
                   <Button
+                    type="primary"
+                    htmlType="submit"
                     block
-                    className="google-button"
-                    icon={
-                      <img
-                        src="https://img.icons8.com/color/20/google-logo.png"
-                        alt="Google"
-                        className="google-icon"
-                      />
-                    }
+                    loading={registerLoading}
+                    className="submit-btn primary-btn"
+                    size="large"
                   >
-                    Đăng nhập với Google
+                    Tạo tài khoản
                   </Button>
                 </Form.Item>
-              </Form>
-            </TabPane>
-
-            {/* ==== TAB ĐĂNG KÝ ==== */}
-            <TabPane tab="Đăng ký" key="2">
-              <Form layout="vertical" onFinish={handleRegister}>
-                <Form.Item label="Đăng ký miễn phí!" />
-                {/* ... các Form.Item như trước ... */}
               </Form>
             </TabPane>
           </Tabs>
         </div>
 
-        {/* --------- ẢNH ---------- */}
-        <div className="modal-image">
-          <div className="extra-circle"></div>
-          <img src={doctor} alt="doctor" />
+        {/* Image Section */}
+        <div className="auth-image-section">
+          <div className="image-overlay">
+            <div className="floating-element element-1"></div>
+            <div className="floating-element element-2"></div>
+            <div className="floating-element element-3"></div>
+          </div>
+          <img
+            src={doctor}
+            alt="Healthcare Professional"
+            className="auth-image"
+          />
+          <div className="image-content">
+            <h3 className="image-title">Chăm sóc sức khỏe toàn diện</h3>
+            <p className="image-description">
+              Dịch vụ y tế chuyên nghiệp, tin cậy cho sức khỏe của bạn.
+            </p>
+            <div className="stats-container">
+              <div className="stat-item">
+                <span className="stat-number">24/7</span>
+                <span className="stat-label">Hỗ trợ</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-number">500+</span>
+                <span className="stat-label">Bác sĩ</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Modal>
