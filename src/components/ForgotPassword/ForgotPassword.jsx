@@ -25,7 +25,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const handleSendPasscode = async (values) => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/account/forgot-password', {
+      await axios.post('http://localhost:3000/account/send-reset-password', {
         email: values.email,
       });
 
@@ -47,7 +47,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const handleVerifyPasscode = async (values) => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/account/verify-passcode', {
+      await axios.post('http://localhost:3000/account/verify-reset-password', {
         email: userEmail,
         passcode: values.passcode,
       });
@@ -74,8 +74,8 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
       await axios.post('http://localhost:3000/account/reset-password', {
         email: userEmail,
         newPassword: values.newPassword,
+        confirmPassword: values.confirmPassword,
       });
-
       message.success(
         'Mật khẩu đã được đặt lại thành công! Bạn có thể đăng nhập với mật khẩu mới.'
       );
