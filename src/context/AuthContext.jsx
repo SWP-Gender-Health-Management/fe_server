@@ -11,12 +11,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = (accessToken, refreshToken, accountId, fullname) => {
     sessionStorage.setItem('accessToken', accessToken);
-    sessionStorage.setItem('refreshToken', refreshToken);
-    sessionStorage.setItem('account_id', accountId);
+    sessionStorage.setItem('accountId', accountId || null);
     sessionStorage.setItem('fullname', fullname || 'Người dùng');
-
     setIsLoggedIn(true);
-    setUserInfo({ accountId, fullname });
+    setUserInfo({ accountId, fullname: fullname || 'Người dùng' }); // Cập nhật userInfo
   };
 
   const logout = () => {

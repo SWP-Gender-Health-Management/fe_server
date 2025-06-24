@@ -113,11 +113,17 @@ const UserAccount = () => {
         message.error('Vui lòng đăng nhập để xem thông tin tài khoản.');
         return;
       }
-
+      const accountId = sessionStorage.getItem('accountId');
+      if (!accountId) {
+        setLoading(false);
+        message.error('Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.');
+        return;
+      }
+      
       try {
         const response = await axios.post(
           'http://localhost:3000/account/view-account',
-          {},
+          { account_id: accountId },
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
