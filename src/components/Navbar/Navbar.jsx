@@ -1,18 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  Menu,
-  Button,
-  Row,
-  Col,
-  Breadcrumb,
-  Dropdown,
-  Modal,
-  Badge,
-  Tooltip,
-  List,
-  Spin,
-} from 'antd';
+import { Menu, Button, Breadcrumb, Dropdown, Tooltip } from 'antd';
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -23,7 +10,6 @@ import {
   ClockCircleOutlined,
   EnvironmentOutlined,
   UserOutlined,
-  BellOutlined,
   MailOutlined,
   FacebookOutlined,
   TwitterOutlined,
@@ -37,6 +23,7 @@ import Logo from '@assets/Blue-full.svg?react';
 import '@styles/reset.css'; // Reset CSS for consistent styling
 import './Navbar.css';
 import Logout from '@pages/Logout/Logout'; // Import Logout component
+import NotificationDropdown from '@components/Notification/NotificationDropdown'; // Import NotificationDropdown component
 
 const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const location = useLocation();
@@ -69,13 +56,36 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const menuItems = [
-    { label: <Link to="/">Trang Chủ</Link>, key: 'home', icon: <HomeOutlined /> },
-    { label: <Link to="/dich-vu">Dịch vụ</Link>, key: 'services', icon: <AppstoreOutlined /> },
-    { label: <Link to="/tin-tuc">Tin tức</Link>, key: 'news', icon: <ReadOutlined /> },
-    { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
-    { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
-    { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
-
+    {
+      label: <Link to="/">Trang Chủ</Link>,
+      key: 'home',
+      icon: <HomeOutlined />,
+    },
+    {
+      label: <Link to="/dich-vu">Dịch vụ</Link>,
+      key: 'services',
+      icon: <AppstoreOutlined />,
+    },
+    {
+      label: <Link to="/tin-tuc">Tin tức</Link>,
+      key: 'news',
+      icon: <ReadOutlined />,
+    },
+    {
+      label: <Link to="/ve-chung-toi">Về chúng tôi</Link>,
+      key: 'about',
+      icon: <TeamOutlined />,
+    },
+    {
+      label: <Link to="/lien-he">Liên hệ</Link>,
+      key: 'contact',
+      icon: <PhoneOutlined />,
+    },
+    {
+      label: <Link to="/hoi-dap">QaA</Link>,
+      key: 'questions',
+      icon: <WechatWorkOutlined />,
+    },
   ];
 
   const accountMenu = {
@@ -118,43 +128,6 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const [notifications, setNotifications] = useState([]);
-  const [_loading, setLoading] = useState(false); // Thêm mục loading vào sau khi call api
-
-  const fetchNotifications = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get('http://localhost:3000/api/notifications?userId=1');
-      setNotifications(res.data || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isLoggedIn) fetchNotifications();
-  }, [isLoggedIn]);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const notiDropdown = {
-    items: notifications.map((item, index) => ({
-      key: `noti-${index}`,
-      label: (
-        <div style={{ whiteSpace: 'normal', maxWidth: 250 }}>
-          <strong>{item.title || 'Thông báo mới'}</strong>
-          <div style={{ fontSize: 12, color: '#888' }}>{item.message}</div>
-        </div>
-      ),
-      style: {
-        backgroundColor: item.read ? '#fff' : '#f6f6f6',
-      },
-    })),
-
   };
 
   return (
@@ -214,17 +187,10 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
             </Tooltip>
 
             {/* Notifications */}
-            <Tooltip title="Thông báo">
-              <Badge count={unreadCount} size="small">
-                <Dropdown menu={notiDropdown} placement="bottomRight" arrow trigger={['click']}>
-                  <Button
-                    type="text"
-                    icon={<BellOutlined />}
-                    className="action-button"
-                  />
-                </Dropdown>
-              </Badge>
-            </Tooltip>
+            <NotificationDropdown
+              isLoggedIn={isLoggedIn}
+              onLoginClick={onLoginClick}
+            />
 
             {/* User Account */}
             {isLoggedIn ? (
@@ -281,16 +247,19 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
                 </Button>
               </Dropdown>
             ) : (
-              <Button className="login-button" icon={<UserOutlined />} onClick={onLoginClick}>
+              <Button
+                className="login-button"
+                icon={<UserOutlined />}
+                onClick={onLoginClick}
+              >
                 Tài khoản
               </Button>
             )}
 
-            <Dropdown menu={notiDropdown} placement="bottomRight" arrow trigger={['click']}>
-              <Badge count={unreadCount} offset={[-2, 2]} size="small">
-                <Button shape="default" icon={<BellOutlined />} className="noti-button" />
-              </Badge>
-            </Dropdown>
+            <NotificationDropdown
+              isLoggedIn={isLoggedIn}
+              onLoginClick={onLoginClick}
+            />
           </div>
         </div>
 
