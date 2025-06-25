@@ -126,7 +126,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/api/notifications?userId=1');
+      const res = await axios.get('http://localhost:3000/api/notifications?userId=${userId}');
       setNotifications(res.data || []);
     } catch (err) {
       console.error(err);
