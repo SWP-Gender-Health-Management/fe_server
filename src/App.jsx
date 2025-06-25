@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
@@ -54,7 +60,8 @@ const AppLayout = () => {
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
-        <Route path="/dich-vu" element={<ServicePage />} /> {/* Sửa thành ServicePage */}
+        <Route path="/dich-vu" element={<ServicePage />} />{' '}
+        {/* Sửa thành ServicePage */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
