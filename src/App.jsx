@@ -1,6 +1,17 @@
 import React, { useEffect } from 'react';
+<<<<<<< page/menstrual
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
+=======
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
+>>>>>>> dev
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
