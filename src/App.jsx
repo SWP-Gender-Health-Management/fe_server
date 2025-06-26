@@ -1,4 +1,8 @@
 import React, { useEffect } from 'react';
+<<<<<<< page/menstrual
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
+=======
 import {
   Routes,
   Route,
@@ -7,6 +11,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'; // Sử dụng .jsx
+>>>>>>> dev
 import Navbar from '@components/Navbar/Navbar';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
@@ -20,7 +25,6 @@ import Payment from '@pages/PaymentPage/PaymentPage';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
 import Footer from '@components/Footer/Footer';
-import ServicePage from '@pages/ServicePage/ServicePage';
 import '@styles/reset.css';
 
 // Layout chung cho tất cả trang
@@ -29,6 +33,9 @@ const AppLayout = () => {
   const [showLogin, setShowLogin] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Lấy fullname từ sessionStorage hoặc mặc định
+  const full_name = sessionStorage.getItem('full_name') || 'Người dùng';
 
   // Hàm handleLogout sử dụng navigate thay vì window.location.href
   const handleLogout = () => {
@@ -46,35 +53,31 @@ const AppLayout = () => {
       <Navbar
         onLoginClick={() => setShowLogin(true)}
         isLoggedIn={isLoggedIn}
-        fullname={fullname}
+        full_name={full_name} // Sử dụng fullname từ sessionStorage
         onLogout={handleLogout}
       />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        {/* <Route path='/login' element={<login />} />  */}
         <Route
           path="/tai-khoan"
-          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />} // Chuyển hướng về /login
         />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
-        <Route path="/dich-vu" element={<Services />} />
+        <Route path="/dich-vu" element={<ServicePage />} /> {/* Sửa thành ServicePage */}
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/dich-vu" element={<ServicePage />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
-          element={
-              <MenstrualPredictorPage />
-          }
+          element={<MenstrualPredictorPage />}
         />
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
-
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       <Footer />
       <div className="footer-spacer" />
-      {/* Loại bỏ Payment khỏi layout cố định, thay bằng route */}
     </div>
   );
 };

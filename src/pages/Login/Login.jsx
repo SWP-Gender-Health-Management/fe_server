@@ -8,7 +8,7 @@ import {
   FontColorsOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
-import { useAuth } from '../../context/AuthContext.jsx'; // Sử dụng .jsx
+import { useAuth } from '@context/AuthContext.jsx'; // Sử dụng .jsx
 import './login.css';
 
 const { TabPane } = Tabs;
@@ -19,7 +19,7 @@ const Login = ({ visible, onCancel }) => {
   /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG NHẬP                                    */
   /* -------------------------------------------------- */
-  const handleLogin = async (values) => {
+      const handleLogin = async (values) => {
     try {
       const response = await axios.post('http://localhost:3000/account/login', {
         email: values.email,
@@ -28,43 +28,44 @@ const Login = ({ visible, onCancel }) => {
       console.log('Phản hồi từ API login:', response.data);
 
       const { accessToken } = response.data.result || {};
-
       if (!accessToken) {
         throw new Error('Thiếu accessToken trong phản hồi');
       }
 
-      // Lưu accessToken và giá trị mặc định ban đầu
+      // Lưu accessToken ban đầu
       login(accessToken, null, null, 'Người dùng');
 
-      // Gọi API /view-account để lấy thông tin người dùng
+      // Gọi API view-account chỉ với token
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
-        {},
+        {}, // Body rỗng vì chỉ dựa vào token
         {
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         }
       );
 
       console.log('Phản hồi từ API view-account:', viewResponse.data);
-
-      const { account_id, fullname } = viewResponse.data.result || {};
-      setUserInfo({ accountId: account_id || null, fullname: fullname || 'Người dùng' });
+      if (!viewResponse.data.result) {
+        throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
+      }
+      const { account_id, full_name } = viewResponse.data.result || {};
+      if (!account_id) throw new Error('Không lấy được account_id');
+      sessionStorage.setItem('accountId', account_id);
+      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
 
       Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
-
-      onCancel(); // Tắt modal
+      onCancel();
     } catch (error) {
       console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
       Modal.error({
         title: 'Đăng nhập thất bại',
-        content: error.response?.data?.message || 'Có lỗi xảy ra',
+        content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
       });
     }
   };
-
   /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG KÝ                                      */
   /* -------------------------------------------------- */

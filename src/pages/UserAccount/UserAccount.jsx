@@ -22,7 +22,6 @@ import {
   Switch,
   Divider,
   Space,
-  Modal,
 } from 'antd';
 import {
   UserOutlined,
@@ -40,9 +39,9 @@ import {
   FileTextOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  ExclamationCircleOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '@context/AuthContext.jsx';
 import dayjs from 'dayjs';
 import './UserAccount.css';
 
@@ -56,68 +55,33 @@ const UserAccount = () => {
   const [editedInfo, setEditedInfo] = useState({});
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
-  const { isLoggedIn, userInfo } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [appointments, setAppointments] = useState([]);
   const [healthRecords, setHealthRecords] = useState([]);
+  const [avatarUrl, setAvatarUrl] = useState(''); // State để lưu URL avatar
 
-  // Mock data for demonstration
-  const mockAppointments = [
-    {
-      id: 1,
-      type: 'Tư vấn 1:1',
-      doctor: 'BS. Nguyễn Thị Lan',
-      date: '2024-01-20',
-      time: '09:00',
-      status: 'confirmed',
-      location: 'Phòng khám A1',
-    },
-    {
-      id: 2,
-      type: 'Xét nghiệm',
-      doctor: 'BS. Trần Văn Nam',
-      date: '2024-01-25',
-      time: '14:00',
-      status: 'pending',
-      location: 'Phòng xét nghiệm B2',
-    },
-  ];
-
-  const mockHealthRecords = [
-    {
-      id: 1,
-      date: '2024-01-15',
-      type: 'Khám tổng quát',
-      result: 'Bình thường',
-      notes: 'Sức khỏe tốt, tiếp tục theo dõi định kỳ',
-    },
-    {
-      id: 2,
-      date: '2024-01-10',
-      type: 'Xét nghiệm hormone',
-      result: 'Trong giới hạn bình thường',
-      notes: 'Các chỉ số hormone ổn định',
-    },
-  ];
-
-  useEffect(() => {
-    const fetchAccountInfo = async () => {
+useEffect(() => {
+    const fetchAccountData = async () => {
       if (!isLoggedIn) {
         setLoading(false);
         return;
       }
 
       const accessToken = sessionStorage.getItem('accessToken');
-      if (!accessToken) {
+      const accountId = sessionStorage.getItem('accountId');
+
+      if (!accessToken || !accountId) {
         setLoading(false);
-        message.error('Vui lòng đăng nhập để xem thông tin tài khoản.');
+        message.error('Vui lòng đăng nhập lại.');
         return;
       }
 
       try {
-        const response = await axios.post(
+        // Lấy thông tin tài khoản
+        const accountRes = await axios.post(
           'http://localhost:3000/account/view-account',
-          {},
+          { account_id: accountId },
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -125,35 +89,72 @@ const UserAccount = () => {
             },
           }
         );
-        const accountData = response.data.result || {};
+
+        const accountData = accountRes.data.result || {};
+        if (accountData.dob) {
+          accountData.dob = dayjs(accountData.dob);
+        }
         setEditedInfo(accountData);
         form.setFieldsValue(accountData);
-
-        // Calculate profile completion
+        if (accountData.avatar) {
+          setAvatarUrl(accountData.avatar);
+        }
         calculateProfileCompletion(accountData);
 
-        // Set mock data
-        setAppointments(mockAppointments);
-        setHealthRecords(mockHealthRecords);
+        // Lấy lịch hẹn
+      try {
+        const appointmentRes = await axios.get(
+          `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/customer/${accountId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setAppointments(appointmentRes.data.result || []);
+      } catch (error) {
+        if (error.response?.status === 404) {
+          setAppointments([]); // Không có lịch hẹn thì đặt mảng rỗng
+        } else {
+          console.error('Lỗi khi tải dữ liệu:', error);
+          message.error('Lỗi khi tải lịch hẹn');
+        }
+      }
+
+        // Lấy hồ sơ sức khỏe
+        const healthRes = await axios.get(
+          `http://localhost:3000/health-record/list?account_id=${accountId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setHealthRecords(healthRes.data.result || []);
+
       } catch (err) {
-        console.error('Lỗi khi lấy thông tin tài khoản:', err);
-        message.error('Không thể tải thông tin tài khoản. Vui lòng thử lại.');
+        console.error('Lỗi khi tải dữ liệu:', err);
+        message.error('Không thể tải thông tin. Vui lòng thử lại.');
       } finally {
         setLoading(false);
       }
     };
 
-    if (isLoggedIn) fetchAccountInfo();
-  }, [isLoggedIn, form]);
+    fetchAccountData();
+}, [isLoggedIn, form]);
 
   const calculateProfileCompletion = (data) => {
     const fields = ['full_name', 'email', 'phone', 'dob', 'gender', 'address'];
-    const completed = fields.filter(
-      (field) => data[field] && data[field].trim() !== ''
-    ).length;
+    const completed = fields.filter((field) => {
+      const value = data[field];
+      if (value == null) return false;
+      if (typeof value === 'string') return value.trim() !== '';
+      return true; // chấp nhận cả object như Date hoặc enum
+    }).length;
     const percentage = Math.round((completed / fields.length) * 100);
     setProfileCompletion(percentage);
   };
+
 
   const handleSave = async (values) => {
     const accessToken = sessionStorage.getItem('accessToken');
@@ -193,11 +194,35 @@ const UserAccount = () => {
     setIsEditing(false);
   };
 
-  const handleAvatarUpload = (info) => {
-    if (info.file.status === 'done') {
-      message.success('Cập nhật ảnh đại diện thành công!');
-    } else if (info.file.status === 'error') {
+  const handleAvatarUpload = async (options) => {
+    const { file, onSuccess, onError } = options;
+    const accessToken = sessionStorage.getItem('accessToken');
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/account/update-avatar', // Giả định endpoint
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setAvatarUrl(response.data.avatarUrl); // Cập nhật URL avatar từ server
+        message.success('Cập nhật ảnh đại diện thành công!');
+        onSuccess();
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Lỗi khi tải ảnh lên:', error);
       message.error('Lỗi khi tải ảnh lên!');
+      onError(error);
     }
   };
 
@@ -271,7 +296,7 @@ const UserAccount = () => {
               <Input
                 prefix={<MailOutlined />}
                 placeholder="Nhập email"
-                disabled={true} // Email thường không cho phép thay đổi
+                disabled={true}
               />
             </Form.Item>
           </Col>
@@ -282,9 +307,7 @@ const UserAccount = () => {
             <Form.Item
               label="Số điện thoại"
               name="phone"
-              rules={[
-                { required: true, message: 'Vui lòng nhập số điện thoại' },
-              ]}
+              rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
             >
               <Input
                 prefix={<PhoneOutlined />}
@@ -383,22 +406,26 @@ const UserAccount = () => {
                     <CalendarOutlined className="date-icon" />
                     <div>
                       <div className="date">
-                        {dayjs(item.date).format('DD/MM/YYYY')}
+                        {dayjs(item.consultant_pattern?.working_slot?.date).format('DD/MM/YYYY')}
                       </div>
-                      <div className="time">{item.time}</div>
+                      <div className="time">
+                        {item.consultant_pattern?.working_slot?.time_slot || 'Không rõ'}
+                      </div>
                     </div>
                   </div>
                 </Col>
                 <Col xs={24} sm={8}>
                   <div className="appointment-info">
-                    <Title level={5}>{item.type}</Title>
-                    <Text type="secondary">{item.doctor}</Text>
+                    <Title level={5}>{item.consultant_pattern?.title || 'Tư vấn'}</Title>
+                    <Text type="secondary">
+                      {item.consultant_pattern?.consultant?.full_name || 'Chuyên gia chưa rõ'}
+                    </Text>
                   </div>
                 </Col>
                 <Col xs={24} sm={6}>
                   <div className="appointment-location">
                     <EnvironmentOutlined />
-                    <Text>{item.location}</Text>
+                    <Text>{item.location || 'Online'}</Text>
                   </div>
                 </Col>
                 <Col xs={24} sm={4}>
@@ -548,18 +575,26 @@ const UserAccount = () => {
             <div className="avatar-section">
               <Badge
                 count={
-                  <Button
-                    size="small"
-                    icon={<CameraOutlined />}
-                    shape="circle"
-                    className="avatar-edit-btn"
-                  />
+                  <Upload
+                    name="avatar"
+                    showUploadList={false}
+                    customRequest={handleAvatarUpload}
+                    accept="image/*"
+                  >
+                    <Button
+                      size="small"
+                      icon={<CameraOutlined />}
+                      shape="circle"
+                      className="avatar-edit-btn"
+                    />
+                  </Upload>
                 }
                 offset={[-10, 35]}
               >
                 <Avatar
                   size={80}
-                  icon={<UserOutlined />}
+                  src={avatarUrl || undefined} // Hiển thị avatar từ URL
+                  icon={!avatarUrl && <UserOutlined />} // Icon mặc định nếu không có avatar
                   className="user-avatar"
                 />
               </Badge>
