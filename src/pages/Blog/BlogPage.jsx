@@ -212,71 +212,6 @@ export default function BlogPage() {
             ))}
           </div>
         </div>
-    <div>
-      <div className="blog-container">
-        <div className="sidebar">
-          <h2 className="sidebar-title">Phân loại</h2>
-          <ul className="category-list">
-            {categories.map((category) => (
-              <li
-                key={category}
-                className={`category-item ${
-                  selectedCategory === category ? 'active' : ''
-                }`}
-                onClick={() => {
-                  setSelectedCategory(category);
-                  setCurrentPage(1);
-                }}
-              >
-                {category}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="main-content">
-          <h1 className="page-title">Tin tức</h1>
-          <div className="search-bar">
-            <Input
-              type="text"
-              placeholder="Tìm kiếm bài viết, chủ đề..."
-              value={searchText}
-              onChange={(e) => {
-                setSearchText(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="hero-search-input"
-            />
-            <Button className="hero-search-btn">
-              <i className="search-icon">🔍</i>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="blog-container">
-        {/* Sidebar */}
-        <aside className="blog-sidebar">
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">Chuyên mục</h3>
-            <div className="category-list">
-              {categories.map((category) => (
-                <div
-                  key={category.id}
-                  className={`category-item ${
-                    selectedCategory === category.id ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedCategory(category.id);
-                    setCurrentPage(1);
-                  }}
-                >
-                  <span className="category-icon">{category.icon}</span>
-                  <span className="category-name">{category.name}</span>
-                  <span className="category-count">({category.count})</span>
-                </div>
-              ))}
-            </div>
-          </div>
 
         {/* Featured Post */}
         <div className="sidebar-section">
@@ -427,38 +362,6 @@ export default function BlogPage() {
           </div>
         )}
       </main>
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="pagination">
-              <Button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                className="pagination-btn"
-              >
-                Trước
-              </Button>
-              <div className="pagination-numbers">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index}
-                    className={`pagination-number ${currentPage === index + 1 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-              <Button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className="pagination-btn"
-              >
-                Sau
-              </Button>
-            </div>
-          )}
-        </main>
-      </div>
     </div>
   );
 }

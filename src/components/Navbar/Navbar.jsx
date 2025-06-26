@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Menu, Button, Breadcrumb, Dropdown, Tooltip } from 'antd';
 import {
   HomeOutlined,
@@ -18,18 +19,20 @@ import {
   CloseOutlined,
   WechatWorkOutlined,
 } from '@ant-design/icons';
-import { useLocation, Link } from 'react-router-dom'; // Loại bỏ useNavigate
+import { useLocation, Link } from 'react-router-dom';
 import Logo from '@assets/Blue-full.svg?react';
-import '@styles/reset.css'; // Reset CSS for consistent styling
+import '@styles/reset.css';
 import './Navbar.css';
-import Logout from '@pages/Logout/Logout'; // Import Logout component
-import NotificationDropdown from '@components/Notification/NotificationDropdown'; // Import NotificationDropdown component
+import Logout from '@pages/Logout/Logout';
+import NotificationDropdown from '@components/Notification/NotificationDropdown';
 
 const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLogoutVisible, setIsLogoutVisible] = useState(false); // State để kiểm soát modal Logout
+  const [isLogoutVisible, setIsLogoutVisible] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false); // Sửa tên _loading thành loading
 
   // Handle scroll effect
   useEffect(() => {
@@ -56,36 +59,12 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const menuItems = [
-    {
-      label: <Link to="/">Trang Chủ</Link>,
-      key: 'home',
-      icon: <HomeOutlined />,
-    },
-    {
-      label: <Link to="/dich-vu">Dịch vụ</Link>,
-      key: 'services',
-      icon: <AppstoreOutlined />,
-    },
-    {
-      label: <Link to="/tin-tuc">Tin tức</Link>,
-      key: 'news',
-      icon: <ReadOutlined />,
-    },
-    {
-      label: <Link to="/ve-chung-toi">Về chúng tôi</Link>,
-      key: 'about',
-      icon: <TeamOutlined />,
-    },
-    {
-      label: <Link to="/lien-he">Liên hệ</Link>,
-      key: 'contact',
-      icon: <PhoneOutlined />,
-    },
-    {
-      label: <Link to="/hoi-dap">QaA</Link>,
-      key: 'questions',
-      icon: <WechatWorkOutlined />,
-    },
+    { label: <Link to="/">Trang Chủ</Link>, key: 'home', icon: <HomeOutlined /> },
+    { label: <Link to="/dich-vu">Dịch vụ</Link>, key: 'services', icon: <AppstoreOutlined /> },
+    { label: <Link to="/tin-tuc">Tin tức</Link>, key: 'news', icon: <ReadOutlined /> },
+    { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
+    { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
+    { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
   ];
 
   const accountMenu = {
@@ -108,14 +87,12 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
           </span>
         ),
       },
-      {
-        type: 'divider',
-      },
+      { type: 'divider' },
       {
         key: 'logout',
         label: (
           <span
-            onClick={() => setIsLogoutVisible(true)} // Mở modal Logout
+            onClick={() => setIsLogoutVisible(true)}
             className="dropdown-link logout-link"
           >
             <AppstoreOutlined style={{ marginRight: '8px' }} />
@@ -129,16 +106,15 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-  const [notifications, setNotifications] = useState([]);
-  const [_loading, setLoading] = useState(false); // Thêm mục loading vào sau khi call api
 
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:3000/api/notifications?userId=${userId}');
+      const userId = sessionStorage.getItem('accountId') || 1; // Lấy userId từ sessionStorage, mặc định 1 nếu không có
+      const res = await axios.get(`http://localhost:3000/api/notifications?userId=${userId}`);
       setNotifications(res.data || []);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to fetch notifications:', err);
     } finally {
       setLoading(false);
     }
@@ -159,19 +135,16 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
           <div style={{ fontSize: 12, color: '#888' }}>{item.message}</div>
         </div>
       ),
-      style: {
-        backgroundColor: item.read ? '#fff' : '#f6f6f6',
-      },
+      style: { backgroundColor: item.read ? '#fff' : '#f6f6f6' },
     })),
-
   };
+
   return (
     <div className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
       {/* Top contact bar - hidden on mobile */}
       <div className="top-bar desktop-only">
         <div className="top-bar-content">
           <div className="top-bar-layout">
-            {/* Contact info row - 3 parts equal */}
             <div className="contact-1">
               <div className="contact-info row-direction">
                 <div className="contact-item">
@@ -225,6 +198,9 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
             <NotificationDropdown
               isLoggedIn={isLoggedIn}
               onLoginClick={onLoginClick}
+              menu={notiDropdown}
+              unreadCount={unreadCount}
+              loading={loading}
             />
 
             {/* User Account */}
@@ -294,6 +270,9 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
             <NotificationDropdown
               isLoggedIn={isLoggedIn}
               onLoginClick={onLoginClick}
+              menu={notiDropdown}
+              unreadCount={unreadCount}
+              loading={loading}
             />
           </div>
         </div>

@@ -31,6 +31,7 @@ const Login = ({ visible, onCancel }) => {
   /* XỬ LÝ ĐĂNG NHẬP                                    */
   /* -------------------------------------------------- */
   const handleLogin = async (values) => {
+    setLoginLoading(true);
     try {
       const response = await axios.post('http://localhost:3000/account/login', {
         email: values.email,
@@ -75,6 +76,8 @@ const Login = ({ visible, onCancel }) => {
         title: 'Đăng nhập thất bại',
         content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
       });
+    }finally {
+      setLoginLoading(false);
     }
   };
 
