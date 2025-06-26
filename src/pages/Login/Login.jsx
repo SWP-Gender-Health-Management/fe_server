@@ -8,7 +8,7 @@ import {
   FontColorsOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
-import { useAuth } from '../../context/AuthContext.jsx'; // Sử dụng .jsx
+import { useAuth } from '@context/AuthContext.jsx'; // Sử dụng .jsx
 import './login.css';
 
 const { TabPane } = Tabs;
@@ -52,6 +52,8 @@ const Login = ({ visible, onCancel }) => {
         throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
       }
       const { account_id, full_name } = viewResponse.data.result || {};
+      if (!account_id) throw new Error('Không lấy được account_id');
+      sessionStorage.setItem('accountId', account_id);
       setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
 
       Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
