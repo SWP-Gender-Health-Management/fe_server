@@ -129,7 +129,42 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+  const [notifications, setNotifications] = useState([]);
+  const [_loading, setLoading] = useState(false); // Thêm mục loading vào sau khi call api
 
+  const fetchNotifications = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('http://localhost:3000/api/notifications?userId=${userId}');
+      setNotifications(res.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) fetchNotifications();
+  }, [isLoggedIn]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const notiDropdown = {
+    items: notifications.map((item, index) => ({
+      key: `noti-${index}`,
+      label: (
+        <div style={{ whiteSpace: 'normal', maxWidth: 250 }}>
+          <strong>{item.title || 'Thông báo mới'}</strong>
+          <div style={{ fontSize: 12, color: '#888' }}>{item.message}</div>
+        </div>
+      ),
+      style: {
+        backgroundColor: item.read ? '#fff' : '#f6f6f6',
+      },
+    })),
+
+  };
   return (
     <div className={`navbar-container ${isScrolled ? 'scrolled' : ''}`}>
       {/* Top contact bar - hidden on mobile */}

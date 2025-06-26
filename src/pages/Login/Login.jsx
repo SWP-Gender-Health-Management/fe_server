@@ -11,8 +11,8 @@ import {
   GoogleOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
-import { useAuth } from '../../context/AuthContext.jsx';
-import ForgotPassword from '../../components/ForgotPassword/ForgotPassword.jsx';
+import { useAuth } from '@context/AuthContext.jsx';
+import ForgotPassword from '@components/ForgotPassword/ForgotPassword.jsx';
 import './login.css';
 import { GoogleLogin } from '@react-oauth/google';
 
@@ -31,7 +31,6 @@ const Login = ({ visible, onCancel }) => {
   /* XỬ LÝ ĐĂNG NHẬP                                    */
   /* -------------------------------------------------- */
   const handleLogin = async (values) => {
-    setLoginLoading(true);
     try {
       const response = await axios.post('http://localhost:3000/account/login', {
         email: values.email,
@@ -39,19 +38,43 @@ const Login = ({ visible, onCancel }) => {
       });
       console.log('Response:', response.data);
 
-      if (response.data && response.data.token) {
-        localStorage.setItem('app_token', response.data.token);
-        login(response.data.token);
-        setUserInfo(response.data.user);
+      const { accessToken } = response.data.result || {};
+      if (!accessToken) {
+        throw new Error('Thiếu accessToken trong phản hồi');
       }
 
-      message.success('Đăng nhập thành công!');
+      // Lưu accessToken ban đầu
+      login(accessToken, null, null, 'Người dùng');
+
+      // Gọi API view-account chỉ với token
+      const viewResponse = await axios.post(
+        'http://localhost:3000/account/view-account',
+        {}, // Body rỗng vì chỉ dựa vào token
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('Phản hồi từ API view-account:', viewResponse.data);
+      if (!viewResponse.data.result) {
+        throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
+      }
+      const { account_id, full_name } = viewResponse.data.result || {};
+      if (!account_id) throw new Error('Không lấy được account_id');
+      sessionStorage.setItem('accountId', account_id);
+      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
+
+      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
       onCancel();
     } catch (error) {
-      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-      message.error(error.response?.data?.message || 'Đăng nhập thất bại!');
-    } finally {
-      setLoginLoading(false);
+      console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
+      Modal.error({
+        title: 'Đăng nhập thất bại',
+        content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
+      });
     }
   };
 
@@ -84,7 +107,6 @@ const Login = ({ visible, onCancel }) => {
     console.log('Đăng nhập thất bại');
     message.error('Đăng nhập Google thất bại!');
   };
-
   /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG KÝ                                       */
   /* -------------------------------------------------- */

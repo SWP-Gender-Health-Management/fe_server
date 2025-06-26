@@ -30,7 +30,7 @@ const AppLayout = () => {
   const navigate = useNavigate();
 
   // Lấy fullname từ sessionStorage hoặc mặc định
-  const fullname = sessionStorage.getItem('fullname') || 'Người dùng';
+  const full_name = sessionStorage.getItem('full_name') || 'Người dùng';
 
   // Hàm handleLogout sử dụng navigate thay vì window.location.href
   const handleLogout = () => {
@@ -48,14 +48,15 @@ const AppLayout = () => {
       <Navbar
         onLoginClick={() => setShowLogin(true)}
         isLoggedIn={isLoggedIn}
-        fullname={fullname} // Sử dụng fullname từ sessionStorage
+        full_name={full_name} // Sử dụng fullname từ sessionStorage
         onLogout={handleLogout}
       />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        {/* <Route path='/login' element={<login />} />  */}
         <Route
           path="/tai-khoan"
-          element={isLoggedIn ? <UserAccount /> : <Navigate to="/login" />} // Chuyển hướng về /login
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />} // Chuyển hướng về /login
         />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />

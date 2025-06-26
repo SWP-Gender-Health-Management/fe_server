@@ -236,6 +236,7 @@
 .form-actions .ant-btn {
   height: 45px;
   border-radius: 8px;
+<<<<<<< page/menstrual
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: none;
 }
@@ -257,6 +258,8 @@
 }
 
 .info-title {
+=======
+>>>>>>> dev
   font-weight: 500;
   min-width: 120px;
 }
