@@ -5,83 +5,140 @@ import './LabTests.css';
 const LabTests = () => {
   const navigate = useNavigate();
   const [selectedTests, setSelectedTests] = useState([]);
-  const [scheduleInfo, setScheduleInfo] = useState(null);
+  const [labSchedule, setLabSchedule] = useState(null);
 
-  // Mock data cho các loại xét nghiệm
-  const labTests = [
+  // Lab test data organized by categories
+  const labTestCategories = [
     {
       id: 1,
-      name: 'Xét nghiệm máu tổng quát',
-      description:
-        'Kiểm tra các chỉ số máu cơ bản: hồng cầu, bạch cầu, tiểu cầu',
-      price: 150000,
-      category: 'Xét nghiệm máu',
+      name: 'Xét nghiệm máu cơ bản',
+      icon: '🩸',
+      description: 'Các xét nghiệm máu thường quy, cơ bản',
+      tests: [
+        {
+          id: 'blood_basic',
+          name: 'Công thức máu toàn phần',
+          description: 'Đếm tế bào máu trắng, đỏ, tiểu cầu',
+          price: 120000,
+          duration: '30 phút',
+        },
+        {
+          id: 'blood_sugar',
+          name: 'Đường huyết lúc đói',
+          description: 'Kiểm tra mức đường trong máu',
+          price: 80000,
+          duration: '15 phút',
+        },
+        {
+          id: 'blood_lipid',
+          name: 'Mỡ máu (Lipid)',
+          description: 'Cholesterol, triglyceride, HDL, LDL',
+          price: 200000,
+          duration: '45 phút',
+        },
+        {
+          id: 'hba1c',
+          name: 'HbA1c',
+          description: 'Đường huyết trung bình 3 tháng',
+          price: 250000,
+          duration: '30 phút',
+        },
+      ],
     },
     {
       id: 2,
-      name: 'Xét nghiệm đường huyết',
-      description: 'Đo nồng độ glucose trong máu, phát hiện tiểu đường',
-      price: 80000,
-      category: 'Xét nghiệm máu',
+      name: 'Xét nghiệm chức năng gan',
+      icon: '🫀',
+      description: 'Đánh giá tình trạng và chức năng gan',
+      tests: [
+        {
+          id: 'liver_alt',
+          name: 'ALT (SGPT)',
+          description: 'Enzyme gan, đánh giá chức năng gan',
+          price: 60000,
+          duration: '20 phút',
+        },
+        {
+          id: 'liver_ast',
+          name: 'AST (SGOT)',
+          description: 'Enzyme gan và tim',
+          price: 60000,
+          duration: '20 phút',
+        },
+      ],
     },
     {
       id: 3,
-      name: 'Xét nghiệm cholesterol',
-      description: 'Kiểm tra mức cholesterol và lipid trong máu',
-      price: 120000,
-      category: 'Xét nghiệm máu',
+      name: 'Xét nghiệm chức năng thận',
+      icon: '🫘',
+      description: 'Đánh giá tình trạng và chức năng thận',
+      tests: [
+        {
+          id: 'kidney_creatinine',
+          name: 'Creatinine máu',
+          description: 'Đánh giá chức năng thận',
+          price: 80000,
+          duration: '20 phút',
+        },
+        {
+          id: 'kidney_urea',
+          name: 'Urea máu',
+          description: 'Sản phẩm chuyển hóa protein',
+          price: 70000,
+          duration: '20 phút',
+        },
+        {
+          id: 'urine_basic',
+          name: 'Tổng phân tích nước tiểu',
+          description: 'Protein, glucose, bạch cầu trong nước tiểu',
+          price: 100000,
+          duration: '25 phút',
+        },
+      ],
     },
     {
       id: 4,
-      name: 'Xét nghiệm chức năng gan',
-      description: 'Đánh giá hoạt động của gan qua các enzyme',
-      price: 200000,
-      category: 'Xét nghiệm chuyên sâu',
-    },
-    {
-      id: 5,
-      name: 'Xét nghiệm chức năng thận',
-      description: 'Kiểm tra creatinine, urea để đánh giá thận',
-      price: 180000,
-      category: 'Xét nghiệm chuyên sâu',
-    },
-    {
-      id: 6,
-      name: 'Xét nghiệm tầm soát ung thư',
-      description: 'Tầm soát các dấu ấn sinh học ung thư phổ biến',
-      price: 500000,
-      category: 'Xét nghiệm chuyên sâu',
-    },
-    {
-      id: 7,
-      name: 'Xét nghiệm nước tiểu',
-      description: 'Phân tích thành phần nước tiểu, phát hiện nhiễm trùng',
-      price: 60000,
-      category: 'Xét nghiệm cơ bản',
-    },
-    {
-      id: 8,
-      name: 'Xét nghiệm vi khuẩn HP',
-      description: 'Phát hiện vi khuẩn Helicobacter pylori gây loét dạ dày',
-      price: 150000,
-      category: 'Xét nghiệm chuyên sâu',
+      name: 'Xét nghiệm chuyên sâu',
+      icon: '🔬',
+      description: 'Các xét nghiệm hormone và vitamin',
+      tests: [
+        {
+          id: 'thyroid_tsh',
+          name: 'TSH (Hormone tuyến giáp)',
+          description: 'Đánh giá chức năng tuyến giáp',
+          price: 300000,
+          duration: '60 phút',
+        },
+        {
+          id: 'vitamin_d',
+          name: 'Vitamin D',
+          description: 'Mức độ Vitamin D trong cơ thể',
+          price: 500000,
+          duration: '90 phút',
+        },
+        {
+          id: 'hepatitis_b',
+          name: 'Xét nghiệm Hepatitis B',
+          description: 'HBsAg, Anti-HBs, Anti-HBc',
+          price: 180000,
+          duration: '40 phút',
+        },
+      ],
     },
   ];
 
-  const categories = [...new Set(labTests.map((test) => test.category))];
-
   useEffect(() => {
-    // Lấy thông tin lịch đã chọn từ sessionStorage
-    const storedSchedule = sessionStorage.getItem('selectedSchedule');
-    if (storedSchedule) {
-      setScheduleInfo(JSON.parse(storedSchedule));
+    // Get schedule from sessionStorage
+    const schedule = sessionStorage.getItem('labSchedule');
+    if (schedule) {
+      setLabSchedule(JSON.parse(schedule));
     } else {
-      // Nếu không có thông tin lịch, quay về trang chọn lịch
-      navigate('/xet-nghiem');
+      // If no schedule, redirect back
+      navigate('/dat-lich-xet-nghiem');
     }
   }, [navigate]);
 
-  const handleTestSelect = (test) => {
+  const handleTestToggle = (test) => {
     setSelectedTests((prev) => {
       const isSelected = prev.find((t) => t.id === test.id);
       if (isSelected) {
@@ -92,7 +149,7 @@ const LabTests = () => {
     });
   };
 
-  const getTotalPrice = () => {
+  const calculateTotal = () => {
     return selectedTests.reduce((total, test) => total + test.price, 0);
   };
 
@@ -105,107 +162,157 @@ const LabTests = () => {
 
   const handleContinue = () => {
     if (selectedTests.length > 0) {
-      // Lưu thông tin xét nghiệm đã chọn
-      sessionStorage.setItem('selectedTests', JSON.stringify(selectedTests));
-      sessionStorage.setItem('totalPrice', getTotalPrice().toString());
-
+      // Save selected tests to sessionStorage
+      sessionStorage.setItem('selectedLabTests', JSON.stringify(selectedTests));
       navigate('/thong-tin-xet-nghiem');
     }
   };
 
-  const handleBack = () => {
-    navigate('/xet-nghiem');
-  };
+  const getTotalDuration = () => {
+    const totalMinutes = selectedTests.reduce((total, test) => {
+      const minutes = parseInt(test.duration.split(' ')[0]);
+      return total + minutes;
+    }, 0);
 
-  if (!scheduleInfo) {
-    return <div>Đang tải...</div>;
-  }
+    if (totalMinutes >= 60) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return minutes > 0 ? `${hours}h ${minutes}p` : `${hours}h`;
+    }
+    return `${totalMinutes} phút`;
+  };
 
   return (
     <div className="lab-tests">
-      <div className="header">
-        <button className="back-button" onClick={handleBack}>
-          ← Quay lại
+      <div className="lab-tests-header">
+        <button
+          className="back-button"
+          onClick={() => navigate('/dat-lich-xet-nghiem')}
+        >
+          ← Quay lại chọn lịch
         </button>
         <h1>Chọn xét nghiệm</h1>
-        <p>Hãy chọn các xét nghiệm bạn muốn thực hiện</p>
-
-        <div className="schedule-reminder">
-          <strong>Lịch đã chọn:</strong> {scheduleInfo.formattedDate} -
-          {scheduleInfo.timeSlot === 'morning'
-            ? ' Buổi sáng (7:00-11:00)'
-            : ' Buổi chiều (13:00-17:00)'}
-        </div>
+        <p>Lựa chọn các xét nghiệm phù hợp với nhu cầu sức khỏe của bạn</p>
       </div>
 
       <div className="tests-container">
-        {categories.map((category) => (
-          <div key={category} className="category-section">
-            <h3 className="category-title">{category}</h3>
-            <div className="tests-grid">
-              {labTests
-                .filter((test) => test.category === category)
-                .map((test) => (
-                  <div
-                    key={test.id}
-                    className={`test-card ${selectedTests.find((t) => t.id === test.id) ? 'selected' : ''}`}
-                    onClick={() => handleTestSelect(test)}
-                  >
-                    <div className="test-header">
-                      <h4 className="test-name">{test.name}</h4>
-                      <div className="test-price">
-                        {formatPrice(test.price)}
-                      </div>
-                    </div>
-                    <p className="test-description">{test.description}</p>
-                    <div className="test-checkbox">
-                      {selectedTests.find((t) => t.id === test.id) ? '✓' : '+'}
+        <div className="tests-content">
+          {/* Schedule Info */}
+          {labSchedule && (
+            <div className="schedule-info">
+              <h3>📅 Lịch đã chọn</h3>
+              <div className="schedule-details">
+                <p>
+                  <strong>Ngày:</strong> {labSchedule.dateString}
+                </p>
+                <p>
+                  <strong>Ca:</strong> {labSchedule.sessionName} (
+                  {labSchedule.sessionTime})
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Test Categories */}
+          <div className="test-categories">
+            {labTestCategories.map((category) => (
+              <div key={category.id} className="test-category">
+                <div className="category-header">
+                  <div className="category-title">
+                    <span className="category-icon">{category.icon}</span>
+                    <div className="category-text">
+                      <h3>{category.name}</h3>
+                      <p className="category-description">
+                        {category.description}
+                      </p>
                     </div>
                   </div>
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
+                </div>
 
-      {selectedTests.length > 0 && (
-        <div className="selection-summary">
-          <div className="summary-header">
-            <h3>Xét nghiệm đã chọn ({selectedTests.length})</h3>
-            <div className="total-price">
-              Tổng cộng: {formatPrice(getTotalPrice())}
-            </div>
-          </div>
+                <div className="category-tests">
+                  {category.tests.map((test) => {
+                    const isSelected = selectedTests.find(
+                      (t) => t.id === test.id
+                    );
 
-          <div className="selected-tests-list">
-            {selectedTests.map((test) => (
-              <div key={test.id} className="selected-test-item">
-                <span className="test-name">{test.name}</span>
-                <span className="test-price">{formatPrice(test.price)}</span>
-                <button
-                  className="remove-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleTestSelect(test);
-                  }}
-                >
-                  ×
-                </button>
+                    return (
+                      <div
+                        key={test.id}
+                        className={`test-item ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleTestToggle(test)}
+                      >
+                        <div className="test-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleTestToggle(test)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+
+                        <div className="test-details">
+                          <div className="test-main-info">
+                            <h4 className="test-name">{test.name}</h4>
+                          </div>
+                          <p className="test-description">{test.description}</p>
+                          <div className="test-meta">
+                            <span className="test-duration">
+                              ⏱️ {test.duration}
+                            </span>
+                            <span className="test-price">
+                              {formatPrice(test.price)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </div>
-
-          <button className="continue-button" onClick={handleContinue}>
-            Tiếp tục điền thông tin
-          </button>
         </div>
-      )}
 
-      {selectedTests.length === 0 && (
-        <div className="no-selection">
-          <p>Vui lòng chọn ít nhất một xét nghiệm để tiếp tục</p>
+        {/* Summary Sidebar */}
+        <div className="summary-sidebar">
+          <div className="summary-card">
+            <h3>📋 Tóm tắt đơn hàng</h3>
+
+            {selectedTests.length === 0 ? (
+              <p className="empty-selection">Chưa chọn xét nghiệm nào</p>
+            ) : (
+              <>
+                <div className="selected-tests">
+                  <h4>Xét nghiệm đã chọn ({selectedTests.length})</h4>
+                  {selectedTests.map((test) => (
+                    <div key={test.id} className="selected-test-item">
+                      <span className="selected-test-name">{test.name}</span>
+                      <span className="selected-test-price">
+                        {formatPrice(test.price)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="summary-totals">
+                  <div className="total-duration">
+                    <span>Tổng thời gian:</span>
+                    <span>{getTotalDuration()}</span>
+                  </div>
+                  <div className="total-price">
+                    <span>Tổng chi phí:</span>
+                    <span>{formatPrice(calculateTotal())}</span>
+                  </div>
+                </div>
+
+                <button className="continue-button" onClick={handleContinue}>
+                  Tiếp tục đặt lịch →
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -1,260 +1,338 @@
 .lab-schedule {
-  max-width: 1200px;
+  padding: 40px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #f8f9fa;
+  background: #f8fafc;
   min-height: 100vh;
 }
 
-.header {
+.lab-schedule-header {
   text-align: center;
   margin-bottom: 40px;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .back-button {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-  background: #69b1ff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  color: #64748b;
+  padding: 12px 24px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .back-button:hover {
-  background: #4096ff;
+  background: #e2e8f0;
+  color: #334155;
+  transform: translateX(-2px);
 }
 
-.header h1 {
-  font-size: 32px;
-  color: #333;
+.lab-schedule-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 10px;
 }
 
-.header p {
-  font-size: 16px;
-  color: #666;
-}
-
-.schedule-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-/* Date Selection */
-.date-selection {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.date-selection h3 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.date-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 15px;
-  max-width: 800px;
+.lab-schedule-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 600px;
   margin: 0 auto;
 }
 
-.date-item {
-  background: #f0f8ff;
-  border: 2px solid #e1ecf4;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.date-item:hover {
-  border-color: #69b1ff;
-  transform: translateY(-2px);
-}
-
-.date-item.selected {
-  background: #69b1ff;
-  border-color: #4096ff;
-  color: white;
-}
-
-.date-number {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.date-text {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-/* Time Selection */
-.time-selection {
+.schedule-container {
   background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.time-selection h3 {
-  font-size: 24px;
-  color: #333;
+/* Date Selection - Week View */
+.date-selection {
+  margin-bottom: 40px;
+}
+
+.date-selection h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #334155;
   margin-bottom: 20px;
   text-align: center;
 }
 
-.time-slots {
+.week-dates {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
   max-width: 700px;
   margin: 0 auto;
 }
 
-.time-slot {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  border: 2px solid #e1ecf4;
-  border-radius: 12px;
-  background: #f0f8ff;
+.date-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 15px;
+  padding: 15px 8px;
+  text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
 }
 
-.time-slot:hover:not(.disabled) {
-  border-color: #69b1ff;
+.date-card:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
   transform: translateY(-2px);
 }
 
-.time-slot.selected {
-  background: #69b1ff;
-  border-color: #4096ff;
+.date-card.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.date-card.today {
+  border-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.date-card.today.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
   color: white;
 }
 
-.time-slot.disabled {
-  background: #f5f5f5;
-  border-color: #d9d9d9;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.time-icon {
-  font-size: 30px;
-  margin-right: 15px;
-}
-
-.time-info {
-  flex: 1;
-}
-
-.time-title {
-  font-size: 18px;
-  font-weight: bold;
+.day-name {
+  font-size: 0.85rem;
+  font-weight: 600;
   margin-bottom: 5px;
 }
 
-.time-range {
-  font-size: 14px;
-  opacity: 0.8;
+.day-date {
+  font-size: 1rem;
+  font-weight: 700;
 }
 
-.unavailable {
-  color: #ff4d4f;
-  font-size: 12px;
-  margin-top: 5px;
-  font-weight: bold;
+/* Session Selection */
+.session-selection {
+  margin-bottom: 40px;
+}
+
+.session-selection h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.sessions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.session-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 25px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.session-card.available:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.session-card.selected {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+}
+
+.session-card.unavailable {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.session-icon {
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+}
+
+.session-info h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.session-time {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.availability {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #10b981;
+  margin: 0;
+}
+
+.session-card.selected .availability {
+  color: #dcfce7;
+}
+
+.unavailable-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0;
 }
 
 /* Selection Summary */
 .selection-summary {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
+  padding: 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
 }
 
-.selection-summary h3 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.summary-info {
-  background: #f0f8ff;
+.summary-card {
+  background: white;
+  border-radius: 12px;
   padding: 20px;
-  border-radius: 8px;
   margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.summary-info p {
+.summary-card h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 15px;
+}
+
+.summary-card p {
+  font-size: 1rem;
+  color: #64748b;
   margin: 8px 0;
-  font-size: 16px;
 }
 
 .continue-button {
-  background: #52c41a;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 15px 30px;
-  font-size: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .continue-button:hover {
-  background: #389e0d;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-/* Responsive */
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .lab-schedule {
-    padding: 10px;
-  }
-
-  .header {
     padding: 20px;
   }
 
-  .back-button {
-    position: relative;
-    left: auto;
-    top: auto;
-    margin-bottom: 20px;
+  .lab-schedule-header h1 {
+    font-size: 2rem;
   }
 
-  .date-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 10px;
+  .schedule-container {
+    padding: 25px;
   }
 
-  .time-slots {
+  .week-dates {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  .date-card {
+    padding: 12px 6px;
+  }
+
+  .day-name {
+    font-size: 0.75rem;
+  }
+
+  .day-date {
+    font-size: 0.9rem;
+  }
+
+  .sessions {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
 
-  .date-selection,
-  .time-selection,
-  .selection-summary {
+  .session-card {
+    padding: 20px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lab-schedule {
+    padding: 15px;
+  }
+
+  .lab-schedule-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .schedule-container {
     padding: 20px;
+  }
+
+  .week-dates {
+    gap: 6px;
+  }
+
+  .date-card {
+    padding: 10px 4px;
+  }
+
+  .day-name {
+    font-size: 0.7rem;
+  }
+
+  .day-date {
+    font-size: 0.8rem;
   }
 }

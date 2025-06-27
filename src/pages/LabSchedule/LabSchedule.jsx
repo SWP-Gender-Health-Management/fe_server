@@ -4,64 +4,82 @@ import './LabSchedule.css';
 
 const LabSchedule = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [availability, setAvailability] = useState({});
 
-  // Mock data cho lịch xét nghiệm - trong thực tế sẽ lấy từ API
-  const [schedules, setSchedules] = useState({});
-
-  useEffect(() => {
-    // Mock data - trong thực tế sẽ fetch từ API
-    const mockSchedules = {};
+  // Generate dates for current week (7 days starting from today)
+  const generateWeekDates = () => {
+    const dates = [];
     const today = new Date();
 
-    // Tạo lịch cho 14 ngày tới
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
-
-      // Randomly mark some slots as unavailable
-      const morningAvailable = Math.random() > 0.3;
-      const afternoonAvailable = Math.random() > 0.3;
-
-      mockSchedules[dateStr] = {
-        morning: morningAvailable,
-        afternoon: afternoonAvailable,
-      };
+      dates.push(date);
     }
 
-    setSchedules(mockSchedules);
-  }, []);
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    return dates;
   };
+
+  // Generate mock availability for sessions
+  const generateAvailability = () => {
+    const slots = {};
+    const dates = generateWeekDates();
+
+    dates.forEach((date) => {
+      const dateKey = date.toISOString().split('T')[0];
+      slots[dateKey] = {
+        morning: {
+          available: Math.random() > 0.2, // 80% availability
+          slots: 15, // Available slots
+        },
+        afternoon: {
+          available: Math.random() > 0.2,
+          slots: 12,
+        },
+      };
+    });
+
+    return slots;
+  };
+
+  useEffect(() => {
+    setAvailability(generateAvailability());
+  }, []);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
-    setSelectedTimeSlot(''); // Reset time slot khi chọn ngày mới
+    setSelectedSession(null);
   };
 
-  const handleTimeSlotSelect = (slot) => {
-    setSelectedTimeSlot(slot);
+  const handleSessionSelect = (session) => {
+    const dateKey = selectedDate.toISOString().split('T')[0];
+    if (availability[dateKey] && availability[dateKey][session].available) {
+      setSelectedSession(session);
+    }
   };
 
   const handleContinue = () => {
-    if (selectedDate && selectedTimeSlot) {
-      // Lưu thông tin đã chọn vào sessionStorage hoặc context
+    if (selectedDate && selectedSession) {
+      // Save to sessionStorage
+      const sessionTime =
+        selectedSession === 'morning' ? '07:00 - 11:00' : '13:00 - 17:00';
+      const sessionName = selectedSession === 'morning' ? 'Sáng' : 'Chiều';
+
       sessionStorage.setItem(
-        'selectedSchedule',
+        'labSchedule',
         JSON.stringify({
-          date: selectedDate,
-          timeSlot: selectedTimeSlot,
-          formattedDate: formatDate(selectedDate),
+          date: selectedDate.toISOString(),
+          session: selectedSession,
+          sessionTime: sessionTime,
+          sessionName: sessionName,
+          dateString: selectedDate.toLocaleDateString('vi-VN', {
+            weekday: 'long',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }),
         })
       );
 
@@ -69,77 +87,105 @@ const LabSchedule = () => {
     }
   };
 
-  const availableDates = Object.keys(schedules).filter((date) => {
-    const schedule = schedules[date];
-    return schedule.morning || schedule.afternoon;
-  });
+  const formatDate = (date) => {
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+    });
+  };
+
+  const formatDayName = (date) => {
+    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    return days[date.getDay()];
+  };
+
+  const dates = generateWeekDates();
+  const selectedDateKey = selectedDate
+    ? selectedDate.toISOString().split('T')[0]
+    : null;
 
   return (
     <div className="lab-schedule">
-      <div className="header">
+      <div className="lab-schedule-header">
         <button className="back-button" onClick={() => navigate('/dich-vu')}>
-          ← Quay lại
+          ← Quay lại dịch vụ
         </button>
-        <h1>Chọn lịch xét nghiệm</h1>
-        <p>Vui lòng chọn ngày và buổi phù hợp</p>
+        <h1>Đặt lịch xét nghiệm</h1>
+        <p>Chọn ngày và ca làm việc trong tuần này</p>
       </div>
 
       <div className="schedule-container">
+        {/* Date Selection - Week View */}
         <div className="date-selection">
-          <h3>Chọn ngày</h3>
-          <div className="date-grid">
-            {availableDates.map((date) => (
-              <div
-                key={date}
-                className={`date-item ${selectedDate === date ? 'selected' : ''}`}
-                onClick={() => handleDateSelect(date)}
-              >
-                <div className="date-number">{new Date(date).getDate()}</div>
-                <div className="date-text">
-                  {new Date(date).toLocaleDateString('vi-VN', {
-                    weekday: 'short',
-                    month: 'short',
-                  })}
+          <h3>Chọn ngày xét nghiệm (Tuần này)</h3>
+          <div className="week-dates">
+            {dates.map((date, index) => {
+              const isSelected =
+                selectedDate &&
+                date.toDateString() === selectedDate.toDateString();
+              const isToday = date.toDateString() === new Date().toDateString();
+
+              return (
+                <div
+                  key={index}
+                  className={`date-card ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
+                  onClick={() => handleDateSelect(date)}
+                >
+                  <div className="day-name">{formatDayName(date)}</div>
+                  <div className="day-date">{formatDate(date)}</div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
+        {/* Session Selection */}
         {selectedDate && (
-          <div className="time-selection">
-            <h3>Chọn buổi</h3>
-            <div className="time-slots">
+          <div className="session-selection">
+            <h3>Chọn ca làm việc</h3>
+            <div className="sessions">
+              {/* Morning Session */}
               <div
-                className={`time-slot ${!schedules[selectedDate]?.morning ? 'disabled' : ''} ${selectedTimeSlot === 'morning' ? 'selected' : ''}`}
-                onClick={() =>
-                  schedules[selectedDate]?.morning &&
-                  handleTimeSlotSelect('morning')
-                }
+                className={`session-card ${
+                  availability[selectedDateKey]?.morning.available
+                    ? 'available'
+                    : 'unavailable'
+                } ${selectedSession === 'morning' ? 'selected' : ''}`}
+                onClick={() => handleSessionSelect('morning')}
               >
-                <div className="time-icon">🌅</div>
-                <div className="time-info">
-                  <div className="time-title">Buổi sáng</div>
-                  <div className="time-range">7:00 - 11:00</div>
-                  {!schedules[selectedDate]?.morning && (
-                    <div className="unavailable">Hết chỗ</div>
+                <div className="session-icon">🌅</div>
+                <div className="session-info">
+                  <h4>Ca sáng</h4>
+                  <p className="session-time">07:00 - 11:00</p>
+                  {availability[selectedDateKey]?.morning.available ? (
+                    <p className="availability">
+                      Còn {availability[selectedDateKey].morning.slots} slot
+                    </p>
+                  ) : (
+                    <p className="unavailable-text">Đã đầy</p>
                   )}
                 </div>
               </div>
 
+              {/* Afternoon Session */}
               <div
-                className={`time-slot ${!schedules[selectedDate]?.afternoon ? 'disabled' : ''} ${selectedTimeSlot === 'afternoon' ? 'selected' : ''}`}
-                onClick={() =>
-                  schedules[selectedDate]?.afternoon &&
-                  handleTimeSlotSelect('afternoon')
-                }
+                className={`session-card ${
+                  availability[selectedDateKey]?.afternoon.available
+                    ? 'available'
+                    : 'unavailable'
+                } ${selectedSession === 'afternoon' ? 'selected' : ''}`}
+                onClick={() => handleSessionSelect('afternoon')}
               >
-                <div className="time-icon">🌆</div>
-                <div className="time-info">
-                  <div className="time-title">Buổi chiều</div>
-                  <div className="time-range">13:00 - 17:00</div>
-                  {!schedules[selectedDate]?.afternoon && (
-                    <div className="unavailable">Hết chỗ</div>
+                <div className="session-icon">🌇</div>
+                <div className="session-info">
+                  <h4>Ca chiều</h4>
+                  <p className="session-time">13:00 - 17:00</p>
+                  {availability[selectedDateKey]?.afternoon.available ? (
+                    <p className="availability">
+                      Còn {availability[selectedDateKey].afternoon.slots} slot
+                    </p>
+                  ) : (
+                    <p className="unavailable-text">Đã đầy</p>
                   )}
                 </div>
               </div>
@@ -147,22 +193,30 @@ const LabSchedule = () => {
           </div>
         )}
 
-        {selectedDate && selectedTimeSlot && (
+        {/* Selection Summary */}
+        {selectedDate && selectedSession && (
           <div className="selection-summary">
-            <h3>Lịch đã chọn</h3>
-            <div className="summary-info">
+            <div className="summary-card">
+              <h4>📋 Thông tin đã chọn</h4>
               <p>
-                <strong>Ngày:</strong> {formatDate(selectedDate)}
+                <strong>Ngày:</strong>{' '}
+                {selectedDate.toLocaleDateString('vi-VN', {
+                  weekday: 'long',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
               </p>
               <p>
-                <strong>Buổi:</strong>{' '}
-                {selectedTimeSlot === 'morning'
-                  ? 'Sáng (7:00 - 11:00)'
+                <strong>Ca:</strong>{' '}
+                {selectedSession === 'morning'
+                  ? 'Sáng (07:00 - 11:00)'
                   : 'Chiều (13:00 - 17:00)'}
               </p>
             </div>
+
             <button className="continue-button" onClick={handleContinue}>
-              Tiếp tục chọn xét nghiệm
+              Tiếp tục chọn xét nghiệm →
             </button>
           </div>
         )}
