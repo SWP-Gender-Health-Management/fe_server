@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './DoctorSchedule.css';
 
 const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
-  const [currentWeek, setCurrentWeek] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [schedule, setSchedule] = useState({});
+
+  // Chỉ lấy tuần hiện tại
+  const currentWeek = new Date();
 
   // Mock data cho lịch khám (true = available, false = booked)
   const generateMockSchedule = () => {
@@ -20,6 +22,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
       '17:00',
     ];
 
+    // Chỉ tạo lịch cho tuần hiện tại
     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
       const date = new Date(currentWeek);
       date.setDate(date.getDate() - date.getDay() + dayOffset);
@@ -38,7 +41,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
   useEffect(() => {
     setSchedule(generateMockSchedule());
-  }, [currentWeek]);
+  }, []);
 
   const formatDate = (date) => {
     return date.toLocaleDateString('vi-VN', {
@@ -66,12 +69,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
     return dates;
   };
 
-  const navigateWeek = (direction) => {
-    const newWeek = new Date(currentWeek);
-    newWeek.setDate(newWeek.getDate() + direction * 7);
-    setCurrentWeek(newWeek);
-    setSelectedSlot(null);
-  };
+  // Đã xóa navigation giữa các tuần - chỉ hiển thị tuần hiện tại
 
   const handleSlotClick = (date, time) => {
     const dateKey = date.toISOString().split('T')[0];
@@ -146,15 +144,8 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
       <div className="schedule-content">
         <div className="week-navigation">
-          <button className="nav-button" onClick={() => navigateWeek(-1)}>
-            ← Tuần trước
-          </button>
-
-          <h3 className="week-title">Tuần {getWeekRange()}</h3>
-
-          <button className="nav-button" onClick={() => navigateWeek(1)}>
-            Tuần sau →
-          </button>
+          <h3 className="week-title">Lịch tuần này ({getWeekRange()})</h3>
+          <p className="week-note">Chỉ hiển thị lịch trong tuần hiện tại</p>
         </div>
 
         <div className="schedule-grid">
