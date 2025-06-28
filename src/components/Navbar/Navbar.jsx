@@ -18,6 +18,9 @@ import {
   MenuOutlined,
   CloseOutlined,
   WechatWorkOutlined,
+  HeartOutlined,
+  ExperimentOutlined,
+  CalendarOutlined,
 } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
 import Logo from '@assets/Blue-full.svg?react';
@@ -58,13 +61,106 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
+  // Services dropdown menu
+  const servicesMenu = {
+    items: [
+      {
+        key: 'cycle-tracking',
+        label: (
+          <Link to="/dich-vu/chu-ky-kinh-nguyet" className="dropdown-link">
+            <HeartOutlined style={{ marginRight: '8px', color: '#ff69b4' }} />
+            <div>
+              <div className="service-title">Theo dõi chu kỳ kinh nguyệt</div>
+              <div className="service-desc">
+                Theo dõi và dự đoán chu kỳ thông minh
+              </div>
+            </div>
+          </Link>
+        ),
+      },
+      {
+        key: 'lab-booking',
+        label: (
+          <Link to="/dat-lich-xet-nghiem" className="dropdown-link">
+            <ExperimentOutlined
+              style={{ marginRight: '8px', color: '#4ecdc4' }}
+            />
+            <div>
+              <div className="service-title">Đặt lịch xét nghiệm</div>
+              <div className="service-desc">Xét nghiệm sức khỏe sinh sản</div>
+            </div>
+          </Link>
+        ),
+      },
+      {
+        key: 'consultation',
+        label: (
+          <Link to="/dat-lich-tu-van" className="dropdown-link">
+            <CalendarOutlined
+              style={{ marginRight: '8px', color: '#667eea' }}
+            />
+            <div>
+              <div className="service-title">Tư vấn 1:1 với bác sĩ</div>
+              <div className="service-desc">
+                Tư vấn trực tiếp với chuyên gia
+              </div>
+            </div>
+          </Link>
+        ),
+      },
+      { type: 'divider' },
+      {
+        key: 'all-services',
+        label: (
+          <Link to="/dich-vu" className="dropdown-link view-all">
+            <AppstoreOutlined style={{ marginRight: '8px' }} />
+            Xem tất cả dịch vụ
+          </Link>
+        ),
+      },
+    ],
+  };
+
   const menuItems = [
-    { label: <Link to="/">Trang Chủ</Link>, key: 'home', icon: <HomeOutlined /> },
-    { label: <Link to="/dich-vu">Dịch vụ</Link>, key: 'services', icon: <AppstoreOutlined /> },
-    { label: <Link to="/tin-tuc">Tin tức</Link>, key: 'news', icon: <ReadOutlined /> },
-    { label: <Link to="/ve-chung-toi">Về chúng tôi</Link>, key: 'about', icon: <TeamOutlined /> },
-    { label: <Link to="/lien-he">Liên hệ</Link>, key: 'contact', icon: <PhoneOutlined /> },
-    { label: <Link to="/hoi-dap">QaA</Link>, key: 'questions', icon: <WechatWorkOutlined /> },
+    {
+      label: <Link to="/">Trang Chủ</Link>,
+      key: 'home',
+      icon: <HomeOutlined />,
+    },
+    {
+      label: (
+        <Dropdown
+          menu={servicesMenu}
+          placement="bottom"
+          trigger={['hover']}
+          overlayClassName="services-dropdown"
+        >
+          <span className="nav-link dropdown-trigger">Dịch vụ</span>
+        </Dropdown>
+      ),
+      key: 'services',
+      icon: <AppstoreOutlined />,
+    },
+    {
+      label: <Link to="/tin-tuc">Tin tức</Link>,
+      key: 'news',
+      icon: <ReadOutlined />,
+    },
+    {
+      label: <Link to="/ve-chung-toi">Về chúng tôi</Link>,
+      key: 'about',
+      icon: <TeamOutlined />,
+    },
+    {
+      label: <Link to="/lien-he">Liên hệ</Link>,
+      key: 'contact',
+      icon: <PhoneOutlined />,
+    },
+    {
+      label: <Link to="/hoi-dap">QaA</Link>,
+      key: 'questions',
+      icon: <WechatWorkOutlined />,
+    },
   ];
 
   const accountMenu = {
@@ -111,7 +207,9 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
     setLoading(true);
     try {
       const userId = sessionStorage.getItem('accountId') || 1; // Lấy userId từ sessionStorage, mặc định 1 nếu không có
-      const res = await axios.get(`http://localhost:3000/api/notifications?userId=${userId}`);
+      const res = await axios.get(
+        `http://localhost:3000/api/notifications?userId=${userId}`
+      );
       setNotifications(res.data || []);
     } catch (err) {
       console.error('Failed to fetch notifications:', err);
@@ -147,15 +245,15 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
           <div className="top-bar-layout">
             <div className="contact-1">
               <div className="contact-info row-direction">
-                <div className="contact-item">
+                <div className="top-contact-item">
                   <PhoneOutlined className="top-bar-icon" />
                   <span>Hotline: (024) 3926 1234</span>
                 </div>
-                <div className="contact-item">
+                <div className="top-contact-item">
                   <ClockCircleOutlined className="top-bar-icon" />
                   <span>7:00 - 18:00 Hằng ngày</span>
                 </div>
-                <div className="contact-item">
+                <div className="top-contact-item">
                   <MailOutlined className="top-bar-icon" />
                   <span>support@gendercare.vn</span>
                 </div>
@@ -240,12 +338,37 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
         {/* Mobile Menu */}
         <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="mobile-menu-content">
-            {menuItems.map((item) => (
-              <div key={item.key} className="mobile-menu-item">
-                {item.icon}
-                {item.label}
-              </div>
-            ))}
+            <div className="mobile-menu-item">
+              <HomeOutlined />
+              <Link to="/">Trang Chủ</Link>
+            </div>
+            <div className="mobile-menu-item">
+              <AppstoreOutlined />
+              <Dropdown
+                menu={servicesMenu}
+                placement="bottomLeft"
+                trigger={['click']}
+                overlayClassName="services-dropdown mobile-services-dropdown"
+              >
+                <span className="nav-link dropdown-trigger">Dịch vụ</span>
+              </Dropdown>
+            </div>
+            <div className="mobile-menu-item">
+              <ReadOutlined />
+              <Link to="/tin-tuc">Tin tức</Link>
+            </div>
+            <div className="mobile-menu-item">
+              <TeamOutlined />
+              <Link to="/ve-chung-toi">Về chúng tôi</Link>
+            </div>
+            <div className="mobile-menu-item">
+              <PhoneOutlined />
+              <Link to="/lien-he">Liên hệ</Link>
+            </div>
+            <div className="mobile-menu-item">
+              <WechatWorkOutlined />
+              <Link to="/hoi-dap">QaA</Link>
+            </div>
           </div>
 
           <div className="nav-right">

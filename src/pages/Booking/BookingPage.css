@@ -1,0 +1,157 @@
+.booking-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 0;
+}
+
+.booking-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Progress Steps */
+.booking-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  margin: 0 10px;
+}
+
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+.step.active:not(:last-child)::after {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: scale(1.1);
+}
+
+.step-title {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+}
+
+.step.active .step-title {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Content Area */
+.booking-content {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: 600px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .booking-page {
+    padding: 10px 0;
+  }
+
+  .booking-container {
+    padding: 0 10px;
+  }
+
+  .booking-progress {
+    margin-bottom: 20px;
+    padding: 15px 10px;
+  }
+
+  .step {
+    margin: 0 5px;
+  }
+
+  .step-number {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .step-title {
+    font-size: 10px;
+  }
+
+  .step:not(:last-child)::after {
+    right: -40%;
+  }
+
+  .booking-content {
+    border-radius: 15px;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .step-title {
+    display: none;
+  }
+
+  .step {
+    margin: 0 2px;
+  }
+
+  .step:not(:last-child)::after {
+    right: -30%;
+  }
+}
