@@ -132,7 +132,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
         <Dropdown
           menu={servicesMenu}
           placement="bottom"
-          trigger={['hover', 'click']}
+          trigger={['hover']}
           overlayClassName="services-dropdown"
         >
           <span className="nav-link dropdown-trigger">Dịch vụ</span>
@@ -245,15 +245,15 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
           <div className="top-bar-layout">
             <div className="contact-1">
               <div className="contact-info row-direction">
-                <div className="contact-item">
+                <div className="top-contact-item">
                   <PhoneOutlined className="top-bar-icon" />
                   <span>Hotline: (024) 3926 1234</span>
                 </div>
-                <div className="contact-item">
+                <div className="top-contact-item">
                   <ClockCircleOutlined className="top-bar-icon" />
                   <span>7:00 - 18:00 Hằng ngày</span>
                 </div>
-                <div className="contact-item">
+                <div className="top-contact-item">
                   <MailOutlined className="top-bar-icon" />
                   <span>support@gendercare.vn</span>
                 </div>

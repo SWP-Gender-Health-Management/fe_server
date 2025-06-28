@@ -19,7 +19,7 @@
 }
 /* Top contact bar */
 .top-bar {
-  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   color: white;
   font-size: 12px;
   padding: 6px 0;
@@ -78,67 +78,66 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
-  max-width: 100px;
+  max-width: 1000px;
   margin: 0 auto;
   justify-content: space-between;
   gap: 0;
 }
 
-.contact-item {
+.top-contact-item {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  flex: 1;
-  position: relative;
-  padding: 0 15px;
-  text-align: center;
-  min-width: 0;
-  background: none;
-  border: none;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+  /* background: rgba(255, 255, 255, 0.05); */
+  border-radius: 6px;
+  /* border: 1px solid rgba(255, 255, 255, 0.1); */
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
-.contact-item:not(:last-child)::after {
+.top-contact-item:not(:last-child)::after {
   content: '';
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 1px;
+  width: 10px;
   height: 16px;
-  background: transparent;
+  background:transparent;
+  border: none;
 }
 
 /* CSS cho Row Direction (mặc định) */
-.contact-info.row-direction .contact-item:nth-child(1),
-.contact-info:not([class*='direction']) .contact-item:nth-child(1) {
+.contact-info.row-direction .top-contact-item:nth-child(1),
+.contact-info:not([class*='direction']) .top-contact-item:nth-child(1) {
   justify-content: flex-start;
   text-align: left;
   padding-left: 0;
 }
 
-.contact-info.row-direction .contact-item:nth-child(2),
-.contact-info:not([class*='direction']) .contact-item:nth-child(2) {
+.contact-info.row-direction .top-contact-item:nth-child(2),
+.contact-info:not([class*='direction']) .top-contact-item:nth-child(2) {
   justify-content: center;
   text-align: center;
 }
 
-.contact-info.row-direction .contact-item:nth-child(3),
-.contact-info:not([class*='direction']) .contact-item:nth-child(3) {
+.contact-info.row-direction .top-contact-item:nth-child(3),
+.contact-info:not([class*='direction']) .top-contact-item:nth-child(3) {
   justify-content: flex-end;
   text-align: right;
   padding-right: 0;
 }
 
 /* Border cho Row Direction - Ẩn border dưới contact-1 */
-.contact-info.row-direction .contact-item:not(:last-child)::after,
-.contact-info:not([class*='direction']) .contact-item:not(:last-child)::after {
+.contact-info.row-direction .top-contact-item:not(:last-child)::after,
+.contact-info:not([class*='direction']) .top-contact-item:not(:last-child)::after {
   display: none;
 }
 
 /* CSS cho Column Direction */
-.contact-info.column-direction .contact-item,
-.contact-info.column-reverse-direction .contact-item {
+.contact-info.column-direction .top-contact-item,
+.contact-info.column-reverse-direction .top-contact-item {
   justify-content: center;
   text-align: center;
   padding: 4px 0;
@@ -146,8 +145,8 @@
 }
 
 /* Border cho Column Direction */
-.contact-info.column-direction .contact-item:not(:last-child)::after,
-.contact-info.column-reverse-direction .contact-item:not(:last-child)::after {
+.contact-info.column-direction .top-contact-item:not(:last-child)::after,
+.contact-info.column-reverse-direction .top-contact-item:not(:last-child)::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -155,29 +154,29 @@
   transform: translateX(-50%);
   width: 60px;
   height: 1px;
-  background: transparent;
+  background:transparent  ;
 }
 
 /* CSS cho Row Reverse Direction */
-.contact-info.row-reverse-direction .contact-item:nth-child(1) {
+.contact-info.row-reverse-direction .top-contact-item:nth-child(1) {
   justify-content: flex-end;
   text-align: right;
   padding-right: 0;
 }
 
-.contact-info.row-reverse-direction .contact-item:nth-child(2) {
+.contact-info.row-reverse-direction .top-contact-item:nth-child(2) {
   justify-content: center;
   text-align: center;
 }
 
-.contact-info.row-reverse-direction .contact-item:nth-child(3) {
+.contact-info.row-reverse-direction .top-contact-item:nth-child(3) {
   justify-content: flex-start;
   text-align: left;
   padding-left: 0;
 }
 
 /* Border cho Row Reverse Direction */
-.contact-info.row-reverse-direction .contact-item:not(:last-child)::after {
+.contact-info.row-reverse-direction .top-contact-item:not(:last-child)::after {
   content: '';
   position: absolute;
   left: 0;
@@ -188,7 +187,7 @@
   background: transparent;
 }
 
-.contact-item:not(:last-child)::after {
+.top-contact-item:not(:last-child)::after {
   content: '';
   position: absolute;
   right: 0;
@@ -200,25 +199,26 @@
 }
 
 /* CSS cho Row Direction (mặc định) */
-.contact-info.row-direction .contact-item:nth-child(1),
-.contact-info:not([class*='direction']) .contact-item:nth-child(1) {
+.contact-info.row-direction .top-contact-item:nth-child(1),
+.contact-info:not([class*='direction']) .top-contact-item:nth-child(1) {
   justify-content: flex-start;
   text-align: left;
   padding-left: 0;
 }
 
-.contact-info.row-direction .contact-item:nth-child(2),
-.contact-info:not([class*='direction']) .contact-item:nth-child(2) {
+.contact-info.row-direction .top-contact-item:nth-child(2),
+.contact-info:not([class*='direction']) .top-contact-item:nth-child(2) {
   justify-content: center;
   text-align: center;
 }
 
-.contact-info.row-direction .contact-item:nth-child(3),
-.contact-info:not([class*='direction']) .contact-item:nth-child(3) {
+.contact-info.row-direction .top-contact-item:nth-child(3),
+.contact-info:not([class*='direction']) .top-contact-item:nth-child(3) {
   justify-content: flex-end;
   text-align: right;
   padding-right: 0;
 }
+
 
 .social-links {
   display: flex;
@@ -228,17 +228,17 @@
 }
 
 /* CSS cho Column Direction */
-.contact-info.column-direction .contact-item,
-.contact-info.column-reverse-direction .contact-item {
-  justify-content: center;
+.contact-info.column-direction .top-contact-item,
+.contact-info.column-reverse-direction .top-contact-item {
+justify-content: center;
   text-align: center;
   padding: 4px 0;
   width: 100%;
 }
 
 /* Border cho Column Direction */
-.contact-info.column-direction .contact-item:not(:last-child)::after,
-.contact-info.column-reverse-direction .contact-item:not(:last-child)::after {
+.contact-info.column-direction .top-contact-item:not(:last-child)::after,
+.contact-info.column-reverse-direction .top-contact-item:not(:last-child)::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -250,25 +250,25 @@
 }
 
 /* CSS cho Row Reverse Direction */
-.contact-info.row-reverse-direction .contact-item:nth-child(1) {
+.contact-info.row-reverse-direction .top-contact-item:nth-child(1) {
   justify-content: flex-end;
   text-align: right;
   padding-right: 0;
 }
 
-.contact-info.row-reverse-direction .contact-item:nth-child(2) {
+.contact-info.row-reverse-direction .top-contact-item:nth-child(2) {
   justify-content: center;
   text-align: center;
 }
 
-.contact-info.row-reverse-direction .contact-item:nth-child(3) {
+.contact-info.row-reverse-direction .top-contact-item:nth-child(3) {
   justify-content: flex-start;
   text-align: left;
   padding-left: 0;
 }
 
 /* Border cho Row Reverse Direction */
-.contact-info.row-reverse-direction .contact-item:not(:last-child)::after {
+.contact-info.row-reverse-direction .top-contact-item:not(:last-child)::after {
   content: '';
   position: absolute;
   left: 0;
@@ -299,7 +299,7 @@
 .nav-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 30px 24px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -341,15 +341,15 @@
 .nav-menu {
   border-bottom: none;
   background: transparent;
-  line-height: 10px;
+  line-height: 58px;
 }
 
 .nav-menu .ant-menu-item {
-  padding: 0px 16px;
+  padding: 0 16px;
   font-size: 14px;
   font-weight: 500;
   border-radius: 8px;
-  margin: 0 5px;
+  margin: 0 2px;
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -455,6 +455,7 @@
   color: white !important;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
 }
 
 .login-button:hover {
@@ -583,7 +584,7 @@
   align-items: center;
   color: #4a5568;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 200;
   transition: color 0.3s ease;
 }
 
@@ -598,11 +599,11 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .nav-content {
-    padding: 0 10px;
+    padding: 0 20px;
   }
 
   .nav-center {
-    margin: 0 10px;
+    margin: 0 20px;
   }
 
   .top-bar-layout {
@@ -613,25 +614,25 @@
     max-width: 800px;
   }
 
-  .contact-item {
+  .top-contact-item {
     padding: 0 10px;
     font-size: 11px;
   }
 
   /* Row Direction responsive */
-  .contact-info.row-direction .contact-item:nth-child(1),
-  .contact-info:not([class*='direction']) .contact-item:nth-child(1) {
+  .contact-info.row-direction .top-contact-item:nth-child(1),
+  .contact-info:not([class*='direction']) .top-contact-item:nth-child(1) {
     padding-left: 0;
   }
 
-  .contact-info.row-direction .contact-item:nth-child(3),
-  .contact-info:not([class*='direction']) .contact-item:nth-child(3) {
+  .contact-info.row-direction .top-contact-item:nth-child(3),
+  .contact-info:not([class*='direction']) .top-contact-item:nth-child(3) {
     padding-right: 0;
   }
 
-  .contact-info.row-direction .contact-item:not(:last-child)::after,
+  .contact-info.row-direction .top-contact-item:not(:last-child)::after,
   .contact-info:not([class*='direction'])
-    .contact-item:not(:last-child)::after {
+    .top-contact-item:not(:last-child)::after {
     display: none;
   }
 
@@ -650,13 +651,13 @@
     gap: 6px;
   }
 
-  .contact-info.column-direction .contact-item,
-  .contact-info.column-reverse-direction .contact-item {
+  .contact-info.column-direction .top-contact-item,
+  .contact-info.column-reverse-direction .top-contact-item {
     padding: 3px 0;
   }
 
-  .contact-info.column-direction .contact-item:not(:last-child)::after,
-  .contact-info.column-reverse-direction .contact-item:not(:last-child)::after {
+  .contact-info.column-direction .top-contact-item:not(:last-child)::after,
+  .contact-info.column-reverse-direction .top-contact-item:not(:last-child)::after {
     width: 50px;
   }
 
@@ -782,6 +783,9 @@ html {
   flex-direction: row;
   justify-content: space-between;
   gap: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 .contact-info.column-direction {
@@ -804,149 +808,9 @@ html {
   align-items: center;
 }
 
-/* Services Dropdown Styling */
-.services-dropdown {
-  margin-top: 8px !important;
-}
-
-.services-dropdown .ant-dropdown-menu {
-  min-width: 320px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 8px;
-  background: white;
-}
-
-.services-dropdown .ant-dropdown-menu-item {
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin: 4px 0;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
-  height: auto;
-}
-
-.services-dropdown .ant-dropdown-menu-item:hover {
-  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.services-dropdown .dropdown-link {
-  display: flex;
-  align-items: flex-start;
-  text-decoration: none;
-  color: #333;
-  width: 100%;
-  gap: 12px;
-}
-
-.services-dropdown .dropdown-link:hover {
-  color: #337ab7;
-  text-decoration: none;
-}
-
-.services-dropdown .service-title {
-  font-weight: 600;
+.dropdown-link .service-title {
   font-size: 14px;
-  color: #333;
-  margin-bottom: 4px;
-  line-height: 1.4;
-}
-
-.services-dropdown .service-desc {
-  font-size: 12px;
-  color: #666;
-  line-height: 1.3;
-  margin: 0;
-}
-
-.services-dropdown .view-all {
-  font-weight: 600;
-  color: #337ab7;
-  justify-content: center;
-  align-items: center;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 8px;
-  padding-top: 16px;
-}
-
-.services-dropdown .view-all:hover {
-  color: #1f2b6c;
-  background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
-}
-
-.services-dropdown .ant-dropdown-menu-item-divider {
-  margin: 8px 0;
-  background: #f0f0f0;
-}
-
-/* Dropdown trigger styling */
-.dropdown-trigger {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: inherit;
-  text-decoration: none;
-  position: relative;
-}
-
-.dropdown-trigger::after {
-  content: '';
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid currentColor;
-  margin-left: 6px;
-  transition: transform 0.2s ease;
-}
-
-.dropdown-trigger:hover::after {
-  transform: translateY(1px);
-}
-
-/* Navigation link styling for dropdown */
-.nav-menu .ant-menu-item .dropdown-trigger {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-menu .ant-menu-item .dropdown-trigger:hover {
-  color: #337ab7;
-}
-
-/* Mobile dropdown styling */
-@media (max-width: 768px) {
-  .services-dropdown .ant-dropdown-menu {
-    min-width: 280px;
-    margin-left: -20px;
-  }
-
-  .services-dropdown .service-title {
-    font-size: 13px;
-  }
-
-  .services-dropdown .service-desc {
-    font-size: 11px;
-  }
-
-  .mobile-services-dropdown .ant-dropdown-menu {
-    min-width: 260px;
-    max-width: 90vw;
-    margin-left: 0;
-  }
-
-  .mobile-menu-item .dropdown-trigger {
-    width: auto;
-    color: #333;
-  }
-
-  .mobile-menu-item .dropdown-trigger:hover {
-    color: #337ab7;
-  }
+  font-weight: 500px;
+  color: #2d3748;
+  margin-bottom: 0px;
 }
