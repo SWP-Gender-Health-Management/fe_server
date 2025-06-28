@@ -226,10 +226,14 @@ const DoctorList = ({ onDoctorSelect }) => {
               </div>
 
               <div className="doctor-info">
-                <h3 className="doctor-name">{doctor.name}</h3>
-                <p className="doctor-specialty">🩺 {doctor.specialty}</p>
-                <p className="doctor-experience">📚 {doctor.experience}</p>
-                <p className="doctor-location">🏥 {doctor.location}</p>
+                <div className="doctor-basic">
+                  <h3 className="doctor-name">{doctor.name}</h3>
+                  <div className="doctor-details">
+                    <div className="doctor-specialty">{doctor.specialty}</div>
+                    <p className="doctor-experience">📚 {doctor.experience}</p>
+                    <p className="doctor-location">🏥 {doctor.location}</p>
+                  </div>
+                </div>
 
                 <div className="doctor-rating">
                   <div className="stars">{renderStars(doctor.rating)}</div>
@@ -238,19 +242,21 @@ const DoctorList = ({ onDoctorSelect }) => {
                   </span>
                 </div>
 
-                <div className="doctor-price">
-                  <span className="price-label">Phí tư vấn:</span>
-                  <span className="price-value">
-                    {formatPrice(doctor.price)}
-                  </span>
-                </div>
+                <div className="doctor-bottom">
+                  <div className="doctor-price">
+                    <span className="price-label">Phí tư vấn:</span>
+                    <span className="price-value">
+                      {formatPrice(doctor.price)}
+                    </span>
+                  </div>
 
-                <button
-                  className="book-button"
-                  onClick={() => onDoctorSelect(doctor)}
-                >
-                  📅 Xem lịch & Đặt lịch
-                </button>
+                  <button
+                    className="book-button"
+                    onClick={() => onDoctorSelect(doctor)}
+                  >
+                    📅 Xem lịch & Đặt lịch
+                  </button>
+                </div>
               </div>
             </div>
           ))

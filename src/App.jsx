@@ -14,6 +14,11 @@ import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
+import BookingPage from '@pages/Booking/BookingPage';
+import LabSchedule from '@pages/LabSchedule/LabSchedule';
+import LabTests from '@pages/LabTests/LabTests';
+import LabConfirmation from '@pages/LabConfirmation/LabConfirmation';
+import LabSuccess from '@pages/LabConfirmation/LabSuccess';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
 import Payment from '@pages/PaymentPage/PaymentPage';
@@ -63,6 +68,11 @@ const AppLayout = () => {
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/dich-vu" element={<ServicePage />} />{' '}
         {/* Sửa thành ServicePage */}
+        <Route path="/dat-lich-tu-van" element={<BookingPage />} />
+        <Route path="/dat-lich-xet-nghiem" element={<LabSchedule />} />
+        <Route path="/chon-xet-nghiem" element={<LabTests />} />
+        <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
+        <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"

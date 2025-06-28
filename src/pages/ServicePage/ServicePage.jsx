@@ -24,6 +24,22 @@ const ServicePage = () => {
     },
     {
       id: 2,
+      title: 'Đặt lịch xét nghiệm',
+      description:
+        'Đặt lịch xét nghiệm y tế nhanh chóng với đội ngũ chuyên gia hàng đầu',
+      icon: '🧪',
+      features: [
+        'Đặt lịch online tiện lợi',
+        'Nhiều loại xét nghiệm',
+        'Kết quả nhanh chóng',
+        'Giá cả cạnh tranh',
+      ],
+      price: 'Từ 100.000đ',
+      route: '/dat-lich-xet-nghiem',
+      popular: false,
+    },
+    {
+      id: 3,
       title: 'Theo dõi chu kỳ kinh nguyệt',
       description:
         'Công cụ thông minh giúp theo dõi và dự đoán chu kỳ kinh nguyệt',
@@ -87,7 +103,11 @@ const ServicePage = () => {
                     className="service-button"
                     onClick={() => handleNavigate(service.route)}
                   >
-                    {service.id === 1 ? '📅 Đặt lịch ngay' : '🌸 Sử dụng ngay'}
+                    {service.id === 1
+                      ? '📅 Đặt lịch ngay'
+                      : service.id === 2
+                        ? '🧪 Đặt lịch ngay'
+                        : '🌸 Sử dụng ngay'}
                   </button>
                 </div>
               </div>
