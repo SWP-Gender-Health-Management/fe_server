@@ -1,17 +1,211 @@
+/* Admin Dashboard Layout */
 .admin-dashboard {
-  padding: 24px;
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.stats-row {
-  margin-bottom: 24px;
+/* Sidebar Styles */
+.admin-sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+  color: white;
+  transition: width 0.3s ease;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.ant-card-head-title {
-  font-weight: bold;
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+  padding: 20px 0;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: #a0aec0;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  margin: 4px 0;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border-left-color: #667eea;
+}
+
+.nav-item.active {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  border-left-color: #667eea;
+}
+
+.nav-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.nav-text {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+.admin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-avatar {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
   font-size: 18px;
+  color: white;
 }
 
-.ant-table-thead > tr > th {
+.admin-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-name {
   font-weight: 600;
-  background-color: #fafafa !important;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.admin-email {
+  font-size: 12px;
+  color: #a0aec0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Main Content Area */
+.admin-content {
+  margin-left: 280px;
+  flex: 1;
+  min-height: 100vh;
+  background: #f7fafc;
+  transition: margin-left 0.3s ease;
+}
+
+.admin-sidebar.collapsed + .admin-content {
+  margin-left: 80px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .admin-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .admin-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .sidebar-header {
+    padding: 16px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+  }
+
+  .nav-item {
+    padding: 12px 16px;
+  }
+
+  .sidebar-footer {
+    padding: 16px;
+  }
 }

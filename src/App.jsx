@@ -73,7 +73,7 @@ const AppLayout = () => {
         <Route path="/chon-xet-nghiem" element={<LabTests />} />
         <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={<MenstrualPredictorPage />}
