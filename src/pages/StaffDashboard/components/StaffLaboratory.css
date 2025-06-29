@@ -1,0 +1,310 @@
+/* Staff Laboratory Styles */
+.staff-laboratory {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Filters */
+.lab-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.lab-filter-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: #6b7280;
+}
+
+.lab-filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.lab-filter-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+/* Calendar Container */
+.lab-calendar-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Calendar Header */
+.lab-calendar-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lab-nav-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.lab-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lab-week-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Calendar Table */
+.lab-calendar-table {
+  overflow-x: auto;
+  padding: 1.5rem;
+}
+
+.lab-calendar-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+/* Table Headers */
+.lab-slot-header,
+.lab-day-header {
+  background: #f8fafc;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.lab-slot-header {
+  background: #667eea;
+  color: white;
+  width: 100px;
+}
+
+.lab-day-header {
+  min-width: 150px;
+}
+
+.lab-day-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.lab-day-date {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* Table Cells */
+.lab-slot-cell {
+  background: #667eea;
+  color: white;
+  text-align: center;
+  font-weight: 600;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.lab-schedule-cell {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  height: 80px;
+  vertical-align: top;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Cell States */
+.lab-cell-empty {
+  background: #f3f4f6;
+}
+
+.lab-cell-ongoing {
+  background: #dcfce7;
+  border-color: #16a34a;
+}
+
+.lab-cell-done {
+  background: #dbeafe;
+  border-color: #2563eb;
+}
+
+.lab-cell-hidden {
+  background: #f9fafb;
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.lab-schedule-cell:hover:not(.lab-cell-empty):not(.lab-cell-hidden) {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+/* Cell Content */
+.lab-cell-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  text-align: center;
+  gap: 0.25rem;
+}
+
+.lab-id {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1f2937;
+}
+
+.lab-type {
+  font-size: 0.75rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.lab-count {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .lab-calendar-table {
+    padding: 1rem;
+  }
+
+  .lab-week-title {
+    font-size: 1.25rem;
+  }
+
+  .lab-nav-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .lab-filters {
+    justify-content: center;
+  }
+
+  .lab-filter-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .lab-calendar-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .lab-week-title {
+    font-size: 1.1rem;
+  }
+
+  .lab-nav-btn {
+    padding: 0.5rem 1rem;
+  }
+
+  .lab-schedule-cell {
+    height: 70px;
+  }
+
+  .lab-cell-content {
+    gap: 0.1rem;
+  }
+
+  .lab-id {
+    font-size: 0.75rem;
+  }
+
+  .lab-type {
+    font-size: 0.65rem;
+  }
+
+  .lab-count {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .lab-calendar-table {
+    padding: 0.5rem;
+  }
+
+  .lab-slot-header,
+  .lab-day-header,
+  .lab-slot-cell {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .lab-schedule-cell {
+    height: 60px;
+    padding: 0.25rem;
+  }
+
+  .lab-day-name {
+    font-size: 0.85rem;
+  }
+
+  .lab-day-date {
+    font-size: 0.75rem;
+  }
+}
+
+/* Animation */
+.lab-calendar-container {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states for accessibility */
+.lab-filter-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.lab-nav-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.lab-schedule-cell:focus {
+  outline: 2px solid #667eea;
+  outline-offset: -2px;
+}

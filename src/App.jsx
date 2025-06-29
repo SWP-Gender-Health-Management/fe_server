@@ -27,6 +27,7 @@ import Contact from '@pages/Contact/Contact';
 import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import Footer from '@components/Footer/Footer';
 import '@styles/reset.css';
+import StaffDashboard from './pages/StaffDashboard/StaffDashboard';
 
 // Layout chung cho tất cả trang
 const AppLayout = () => {
@@ -76,6 +77,7 @@ const AppLayout = () => {
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/consultant/*" element={<ConsultantDashboard />} />
+        <Route path="/staff/*" element={<StaffDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={<MenstrualPredictorPage />}
