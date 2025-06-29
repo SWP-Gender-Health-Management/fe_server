@@ -2,7 +2,7 @@
 .navbar-container {
   width: 100%;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Helvetica;
   position: sticky;
   top: 0;
   z-index: 1000;

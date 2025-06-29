@@ -72,7 +72,7 @@
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,7 +85,7 @@
 .brand-title {
   font-size: 32px;
   font-weight: 800;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -160,7 +160,7 @@
 }
 
 .auth-tabs .ant-tabs-tab-active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%) !important;
   color: white !important;
   border-color: transparent !important;
   transform: translateY(-2px);
@@ -275,7 +275,7 @@
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   box-shadow: 0 12px 35px rgba(99, 102, 241, 0.3);
 }
 
@@ -372,7 +372,7 @@
 }
 
 .terms-link:hover {
-  color: #4f46e5;
+  color: #ffffff;
 }
 
 /* ================================================ */
@@ -381,7 +381,7 @@
 .auth-image-section {
   flex: 1;
   position: relative;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
