@@ -44,7 +44,11 @@ const AdminDashboard = () => {
             className="sidebar-toggle"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
-            {sidebarCollapsed ? '→' : '←'}
+            <span className="hamburger-icon">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
           </button>
         </div>
 
@@ -76,6 +80,7 @@ const AdminDashboard = () => {
               <div className="admin-details">
                 <div className="admin-name">{adminName}</div>
                 <div className="admin-email">{adminEmail}</div>
+                <div className="admin-role">Admin</div>
               </div>
             )}
           </div>

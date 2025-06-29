@@ -38,6 +38,11 @@ const AppLayout = () => {
   // Lấy fullname từ sessionStorage hoặc mặc định
   const full_name = sessionStorage.getItem('full_name') || 'Người dùng';
 
+  // Kiểm tra xem có phải trang admin/manager dashboard không
+  const isDashboardPage =
+    location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/manager');
+
   // Hàm handleLogout sử dụng navigate thay vì window.location.href
   const handleLogout = () => {
     logout(); // Gọi logout từ useAuth để cập nhật trạng thái
@@ -51,12 +56,15 @@ const AppLayout = () => {
 
   return (
     <div className="app-container">
-      <Navbar
-        onLoginClick={() => setShowLogin(true)}
-        isLoggedIn={isLoggedIn}
-        full_name={full_name} // Sử dụng fullname từ sessionStorage
-        onLogout={handleLogout}
-      />
+      {/* Chỉ hiển thị Navbar khi không ở trang dashboard */}
+      {!isDashboardPage && (
+        <Navbar
+          onLoginClick={() => setShowLogin(true)}
+          isLoggedIn={isLoggedIn}
+          full_name={full_name} // Sử dụng fullname từ sessionStorage
+          onLogout={handleLogout}
+        />
+      )}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         {/* <Route path='/login' element={<login />} />  */}
@@ -84,8 +92,9 @@ const AppLayout = () => {
         <Route path="/payment" element={<Payment />} />
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
-      <Footer />
-      <div className="footer-spacer" />
+      {/* Chỉ hiển thị Footer khi không ở trang dashboard */}
+      {!isDashboardPage && <Footer />}
+      {!isDashboardPage && <div className="footer-spacer" />}
     </div>
   );
 };
