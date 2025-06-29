@@ -101,6 +101,34 @@ const Login = ({ visible, onCancel }) => {
       localStorage.setItem('app_token', res.data.token);
       message.success('Đăng nhập Google thành công!');
       onCancel();
+
+            // Lưu token
+      sessionStorage.setItem('app_token', res.data.token);
+
+      // Gọi API để lấy thông tin người dùng giống login thường
+      const viewResponse = await axios.post(
+        'http://localhost:3000/account/view-account',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${res.data.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const { accessToken } = res.data.result || {};
+      if (!accessToken) {
+        throw new Error('Thiếu accessToken trong phản hồi');
+      }
+
+      login(accessToken, null, null, 'Người dùng');
+      const { account_id, full_name } = viewResponse.data.result || {};
+      sessionStorage.setItem('accountId', account_id);
+      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
+
+      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+      onCancel();
     } catch (error) {
       console.error('Lỗi xác thực với backend:', error);
       message.error('Đăng nhập Google thất bại!');
@@ -111,6 +139,7 @@ const Login = ({ visible, onCancel }) => {
     console.log('Đăng nhập thất bại');
     message.error('Đăng nhập Google thất bại!');
   };
+
   /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG KÝ                                       */
   /* -------------------------------------------------- */
