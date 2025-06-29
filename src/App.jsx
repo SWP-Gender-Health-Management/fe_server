@@ -12,6 +12,7 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
+import ManagerDashboard from '@pages/ManagerDashboard/ManagerDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import BookingPage from '@pages/Booking/BookingPage';
@@ -74,6 +75,7 @@ const AppLayout = () => {
         <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route path="/manager/*" element={<ManagerDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={<MenstrualPredictorPage />}
