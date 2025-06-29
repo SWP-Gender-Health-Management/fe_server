@@ -11,8 +11,9 @@ import {
   GoogleOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
+import Logo from '@assets/Blue-full.svg?react';
 import { useAuth } from '@context/AuthContext.jsx';
-import ForgotPassword from '@components/ForgotPassword/ForgotPassword.jsx';
+import ForgotPassword from '@pages/ForgotPassword/ForgotPassword.jsx';
 import './login.css';
 import { GoogleLogin } from '@react-oauth/google';
 
@@ -150,10 +151,7 @@ const Login = ({ visible, onCancel }) => {
           <div className="auth-form-section">
             <div className="auth-header">
               <div className="brand-logo">
-                <div className="logo-icon">
-                  <MailOutlined />
-                </div>
-                <h1 className="brand-title">MediCare</h1>
+                  <Logo className="tab-brand-logo" />
               </div>
               <p className="auth-subtitle">
                 {activeTab === '1'
@@ -382,6 +380,24 @@ const Login = ({ visible, onCancel }) => {
                       Tạo tài khoản
                     </Button>
                   </Form.Item>
+
+                  <div className="divider-section">
+                    <div className="divider-line"></div>
+                    <span className="divider-text">Hoặc</span>
+                    <div className="divider-line"></div>
+                  </div>
+
+                  <div className="google-login-container">
+                    <GoogleLogin
+                      onSuccess={handleGoogleLogin}
+                      onError={handleLoginError}
+                      theme="outline"
+                      size="large"
+                      text="signin_with"
+                      shape="rectangular"
+                      width="100%"
+                    />
+                  </div>
                 </Form>
               </TabPane>
             </Tabs>
