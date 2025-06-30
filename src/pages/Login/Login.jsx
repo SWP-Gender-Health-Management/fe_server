@@ -59,8 +59,8 @@ const Login = ({ visible, onCancel }) => {
           },
         }
       );
+      console.log('Phản hồi đầy đủ từ view-account:', viewResponse.data);
 
-      console.log('Phản hồi từ API view-account:', viewResponse.data);
       if (!viewResponse.data.result) {
         throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
       }
@@ -77,7 +77,7 @@ const Login = ({ visible, onCancel }) => {
         title: 'Đăng nhập thất bại',
         content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
       });
-    }finally {
+    } finally {
       setLoginLoading(false);
     }
   };
@@ -86,52 +86,54 @@ const Login = ({ visible, onCancel }) => {
   /* XỬ LÝ ĐĂNG NHẬP VỚI GOOGLE                            */
   /* -------------------------------------------------- */
   const handleGoogleLogin = async (credentialResponse) => {
-    console.log('Đăng nhập Google thành công:', credentialResponse);
-    const idToken = credentialResponse.credential;
-
+    setLoginLoading(true);
     try {
-      const res = await axios.post(
-        'http://localhost:3000/account/google-verify',
-        {
-          idToken: idToken,
-        }
-      );
-
+      const idToken = credentialResponse.credential;
+      const res = await axios.post('http://localhost:3000/account/google-verify', {
+        idToken,
+      });
       console.log('Backend response:', res.data);
-      localStorage.setItem('app_token', res.data.token);
-      message.success('Đăng nhập Google thành công!');
-      onCancel();
 
-            // Lưu token
-      sessionStorage.setItem('app_token', res.data.token);
+      const { accessToken, account } = res.data.result || {};
+      if (!accessToken || !account?.account_id) {
+        throw new Error('Thiếu accessToken hoặc account_id trong phản hồi');
+      }
 
-      // Gọi API để lấy thông tin người dùng giống login thường
+      // Lưu accessToken ban đầu
+      login(accessToken, null, null, 'Người dùng');
+
+      // Gọi view-account bằng đúng token
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
         {},
         {
           headers: {
-            Authorization: `Bearer ${res.data.token}`,
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         }
       );
+      console.log('Phản hồi đầy đủ từ view-account:', viewResponse.data);
 
-      const { accessToken } = res.data.result || {};
-      if (!accessToken) {
-        throw new Error('Thiếu accessToken trong phản hồi');
+      if (!viewResponse.data.result) {
+        throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
       }
-
-      login(accessToken, null, null, 'Người dùng');
       const { account_id, full_name } = viewResponse.data.result || {};
+      if (!account_id) throw new Error('Không lấy được account_id');
       sessionStorage.setItem('accountId', account_id);
+      sessionStorage.setItem('accessToken', accessToken); // Lưu accessToken
       setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
 
-      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+      Modal.success({ title: 'Thành công!', content: 'Đăng nhập Google thành công.' });
       onCancel();
     } catch (error) {
-      console.error('Lỗi xác thực với backend:', error);
-      message.error('Đăng nhập Google thất bại!');
+      console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
+      Modal.error({
+        title: 'Đăng nhập thất bại',
+        content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
+      });
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -180,7 +182,7 @@ const Login = ({ visible, onCancel }) => {
           <div className="auth-form-section">
             <div className="auth-header">
               <div className="brand-logo">
-                  <Logo className="tab-brand-logo" />
+                <Logo className="tab-brand-logo" />
               </div>
               <p className="auth-subtitle">
                 {activeTab === '1'
