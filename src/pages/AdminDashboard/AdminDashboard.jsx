@@ -3,6 +3,10 @@ import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import AccountManagement from './components/AccountManagement';
 import AdminProfile from './components/AdminProfile';
+import UserManagement from './components/UserManagement';
+import Reports from './components/Reports';
+import BulkEmail from './components/BulkEmail';
+import RecentActivities from './components/RecentActivities';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -20,6 +24,26 @@ const AdminDashboard = () => {
       path: '/admin/accounts',
       name: 'Quản lý tài khoản',
       icon: '👥',
+    },
+    {
+      path: '/admin/users',
+      name: 'Thêm người dùng',
+      icon: '➕',
+    },
+    {
+      path: '/admin/reports',
+      name: 'Báo cáo',
+      icon: '📈',
+    },
+    {
+      path: '/admin/bulk-email',
+      name: 'Gửi email hàng loạt',
+      icon: '📧',
+    },
+    {
+      path: '/admin/activities',
+      name: 'Hoạt động gần đây',
+      icon: '⚡',
     },
     {
       path: '/admin/profile',
@@ -96,6 +120,10 @@ const AdminDashboard = () => {
           />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/accounts" element={<AccountManagement />} />
+          <Route path="/users" element={<UserManagement />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/bulk-email" element={<BulkEmail />} />
+          <Route path="/activities" element={<RecentActivities />} />
           <Route path="/profile" element={<AdminProfile />} />
         </Routes>
       </div>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PieChart from './PieChart';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [kpiData, setKpiData] = useState({
     totalAppointments: 23,
     consultationRevenue: 1250000,
@@ -202,6 +204,44 @@ const Dashboard = () => {
               {formatNumber(kpiData.newMenstrualUsers)}
             </div>
             <div className="kpi-change neutral">Hôm nay</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="quick-actions-section">
+        <div className="section-header">
+          <h2>Thao tác nhanh</h2>
+          <p>Các chức năng quản lý thường dùng</p>
+        </div>
+        <div className="quick-actions-grid">
+          <div
+            className="quick-action-card"
+            onClick={() => navigate('/manager/services')}
+          >
+            <div className="action-icon" style={{ backgroundColor: '#10b981' }}>
+              🏥
+            </div>
+            <div className="action-content">
+              <div className="action-title">Quản lý dịch vụ</div>
+              <div className="action-description">
+                Quản lý tư vấn, xét nghiệm và dịch vụ chu kỳ
+              </div>
+            </div>
+          </div>
+          <div
+            className="quick-action-card"
+            onClick={() => navigate('/manager/blogs')}
+          >
+            <div className="action-icon" style={{ backgroundColor: '#8b5cf6' }}>
+              📝
+            </div>
+            <div className="action-content">
+              <div className="action-title">Quản lý bài viết</div>
+              <div className="action-description">
+                Xem và quản lý tất cả bài viết các trạng thái
+              </div>
+            </div>
           </div>
         </div>
       </div>

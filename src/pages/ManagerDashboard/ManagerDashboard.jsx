@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import ServiceManagement from './components/ServiceManagement';
+import BlogManagement from './components/BlogManagement';
 import ManagerProfile from './components/ManagerProfile';
 import './ManagerDashboard.css';
 
@@ -20,6 +21,11 @@ const ManagerDashboard = () => {
       path: '/manager/services',
       name: 'Quản lý dịch vụ',
       icon: '🏥',
+    },
+    {
+      path: '/manager/blogs',
+      name: 'Quản lý bài viết',
+      icon: '📝',
     },
     {
       path: '/manager/profile',
@@ -96,6 +102,7 @@ const ManagerDashboard = () => {
           />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/services" element={<ServiceManagement />} />
+          <Route path="/blogs" element={<BlogManagement />} />
           <Route path="/profile" element={<ManagerProfile />} />
         </Routes>
       </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './UserModal.css';
 
-const UserModal = ({ mode, user, onClose, onSave }) => {
+const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,10 +11,13 @@ const UserModal = ({ mode, user, onClose, onSave }) => {
     address: '',
     dateOfBirth: '',
     gender: '',
+    id: '',
+    password: '',
   });
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user && mode !== 'create') {
@@ -27,6 +30,19 @@ const UserModal = ({ mode, user, onClose, onSave }) => {
         address: user.address || '',
         dateOfBirth: user.dateOfBirth || '',
         gender: user.gender || '',
+        id: user.id,
+      });
+    } else if (mode === 'create') {
+      setFormData({
+        name: '',
+        email: '',
+        role: 'User',
+        status: 'active',
+        phone: '',
+        address: '',
+        dateOfBirth: '',
+        gender: '',
+        password: '',
       });
     }
   }, [user, mode]);
@@ -187,6 +203,37 @@ const UserModal = ({ mode, user, onClose, onSave }) => {
                   </select>
                 </div>
               </div>
+
+              {mode === 'create' && (
+                <div className="form-group">
+                  <label htmlFor="password">
+                    Mật khẩu <span className="required">*</span>
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password || ''}
+                      onChange={handleChange}
+                      className={errors.password ? 'error' : ''}
+                      placeholder="Nhập mật khẩu"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      style={{ marginLeft: 8 }}
+                      onClick={() => setShowPassword((v) => !v)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? 'Ẩn' : 'Hiện'}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <span className="error-message">{errors.password}</span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Contact Information */}
@@ -298,6 +345,12 @@ const UserModal = ({ mode, user, onClose, onSave }) => {
             <button type="button" className="cancel-btn" onClick={onClose}>
               {mode === 'view' ? 'Đóng' : 'Hủy'}
             </button>
+
+            {mode === 'view' && (
+              <button type="button" className="save-btn" onClick={onEdit}>
+                Chỉnh sửa
+              </button>
+            )}
 
             {mode !== 'view' && (
               <button type="submit" className="save-btn" disabled={isLoading}>

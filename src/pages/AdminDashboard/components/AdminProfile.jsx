@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const AdminProfile = () => {
-  const adminInfo = {
+  const [isEdit, setIsEdit] = useState(false);
+  const [adminInfo, setAdminInfo] = useState({
     name: sessionStorage.getItem('full_name') || 'Admin',
     email: sessionStorage.getItem('email') || 'admin@example.com',
     role: 'Admin',
     joinDate: '2024-01-01',
     avatar: null,
+  });
+  const [form, setForm] = useState({
+    name: adminInfo.name,
+    email: adminInfo.email,
+  });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleSave = () => {
+    setAdminInfo((prev) => ({ ...prev, ...form }));
+    sessionStorage.setItem('full_name', form.name);
+    sessionStorage.setItem('email', form.email);
+    setIsEdit(false);
   };
 
   return (
@@ -170,23 +183,96 @@ const AdminProfile = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: '24px', textAlign: 'center' }}>
-          <button
-            style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
+        {!isEdit ? (
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <button
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onClick={() => setIsEdit(true)}
+            >
+              Chỉnh sửa thông tin
+            </button>
+          </div>
+        ) : (
+          <form
+            style={{ marginTop: 32 }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
             }}
           >
-            Chỉnh sửa thông tin
-          </button>
-        </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontWeight: 600 }}>Họ và tên</label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                style={{
+                  width: '100%',
+                  padding: 8,
+                  borderRadius: 4,
+                  border: '1px solid #ccc',
+                  marginTop: 4,
+                }}
+              />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontWeight: 600 }}>Email</label>
+              <input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                style={{
+                  width: '100%',
+                  padding: 8,
+                  borderRadius: 4,
+                  border: '1px solid #ccc',
+                  marginTop: 4,
+                }}
+              />
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <button
+                type="button"
+                onClick={() => setIsEdit(false)}
+                style={{
+                  marginRight: 12,
+                  padding: '8px 20px',
+                  borderRadius: 6,
+                  border: '1px solid #aaa',
+                  background: '#f8fafc',
+                  color: '#333',
+                  fontWeight: 500,
+                }}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                style={{
+                  background:
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 20px',
+                  borderRadius: 6,
+                  fontWeight: 600,
+                }}
+              >
+                Lưu
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

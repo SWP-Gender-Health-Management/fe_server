@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LineChart from './LineChart';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [kpiData, setKpiData] = useState({
     totalUsers: 2847,
     newUsers: 156,
@@ -91,31 +93,18 @@ const Dashboard = () => {
   const quickActions = [
     {
       title: 'Thêm người dùng',
-      description: 'Tạo tài khoản mới',
+      description:
+        'Tạo tài khoản mới cho admin, manager, staff, consultant, customer',
       icon: '👥',
       color: '#10b981',
-      action: () => console.log('Add user'),
+      action: () => navigate('/admin/users'),
     },
     {
       title: 'Xem báo cáo',
-      description: 'Báo cáo tổng quan',
+      description: 'Xem báo cáo về người dùng, doanh thu, cuộc hẹn, đánh giá',
       icon: '📊',
       color: '#3b82f6',
-      action: () => console.log('View reports'),
-    },
-    {
-      title: 'Quản lý bài viết',
-      description: 'Duyệt nội dung',
-      icon: '📝',
-      color: '#8b5cf6',
-      action: () => console.log('Manage content'),
-    },
-    {
-      title: 'Cài đặt hệ thống',
-      description: 'Cấu hình chung',
-      icon: '⚙️',
-      color: '#f59e0b',
-      action: () => console.log('Settings'),
+      action: () => navigate('/admin/reports'),
     },
   ];
 
@@ -247,30 +236,23 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activities */}
-      <div className="activities-section">
-        <div className="section-header">
-          <h2>Hoạt động gần đây</h2>
-          <p>Các sự kiện mới nhất trong hệ thống</p>
-        </div>
-        <div className="activities-list">
+      <div className="recent-activities-section">
+        <h2>Hoạt động gần đây</h2>
+        <ul style={{ padding: 0, listStyle: 'none' }}>
           {recentActivities.map((activity) => (
-            <div key={activity.id} className="activity-item">
-              <div
-                className="activity-icon"
-                style={{ backgroundColor: activity.color }}
-              >
-                {activity.icon}
-              </div>
-              <div className="activity-content">
-                <div className="activity-message">{activity.message}</div>
-                <div className="activity-time">{activity.time}</div>
-              </div>
-            </div>
+            <li
+              key={activity.id}
+              style={{
+                marginBottom: 8,
+                borderBottom: '1px solid #eee',
+                paddingBottom: 4,
+              }}
+            >
+              <div style={{ fontWeight: 500 }}>{activity.message}</div>
+              <div style={{ fontSize: 12, color: '#888' }}>{activity.time}</div>
+            </li>
           ))}
-        </div>
-        <div className="activities-footer">
-          <button className="view-all-btn">Xem tất cả hoạt động</button>
-        </div>
+        </ul>
       </div>
     </div>
   );

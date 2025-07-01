@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UserModal from './UserModal';
 import './AccountManagement.css';
 
 const AccountManagement = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,9 +140,7 @@ const AccountManagement = () => {
 
   // Handle user actions
   const handleCreateUser = () => {
-    setModalMode('create');
-    setSelectedUser(null);
-    setShowModal(true);
+    navigate('/admin/users');
   };
 
   const handleViewUser = (user) => {
@@ -350,9 +350,6 @@ const AccountManagement = () => {
                       <button onClick={() => handleViewUser(user)}>
                         👁 Xem chi tiết
                       </button>
-                      <button onClick={() => handleEditUser(user)}>
-                        ✏️ Chỉnh sửa
-                      </button>
                       <button onClick={() => handleResetPassword(user)}>
                         🔑 Đặt lại mật khẩu
                       </button>
@@ -361,12 +358,14 @@ const AccountManagement = () => {
                           ? '🔒 Khóa tài khoản'
                           : '🔓 Mở khóa tài khoản'}
                       </button>
-                      <button
-                        onClick={() => handleDeleteUser(user)}
-                        className="delete-action"
-                      >
-                        🗑 Xóa
-                      </button>
+                      {user.role !== 'Admin' && (
+                        <button
+                          onClick={() => handleDeleteUser(user)}
+                          className="delete-action"
+                        >
+                          🗑 Xóa
+                        </button>
+                      )}
                     </div>
                   </div>
                 </td>
@@ -429,24 +428,15 @@ const AccountManagement = () => {
           mode={modalMode}
           user={selectedUser}
           onClose={() => setShowModal(false)}
-          onSave={(userData) => {
-            if (modalMode === 'create') {
-              const newUser = {
-                ...userData,
-                id: Math.max(...users.map((u) => u.id)) + 1,
-                joinDate: new Date().toISOString().split('T')[0],
-                lastLogin: 'Chưa đăng nhập',
-              };
-              setUsers([...users, newUser]);
-            } else if (modalMode === 'edit') {
+          onSave={(updatedUser) => {
+            if (modalMode === 'edit') {
               setUsers(
-                users.map((u) =>
-                  u.id === selectedUser.id ? { ...u, ...userData } : u
-                )
+                users.map((u) => (u.id === updatedUser.id ? updatedUser : u))
               );
             }
             setShowModal(false);
           }}
+          onEdit={() => setModalMode('edit')}
         />
       )}
 
