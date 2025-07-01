@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import LabDetailModal from './LabDetailModal';
+import React, { useState } from 'react';
+import LabDetailModal from '@components/StaffDshBrd/LabDetail/LabDetailModal';
 import './StaffLaboratory.css';
 
 const StaffLaboratory = () => {

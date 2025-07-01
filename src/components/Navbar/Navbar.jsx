@@ -28,8 +28,13 @@ import '@styles/reset.css';
 import './Navbar.css';
 import Logout from '@pages/Logout/Logout';
 import NotificationDropdown from '@components/Notification/NotificationDropdown';
+import Cookies from 'js-cookie'; // Thêm thư viện js-cookie
+import { useAuth } from '@context/AuthContext';
 
-const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
+
+const Navbar = ({ onLoginClick }) => {
+  const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context
+  const { fullname, role } = userInfo || {};
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -174,15 +179,30 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
           </Link>
         ),
       },
-      {
-        key: 'settings',
-        label: (
-          <span className="dropdown-link">
-            <AppstoreOutlined style={{ marginRight: '8px' }} />
-            Cài đặt
-          </span>
-        ),
-      },
+      ...(role === 3 ? [] : [ // Ẩn "Cài đặt" với role 3 (CUSTOMER)
+            {
+              key: 'settings',
+              label: (
+                <Link
+                  to={
+                    role === 2 ? '/staff' :
+                    role === 1 ? '/consultant' :
+                    role === 4 ? '/manager' :
+                    role === 0 ? '/admin' :
+                    role === 5 ? '/receptionist' : '/settings'
+                  }
+                  className="dropdown-link"
+                >
+                  <AppstoreOutlined style={{ marginRight: '8px' }} />
+                  {role === 2 ? 'Staff' :
+                  role === 1 ? 'Tư vấn' :
+                  role === 4 ? 'Quản lý' :
+                  role === 0 ? 'Admin' :
+                  role === 5 ? 'Lễ tân' : 'Cài đặt'}
+                </Link>
+              ),
+            }
+          ]),
       { type: 'divider' },
       {
         key: 'logout',
@@ -206,7 +226,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const userId = sessionStorage.getItem('accountId') || 1; // Lấy userId từ sessionStorage, mặc định 1 nếu không có
+      const userId = Cookies.get('accountId') || 1; // Thay sessionStorage bằng Cookies
       const res = await axios.get(
         `http://localhost:3000/api/notifications?userId=${userId}`
       );
@@ -268,7 +288,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
         <div className="nav-content">
           <div className="nav-left">
             <Link to="/" className="logo-container">
-              <Logo className="logo" />
+              <Logo className="nav-logo" />
             </Link>
           </div>
 

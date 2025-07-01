@@ -16,6 +16,7 @@ import { useAuth } from '@context/AuthContext.jsx';
 import ForgotPassword from '@pages/ForgotPassword/ForgotPassword.jsx';
 import './login.css';
 import { GoogleLogin } from '@react-oauth/google';
+import Cookies from 'js-cookie'; // Thêm import Cookies
 
 const { TabPane } = Tabs;
 
@@ -45,13 +46,13 @@ const Login = ({ visible, onCancel }) => {
         throw new Error('Thiếu accessToken trong phản hồi');
       }
 
-      // Lưu accessToken ban đầu
-      login(accessToken, null, null, 'Người dùng');
-      sessionStorage.setItem('accessToken', accessToken);
+      // Lưu accessToken ban đầu vào Cookies
+      Cookies.set('accessToken', accessToken, { expires: 1 });
+
       // Gọi API view-account chỉ với token
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
-        {}, // Body rỗng vì chỉ dựa vào token
+        {},
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -64,10 +65,16 @@ const Login = ({ visible, onCancel }) => {
       if (!viewResponse.data.result) {
         throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
       }
-      const { account_id, full_name } = viewResponse.data.result || {};
+
+      const { account_id, full_name, role } = viewResponse.data.result || {};
       if (!account_id) throw new Error('Không lấy được account_id');
-      sessionStorage.setItem('accountId', account_id);
-      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
+
+      // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
+      login(accessToken, null, account_id, full_name || 'Người dùng', role);
+      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
+      Cookies.set('accountId', account_id, { expires: 1 });
+      Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
+      Cookies.set('role', role || null, { expires: 1 });
 
       Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
       onCancel();
@@ -94,15 +101,15 @@ const Login = ({ visible, onCancel }) => {
       });
       console.log('Backend response:', res.data);
 
-      const { accessToken, account } = res.data.result || {};
-      if (!accessToken || !account?.account_id) {
-        throw new Error('Thiếu accessToken hoặc account_id trong phản hồi');
+      const { accessToken } = res.data.result || {};
+      if (!accessToken) {
+        throw new Error('Thiếu accessToken trong phản hồi');
       }
 
-      // Lưu accessToken ban đầu
-      login(accessToken, null, null, 'Người dùng');
+      // Lưu accessToken ban đầu vào Cookies
+      Cookies.set('accessToken', accessToken, { expires: 1 });
 
-      // Gọi view-account bằng đúng token
+      // Gọi API view-account bằng đúng token
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
         {},
@@ -118,11 +125,16 @@ const Login = ({ visible, onCancel }) => {
       if (!viewResponse.data.result) {
         throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
       }
-      const { account_id, full_name } = viewResponse.data.result || {};
+
+      const { account_id, full_name, role } = viewResponse.data.result || {};
       if (!account_id) throw new Error('Không lấy được account_id');
-      sessionStorage.setItem('accountId', account_id);
-      sessionStorage.setItem('accessToken', accessToken); // Lưu accessToken
-      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
+
+      // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
+      login(accessToken, null, account_id, full_name || 'Người dùng', role);
+      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
+      Cookies.set('accountId', account_id, { expires: 1 });
+      Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
+      Cookies.set('role', role || null, { expires: 1 });
 
       Modal.success({ title: 'Thành công!', content: 'Đăng nhập Google thành công.' });
       onCancel();

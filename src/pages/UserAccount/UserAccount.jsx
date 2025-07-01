@@ -43,6 +43,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext.jsx';
 import dayjs from 'dayjs';
+import Cookies from 'js-cookie'; // nhớ import nếu chưa có
 import './UserAccount.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -68,8 +69,8 @@ useEffect(() => {
         return;
       }
 
-      const accessToken = sessionStorage.getItem('accessToken');
-      const accountId = sessionStorage.getItem('accountId');
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
 
       if (!accessToken || !accountId) {
         setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import QuestionModal from './QuestionModal';
+import QuestionModal from '@components/ConsultDshBrd/QuestionModal/QuestionModal';
 import './ConsultantQuestion.css';
 import axios from 'axios';
 
