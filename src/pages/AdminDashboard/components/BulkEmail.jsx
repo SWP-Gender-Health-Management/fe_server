@@ -191,6 +191,23 @@ const BulkEmail = () => {
     }, 0);
   };
 
+  const getRoleIcon = (roleValue) => {
+    switch (roleValue) {
+      case 'admin':
+        return '👑';
+      case 'manager':
+        return '👨‍💼';
+      case 'staff':
+        return '👷‍♂️';
+      case 'consultant':
+        return '👨‍🔬';
+      case 'customer':
+        return '👤';
+      default:
+        return '❓';
+    }
+  };
+
   return (
     <div className="bulk-email">
       <div className="bulk-email-header">
@@ -201,7 +218,7 @@ const BulkEmail = () => {
         </p>
       </div>
 
-      <div className="bulk-email-container">
+      <div className="bulk-email-container-single">
         <div className="email-form-section">
           <div className="form-section">
             <h2>Mẫu email có sẵn</h2>
@@ -305,29 +322,89 @@ const BulkEmail = () => {
           </div>
 
           <div className="form-section">
-            <h2>Đối tượng nhận email</h2>
-            <div className="role-selection">
+            <h2>
+              <span className="section-icon">👥</span>
+              Đối tượng nhận email
+            </h2>
+            <p className="section-description">
+              <span className="desc-icon">📧</span>
+              Chọn vai trò người dùng sẽ nhận email này
+            </p>
+
+            <div className="role-selection-grid">
               {roles.map((role) => (
-                <label key={role.value} className="role-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={emailData.targetRoles.includes(role.value)}
-                    onChange={() => handleRoleChange(role.value)}
-                  />
-                  <span className="checkmark"></span>
-                  <div className="role-info">
-                    <span className="role-name">{role.label}</span>
-                    <span className="role-count">({role.count} người)</span>
+                <div
+                  key={role.value}
+                  className={`role-card ${emailData.targetRoles.includes(role.value) ? 'selected' : ''}`}
+                  onClick={() => handleRoleChange(role.value)}
+                >
+                  <div className="role-card-header">
+                    <div className="role-icon-wrapper">
+                      <span className="role-icon">
+                        {getRoleIcon(role.value)}
+                      </span>
+                    </div>
+                    <div className="role-checkbox-wrapper">
+                      <input
+                        type="checkbox"
+                        checked={emailData.targetRoles.includes(role.value)}
+                        onChange={() => handleRoleChange(role.value)}
+                        className="role-checkbox-input"
+                      />
+                      <span className="role-checkmark"></span>
+                    </div>
                   </div>
-                </label>
+                  <div className="role-card-content">
+                    <h3 className="role-name">{role.label}</h3>
+                    <div className="role-stats">
+                      <span className="role-count">{role.count}</span>
+                      <span className="role-count-label">người dùng</span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
 
-            <div className="recipient-summary">
-              <p>
-                Tổng số người nhận: <strong>{getTotalRecipients()}</strong>
-              </p>
-            </div>
+            {emailData.targetRoles.length > 0 && (
+              <div className="recipient-summary-card">
+                <div className="summary-icon">
+                  <span>📊</span>
+                </div>
+                <div className="summary-content">
+                  <div className="summary-main">
+                    <span className="summary-label">Tổng số người nhận:</span>
+                    <span className="summary-count">
+                      {getTotalRecipients()}
+                    </span>
+                  </div>
+                  <div className="summary-breakdown">
+                    {emailData.targetRoles.map((roleValue) => {
+                      const role = roles.find((r) => r.value === roleValue);
+                      return (
+                        <span key={roleValue} className="breakdown-item">
+                          <span className="breakdown-icon">
+                            {getRoleIcon(roleValue)}
+                          </span>
+                          <span className="breakdown-text">
+                            {role.label}: {role.count}
+                          </span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {emailData.targetRoles.length === 0 && (
+              <div className="no-selection-card">
+                <div className="no-selection-icon">🎯</div>
+                <div className="no-selection-text">
+                  <h4>Chưa chọn đối tượng</h4>
+                  <p>Hãy chọn ít nhất một vai trò để gửi email</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {message.text && (
@@ -352,34 +429,6 @@ const BulkEmail = () => {
               {loading ? 'Đang gửi...' : 'Gửi email'}
             </button>
           </div>
-        </div>
-
-        <div className="recipients-section">
-          <h3>Danh sách người nhận</h3>
-          {filteredUsers.length > 0 ? (
-            <div className="recipients-list">
-              {filteredUsers.slice(0, 10).map((user) => (
-                <div key={user.id} className="recipient-item">
-                  <div className="recipient-info">
-                    <span className="recipient-name">{user.name}</span>
-                    <span className="recipient-email">{user.email}</span>
-                  </div>
-                  <span className={`role-badge role-${user.role}`}>
-                    {roles.find((r) => r.value === user.role)?.label}
-                  </span>
-                </div>
-              ))}
-              {filteredUsers.length > 10 && (
-                <div className="more-recipients">
-                  +{filteredUsers.length - 10} người khác...
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="no-recipients">
-              <p>Chọn vai trò để xem danh sách người nhận</p>
-            </div>
-          )}
         </div>
       </div>
 

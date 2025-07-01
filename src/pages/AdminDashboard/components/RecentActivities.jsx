@@ -3,46 +3,19 @@ import './RecentActivities.css';
 
 const RecentActivities = () => {
   const [activities, setActivities] = useState([]);
-  const [filteredActivities, setFilteredActivities] = useState([]);
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('today');
-  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const activitiesPerPage = 20;
 
-  const activityTypes = [
-    { value: 'all', label: 'Tất cả', icon: '📋' },
-    { value: 'user_register', label: 'Đăng ký tài khoản', icon: '👤' },
-    { value: 'appointment', label: 'Cuộc hẹn', icon: '📅' },
-    { value: 'blog_approved', label: 'Duyệt bài viết', icon: '📝' },
-    { value: 'payment', label: 'Thanh toán', icon: '💳' },
-    { value: 'consultation', label: 'Tư vấn', icon: '💬' },
-    { value: 'lab_booking', label: 'Đặt xét nghiệm', icon: '🧪' },
-    { value: 'system', label: 'Hệ thống', icon: '⚙️' },
-  ];
-
-  const dateFilters = [
-    { value: 'today', label: 'Hôm nay' },
-    { value: 'yesterday', label: 'Hôm qua' },
-    { value: 'week', label: '7 ngày qua' },
-    { value: 'month', label: '30 ngày qua' },
-    { value: 'all', label: 'Tất cả' },
-  ];
-
   useEffect(() => {
     generateMockActivities();
   }, []);
 
-  useEffect(() => {
-    filterActivities();
-  }, [activities, typeFilter, dateFilter, searchTerm]);
-
   const generateMockActivities = () => {
     setLoading(true);
 
-    // Generate more mock activities for better demonstration
+    // Generate mock activities
     const mockActivities = [];
     const types = [
       'user_register',
@@ -67,10 +40,6 @@ const RecentActivities = () => {
         time: getTimeAgo(activityTime),
         fullTime: activityTime.toLocaleString('vi-VN'),
         timestamp: activityTime,
-        icon: getActivityIcon(type),
-        color: getActivityColor(type),
-        user: `User${Math.floor(Math.random() * 1000)}`,
-        details: generateDetails(type, i),
       };
 
       mockActivities.push(activity);
@@ -126,29 +95,20 @@ const RecentActivities = () => {
     return typeMessages[Math.floor(Math.random() * typeMessages.length)];
   };
 
-  const generateDetails = (type, index) => {
-    switch (type) {
-      case 'user_register':
-        return {
-          email: `user${index}@example.com`,
-          role: 'customer',
-          ip: `192.168.1.${Math.floor(Math.random() * 255)}`,
-        };
-      case 'payment':
-        return {
-          amount: Math.floor(Math.random() * 1000000),
-          method: 'credit_card',
-          transactionId: `TXN${Date.now()}${index}`,
-        };
-      case 'appointment':
-        return {
-          doctor: 'BS. Nguyễn Văn A',
-          service: 'Khám tổng quát',
-          date: new Date().toLocaleDateString(),
-        };
-      default:
-        return {};
-    }
+  const getTimeAgo = (date) => {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'Vừa xong';
+    if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} giờ trước`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} ngày trước`;
+
+    return date.toLocaleDateString('vi-VN');
   };
 
   const getActivityIcon = (type) => {
@@ -177,267 +137,115 @@ const RecentActivities = () => {
     return colors[type] || '#6b7280';
   };
 
-  const getTimeAgo = (date) => {
-    const now = new Date();
-    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
-
-    if (diffInMinutes < 1) return 'Vừa xong';
-    if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
-
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours} giờ trước`;
-
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays} ngày trước`;
-
-    return date.toLocaleDateString('vi-VN');
-  };
-
-  const filterActivities = () => {
-    let filtered = activities;
-
-    // Filter by type
-    if (typeFilter !== 'all') {
-      filtered = filtered.filter((activity) => activity.type === typeFilter);
-    }
-
-    // Filter by date
-    if (dateFilter !== 'all') {
-      const now = new Date();
-      let cutoffDate;
-
-      switch (dateFilter) {
-        case 'today':
-          cutoffDate = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate()
-          );
-          break;
-        case 'yesterday':
-          cutoffDate = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() - 1
-          );
-          filtered = filtered.filter((activity) => {
-            const activityDate = new Date(
-              activity.timestamp.getFullYear(),
-              activity.timestamp.getMonth(),
-              activity.timestamp.getDate()
-            );
-            return activityDate.getTime() === cutoffDate.getTime();
-          });
-          break;
-        case 'week':
-          cutoffDate = new Date(now - 7 * 24 * 60 * 60 * 1000);
-          break;
-        case 'month':
-          cutoffDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
-          break;
-        default:
-          cutoffDate = null;
-      }
-
-      if (cutoffDate && dateFilter !== 'yesterday') {
-        filtered = filtered.filter(
-          (activity) => activity.timestamp >= cutoffDate
-        );
-      }
-    }
-
-    // Filter by search term
-    if (searchTerm.trim()) {
-      filtered = filtered.filter(
-        (activity) =>
-          activity.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          activity.user.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredActivities(filtered);
-    setCurrentPage(1); // Reset to first page when filtering
-  };
-
-  const getActivityTypeCounts = () => {
-    const counts = { all: activities.length };
-    activityTypes.forEach((type) => {
-      if (type.value !== 'all') {
-        counts[type.value] = activities.filter(
-          (a) => a.type === type.value
-        ).length;
-      }
-    });
-    return counts;
-  };
-
   // Pagination
-  const totalPages = Math.ceil(filteredActivities.length / activitiesPerPage);
+  const totalPages = Math.ceil(activities.length / activitiesPerPage);
   const startIndex = (currentPage - 1) * activitiesPerPage;
-  const endIndex = startIndex + activitiesPerPage;
-  const currentActivities = filteredActivities.slice(startIndex, endIndex);
+  const paginatedActivities = activities.slice(
+    startIndex,
+    startIndex + activitiesPerPage
+  );
 
-  const counts = getActivityTypeCounts();
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="recent-activities">
       <div className="activities-header">
-        <h1>Hoạt động gần đây</h1>
-        <p>Theo dõi tất cả hoạt động và sự kiện trong hệ thống</p>
-
-        <div className="activity-stats">
-          <div className="stat-item">
-            <span className="stat-number">{activities.length}</span>
-            <span className="stat-label">Tổng hoạt động</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number">{filteredActivities.length}</span>
-            <span className="stat-label">Kết quả lọc</span>
-          </div>
-        </div>
+        <h1>
+          <span className="header-icon">📋</span>
+          Hoạt động gần đây
+        </h1>
+        <p>
+          <span className="desc-icon">🔍</span>
+          Xem tất cả hoạt động trong hệ thống
+        </p>
       </div>
 
-      {/* Filters */}
-      <div className="activity-filters">
-        <div className="filter-section">
-          <label>Loại hoạt động:</label>
-          <div className="type-filters">
-            {activityTypes.map((type) => (
-              <button
-                key={type.value}
-                className={`filter-btn ${typeFilter === type.value ? 'active' : ''}`}
-                onClick={() => setTypeFilter(type.value)}
-              >
-                <span className="filter-icon">{type.icon}</span>
-                <span className="filter-text">{type.label}</span>
-                <span className="filter-count">
-                  ({counts[type.value] || 0})
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="filter-section">
-          <label>Thời gian:</label>
-          <select
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
-            className="date-filter"
-          >
-            {dateFilters.map((filter) => (
-              <option key={filter.value} value={filter.value}>
-                {filter.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-section">
-          <label>Tìm kiếm:</label>
-          <input
-            type="text"
-            placeholder="Tìm kiếm hoạt động..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        <div className="filter-section">
-          <button
-            className="refresh-btn"
-            onClick={generateMockActivities}
-            disabled={loading}
-          >
-            {loading ? '🔄' : '↻'} Làm mới
-          </button>
-        </div>
-      </div>
-
-      {/* Activities List */}
-      <div className="activities-container">
-        {loading ? (
-          <div className="loading">Đang tải...</div>
-        ) : currentActivities.length > 0 ? (
+      {loading ? (
+        <div className="loading">Đang tải...</div>
+      ) : (
+        <>
+          {/* Activities List */}
           <div className="activities-list">
-            {currentActivities.map((activity) => (
-              <div key={activity.id} className="activity-item">
-                <div
-                  className="activity-icon"
-                  style={{ backgroundColor: activity.color }}
-                >
-                  {activity.icon}
-                </div>
+            {paginatedActivities.map((activity) => (
+              <div key={activity.id} className="activity-item-simple">
                 <div className="activity-content">
-                  <div className="activity-main">
+                  <div className="activity-main-content">
+                    <div className="activity-icon-wrapper">
+                      <div
+                        className="activity-icon"
+                        style={{
+                          backgroundColor: getActivityColor(activity.type),
+                        }}
+                      >
+                        {getActivityIcon(activity.type)}
+                      </div>
+                    </div>
                     <div className="activity-message">{activity.message}</div>
-                    <div className="activity-meta">
-                      <span className="activity-user">
-                        Bởi: {activity.user}
-                      </span>
-                      <span className="activity-time" title={activity.fullTime}>
-                        {activity.time}
-                      </span>
-                    </div>
                   </div>
-                  {Object.keys(activity.details).length > 0 && (
-                    <div className="activity-details">
-                      {Object.entries(activity.details).map(([key, value]) => (
-                        <span key={key} className="detail-item">
-                          <strong>{key}:</strong> {value}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="activity-type">
-                  <span className={`type-badge type-${activity.type}`}>
-                    {activityTypes.find((t) => t.value === activity.type)
-                      ?.label || activity.type}
-                  </span>
+                  <div className="activity-time">
+                    <span className="time-icon">🕒</span>
+                    {activity.time}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="no-activities">
-            <p>Không tìm thấy hoạt động nào phù hợp với bộ lọc</p>
-          </div>
-        )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+          {/* Pagination */}
           <div className="pagination">
-            <button
-              className="pagination-btn"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              ← Trước
-            </button>
-
             <div className="pagination-info">
-              Trang {currentPage} / {totalPages}
-              <span className="pagination-details">
-                ({startIndex + 1}-
-                {Math.min(endIndex, filteredActivities.length)} của{' '}
-                {filteredActivities.length})
-              </span>
+              <span className="info-icon">📊</span>
+              Hiển thị {startIndex + 1}-
+              {Math.min(startIndex + activitiesPerPage, activities.length)}
+              trong tổng số {activities.length} hoạt động
             </div>
+            <div className="pagination-controls">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="page-btn"
+              >
+                <span className="nav-icon">←</span>
+                Trước
+              </button>
 
-            <button
-              className="pagination-btn"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-            >
-              Sau →
-            </button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`page-btn ${currentPage === pageNum ? 'active' : ''}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="page-btn"
+              >
+                Sau
+                <span className="nav-icon">→</span>
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };

@@ -1,72 +1,333 @@
 .bulk-email {
-  padding: 24px;
-  max-width: 1400px;
+  padding: 32px;
+  max-width: 1000px;
   margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
 .bulk-email-header {
-  margin-bottom: 32px;
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .bulk-email-header h1 {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   margin-bottom: 8px;
-  color: #1f2937;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .bulk-email-header p {
-  color: #6b7280;
+  color: #64748b;
   font-size: 16px;
   margin: 0;
 }
 
-.bulk-email-container {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 32px;
+.bulk-email-container-single {
+  display: block;
+  width: 100%;
 }
 
 .email-form-section {
   background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .form-section {
   margin-bottom: 32px;
 }
 
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
 .form-section h2 {
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 16px;
-  color: #1f2937;
+  margin-bottom: 8px;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.template-selector select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+.section-icon {
+  font-size: 18px;
+}
+
+.section-description {
+  color: #64748b;
   font-size: 14px;
-  background: white;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.form-group {
+.desc-icon {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Role Selection Grid */
+.role-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.role-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.role-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.role-card.selected {
+  border-color: #667eea;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.role-card.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.role-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
+}
+
+.role-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.role-icon {
+  font-size: 24px;
+  filter: brightness(0) invert(1);
+}
+
+.role-checkbox-wrapper {
+  position: relative;
+}
+
+.role-checkbox-input {
+  opacity: 0;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.role-checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.role-checkbox-input:checked + .role-checkmark {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+}
+
+.role-checkbox-input:checked + .role-checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.role-card-content {
+  text-align: center;
+}
+
+.role-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.role-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.role-count {
+  font-size: 18px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.role-count-label {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Summary Cards */
+.recipient-summary-card {
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.summary-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.summary-content {
+  flex: 1;
+}
+
+.summary-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.summary-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.summary-count {
+  font-size: 24px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.summary-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.breakdown-icon {
+  font-size: 16px;
+}
+
+.breakdown-text {
+  font-weight: 500;
+}
+
+.no-selection-card {
+  background: #f8fafc;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.no-selection-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.no-selection-text h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.no-selection-text p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 20px;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 
 .form-group label {
   display: block;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 8px;
   color: #374151;
 }
@@ -75,11 +336,11 @@
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 12px;
+  padding: 12px 16px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
   font-family: inherit;
 }
 
@@ -87,15 +348,28 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.form-group textarea {
-  resize: vertical;
-  min-height: 120px;
+/* Template Selector */
+.template-selector select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.3s ease;
 }
 
+.template-selector select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* File Input */
 .file-input-container {
   display: flex;
   flex-direction: column;
@@ -110,21 +384,26 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 16px;
   border: 2px dashed #d1d5db;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   background: #f9fafb;
   color: #374151;
   font-weight: 500;
   text-align: center;
+  justify-content: center;
 }
 
 .file-input-label:hover {
-  border-color: #3b82f6;
-  background: #f0f9ff;
-  color: #1d4ed8;
+  border-color: #667eea;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+  color: #667eea;
 }
 
 .file-icon {
@@ -171,109 +450,12 @@
   font-style: italic;
 }
 
-.html-file-preview {
-  background: #f9fafb;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.html-file-preview p {
-  margin: 8px 0;
-  color: #374151;
-}
-
-.html-file-preview em {
-  color: #6b7280;
-}
-
-.role-selection {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.role-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.role-checkbox:hover {
-  border-color: #3b82f6;
-  background: #f8fafc;
-}
-
-.role-checkbox input[type='checkbox'] {
-  width: auto;
-  margin: 0;
-}
-
-.checkmark {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #d1d5db;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.role-checkbox input:checked + .checkmark {
-  background: #3b82f6;
-  border-color: #3b82f6;
-}
-
-.role-checkbox input:checked + .checkmark::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.role-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.role-name {
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.role-count {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.recipient-summary {
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-}
-
-.recipient-summary p {
-  margin: 0;
-  color: #0c4a6e;
-  font-weight: 500;
-}
-
+/* Messages */
 .message {
   padding: 12px 16px;
   border-radius: 8px;
-  margin-bottom: 16px;
   font-weight: 500;
+  margin-bottom: 20px;
 }
 
 .message.success {
@@ -288,20 +470,28 @@
   border: 1px solid #fca5a5;
 }
 
+/* Form Actions */
 .form-actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .btn-preview,
 .btn-send {
   padding: 12px 24px;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-preview {
@@ -312,116 +502,27 @@
 
 .btn-preview:hover:not(:disabled) {
   background: #e5e7eb;
+  transform: translateY(-1px);
 }
 
 .btn-send {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
 .btn-send:hover:not(:disabled) {
-  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
 .btn-preview:disabled,
 .btn-send:disabled {
-  background: #9ca3af;
+  opacity: 0.5;
   cursor: not-allowed;
-  color: #6b7280;
+  transform: none !important;
 }
 
-.recipients-section {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  height: fit-content;
-}
-
-.recipients-section h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #1f2937;
-}
-
-.recipients-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.recipient-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: #f9fafb;
-  border-radius: 8px;
-}
-
-.recipient-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.recipient-name {
-  font-weight: 500;
-  color: #1f2937;
-}
-
-.recipient-email {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.role-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.role-admin {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.role-manager {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.role-staff {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.role-consultant {
-  background: #e0e7ff;
-  color: #3730a3;
-}
-
-.role-customer {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.more-recipients {
-  text-align: center;
-  padding: 12px;
-  color: #6b7280;
-  font-style: italic;
-}
-
-.no-recipients {
-  text-align: center;
-  padding: 48px 16px;
-  color: #6b7280;
-}
-
+/* Modal Styles remain the same */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -433,30 +534,29 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 16px;
 }
 
 .modal-content.email-preview {
   background: white;
   border-radius: 12px;
-  max-width: 700px;
-  width: 100%;
-  max-height: 90vh;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
   overflow-y: auto;
 }
 
 .modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-header h2 {
-  font-size: 20px;
-  font-weight: 600;
   margin: 0;
+  font-size: 18px;
+  font-weight: 600;
   color: #1f2937;
 }
 
@@ -466,7 +566,12 @@
   font-size: 24px;
   cursor: pointer;
   color: #6b7280;
-  padding: 4px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-close:hover {
@@ -478,84 +583,151 @@
 }
 
 .email-preview-content {
-  line-height: 1.6;
+  /* Email preview styles remain the same */
 }
 
 .email-header {
   background: #f9fafb;
   padding: 16px;
   border-radius: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .email-header p {
-  margin: 4px 0;
-  font-size: 14px;
+  margin: 8px 0;
+  color: #374151;
 }
 
 .email-body h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  margin: 0 0 12px 0;
+  font-size: 16px;
   color: #1f2937;
 }
 
 .email-content p {
-  margin-bottom: 12px;
-  color: #374151;
+  margin: 8px 0;
+  color: #6b7280;
 }
 
 .modal-footer {
-  padding: 24px;
+  padding: 16px 24px;
   border-top: 1px solid #e5e7eb;
   display: flex;
-  gap: 12px;
   justify-content: flex-end;
+  gap: 12px;
 }
 
 .modal-footer .btn-secondary,
 .modal-footer .btn-primary {
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
-  border: none;
+  transition: all 0.3s ease;
 }
 
 .modal-footer .btn-secondary {
   background: #f3f4f6;
   color: #374151;
+  border: 1px solid #d1d5db;
 }
 
 .modal-footer .btn-primary {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  border: none;
 }
 
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .bulk-email-container {
-    grid-template-columns: 1fr;
+  .bulk-email {
+    padding: 16px;
+  }
+
+  .bulk-email-header {
+    padding: 24px;
+  }
+
+  .bulk-email-header h1 {
+    font-size: 24px;
+  }
+
+  .email-form-section {
+    padding: 24px;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .role-selection {
+  .role-selection-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .role-card {
+    padding: 16px;
+  }
+
+  .role-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .role-icon {
+    font-size: 20px;
+  }
+
+  .recipient-summary-card {
+    padding: 16px;
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .summary-breakdown {
+    justify-content: center;
   }
 
   .form-actions {
-    justify-content: stretch;
+    flex-direction: column;
   }
 
   .btn-preview,
   .btn-send {
-    flex: 1;
+    justify-content: center;
   }
 
   .modal-content.email-preview {
-    margin: 16px;
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .bulk-email-header {
+    padding: 20px;
+  }
+
+  .bulk-email-header h1 {
+    font-size: 20px;
+  }
+
+  .email-form-section {
+    padding: 20px;
+  }
+
+  .role-card {
+    padding: 12px;
+  }
+
+  .no-selection-card {
+    padding: 30px 16px;
+  }
+
+  .no-selection-icon {
+    font-size: 36px;
   }
 }
