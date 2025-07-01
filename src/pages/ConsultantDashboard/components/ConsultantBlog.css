@@ -162,11 +162,11 @@
   transform: translateY(-4px);
 }
 
-.blog-card.verified {
+.blog-card.true {
   border-top: 4px solid #28a745;
 }
 
-.blog-card.unverified {
+.blog-card.false {
   border-top: 4px solid #ffc107;
 }
 
@@ -209,12 +209,12 @@
   backdrop-filter: blur(10px);
 }
 
-.status-verified {
+.status-true {
   background: rgba(40, 167, 69, 0.9);
   color: white;
 }
 
-.status-unverified {
+.status-false {
   background: rgba(255, 193, 7, 0.9);
   color: #212529;
 }

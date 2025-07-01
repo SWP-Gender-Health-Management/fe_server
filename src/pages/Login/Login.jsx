@@ -46,7 +46,7 @@ const Login = ({ visible, onCancel }) => {
 
       // Lưu accessToken ban đầu
       login(accessToken, null, null, 'Người dùng');
-
+      sessionStorage.setItem('accessToken', accessToken);
       // Gọi API view-account chỉ với token
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',

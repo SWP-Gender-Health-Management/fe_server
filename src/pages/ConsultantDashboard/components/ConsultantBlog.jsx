@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BlogModal from './BlogModal';
 import BlogFormModal from './BlogFormModal';
 import './ConsultantBlog.css';
+import axios, { AxiosHeaders } from 'axios';
 
 const ConsultantBlog = () => {
   const [filter, setFilter] = useState('All');
@@ -11,51 +12,29 @@ const ConsultantBlog = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Mock data cho blogs
-  const [blogs, setBlogs] = useState([
-    {
-      id: 'B001',
-      title: 'Hướng dẫn chăm sóc sức khỏe sinh sản',
-      major: 'Sức khỏe sinh sản',
-      content:
-        'Việc chăm sóc sức khỏe sinh sản là rất quan trọng đối với mọi người. Bài viết này sẽ hướng dẫn các bạn những điều cần biết về chăm sóc sức khỏe sinh sản một cách khoa học và an toàn.',
-      status: 'verified', // verified, unverified
-      images: [
-        'https://via.placeholder.com/300x200?text=Health+Care+1',
-        'https://via.placeholder.com/300x200?text=Health+Care+2',
-      ],
-      createdAt: '2024-01-15T10:30:00Z',
-      updatedAt: '2024-01-15T10:30:00Z',
-      author: sessionStorage.getItem('full_name') || 'Tư vấn viên',
-    },
-    {
-      id: 'B002',
-      title: 'Kế hoạch hóa gia đình hiện đại',
-      major: 'Kế hoạch hóa gia đình',
-      content:
-        'Kế hoạch hóa gia đình là một quyết định quan trọng của mỗi cặp đôi. Bài viết này sẽ cung cấp thông tin về các phương pháp kế hoạch hóa gia đình hiện đại và an toàn nhất.',
-      status: 'unverified',
-      images: ['https://via.placeholder.com/300x200?text=Family+Planning'],
-      createdAt: '2024-01-14T14:20:00Z',
-      updatedAt: '2024-01-14T14:20:00Z',
-      author: sessionStorage.getItem('full_name') || 'Tư vấn viên',
-    },
-    {
-      id: 'B003',
-      title: 'Phòng ngừa bệnh lây nhiễm qua đường tình dục',
-      major: 'Sức khỏe tình dục',
-      content:
-        'Các bệnh lây nhiễm qua đường tình dục có thể được phòng ngừa hiệu quả nếu chúng ta có kiến thức và biện pháp phù hợp. Hãy cùng tìm hiểu về cách phòng ngừa các bệnh này.',
-      status: 'verified',
-      images: [
-        'https://via.placeholder.com/300x200?text=STD+Prevention+1',
-        'https://via.placeholder.com/300x200?text=STD+Prevention+2',
-        'https://via.placeholder.com/300x200?text=STD+Prevention+3',
-      ],
-      createdAt: '2024-01-13T09:15:00Z',
-      updatedAt: '2024-01-13T09:15:00Z',
-      author: sessionStorage.getItem('full_name') || 'Tư vấn viên',
-    },
-  ]);
+  const [blogs, setBlogs] = useState([]);
+
+  useEffect(() => {
+    async function fetchBlogs() {
+      const accountId = await sessionStorage.getItem('accountId');
+      const appToken = await sessionStorage.getItem('accessToken');
+      console.log('useEffect has been called!:', accountId);
+      console.log('useEffect has been called!:', appToken);
+      const response = await axios.get(
+        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+        {}, // Body rỗng vì chỉ dựa vào token
+        {
+          headers: {
+            Authorization: `Bearer ${appToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('Response:', response.data);
+      setBlogs(response.data.result || []);
+    }
+    fetchBlogs();
+  }, []);
 
   const majors = [
     'Sức khỏe sinh sản',
@@ -68,10 +47,10 @@ const ConsultantBlog = () => {
 
   // Filter blogs based on status
   const filteredBlogs = blogs.filter((blog) => {
-    if (filter === 'Verified') {
-      return blog.status === 'verified';
-    } else if (filter === 'Unverified') {
-      return blog.status === 'unverified';
+    if (filter === 'true') {
+      return blog.status === 'true';
+    } else if (filter === 'false') {
+      return blog.status === 'false';
     }
     return true;
   });
@@ -104,11 +83,11 @@ const ConsultantBlog = () => {
         prev.map((blog) =>
           blog.id === selectedBlog.id
             ? {
-                ...blog,
-                ...blogData,
-                status: 'unverified', // Reset to unverified when updated
-                updatedAt: new Date().toISOString(),
-              }
+              ...blog,
+              ...blogData,
+              status: 'false', // Reset to false when updated
+              updatedAt: new Date().toISOString(),
+            }
             : blog
         )
       );
@@ -117,7 +96,7 @@ const ConsultantBlog = () => {
       const newBlog = {
         id: `B${String(blogs.length + 1).padStart(3, '0')}`,
         ...blogData,
-        status: 'unverified',
+        status: 'false',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         author: sessionStorage.getItem('full_name') || 'Tư vấn viên',
@@ -144,13 +123,13 @@ const ConsultantBlog = () => {
         <div className="blog-stats">
           <div className="stat-item">
             <span className="stat-number">
-              {blogs.filter((b) => b.status === 'verified').length}
+              {blogs.filter((b) => b.status === 'true').length}
             </span>
             <span className="stat-label">Đã duyệt</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
-              {blogs.filter((b) => b.status === 'unverified').length}
+              {blogs.filter((b) => b.status === 'false').length}
             </span>
             <span className="stat-label">Chờ duyệt</span>
           </div>
@@ -163,7 +142,7 @@ const ConsultantBlog = () => {
 
       <div className="blog-controls">
         <div className="blog-filters">
-          {['All', 'Verified', 'Unverified'].map((filterOption) => (
+          {['All', 'true', 'false'].map((filterOption) => (
             <button
               key={filterOption}
               className={`filter-btn ${filter === filterOption ? 'active' : ''}`}
@@ -171,16 +150,16 @@ const ConsultantBlog = () => {
             >
               {filterOption === 'All'
                 ? 'Tất cả'
-                : filterOption === 'Verified'
+                : filterOption === 'true'
                   ? 'Đã duyệt'
                   : 'Chờ duyệt'}
               <span className="filter-count">
                 (
                 {filterOption === 'All'
                   ? blogs.length
-                  : filterOption === 'Verified'
-                    ? blogs.filter((b) => b.status === 'verified').length
-                    : blogs.filter((b) => b.status === 'unverified').length}
+                  : filterOption === 'true'
+                    ? blogs.filter((b) => b.status === 'true').length
+                    : blogs.filter((b) => b.status === 'false').length}
                 )
               </span>
             </button>
@@ -202,7 +181,7 @@ const ConsultantBlog = () => {
             <p>
               {filter === 'All'
                 ? 'Bạn chưa tạo blog nào. Hãy tạo blog đầu tiên của bạn!'
-                : filter === 'Verified'
+                : filter === 'true'
                   ? 'Hiện tại chưa có blog nào được duyệt.'
                   : 'Hiện tại chưa có blog nào đang chờ duyệt.'}
             </p>
@@ -224,7 +203,7 @@ const ConsultantBlog = () => {
                   </div>
                 )}
                 <div className={`status-badge status-${blog.status}`}>
-                  {blog.status === 'verified' ? 'Đã duyệt' : 'Chờ duyệt'}
+                  {blog.status === 'true' ? 'Đã duyệt' : 'Chờ duyệt'}
                 </div>
               </div>
               <div className="blog-content">
