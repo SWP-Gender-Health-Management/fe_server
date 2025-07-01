@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import './QuestionModal.css';
 
 const QuestionModal = ({ question, onClose, onReply }) => {
-  const [reply, setReply] = useState(question.reply || '');
+  const [reply, setReply] = useState((question.reply) ? question.reply.content : '');
+
+  // Kiểm tra nếu question không hợp lệ
+  if (!question) {
+    return <div>Không có dữ liệu câu hỏi</div>; // Fallback UI
+  }
 
   const handleReplySubmit = () => {
     if (!reply.trim()) {
       alert('Vui lòng nhập câu trả lời.');
       return;
     }
-    onReply(question.id, reply);
+    onReply(question.ques_id, reply);
   };
 
   const handleBackdropClick = (e) => {
@@ -65,20 +70,20 @@ const QuestionModal = ({ question, onClose, onReply }) => {
                 <div className="customer-info">
                   <div className="detail-row">
                     <label>Tên:</label>
-                    <span>{question.customerName}</span>
+                    <span>{question.customer.full_name}</span>
                   </div>
                   <div className="detail-row">
                     <label>Ngày sinh:</label>
                     <span>
-                      {new Date(question.customerDOB).toLocaleDateString(
+                      {new Date(question.customer.dob).toLocaleDateString(
                         'vi-VN'
                       )}{' '}
-                      ({calculateAge(question.customerDOB)} tuổi)
+                      ({calculateAge(question.customer.dob)} tuổi)
                     </span>
                   </div>
                   <div className="detail-row">
                     <label>Số điện thoại:</label>
-                    <span>{question.customerPhone}</span>
+                    <span>{question.customer.phone}</span>
                   </div>
                 </div>
               </div>
@@ -89,12 +94,10 @@ const QuestionModal = ({ question, onClose, onReply }) => {
               <h3>Nội Dung Câu Hỏi</h3>
               <div className="question-meta">
                 <span className="question-date">
-                  <strong>Ngày gửi:</strong> {formatDate(question.createdAt)}
+                  <strong>Ngày gửi:</strong> {formatDate(question.created_at)}
                 </span>
-                <span className={`status-badge status-${question.status}`}>
-                  {question.status === 'unreplied'
-                    ? 'Chưa trả lời'
-                    : 'Đã trả lời'}
+                <span className={`status-badge status-${question.reply ? 'replied' : 'unreplied'}`}>
+                  {question.reply ? 'Đã trả lời' : 'Chưa trả lời'}
                 </span>
               </div>
               <div className="question-content-box">{question.content}</div>
@@ -103,11 +106,9 @@ const QuestionModal = ({ question, onClose, onReply }) => {
             {/* Reply Section */}
             <div className="detail-section">
               <h3>
-                {question.status === 'unreplied'
-                  ? 'Trả Lời Câu Hỏi'
-                  : 'Câu Trả Lời'}
+                {question.reply ? 'Câu Trả Lời' : 'Trả Lời Câu Hỏi'}
               </h3>
-              {question.status === 'unreplied' ? (
+              {!question.reply ? (
                 <div className="reply-form">
                   <textarea
                     className="reply-textarea"
@@ -131,14 +132,14 @@ const QuestionModal = ({ question, onClose, onReply }) => {
                 </div>
               ) : (
                 <div className="existing-reply">
-                  <div className="reply-content-box">{question.reply}</div>
+                  <div className="reply-content-box">{question.reply.content}</div>
                   <div className="reply-meta">
                     <span>
-                      <strong>Trả lời bởi:</strong> {question.consultantName}
+                      <strong>Trả lời bởi:</strong> {question.reply.consultant.full_name}
                     </span>
                     <span>
                       <strong>Thời gian:</strong>{' '}
-                      {formatDate(question.repliedAt)}
+                      {formatDate(question.reply.created_at)}
                     </span>
                   </div>
                 </div>
@@ -148,7 +149,7 @@ const QuestionModal = ({ question, onClose, onReply }) => {
         </div>
 
         <div className="modal-actions">
-          {question.status === 'unreplied' ? (
+          {!question.reply ? (
             <>
               <button className="btn btn-primary" onClick={handleReplySubmit}>
                 <span>📤</span> Gửi trả lời

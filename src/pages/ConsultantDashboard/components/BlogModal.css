@@ -123,12 +123,12 @@
   font-weight: 600;
 }
 
-.status-verified {
+.status-true {
   background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
   color: white;
 }
 
-.status-unverified {
+.status-false {
   background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
   color: #212529;
 }
@@ -249,13 +249,13 @@
   border: 2px solid;
 }
 
-.status-info.status-verified {
+.status-info.status-true {
   background: #d4edda;
   border-color: #28a745;
   color: #155724;
 }
 
-.status-info.status-unverified {
+.status-info.status-false {
   background: #fff3cd;
   border-color: #ffc107;
   color: #856404;

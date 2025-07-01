@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import QuestionModal from './QuestionModal';
 import './ConsultantQuestion.css';
+import axios from 'axios';
 
 const ConsultantQuestion = () => {
   const [filter, setFilter] = useState('Unreply');
@@ -8,78 +9,57 @@ const ConsultantQuestion = () => {
   const [showModal, setShowModal] = useState(false);
 
   // Mock data cho questions
-  const [questions, setQuestions] = useState([
-    {
-      id: 'Q001',
-      customerName: 'Nguyễn Thị A',
-      customerDOB: '1995-05-15',
-      customerPhone: '0123456789',
-      content:
-        'Tôi muốn tìm hiểu về các phương pháp tránh thai an toàn và hiệu quả. Có thể tư vấn cho tôi được không?',
-      createdAt: '2024-01-15T10:30:00Z',
-      status: 'unreplied', // unreplied, replied
-      reply: null,
-      consultantName: null,
-      repliedAt: null,
-    },
-    {
-      id: 'Q002',
-      customerName: 'Trần Văn B',
-      customerDOB: '1990-12-20',
-      customerPhone: '0987654321',
-      content:
-        'Gần đây tôi có một số vấn đề về sức khỏe sinh sản. Các triệu chứng bao gồm đau bụng dưới và khó chịu. Tôi nên làm gì?',
-      createdAt: '2024-01-14T14:20:00Z',
-      status: 'unreplied',
-      reply: null,
-      consultantName: null,
-      repliedAt: null,
-    },
-    {
-      id: 'Q003',
-      customerName: 'Lê Thị C',
-      customerDOB: '1988-03-10',
-      customerPhone: '0456789123',
-      content:
-        'Tôi đang có kế hoạch sinh con. Có những lưu ý gì về việc chuẩn bị trước khi mang thai?',
-      createdAt: '2024-01-13T09:15:00Z',
-      status: 'replied',
-      reply:
-        'Việc chuẩn bị trước khi mang thai rất quan trọng. Bạn nên bổ sung acid folic, kiểm tra sức khỏe tổng quát, và tham khảo ý kiến bác sĩ về chế độ dinh dưỡng phù hợp.',
-      consultantName: 'Tư vấn viên',
-      repliedAt: '2024-01-13T15:30:00Z',
-    },
-    {
-      id: 'Q004',
-      customerName: 'Phạm Văn D',
-      customerDOB: '1992-08-25',
-      customerPhone: '0321654987',
-      content:
-        'Tôi muốn tìm hiểu về các bệnh lây nhiễm qua đường tình dục và cách phòng ngừa.',
-      createdAt: '2024-01-12T16:45:00Z',
-      status: 'replied',
-      reply:
-        'Các bệnh lây nhiễm qua đường tình dục có thể phòng ngừa bằng cách sử dụng bao cao su, có quan hệ một vợ một chồng, và thực hiện kiểm tra sức khỏe định kỳ. Bạn có thể đến trung tâm để được tư vấn chi tiết hơn.',
-      consultantName: 'Tư vấn viên',
-      repliedAt: '2024-01-12T18:20:00Z',
-    },
-  ]);
+  const [questionsUnreplied, setQuestionsUnreplied] = useState([]);
+  const [questionsReplied, setQuestionsReplied] = useState([]);
+
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      const accountId = await sessionStorage.getItem('accountId');
+      const accessToken = await sessionStorage.getItem('accessToken');
+      // console.log('useEffect has been called!:', accountId);
+      console.log('useEffect has been called!:', accessToken);
+
+      const responseUnreply = await axios.get(
+        `http://localhost:3000/question/get-unreplied-questions`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log('Response:', responseUnreply.data);
+      setQuestionsUnreplied(responseUnreply.data.result || []);
+      const responseReplied = await axios.get(
+        `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log('Response:', responseReplied.data);
+      setQuestionsReplied(responseReplied.data.result || []);
+
+    }
+    fetchQuestions();
+  }, []);
 
   // Filter questions based on status
-  const filteredQuestions = questions.filter((question) => {
-    if (filter === 'Unreply') {
-      return question.status === 'unreplied';
-    } else if (filter === 'Replied') {
-      return question.status === 'replied';
-    }
-    return true;
-  });
+  const filteredQuestions = (filter === 'Unreply') ? questionsUnreplied : questionsReplied;
 
   // Handle question click
   const handleQuestionClick = (question) => {
-    setSelectedQuestion(question);
-    setShowModal(true);
-  };
+  console.log('Selected Question:', question);
+  if (!question || !question.ques_id) {
+    console.error('Question data is invalid:', question);
+    return;
+  }
+  setSelectedQuestion(question);
+  setShowModal(true);
+};
 
   // Handle reply submission
   const handleReplySubmit = (questionId, reply) => {
@@ -87,13 +67,13 @@ const ConsultantQuestion = () => {
       prev.map((q) =>
         q.id === questionId
           ? {
-              ...q,
-              status: 'replied',
-              reply: reply,
-              consultantName:
-                sessionStorage.getItem('full_name') || 'Tư vấn viên',
-              repliedAt: new Date().toISOString(),
-            }
+            ...q,
+            status: 'replied',
+            reply: reply,
+            consultantName:
+              sessionStorage.getItem('full_name') || 'Tư vấn viên',
+            repliedAt: new Date().toISOString(),
+          }
           : q
       )
     );
@@ -117,13 +97,13 @@ const ConsultantQuestion = () => {
         <div className="question-stats">
           <div className="stat-item">
             <span className="stat-number">
-              {questions.filter((q) => q.status === 'unreplied').length}
+              {questionsUnreplied.length}
             </span>
             <span className="stat-label">Chưa trả lời</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
-              {questions.filter((q) => q.status === 'replied').length}
+              {questionsReplied.length}
             </span>
             <span className="stat-label">Đã trả lời</span>
           </div>
@@ -139,15 +119,7 @@ const ConsultantQuestion = () => {
           >
             {filterOption === 'Unreply' ? 'Chưa trả lời' : 'Đã trả lời'}
             <span className="filter-count">
-              (
-              {
-                questions.filter((q) =>
-                  filterOption === 'Unreply'
-                    ? q.status === 'unreplied'
-                    : q.status === 'replied'
-                ).length
-              }
-              )
+              ({filterOption === 'Unreply' ? questionsUnreplied.length : questionsReplied.length})
             </span>
           </button>
         ))}
@@ -167,45 +139,41 @@ const ConsultantQuestion = () => {
         ) : (
           filteredQuestions.map((question) => (
             <div
-              key={question.id}
-              className={`question-card ${question.status}`}
+              key={question.ques_id}
+              className={`question-card ${question.reply ? 'replied' : 'unreplied'}`}
               onClick={() => handleQuestionClick(question)}
             >
               <div className="question-info">
                 <div className="question-header-info">
                   <div className="customer-info">
                     <span className="customer-name">
-                      {question.customerName}
+                      {question.customer.full_name}
                     </span>
                     <span className="question-date">
-                      {formatDate(question.createdAt)}
+                      {formatDate(question.created_at)}
                     </span>
                   </div>
-                  <div className={`status-badge status-${question.status}`}>
-                    {question.status === 'unreplied'
-                      ? 'Chưa trả lời'
-                      : 'Đã trả lời'}
+                  <div className={`status-badge status-${question.reply ? 'replied' : 'unreplied'}`}>
+                    {question.reply ? 'Đã trả lời' : 'Chưa trả lời'}
                   </div>
                 </div>
                 <div className="question-content">
                   <p>{question.content}</p>
                 </div>
-                {question.status === 'replied' && (
+                {question.reply && (
                   <div className="reply-preview">
                     <strong>Trả lời:</strong>
-                    <p>{question.reply}</p>
+                    <p>{question.reply.content}</p>
                     <div className="reply-info">
-                      <span>Bởi {question.consultantName}</span>
-                      <span>{formatDate(question.repliedAt)}</span>
+                      <span>Bởi {question.reply.consultant.full_name}</span>
+                      <span>{formatDate(question.reply.created_at)}</span>
                     </div>
                   </div>
                 )}
               </div>
               <div className="question-actions">
                 <button className="btn btn-primary">
-                  {question.status === 'unreplied'
-                    ? '👁️ Xem & Trả lời'
-                    : '👁️ Xem chi tiết'}
+                  {question.reply ? '👁️ Xem chi tiết' : '👁️ Xem & Trả lời'}
                 </button>
               </div>
             </div>
