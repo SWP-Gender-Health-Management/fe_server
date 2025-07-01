@@ -36,7 +36,7 @@ const BlogModal = ({ blog, onClose, onEdit }) => {
                 <div className="blog-meta-info">
                   <span className="blog-major-tag">{blog.major}</span>
                   <span className={`status-badge status-${blog.status}`}>
-                    {blog.status === 'verified' ? 'Đã duyệt' : 'Chờ duyệt'}
+                    {(blog.status === 'true' || blog.status === true) ? 'Đã duyệt' : 'Chờ duyệt'}
                   </span>
                 </div>
               </div>
@@ -83,7 +83,7 @@ const BlogModal = ({ blog, onClose, onEdit }) => {
             <div className="blog-status-section">
               <h3>Trạng Thái Blog</h3>
               <div className={`status-info status-${blog.status}`}>
-                {blog.status === 'verified' ? (
+                {(blog.status === 'true' || blog.status === true) ? (
                   <>
                     <div className="status-icon">✅</div>
                     <div className="status-text">

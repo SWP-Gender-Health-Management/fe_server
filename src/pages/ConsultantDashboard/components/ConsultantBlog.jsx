@@ -17,17 +17,16 @@ const ConsultantBlog = () => {
   useEffect(() => {
     async function fetchBlogs() {
       const accountId = await sessionStorage.getItem('accountId');
-      const appToken = await sessionStorage.getItem('accessToken');
-      console.log('useEffect has been called!:', accountId);
-      console.log('useEffect has been called!:', appToken);
+      const accessToken = await sessionStorage.getItem('accessToken');
+      // console.log('useEffect has been called!:', accountId);
+      console.log('useEffect has been called!:', accessToken);
       const response = await axios.get(
         `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
-        {}, // Body rỗng vì chỉ dựa vào token
         {
           headers: {
-            Authorization: `Bearer ${appToken}`,
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          },
+          }
         }
       );
       console.log('Response:', response.data);
@@ -48,9 +47,9 @@ const ConsultantBlog = () => {
   // Filter blogs based on status
   const filteredBlogs = blogs.filter((blog) => {
     if (filter === 'true') {
-      return blog.status === 'true';
+      return blog.status === true || blog.status === 'true';
     } else if (filter === 'false') {
-      return blog.status === 'false';
+      return blog.status === false || blog.status === 'false';
     }
     return true;
   });
@@ -123,13 +122,13 @@ const ConsultantBlog = () => {
         <div className="blog-stats">
           <div className="stat-item">
             <span className="stat-number">
-              {blogs.filter((b) => b.status === 'true').length}
+              {blogs.filter((b) => (b.status === 'true' || b.status === true)).length}
             </span>
             <span className="stat-label">Đã duyệt</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
-              {blogs.filter((b) => b.status === 'false').length}
+              {blogs.filter((b) => (b.status === 'false' || b.status === false)).length}
             </span>
             <span className="stat-label">Chờ duyệt</span>
           </div>
@@ -158,8 +157,8 @@ const ConsultantBlog = () => {
                 {filterOption === 'All'
                   ? blogs.length
                   : filterOption === 'true'
-                    ? blogs.filter((b) => b.status === 'true').length
-                    : blogs.filter((b) => b.status === 'false').length}
+                    ? blogs.filter((b) => b.status === 'true' || b.status === true).length
+                    : blogs.filter((b) => b.status === 'false' || b.status === false).length}
                 )
               </span>
             </button>
@@ -193,7 +192,7 @@ const ConsultantBlog = () => {
           </div>
         ) : (
           filteredBlogs.map((blog) => (
-            <div key={blog.id} className={`blog-card ${blog.status}`}>
+            <div key={blog.id} className={`blog-card ${blog.status}`} onClick={() => handleBlogClick(blog)}>
               <div className="blog-image">
                 {blog.images && blog.images.length > 0 ? (
                   <img src={blog.images[0]} alt={blog.title} />
@@ -203,7 +202,7 @@ const ConsultantBlog = () => {
                   </div>
                 )}
                 <div className={`status-badge status-${blog.status}`}>
-                  {blog.status === 'true' ? 'Đã duyệt' : 'Chờ duyệt'}
+                  {(blog.status === 'true' || blog.status === true) ? 'Đã duyệt' : 'Chờ duyệt'}
                 </div>
               </div>
               <div className="blog-content">
