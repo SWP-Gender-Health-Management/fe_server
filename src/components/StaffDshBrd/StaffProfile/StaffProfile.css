@@ -1,0 +1,248 @@
+/* Staff Profile Styles */
+.staff-profile {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.staff-profile-container {
+  width: 100%;
+}
+
+.staff-profile-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Profile Header */
+.staff-profile-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+}
+
+.staff-profile-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.staff-profile-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  object-fit: cover;
+}
+
+.staff-avatar-edit-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.staff-avatar-edit-btn:hover {
+  transform: scale(1.1);
+}
+
+.staff-profile-info {
+  flex: 1;
+}
+
+.staff-profile-info h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.staff-profile-info p {
+  margin: 0.25rem 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.staff-profile-actions {
+  flex-shrink: 0;
+}
+
+.staff-profile-action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Profile Content */
+.staff-profile-content {
+  padding: 2rem;
+}
+
+.staff-profile-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.staff-profile-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.staff-profile-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Form Styles */
+.staff-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.staff-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-form-group-full {
+  grid-column: 1 / -1;
+}
+
+.staff-form-group label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.staff-form-group input,
+.staff-form-group select {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.staff-form-group input:focus,
+.staff-form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.staff-form-group input:disabled,
+.staff-form-group select:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.staff-form-group input:disabled:focus,
+.staff-form-group select:disabled:focus {
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .staff-profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .staff-profile-avatar img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .staff-profile-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .staff-profile-content {
+    padding: 1.5rem;
+  }
+
+  .staff-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .staff-profile-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .staff-profile-action-buttons .staff-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .staff-profile-header {
+    padding: 1rem;
+  }
+
+  .staff-profile-content {
+    padding: 1rem;
+  }
+
+  .staff-profile-section {
+    padding: 1rem;
+  }
+
+  .staff-form-grid {
+    gap: 0.75rem;
+  }
+}
+
+/* Animation */
+.staff-profile-card {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states for accessibility */
+.staff-avatar-edit-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.staff-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

@@ -1,78 +1,663 @@
-import React from 'react';
-import { Card, Table, List, Typography, Divider } from 'antd';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import {
+  Card,
+  Typography,
+  Button,
+  Input,
+  message,
+  Avatar,
+  Row,
+  Col,
+  Tabs,
+  Form,
+  Select,
+  DatePicker,
+  Upload,
+  Progress,
+  Statistic,
+  Badge,
+  List,
+  Tag,
+  Switch,
+  Divider,
+  Space,
+} from 'antd';
+import {
+  UserOutlined,
+  EditOutlined,
+  SaveOutlined,
+  CameraOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  CalendarOutlined,
+  EnvironmentOutlined,
+  HeartOutlined,
+  SettingOutlined,
+  BellOutlined,
+  SecurityScanOutlined,
+  FileTextOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons';
+import { useAuth } from '@context/AuthContext.jsx';
+import dayjs from 'dayjs';
+import Cookies from 'js-cookie'; // nhớ import nếu chưa có
 import './UserAccount.css';
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
+const { Option } = Select;
+const { TextArea } = Input;
 
 const UserAccount = () => {
-  // Orders table data
-  const ordersColumns = [
-    { title: 'Đơn hàng', dataIndex: 'order', key: 'order', 
-      render: (text) => <Text className="empty-text">{text}</Text> },
-    { title: 'Ngày', dataIndex: 'date', key: 'date' },
-    { title: 'Giá trị đơn hàng', dataIndex: 'amount', key: 'amount' },
-    { title: 'Trạng thái thanh toán', dataIndex: 'paymentStatus', key: 'paymentStatus' },
-    { title: 'Trạng thái giao hàng', dataIndex: 'deliveryStatus', key: 'deliveryStatus' },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedInfo, setEditedInfo] = useState({});
+  const [activeTab, setActiveTab] = useState('1');
+  const [form] = Form.useForm();
+  const { isLoggedIn } = useAuth();
+  const [profileCompletion, setProfileCompletion] = useState(0);
+  const [appointments, setAppointments] = useState([]);
+  const [healthRecords, setHealthRecords] = useState([]);
+  const [avatarUrl, setAvatarUrl] = useState(''); // State để lưu URL avatar
 
-  const ordersData = [
-    { key: '1', order: 'Không có đơn hàng nào.', date: '', amount: '', paymentStatus: '', deliveryStatus: '' },
-  ];
+useEffect(() => {
+    const fetchAccountData = async () => {
+      if (!isLoggedIn) {
+        setLoading(false);
+        return;
+      }
 
-  // Account information data
-  const accountInfoData = [
-    { title: 'Tên tài khoản', value: '1' },
-    { title: 'Địa chỉ', value: '' },
-    { title: 'Điện thoại', value: '' },
-    { title: 'Địa chỉ 1', value: '' },
-    { title: 'Công ty', value: '' },
-    { title: 'Quốc gia', value: 'Vietnam' },
-    { title: 'Zip code', value: '70000' },
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+
+      if (!accessToken || !accountId) {
+        setLoading(false);
+        message.error('Vui lòng đăng nhập lại.');
+        return;
+      }
+
+      try {
+        // Lấy thông tin tài khoản
+        const accountRes = await axios.post(
+          'http://localhost:3000/account/view-account',
+          { account_id: accountId },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        const accountData = accountRes.data.result || {};
+        if (accountData.dob) {
+          accountData.dob = dayjs(accountData.dob);
+        }
+        setEditedInfo(accountData);
+        form.setFieldsValue(accountData);
+        if (accountData.avatar) {
+          setAvatarUrl(accountData.avatar);
+        }
+        calculateProfileCompletion(accountData);
+
+        // Lấy lịch hẹn
+      try {
+        const appointmentRes = await axios.get(
+          `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/customer/${accountId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setAppointments(appointmentRes.data.result || []);
+      } catch (error) {
+        if (error.response?.status === 404) {
+          setAppointments([]); // Không có lịch hẹn thì đặt mảng rỗng
+        } else {
+          console.error('Lỗi khi tải dữ liệu:', error);
+          message.error('Lỗi khi tải lịch hẹn');
+        }
+      }
+
+        // Lấy hồ sơ sức khỏe
+        const healthRes = await axios.get(
+          `http://localhost:3000/health-record/list?account_id=${accountId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setHealthRecords(healthRes.data.result || []);
+
+      } catch (err) {
+        console.error('Lỗi khi tải dữ liệu:', err);
+        message.error('Không thể tải thông tin. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccountData();
+}, [isLoggedIn, form]);
+
+  const calculateProfileCompletion = (data) => {
+    const fields = ['full_name', 'email', 'phone', 'dob', 'gender', 'address'];
+    const completed = fields.filter((field) => {
+      const value = data[field];
+      if (value == null) return false;
+      if (typeof value === 'string') return value.trim() !== '';
+      return true; // chấp nhận cả object như Date hoặc enum
+    }).length;
+    const percentage = Math.round((completed / fields.length) * 100);
+    setProfileCompletion(percentage);
+  };
+
+
+  const handleSave = async (values) => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+      message.error('Vui lòng đăng nhập để lưu thông tin.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        'http://localhost:3000/account/update-profile',
+        { ...values },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const updatedData = response.data.result || values;
+      setEditedInfo(updatedData);
+      calculateProfileCompletion(updatedData);
+      setIsEditing(false);
+      message.success('Cập nhật thông tin thành công!');
+    } catch (err) {
+      console.error('Lỗi khi cập nhật thông tin:', err);
+      message.error('Không thể cập nhật thông tin. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    form.setFieldsValue(editedInfo);
+    setIsEditing(false);
+  };
+
+  const handleAvatarUpload = async (options) => {
+    const { file, onSuccess, onError } = options;
+    const accessToken = sessionStorage.getItem('accessToken');
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/account/update-avatar', // Giả định endpoint
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setAvatarUrl(response.data.avatarUrl); // Cập nhật URL avatar từ server
+        message.success('Cập nhật ảnh đại diện thành công!');
+        onSuccess();
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Lỗi khi tải ảnh lên:', error);
+      message.error('Lỗi khi tải ảnh lên!');
+      onError(error);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed':
+        return 'green';
+      case 'pending':
+        return 'orange';
+      case 'cancelled':
+        return 'red';
+      default:
+        return 'default';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'confirmed':
+        return 'Đã xác nhận';
+      case 'pending':
+        return 'Chờ xác nhận';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return 'Không xác định';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="account-container">
+        <div className="loading-container">
+          <Title level={4}>Đang tải thông tin tài khoản...</Title>
+        </div>
+      </div>
+    );
+  }
+
+  const personalInfoTab = (
+    <div className="tab-content">
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSave}
+        initialValues={editedInfo}
+      >
+        <Row gutter={24}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Họ và tên"
+              name="full_name"
+              rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+            >
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="Nhập họ và tên"
+                disabled={!isEditing}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: 'Vui lòng nhập email' },
+                { type: 'email', message: 'Email không hợp lệ' },
+              ]}
+            >
+              <Input
+                prefix={<MailOutlined />}
+                placeholder="Nhập email"
+                disabled={true}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={24}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Số điện thoại"
+              name="phone"
+              rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
+            >
+              <Input
+                prefix={<PhoneOutlined />}
+                placeholder="Nhập số điện thoại"
+                disabled={!isEditing}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Ngày sinh" name="dob">
+              <DatePicker
+                style={{ width: '100%' }}
+                placeholder="Chọn ngày sinh"
+                disabled={!isEditing}
+                format="DD/MM/YYYY"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={24}>
+          <Col xs={24} md={12}>
+            <Form.Item label="Giới tính" name="gender">
+              <Select placeholder="Chọn giới tính" disabled={!isEditing}>
+                <Option value="Female">Nữ</Option>
+                <Option value="Male">Nam</Option>
+                <Option value="Other">Khác</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Tình trạng hôn nhân" name="marital_status">
+              <Select placeholder="Chọn tình trạng" disabled={!isEditing}>
+                <Option value="single">Độc thân</Option>
+                <Option value="married">Đã kết hôn</Option>
+                <Option value="divorced">Đã ly hôn</Option>
+                <Option value="widowed">Góa phụ</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={24}>
+          <Col xs={24}>
+            <Form.Item label="Địa chỉ" name="address">
+              <TextArea
+                rows={3}
+                placeholder="Nhập địa chỉ chi tiết"
+                disabled={!isEditing}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={24}>
+          <Col xs={24}>
+            <Form.Item label="Ghi chú sức khỏe" name="health_notes">
+              <TextArea
+                rows={4}
+                placeholder="Ghi chú về tình trạng sức khỏe, dị ứng, thuốc đang sử dụng..."
+                disabled={!isEditing}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {isEditing && (
+          <div className="form-actions">
+            <Space>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SaveOutlined />}
+                loading={loading}
+              >
+                Lưu thay đổi
+              </Button>
+              <Button onClick={handleCancel}>Hủy</Button>
+            </Space>
+          </div>
+        )}
+      </Form>
+    </div>
+  );
+
+  const appointmentsTab = (
+    <div className="tab-content">
+      <List
+        dataSource={appointments}
+        renderItem={(item) => (
+          <List.Item className="appointment-item">
+            <Card className="appointment-card">
+              <Row gutter={16} align="middle">
+                <Col xs={24} sm={6}>
+                  <div className="appointment-date">
+                    <CalendarOutlined className="date-icon" />
+                    <div>
+                      <div className="date">
+                        {dayjs(item.consultant_pattern?.working_slot?.date).format('DD/MM/YYYY')}
+                      </div>
+                      <div className="time">
+                        {item.consultant_pattern?.working_slot?.time_slot || 'Không rõ'}
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+                <Col xs={24} sm={8}>
+                  <div className="appointment-info">
+                    <Title level={5}>{item.consultant_pattern?.title || 'Tư vấn'}</Title>
+                    <Text type="secondary">
+                      {item.consultant_pattern?.consultant?.full_name || 'Chuyên gia chưa rõ'}
+                    </Text>
+                  </div>
+                </Col>
+                <Col xs={24} sm={6}>
+                  <div className="appointment-location">
+                    <EnvironmentOutlined />
+                    <Text>{item.location || 'Online'}</Text>
+                  </div>
+                </Col>
+                <Col xs={24} sm={4}>
+                  <Tag color={getStatusColor(item.status)}>
+                    {getStatusText(item.status)}
+                  </Tag>
+                </Col>
+              </Row>
+            </Card>
+          </List.Item>
+        )}
+      />
+    </div>
+  );
+
+  const healthRecordsTab = (
+    <div className="tab-content">
+      <List
+        dataSource={healthRecords}
+        renderItem={(item) => (
+          <List.Item className="health-record-item">
+            <Card className="health-record-card">
+              <Row gutter={16}>
+                <Col xs={24} sm={4}>
+                  <div className="record-date">
+                    <CalendarOutlined />
+                    <Text strong>{dayjs(item.date).format('DD/MM/YYYY')}</Text>
+                  </div>
+                </Col>
+                <Col xs={24} sm={6}>
+                  <div className="record-type">
+                    <FileTextOutlined />
+                    <Text>{item.type}</Text>
+                  </div>
+                </Col>
+                <Col xs={24} sm={6}>
+                  <div className="record-result">
+                    <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                    <Text strong>{item.result}</Text>
+                  </div>
+                </Col>
+                <Col xs={24} sm={8}>
+                  <div className="record-notes">
+                    <Text type="secondary">{item.notes}</Text>
+                  </div>
+                </Col>
+              </Row>
+            </Card>
+          </List.Item>
+        )}
+      />
+    </div>
+  );
+
+  const settingsTab = (
+    <div className="tab-content">
+      <Card title="Thông báo" className="settings-card">
+        <Row gutter={16}>
+          <Col span={18}>
+            <Text>Nhận thông báo về lịch hẹn</Text>
+          </Col>
+          <Col span={6}>
+            <Switch defaultChecked />
+          </Col>
+        </Row>
+        <Divider />
+        <Row gutter={16}>
+          <Col span={18}>
+            <Text>Nhận email nhắc nhở</Text>
+          </Col>
+          <Col span={6}>
+            <Switch defaultChecked />
+          </Col>
+        </Row>
+        <Divider />
+        <Row gutter={16}>
+          <Col span={18}>
+            <Text>Nhận tin tức sức khỏe</Text>
+          </Col>
+          <Col span={6}>
+            <Switch />
+          </Col>
+        </Row>
+      </Card>
+
+      <Card title="Bảo mật" className="settings-card">
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Button icon={<SecurityScanOutlined />}>Đổi mật khẩu</Button>
+          <Button icon={<SecurityScanOutlined />}>Xác thực hai bước</Button>
+          <Button danger icon={<ExclamationCircleOutlined />}>
+            Xóa tài khoản
+          </Button>
+        </Space>
+      </Card>
+    </div>
+  );
+
+  const tabItems = [
+    {
+      key: '1',
+      label: (
+        <span>
+          <UserOutlined />
+          Thông tin cá nhân
+        </span>
+      ),
+      children: personalInfoTab,
+    },
+    {
+      key: '2',
+      label: (
+        <span>
+          <CalendarOutlined />
+          Lịch hẹn ({appointments.length})
+        </span>
+      ),
+      children: appointmentsTab,
+    },
+    {
+      key: '3',
+      label: (
+        <span>
+          <HeartOutlined />
+          Hồ sơ sức khỏe ({healthRecords.length})
+        </span>
+      ),
+      children: healthRecordsTab,
+    },
+    {
+      key: '4',
+      label: (
+        <span>
+          <SettingOutlined />
+          Cài đặt
+        </span>
+      ),
+      children: settingsTab,
+    },
   ];
 
   return (
     <div className="account-container">
-      {/* Orders Section */}
-      <Card className="account-card">
-        <Title level={4} className="section-title">Thông tin tài khoản</Title>
-        <Text strong className="greeting-text">Xin chào, I</Text>
-        
-        <Divider className="divider" />
-        
-        <Title level={5} className="subsection-title">Đơn hàng</Title>
-        <Table
-          columns={ordersColumns}
-          dataSource={ordersData}
-          pagination={false}
-          bordered
-          className="orders-table"
-        />
+      {/* Profile Header */}
+      <Card className="profile-header">
+        <Row gutter={24} align="middle">
+          <Col xs={24} sm={6} md={4}>
+            <div className="avatar-section">
+              <Badge
+                count={
+                  <Upload
+                    name="avatar"
+                    showUploadList={false}
+                    customRequest={handleAvatarUpload}
+                    accept="image/*"
+                  >
+                    <Button
+                      size="small"
+                      icon={<CameraOutlined />}
+                      shape="circle"
+                      className="avatar-edit-btn"
+                    />
+                  </Upload>
+                }
+                offset={[-10, 35]}
+              >
+                <Avatar
+                  size={80}
+                  src={avatarUrl || undefined} // Hiển thị avatar từ URL
+                  icon={!avatarUrl && <UserOutlined />} // Icon mặc định nếu không có avatar
+                  className="user-avatar"
+                />
+              </Badge>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} md={14}>
+            <div className="profile-info">
+              <Title level={3} className="user-name">
+                {editedInfo.full_name || 'Chưa cập nhật tên'}
+              </Title>
+              <Text type="secondary" className="user-email">
+                {editedInfo.email || 'Chưa cập nhật email'}
+              </Text>
+              <div className="profile-completion">
+                <Text>Hoàn thiện hồ sơ: </Text>
+                <Progress
+                  percent={profileCompletion}
+                  size="small"
+                  style={{ width: 200, marginLeft: 8 }}
+                />
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={6} md={6}>
+            <div className="profile-stats">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Statistic
+                    title="Lịch hẹn"
+                    value={appointments.length}
+                    prefix={<CalendarOutlined />}
+                  />
+                </Col>
+                <Col span={12}>
+                  <Statistic
+                    title="Hồ sơ"
+                    value={healthRecords.length}
+                    prefix={<FileTextOutlined />}
+                  />
+                </Col>
+              </Row>
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                onClick={() => setIsEditing(!isEditing)}
+                className="edit-profile-btn"
+              >
+                {isEditing ? 'Hủy chỉnh sửa' : 'Chỉnh sửa hồ sơ'}
+              </Button>
+            </div>
+          </Col>
+        </Row>
       </Card>
 
-      {/* Account Info Section */}
-      <Card className="account-card" style={{ marginTop: 24 }}>
-        <Title level={4} className="section-title">Thông tin tài khoản</Title>
-        <Text strong className="greeting-text">Xin chào, I</Text>
-        
-        <Divider className="divider" />
-        
-        <List
-          itemLayout="horizontal"
-          dataSource={accountInfoData}
-          renderItem={(item) => (
-            <List.Item className="account-list-item">
-              <List.Item.Meta
-                title={<Text className="info-title">{item.title}</Text>}
-                description={<Text className={item.value ? "info-value" : "empty-text"}>{item.value || ' '}</Text>}
-              />
-            </List.Item>
-          )}
-          className="account-list"
+      {/* Main Content */}
+      <Card className="main-content">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems}
+          className="account-tabs"
         />
-        
-        <Divider className="divider" />
-        
-        <Text className="address-count">Số địa chỉ (1)</Text>
       </Card>
     </div>
   );
