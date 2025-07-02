@@ -27,6 +27,7 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext';
+import Cookies from 'js-cookie';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -39,43 +40,34 @@ const Question = () => {
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const accessToken = Cookies.get('accessToken');
+  const customerId = Cookies.get('accountId');
   // Form states
   const [newQuestion, setNewQuestion] = useState({
     content: '',
-    category: '',
-    title: '',
+    customer_id: customerId,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { isLoggedIn, userInfo } = useAuth();
-
-  const categories = [
-    { value: 'general', label: '🩺 Tư vấn chung', color: '#667eea' },
-    { value: 'nutrition', label: '🥗 Dinh dưỡng', color: '#f093fb' },
-    { value: 'exercise', label: '🏃‍♀️ Vận động', color: '#4facfe' },
-    { value: 'mental', label: '🧠 Sức khỏe tinh thần', color: '#43e97b' },
-    { value: 'pregnancy', label: '🤱 Thai kỳ', color: '#fa709a' },
-    { value: 'child', label: '👶 Trẻ em', color: '#ffecd2' },
-    { value: 'elderly', label: '👴 Người cao tuổi', color: '#a8edea' },
-    { value: 'emergency', label: '🚨 Cấp cứu', color: '#ff6b6b' },
-  ];
 
   const fetchMyQuestions = async () => {
     if (!isLoggedIn) return;
 
     setLoading(true);
     try {
-      const accessToken = sessionStorage.getItem('accessToken');
+
       const res = await axios.get(
-        'http://localhost:3000/question/get-my-questions',
+        `http://localhost:3000/question/get-question-by-id/customer/${customerId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          },
+          }
         }
       );
-      setMyQuestions(res.data.questions || res.data || []);
+      console.log('Fetched questions:', res.data.result);
+      setMyQuestions(res.data.result || []);
     } catch (error) {
       console.error('Failed to fetch my questions:', error);
       message.error('Không thể tải danh sách câu hỏi của bạn.');
@@ -98,24 +90,17 @@ const Question = () => {
     }
 
     if (
-      !newQuestion.title.trim() ||
-      !newQuestion.content.trim() ||
-      !newQuestion.category
+      !newQuestion.content.trim()
     ) {
       message.warning('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
     setIsSubmitting(true);
-    const accessToken = sessionStorage.getItem('accessToken');
-    const customerId = userInfo.accountId;
 
     const payload = {
       customer_id: customerId,
-      title: newQuestion.title,
       content: newQuestion.content,
-      category: newQuestion.category,
-      status: true,
     };
 
     try {
@@ -130,8 +115,8 @@ const Question = () => {
         }
       );
 
-      setMyQuestions([res.data, ...myQuestions]);
-      setNewQuestion({ content: '', category: '', title: '' });
+      fetchMyQuestions(); // Refresh the question list
+      setNewQuestion({ content: '' });
       setActiveTab('my-questions');
       message.success(
         'Câu hỏi đã được gửi thành công! Chúng tôi sẽ phản hồi sớm nhất có thể.'
@@ -148,14 +133,6 @@ const Question = () => {
     setIsDetailModalVisible(true);
   };
 
-  const getCategoryInfo = (category) => {
-    return (
-      categories.find((cat) => cat.value === category) || {
-        label: '📋 Khác',
-        color: '#6c757d',
-      }
-    );
-  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -208,7 +185,7 @@ const Question = () => {
             </div>
             <div className="stat-card">
               <div className="stat-number">
-                {myQuestions.filter((q) => q.answer).length}
+                {myQuestions.filter((q) => q.reply).length}
               </div>
               <div className="stat-label">Đã trả lời</div>
             </div>
@@ -278,25 +255,18 @@ const Question = () => {
               ) : (
                 <div className="questions-grid">
                   {myQuestions.map((question, index) => {
-                    const categoryInfo = getCategoryInfo(question.category);
                     return (
                       <Card
-                        key={question.id || index}
+                        key={question.ques_id || index}
                         className="question-card"
                         hoverable
                         onClick={() => handleQuestionClick(question)}
                       >
                         <div className="card-header">
-                          <Tag
-                            color={categoryInfo.color}
-                            className="category-tag"
-                          >
-                            {categoryInfo.label}
-                          </Tag>
                           <div
-                            className={`status-indicator ${question.answer ? 'answered' : 'pending'}`}
+                            className={`status-indicator ${question.reply ? 'answered' : 'pending'}`}
                           >
-                            {question.answer ? (
+                            {question.reply ? (
                               <>
                                 <CheckCircleOutlined />
                                 <span>Đã trả lời</span>
@@ -310,7 +280,6 @@ const Question = () => {
                           </div>
                         </div>
 
-                        <h3 className="question-title">{question.title}</h3>
                         <p className="question-preview">
                           {question.content.length > 120
                             ? question.content.substring(0, 120) + '...'
@@ -324,7 +293,7 @@ const Question = () => {
                               {formatDate(question.created_at || new Date())}
                             </span>
                           </div>
-                          {question.answer && (
+                          {question.reply && (
                             <div className="answer-available">
                               <MessageOutlined />
                               <span>Có câu trả lời</span>
@@ -354,103 +323,21 @@ const Question = () => {
 
                 <div className="progress-indicator">
                   <div
-                    className={`step ${newQuestion.category ? 'completed' : 'active'}`}
+                    className={`step ${newQuestion.content ? 'completed' : ''}`}
                   >
-                    <div className="step-number">1</div>
-                    <span>Chọn chủ đề</span>
-                  </div>
-                  <div
-                    className={`step ${newQuestion.title ? 'completed' : newQuestion.category ? 'active' : ''}`}
-                  >
-                    <div className="step-number">2</div>
-                    <span>Viết tiêu đề</span>
-                  </div>
-                  <div
-                    className={`step ${newQuestion.content ? 'completed' : newQuestion.title ? 'active' : ''}`}
-                  >
-                    <div className="step-number">3</div>
+                    <div className="step-number">📋</div>
                     <span>Mô tả chi tiết</span>
                   </div>
                 </div>
 
                 <div className="question-form">
-                  {/* Step 1: Category Selection */}
-                  <div className="form-step">
-                    <div className="step-header">
-                      <h3>🏷️ Bước 1: Chọn chủ đề phù hợp</h3>
-                      <p>
-                        Giúp chúng tôi hiểu rõ vấn đề của bạn thuộc lĩnh vực nào
-                      </p>
-                    </div>
-                    <div className="category-grid">
-                      {categories.map((cat) => (
-                        <div
-                          key={cat.value}
-                          className={`category-card ${newQuestion.category === cat.value ? 'selected' : ''}`}
-                          onClick={() =>
-                            setNewQuestion({
-                              ...newQuestion,
-                              category: cat.value,
-                            })
-                          }
-                        >
-                          <div className="category-emoji-large">
-                            {cat.label.split(' ')[0]}
-                          </div>
-                          <div className="category-name">
-                            {cat.label.substring(cat.label.indexOf(' ') + 1)}
-                          </div>
-                          {newQuestion.category === cat.value && (
-                            <div className="selected-check">✓</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  
 
-                  {/* Step 2: Title */}
-                  {newQuestion.category && (
+                  {/* Detailed Description */}
+                  { (
                     <div className="form-step fade-in">
                       <div className="step-header">
-                        <h3>📝 Bước 2: Viết tiêu đề câu hỏi</h3>
-                        <p>Hãy tóm tắt vấn đề của bạn trong một câu ngắn gọn</p>
-                      </div>
-                      <div className="input-container">
-                        <Input
-                          placeholder="Ví dụ: Đau đầu kéo dài 3 ngày, có cần lo lắng không?"
-                          value={newQuestion.title}
-                          onChange={(e) =>
-                            setNewQuestion({
-                              ...newQuestion,
-                              title: e.target.value,
-                            })
-                          }
-                          maxLength={100}
-                          size="large"
-                          className="form-input-enhanced"
-                          prefix={
-                            <MessageOutlined style={{ color: '#667eea' }} />
-                          }
-                        />
-                        <div className="input-footer">
-                          <span className="char-counter">
-                            {newQuestion.title.length}/100 ký tự
-                          </span>
-                          {newQuestion.title.length >= 10 && (
-                            <span className="validation-success">
-                              ✓ Tiêu đề tốt!
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 3: Detailed Description */}
-                  {newQuestion.title && (
-                    <div className="form-step fade-in">
-                      <div className="step-header">
-                        <h3>📋 Bước 3: Mô tả chi tiết vấn đề</h3>
+                        <h3>📋 Mô tả chi tiết vấn đề</h3>
                         <p>
                           Càng chi tiết, bác sĩ càng có thể tư vấn chính xác cho
                           bạn
@@ -552,23 +439,12 @@ const Question = () => {
                   )}
 
                   {/* Submit Section */}
-                  {newQuestion.category &&
-                    newQuestion.title &&
+                  {
                     newQuestion.content && (
                       <div className="submit-section fade-in">
                         <div className="submit-preview">
                           <h4>🔍 Xem lại câu hỏi của bạn:</h4>
                           <div className="preview-card">
-                            <div className="preview-category">
-                              {
-                                categories.find(
-                                  (cat) => cat.value === newQuestion.category
-                                )?.label
-                              }
-                            </div>
-                            <div className="preview-title">
-                              {newQuestion.title}
-                            </div>
                             <div className="preview-content">
                               {newQuestion.content.length > 100
                                 ? newQuestion.content.substring(0, 100) + '...'
@@ -586,8 +462,6 @@ const Question = () => {
                             icon={<SendOutlined />}
                             className="submit-button-enhanced"
                             disabled={
-                              !newQuestion.category ||
-                              !newQuestion.title.trim() ||
                               !newQuestion.content.trim()
                             }
                           >
@@ -600,8 +474,6 @@ const Question = () => {
                             onClick={() =>
                               setNewQuestion({
                                 content: '',
-                                category: '',
-                                title: '',
                               })
                             }
                             className="clear-button"
@@ -639,16 +511,10 @@ const Question = () => {
           {selectedQuestion && (
             <div className="question-detail">
               <div className="detail-header">
-                <Tag
-                  color={getCategoryInfo(selectedQuestion.category).color}
-                  className="detail-category"
-                >
-                  {getCategoryInfo(selectedQuestion.category).label}
-                </Tag>
                 <div
-                  className={`detail-status ${selectedQuestion.answer ? 'answered' : 'pending'}`}
+                  className={`detail-status ${selectedQuestion.reply ? 'answered' : 'pending'}`}
                 >
-                  {selectedQuestion.answer ? (
+                  {selectedQuestion.reply ? (
                     <>
                       <CheckCircleOutlined />
                       <span>Đã trả lời</span>
@@ -661,8 +527,6 @@ const Question = () => {
                   )}
                 </div>
               </div>
-
-              <h2 className="detail-title">{selectedQuestion.title}</h2>
 
               <div className="detail-meta">
                 <div className="meta-item">
@@ -686,24 +550,24 @@ const Question = () => {
                 </div>
               </div>
 
-              {selectedQuestion.answer ? (
+              {selectedQuestion.reply ? (
                 <div className="answer-section">
                   <h4>Câu trả lời:</h4>
                   <div className="answer-content">
                     <div className="answer-header">
                       <div className="doctor-info">
                         <span className="doctor-name">
-                          🩺 {selectedQuestion.doctorName || 'Bác sĩ tư vấn'}
+                          🩺 {"Tư vấn viên " + (selectedQuestion.reply.consultant.full_name || '')}
                         </span>
                         <span className="answer-date">
                           {formatDate(
-                            selectedQuestion.answer_date || new Date()
+                            selectedQuestion.reply.created_at || new Date()
                           )}
                         </span>
                       </div>
                     </div>
                     <div className="answer-text">
-                      {selectedQuestion.answer
+                      {selectedQuestion.reply.content
                         .split('\n')
                         .map((line, index) => (
                           <p key={index}>{line}</p>
