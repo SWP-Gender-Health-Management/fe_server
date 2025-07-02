@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import QuestionModal from '@components/ConsultDshBrd/QuestionModal/QuestionModal';
 import './ConsultantQuestion.css';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Thêm import Cookies
 
 const ConsultantQuestion = () => {
   const [filter, setFilter] = useState('Unreply');
@@ -15,8 +16,8 @@ const ConsultantQuestion = () => {
 
   useEffect(() => {
     async function fetchQuestions() {
-      const accountId = await sessionStorage.getItem('accountId');
-      const accessToken = await sessionStorage.getItem('accessToken');
+      const accountId = await Cookies.get('accountId');
+      const accessToken = await Cookies.get('accessToken');
       // console.log('useEffect has been called!:', accountId);
       console.log('useEffect has been called!:', accessToken);
 
@@ -69,11 +70,11 @@ const ConsultantQuestion = () => {
         {
           ques_id: questionId,
           content: reply,
-          consultant_id: sessionStorage.getItem('accountId') || '',
+          consultant_id: Cookies.get('accountId') || '',
         },
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
             'Content-Type': 'application/json',
           }
         }

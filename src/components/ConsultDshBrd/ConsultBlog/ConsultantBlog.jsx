@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import BlogModal from '@components/ConsultDshBrd/BlogModal/BlogModal';
-import BlogFormModal from '@components/ConsultDshBrd/BlogModal/BlogModal';
+import BlogFormModal from '@components/ConsultDshBrd/BlogForm/BlogFormModal';
 import './ConsultantBlog.css';
 import axios, { AxiosHeaders } from 'axios';
+import Cookies from 'js-cookie'; // Thêm import Cookies
 
 const ConsultantBlog = () => {
   const [filter, setFilter] = useState('All');
@@ -22,8 +23,8 @@ const ConsultantBlog = () => {
 
   // Fetch blogs from the server
   const fetchBlogs = async function () {
-    const accountId = await sessionStorage.getItem('accountId');
-    const accessToken = await sessionStorage.getItem('accessToken');
+    const accountId = await Cookies.get('accountId');
+    const accessToken = await Cookies.get('accessToken');
     // console.log('useEffect has been called!:', accountId);
     console.log('useEffect has been called!:', accessToken);
     const response = await axios.get(
@@ -41,8 +42,8 @@ const ConsultantBlog = () => {
 
   // Fetch majors from the server
   const fetchMajors = async () => {
-    const accountId = await sessionStorage.getItem('accountId');
-    const accessToken = await sessionStorage.getItem('accessToken');
+    const accountId = await Cookies.get('accountId');
+    const accessToken = await Cookies.get('accessToken');
 
     const response = await axios.get(
       'http://localhost:3000/blog/get-major',
@@ -105,8 +106,8 @@ const ConsultantBlog = () => {
       );
     } else {
       // Create new blog
-      const accountId = await sessionStorage.getItem('accountId');
-      const accessToken = await sessionStorage.getItem('accessToken');
+      const accountId = await Cookies.get('accountId');
+      const accessToken = await Cookies.get('accessToken');
       // Create FormData
       const formDataToSend = new FormData();
       formDataToSend.append('title', blogData.title);
