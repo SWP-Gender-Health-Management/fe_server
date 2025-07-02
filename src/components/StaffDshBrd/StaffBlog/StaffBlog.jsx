@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import BlogDetailModal from './BlogDetailModal';
-import BlogFormModal from './BlogFormModal';
+import BlogDetailModal from '@components/StaffDshBrd/BlogDetail/BlogDetailModal';
+import BlogFormModal from '@components/StaffDshBrd/BlogForm/BlogFormModal';
 import './StaffBlog.css';
 
 const StaffBlog = () => {

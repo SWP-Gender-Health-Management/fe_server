@@ -51,6 +51,15 @@
   pointer-events: none;
 }
 
+.ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: #1677ff;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important; 
+}
+
+
 /* ================================================ */
 /* BRAND HEADER                                     */
 /* ================================================ */
@@ -68,39 +77,24 @@
   margin-bottom: 16px;
 }
 
-.logo-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+.tab-brand-logo{
+  width: auto;
+  height: 5em;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 24px;
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-  animation: pulse 2s infinite;
-}
-
-.brand-title {
-  font-size: 32px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0;
-  letter-spacing: -0.5px;
 }
 
 .auth-subtitle {
   font-size: 16px;
-  color: #64748b;
+  color: #337AB7;
   margin: 0;
   font-weight: 400;
   line-height: 1.6;
   max-width: 300px;
   margin: 0 auto;
+  white-space: nowrap;
 }
 
 /* ================================================ */
@@ -123,7 +117,7 @@
   padding: 16px 32px;
   font-size: 16px;
   font-weight: 600;
-  border-radius: 16px;
+  border-radius: 12px;
   margin-right: 8px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -160,7 +154,7 @@
 }
 
 .auth-tabs .ant-tabs-tab-active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%) !important;
   color: white !important;
   border-color: transparent !important;
   transform: translateY(-2px);
@@ -198,33 +192,58 @@
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   font-size: 16px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.ant-input-affix-wrapper.ant-input-affix-wrapper-lg {
+  height: 56px;
+  border-radius: 16px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+}
+
+.ant-input-affix-wrapper .ant-input-prefix {
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.ant-input-affix-wrapper input.ant-input {
+  height: 100%;
+  padding: 10px;
+  line-height: 56px;
+}
+
 .modern-input:hover {
-  border-color: #6366f1;
+  border-color: #337AB7;
   transform: translateY(-1px);
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
 }
 
 .modern-input:focus,
 .modern-input.ant-input-focused {
-  border-color: #6366f1 !important;
+  border-color: #337AB7 !important;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
   transform: translateY(-1px);
 }
 
 .input-prefix-icon {
-  color: #6366f1;
+  color: #337AB7;
   font-size: 18px;
   transition: all 0.3s ease;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .modern-input:focus .input-prefix-icon,
 .modern-input.ant-input-focused .input-prefix-icon {
   transform: scale(1.1);
-  color: #4f46e5;
+  color: #337AB7;
 }
 
 /* ================================================ */
@@ -243,19 +262,19 @@
 
 .remember-me .ant-checkbox-wrapper {
   font-size: 14px;
-  color: #64748b;
+  color: #337AB7;
 }
 
 .forgot-link {
   padding: 0;
   font-size: 14px;
-  color: #6366f1;
+  color: #337AB7;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
 .forgot-link:hover {
-  color: #4f46e5;
+  color: #337AB7;
   transform: translateX(2px);
 }
 
@@ -274,8 +293,8 @@
   border: none;
 }
 
-.primary-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+.submit-btn.primary-btn{
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   box-shadow: 0 12px 35px rgba(99, 102, 241, 0.3);
 }
 
@@ -301,7 +320,9 @@
 
 .primary-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 16px 45px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 16px 45px rgba(49, 33, 5, 0.4);
+  background: linear-gradient(135deg, #ffb74b, #f89e28) !important;
+
 }
 
 .primary-btn:active {
@@ -328,7 +349,7 @@
   padding: 0 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #64748b;
+  color: #337AB7;
   background: linear-gradient(135deg, #fafafb 0%, #ffffff 100%);
   position: relative;
 }
@@ -359,20 +380,20 @@
 /* ================================================ */
 .agreement-checkbox {
   font-size: 14px;
-  color: #64748b;
+  color: #337AB7;
   line-height: 1.6;
 }
 
 .terms-link {
   padding: 0;
   font-size: 14px;
-  color: #6366f1;
+  color: #337AB7;
   font-weight: 500;
   text-decoration: underline;
 }
 
 .terms-link:hover {
-  color: #4f46e5;
+  color: #ffffff;
 }
 
 /* ================================================ */
@@ -381,7 +402,7 @@
 .auth-image-section {
   flex: 1;
   position: relative;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #337AB7 0%, #1F2B6C 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -452,7 +473,7 @@
 .stat-item {
   text-align: center;
   opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.783);
   padding: 12px 16px;
   border-radius: 12px;
   backdrop-filter: blur(10px);
@@ -463,13 +484,14 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 2px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  text-shadow:linear-gradient(135deg, #ff6b6b, #ff8e53);
 }
 
 .stat-label {
   font-size: 11px;
   opacity: 0.8;
   font-weight: 400;
+  color: #ffffff;
 }
 
 /* ================================================ */
@@ -570,16 +592,16 @@
 /* CHECKBOX CUSTOMIZATION                           */
 /* ================================================ */
 .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #6366f1;
-  border-color: #6366f1;
+  background-color: #337AB7;
+  border-color: #337AB7;
 }
 
 .ant-checkbox:hover .ant-checkbox-inner {
-  border-color: #6366f1;
+  border-color: #337AB7;
 }
 
 .ant-checkbox-wrapper:hover .ant-checkbox-inner {
-  border-color: #6366f1;
+  border-color: #337AB7;
 }
 
 /* ================================================ */
@@ -666,7 +688,7 @@
 .submit-btn:focus,
 .modern-input:focus,
 .auth-tabs .ant-tabs-tab:focus {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #337AB7;
   outline-offset: 2px;
 }
 

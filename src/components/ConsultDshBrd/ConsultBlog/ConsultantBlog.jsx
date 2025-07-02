@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import BlogModal from './BlogModal';
-import BlogFormModal from './BlogFormModal';
+import BlogModal from '@components/ConsultDshBrd/BlogModal/BlogModal';
+import BlogFormModal from '@components/ConsultDshBrd/BlogModal/BlogModal';
 import './ConsultantBlog.css';
 import axios, { AxiosHeaders } from 'axios';
 

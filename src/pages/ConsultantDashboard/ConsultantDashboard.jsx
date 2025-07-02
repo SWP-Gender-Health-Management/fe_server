@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Routes,
   Route,
@@ -6,10 +6,10 @@ import {
   useNavigate,
   useLocation,
 } from 'react-router-dom';
-import ConsultantProfile from './components/ConsultantProfile';
-import ConsultantAppointment from './components/ConsultantAppointment';
-import ConsultantQuestion from './components/ConsultantQuestion';
-import ConsultantBlog from './components/ConsultantBlog';
+import ConsultantProfile from '@components/ConsultDshBrd/ConsultProfile/ConsultantProfile';
+import ConsultantAppointment from '@components/ConsultDshBrd/ConsultAppoint/ConsultantAppointment';
+import ConsultantQuestion from '@components/ConsultDshBrd/ConsultQuest/ConsultantQuestion';
+import ConsultantBlog from '@components/ConsultDshBrd/ConsultBlog/ConsultantBlog';
 import './ConsultantDashboard.css';
 
 const ConsultantDashboard = () => {

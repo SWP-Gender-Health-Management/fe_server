@@ -2,7 +2,7 @@
 .navbar-container {
   width: 100%;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Helvetica;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -321,8 +321,8 @@ justify-content: center;
   transform: scale(1.05);
 }
 
-.logo {
-  width: 140px;
+.nav-logo {
+  width: 12em;
   height: auto;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }

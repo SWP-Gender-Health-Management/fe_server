@@ -1,195 +1,170 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
 import './BlogPage.css';
 
-const posts = [
-  // Bệnh nữ khoa
-  {
-    id: 1,
-    title: 'Viêm âm đạo: Nguyên nhân, triệu chứng và cách điều trị hiệu quả',
-    excerpt:
-      'Viêm âm đạo là bệnh phụ khoa phổ biến ở phụ nữ. Hiểu rõ nguyên nhân và cách điều trị để bảo vệ sức khỏe sinh sản.',
-    category: 'Bệnh nữ khoa',
-    time: '2 ngày trước',
-    readTime: '5 phút đọc',
-    author: 'BS. Nguyễn Thị Hạnh',
-    views: '2.3k',
-    img: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600',
-    tags: ['Viêm âm đạo', 'Phụ khoa', 'Điều trị'],
-  },
-  {
-    id: 2,
-    title: 'Rối loạn kinh nguyệt: Dấu hiệu cảnh báo không thể bỏ qua',
-    excerpt:
-      'Kinh nguyệt không đều có thể là dấu hiệu của nhiều vấn đề sức khỏe nghiêm trọng. Tìm hiểu khi nào cần đi khám.',
-    category: 'Bệnh nữ khoa',
-    time: '1 ngày trước',
-    readTime: '4 phút đọc',
-    author: 'BS. Lê Thị Mai',
-    views: '1.8k',
-    img: 'https://images.unsplash.com/photo-1594824154122-864b3c99f1a0?w=600',
-    tags: ['Kinh nguyệt', 'Rối loạn', 'Hormone'],
-  },
-  {
-    id: 3,
-    title: 'U xơ tử cung: Những điều phụ nữ cần biết để phòng tránh',
-    excerpt:
-      'U xơ tử cung ảnh hưởng đến khả năng sinh sản. Khám phá các phương pháp phòng ngừa và điều trị hiện đại.',
-    category: 'Bệnh nữ khoa',
-    time: '3 ngày trước',
-    readTime: '7 phút đọc',
-    author: 'BS. Trần Minh Châu',
-    views: '3.1k',
-    img: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600',
-    tags: ['U xơ tử cung', 'Sinh sản', 'Phòng ngừa'],
-  },
-
-  // Bệnh nam khoa
-  {
-    id: 4,
-    title: 'Yếu sinh lý nam giới: Nguyên nhân và giải pháp điều trị',
-    excerpt:
-      'Rối loạn cương dương ảnh hưởng đến chất lượng cuộc sống. Tìm hiểu các phương pháp điều trị an toàn và hiệu quả.',
-    category: 'Bệnh nam khoa',
-    time: '1 ngày trước',
-    readTime: '6 phút đọc',
-    author: 'BS. Phạm Văn Đức',
-    views: '4.2k',
-    img: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600',
-    tags: ['Sinh lý nam', 'ED', 'Điều trị'],
-  },
-  {
-    id: 5,
-    title: 'Viêm tuyến tiền liệt: Triệu chứng và cách phòng ngừa',
-    excerpt:
-      'Viêm tuyến tiền liệt ngày càng phổ biến ở nam giới trẻ. Nhận biết sớm để có phương pháp điều trị kịp thời.',
-    category: 'Bệnh nam khoa',
-    time: '4 ngày trước',
-    readTime: '5 phút đọc',
-    author: 'BS. Hoàng Minh Tuấn',
-    views: '2.9k',
-    img: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600',
-    tags: ['Tuyến tiền liệt', 'Viêm nhiễm', 'Nam khoa'],
-  },
-  {
-    id: 6,
-    title: 'Vô sinh nam: Nguyên nhân và phương pháp hỗ trợ sinh sản',
-    excerpt:
-      'Vô sinh nam chiếm 40% các trường hợp vô sinh. Tìm hiểu về các kỹ thuật hỗ trợ sinh sản hiện đại.',
-    category: 'Bệnh nam khoa',
-    time: '5 ngày trước',
-    readTime: '8 phút đọc',
-    author: 'BS. Nguyễn Văn Thành',
-    views: '3.7k',
-    img: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600',
-    tags: ['Vô sinh', 'Sinh sản', 'IVF'],
-  },
-
-  // Bệnh lây qua đường tình dục
-  {
-    id: 7,
-    title: 'HIV/AIDS: Phòng ngừa và điều trị trong thời đại mới',
-    excerpt:
-      'Những tiến bộ mới trong điều trị HIV giúp người bệnh sống khỏe mạnh. Cập nhật kiến thức về phòng chống HIV.',
-    category: 'Bệnh tình dục',
-    time: '2 ngày trước',
-    readTime: '6 phút đọc',
-    author: 'BS. Lê Văn Hải',
-    views: '5.1k',
-    img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600',
-    tags: ['HIV', 'AIDS', 'Phòng ngừa'],
-  },
-  {
-    id: 8,
-    title: 'Giang mai: Triệu chứng, chẩn đoán và điều trị',
-    excerpt:
-      'Giang mai có thể điều trị khỏi hoàn toàn nếu phát hiện sớm. Tìm hiểu về các giai đoạn và phương pháp điều trị.',
-    category: 'Bệnh tình dục',
-    time: '3 ngày trước',
-    readTime: '4 phút đọc',
-    author: 'BS. Trần Thị Lan',
-    views: '2.8k',
-    img: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600',
-    tags: ['Giang mai', 'STD', 'Chẩn đoán'],
-  },
-  {
-    id: 9,
-    title: 'HPV và ung thư cổ tử cung: Tầm soát và phòng ngừa',
-    excerpt:
-      'Virus HPV là nguyên nhân chính gây ung thư cổ tử cung. Vaccine HPV có thể phòng ngừa hiệu quả.',
-    category: 'Bệnh tình dục',
-    time: '1 tuần trước',
-    readTime: '7 phút đọc',
-    author: 'BS. Phạm Thị Hương',
-    views: '4.6k',
-    img: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600',
-    tags: ['HPV', 'Ung thư', 'Vaccine'],
-  },
-  {
-    id: 10,
-    title: 'Lậu và chlamydia: Hai bệnh tình dục thầm lặng',
-    excerpt:
-      'Nhiều trường hợp lậu và chlamydia không có triệu chứng rõ ràng, dẫn đến biến chứng nghiêm trọng.',
-    category: 'Bệnh tình dục',
-    time: '1 tuần trước',
-    readTime: '5 phút đọc',
-    author: 'BS. Đỗ Văn Nam',
-    views: '3.4k',
-    img: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600',
-    tags: ['Lậu', 'Chlamydia', 'STI'],
-  },
-];
-
-const categories = [
-  { id: 'all', name: 'Tất cả', icon: '📰', count: posts.length },
-  {
-    id: 'Bệnh nữ khoa',
-    name: 'Bệnh nữ khoa',
-    icon: '🌸',
-    count: posts.filter((p) => p.category === 'Bệnh nữ khoa').length,
-  },
-  {
-    id: 'Bệnh nam khoa',
-    name: 'Bệnh nam khoa',
-    icon: '👨‍⚕️',
-    count: posts.filter((p) => p.category === 'Bệnh nam khoa').length,
-  },
-  {
-    id: 'Bệnh tình dục',
-    name: 'Bệnh tình dục',
-    icon: '🛡️',
-    count: posts.filter((p) => p.category === 'Bệnh tình dục').length,
-  },
-];
+const API_BASE = 'http://localhost:3000';
 
 export default function BlogPage() {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [blogs, setBlogs] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    major: '',
+    status: true,
+    images: [],
+  });
+  const [editingBlog, setEditingBlog] = useState(null);
+
+  const fetchAllBlogs = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/blog/get-all-blogs`);
+      setBlogs(res.data.result || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCreateBlog = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Bạn không thể thực hiện hành động này.');
+      return;
+    }
+
+    try {
+      const payload = new FormData();
+      payload.append('title', formData.title);
+      payload.append('content', formData.content);
+      payload.append('major', formData.major);
+      payload.append('status', formData.status);
+      for (let file of formData.images) {
+        payload.append('images', file);
+      }
+
+      await axios.post(`${API_BASE}/blog/create-blog`, payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setShowForm(false);
+      setFormData({
+        title: '',
+        content: '',
+        major: '',
+        status: true,
+        images: [],
+      });
+      fetchAllBlogs();
+    } catch (err) {
+      console.error('Create failed:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Bạn không thể thực hiện hành động này.');
+      return;
+    }
+
+    try {
+      await axios.delete(`${API_BASE}/blog/delete-blog/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      fetchAllBlogs();
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
+  };
+
+  const handleUpdateBlog = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Bạn không thể thực hiện hành động này.');
+      return;
+    }
+
+    try {
+      const payload = new FormData();
+      payload.append('title', formData.title);
+      payload.append('content', formData.content);
+      payload.append('major', formData.major);
+      payload.append('status', formData.status);
+      for (let file of formData.images) {
+        payload.append('images', file);
+      }
+
+      await axios.put(
+        `${API_BASE}/blog/update-blog/${editingBlog.blog_id}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setShowForm(false);
+      setFormData({
+        title: '',
+        content: '',
+        major: '',
+        status: true,
+        images: [],
+      });
+      setEditingBlog(null);
+      fetchAllBlogs();
+    } catch (err) {
+      console.error('Update failed:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllBlogs();
+  }, []);
+
+  const filteredPosts = blogs.filter((post) => {
+    const matchesSearch = post.title
+      .toLowerCase()
+      .includes(searchText.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'all' || post.major === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   const postsPerPage = 6;
-
-  const filteredPosts = posts.filter(
-    (post) =>
-      (selectedCategory === 'all' || post.category === selectedCategory) &&
-      (post.title.toLowerCase().includes(searchText.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchText.toLowerCase()) ||
-        post.tags.some((tag) =>
-          tag.toLowerCase().includes(searchText.toLowerCase())
-        ))
-  );
-
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const currentPosts = filteredPosts.slice(
     (currentPage - 1) * postsPerPage,
     currentPage * postsPerPage
   );
 
-  const featuredPost = posts[0];
+  const categories = [
+    { id: 'all', name: 'Tất cả', icon: '📚', count: blogs.length },
+    ...Array.from(new Set(blogs.map((b) => b.major))).map((major) => ({
+      id: major,
+      name: major,
+      icon: '📌',
+      count: blogs.filter((b) => b.major === major).length,
+    })),
+  ];
+
+  const featuredPost = blogs[0];
 
   return (
     <div className="blog-container">
-      {/* Sidebar */}
       <aside className="blog-sidebar">
         <div className="sidebar-section">
           <h3 className="sidebar-title">Chuyên mục</h3>
@@ -197,9 +172,7 @@ export default function BlogPage() {
             {categories.map((category) => (
               <div
                 key={category.id}
-                className={`category-item ${
-                  selectedCategory === category.id ? 'active' : ''
-                }`}
+                className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
                 onClick={() => {
                   setSelectedCategory(category.id);
                   setCurrentPage(1);
@@ -213,42 +186,39 @@ export default function BlogPage() {
           </div>
         </div>
 
-        {/* Featured Post */}
-        <div className="sidebar-section">
-          <h3 className="sidebar-title">Bài viết nổi bật</h3>
-          <div className="featured-post">
-            <img
-              src={featuredPost.img}
-              alt={featuredPost.title}
-              className="featured-img"
-            />
-            <div className="featured-content">
-              <span className="featured-category">{featuredPost.category}</span>
-              <h4 className="featured-title">{featuredPost.title}</h4>
-              <div className="featured-meta">
-                <span className="featured-author">{featuredPost.author}</span>
-                <span className="featured-views">
-                  {featuredPost.views} lượt xem
-                </span>
+        {featuredPost && (
+          <div className="sidebar-section">
+            <h3 className="sidebar-title">Bài viết nổi bật</h3>
+            <div className="featured-post">
+              <img
+                src={featuredPost?.images?.[0]}
+                alt={featuredPost.title}
+                className="featured-img"
+              />
+              <div className="featured-content">
+                <span className="featured-category">{featuredPost.major}</span>
+                <h4 className="featured-title">{featuredPost.title}</h4>
+                <div className="featured-meta">
+                  <span className="featured-author">
+                    {featuredPost.author || 'Ẩn danh'}
+                  </span>
+                  <span className="featured-views">
+                    {featuredPost.views || 0} lượt xem
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Newsletter */}
         <div className="sidebar-section">
-          <h3 className="sidebar-title">Đăng ký nhận tin</h3>
-          <p className="newsletter-text">
-            Nhận tin tức sức khỏe mới nhất qua email
-          </p>
-          <div className="newsletter-form">
-            <Input placeholder="Email của bạn" className="newsletter-input" />
-            <Button className="newsletter-btn">Đăng ký</Button>
-          </div>
+          <h3 className="sidebar-title">Đăng bài</h3>
+          <Button onClick={() => setShowForm(true)} className="newsletter-btn">
+            + Bài viết mới
+          </Button>
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="blog-main">
         <div className="blog-header">
           <h1 className="page-title">Tin tức</h1>
@@ -263,9 +233,7 @@ export default function BlogPage() {
               }}
               className="hero-search-input"
             />
-            <Button className="hero-search-btn">
-              <i className="search-icon">🔍</i>
-            </Button>
+            <Button className="hero-search-btn">🔍</Button>
           </div>
           <div className="blog-stats">
             <span className="stats-text">
@@ -279,36 +247,55 @@ export default function BlogPage() {
         {currentPosts.length > 0 ? (
           <div className="blog-grid">
             {currentPosts.map((post) => (
-              <article key={post.id} className="blog-card">
+              <article key={post.blog_id} className="blog-card">
                 <div className="card-image">
-                  <img src={post.img} alt={post.title} />
+                  <img
+                    src={post?.images?.[0]}
+                    alt={post.title}
+                    className="featured-img"
+                  />
                   <div className="card-overlay">
-                    <span className="card-category">{post.category}</span>
+                    <span className="card-category">{post.major}</span>
                   </div>
                 </div>
                 <div className="card-content">
                   <div className="card-meta">
-                    <span className="card-author">{post.author}</span>
+                    <span className="card-author">
+                      {post.author || 'Ẩn danh'}
+                    </span>
                     <span className="meta-divider">•</span>
-                    <span className="card-time">{post.time}</span>
+                    <span className="card-time">
+                      {new Date(post.createdAt).toLocaleDateString('vi-VN')}
+                    </span>
                     <span className="meta-divider">•</span>
-                    <span className="card-read-time">{post.readTime}</span>
+                    <span className="card-read-time">
+                      {(post.content.length / 500).toFixed(0)} phút đọc
+                    </span>
                   </div>
                   <h3 className="card-title">{post.title}</h3>
-                  <p className="card-excerpt">{post.excerpt}</p>
+                  <p className="card-excerpt">
+                    {post.content.slice(0, 100)}...
+                  </p>
                   <div className="card-footer">
                     <div className="card-tags">
-                      {post.tags.slice(0, 2).map((tag, index) => (
-                        <span key={index} className="card-tag">
-                          #{tag}
-                        </span>
-                      ))}
+                      {(post.tags || ['#Blog'])
+                        .slice(0, 2)
+                        .map((tag, index) => (
+                          <span key={index} className="card-tag">
+                            #{tag}
+                          </span>
+                        ))}
                     </div>
                     <div className="card-stats">
-                      <span className="card-views">👁️ {post.views}</span>
+                      <span className="card-views">👁️ {post.views || '0'}</span>
                     </div>
                   </div>
-                  <Button className="read-more-btn">Đọc tiếp</Button>
+                  <div className="card-actions">
+                    <Button onClick={() => handleUpdateBlog(post)}>📝</Button>
+                    <Button onClick={() => handleDelete(post.blog_id)}>
+                      🗑️
+                    </Button>
+                  </div>
                 </div>
               </article>
             ))}
@@ -329,36 +316,102 @@ export default function BlogPage() {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="pagination">
             <Button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
-              className="pagination-btn"
             >
               Trước
             </Button>
-            <div className="pagination-numbers">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  className={`pagination-number ${
-                    currentPage === index + 1 ? 'active' : ''
-                  }`}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={`pagination-number ${currentPage === i + 1 ? 'active' : ''}`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
             <Button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
-              className="pagination-btn"
             >
               Sau
             </Button>
+          </div>
+        )}
+
+        {showForm && (
+          <div className="blog-form-modal">
+            <div className="blog-form">
+              <h3>{editingBlog ? 'Chỉnh sửa bài viết' : 'Tạo bài viết mới'}</h3>
+
+              <div className="blog-form-group">
+                <label className="blog-form-label">Tiêu đề</label>
+                <input
+                  className="blog-form-input"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  placeholder="Nhập tiêu đề bài viết"
+                />
+              </div>
+
+              <div className="blog-form-group">
+                <label className="blog-form-label">Chuyên mục</label>
+                <input
+                  className="blog-form-input"
+                  value={formData.major}
+                  onChange={(e) =>
+                    setFormData({ ...formData, major: e.target.value })
+                  }
+                  placeholder="Ví dụ: Tin tức, Kỹ thuật, Sức khỏe..."
+                />
+              </div>
+
+              <div className="blog-form-group">
+                <label className="blog-form-label">Nội dung</label>
+                <textarea
+                  className="blog-form-textarea"
+                  value={formData.content}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
+                  placeholder="Nhập nội dung bài viết..."
+                />
+              </div>
+
+              <div className="blog-form-group">
+                <label className="blog-form-label">
+                  Hình ảnh (có thể chọn nhiều)
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  onChange={(e) =>
+                    setFormData({ ...formData, images: [...e.target.files] })
+                  }
+                />
+              </div>
+
+              <div className="form-buttons">
+                <button
+                  onClick={editingBlog ? handleUpdateBlog : handleCreateBlog}
+                >
+                  {editingBlog ? 'Lưu chỉnh sửa' : 'Đăng bài'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowForm(false);
+                    setEditingBlog(null);
+                  }}
+                >
+                  Hủy
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </main>
