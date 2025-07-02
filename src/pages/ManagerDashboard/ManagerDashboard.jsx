@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import ServiceManagement from './components/ServiceManagement';
 import BlogManagement from './components/BlogManagement';
+import QuestionManagement from './components/QuestionManagement';
 import ManagerProfile from './components/ManagerProfile';
 import './ManagerDashboard.css';
 
@@ -26,6 +27,11 @@ const ManagerDashboard = () => {
       path: '/manager/blogs',
       name: 'Quản lý bài viết',
       icon: '📝',
+    },
+    {
+      path: '/manager/questions',
+      name: 'Quản lý câu hỏi',
+      icon: '💬',
     },
     {
       path: '/manager/profile',
@@ -103,6 +109,7 @@ const ManagerDashboard = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/services" element={<ServiceManagement />} />
           <Route path="/blogs" element={<BlogManagement />} />
+          <Route path="/questions" element={<QuestionManagement />} />
           <Route path="/profile" element={<ManagerProfile />} />
         </Routes>
       </div>
