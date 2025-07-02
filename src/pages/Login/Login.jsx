@@ -21,7 +21,7 @@ import Cookies from 'js-cookie'; // Thêm import Cookies
 const { TabPane } = Tabs;
 
 const Login = ({ visible, onCancel }) => {
-  const { login, setUserInfo } = useAuth();
+  const { login } = useAuth();
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
   const [loginLoading, setLoginLoading] = useState(false);
@@ -71,7 +71,7 @@ const Login = ({ visible, onCancel }) => {
 
       // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
       login(accessToken, null, account_id, full_name || 'Người dùng', role);
-      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
+      // setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
       Cookies.set('accountId', account_id, { expires: 1 });
       Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
       Cookies.set('role', role || null, { expires: 1 });
@@ -131,7 +131,7 @@ const Login = ({ visible, onCancel }) => {
 
       // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
       login(accessToken, null, account_id, full_name || 'Người dùng', role);
-      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
+      // setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
       Cookies.set('accountId', account_id, { expires: 1 });
       Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
       Cookies.set('role', role || null, { expires: 1 });

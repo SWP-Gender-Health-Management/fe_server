@@ -13,30 +13,33 @@ export const AuthProvider = ({ children }) => {
   });
 
   // Cập nhật trạng thái khi cookie thay đổi
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const accountId = Cookies.get('accountId');
-      const fullname = Cookies.get('fullname');
-      const role = Cookies.get('role');
-      setIsLoggedIn(!!accountId);
-      setUserInfo({
-        accountId: accountId || null,
-        fullname: fullname || null,
-        role: role || null,
-      });
-    }, 1000); // kiểm tra mỗi giây
+useEffect(() => {
+  const interval = setInterval(() => {
+    const accountId = Cookies.get('accountId');
+    const fullname = Cookies.get('fullname');
+    const role = Cookies.get('role');
+    setIsLoggedIn(!!accountId);
+    setUserInfo({
+      accountId: accountId || null,
+      fullname: fullname || null,
+      role: role,
+    });
+  }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  return () => clearInterval(interval);
+}, []);
 
-  const login = (accessToken, refreshToken, accountId, fullname, role) => {
-    Cookies.set('accessToken', accessToken, { expires: 1 });
-    Cookies.set('accountId', accountId || null, { expires: 1 });
-    Cookies.set('fullname', fullname || 'Người dùng', { expires: 1 });
-    Cookies.set('role', role || null, { expires: 1 });
-    setIsLoggedIn(true);
-    setUserInfo({ accountId, fullname: fullname || 'Người dùng', role });
-  };
+
+const login = (accessToken, refreshToken, accountId, fullname, role) => {
+  Cookies.set('accessToken', accessToken, { expires: 1 });
+  Cookies.set('accountId', accountId || null, { expires: 1 });
+  Cookies.set('fullname', fullname || 'Người dùng', { expires: 1 });
+  Cookies.set('role', role, { expires: 1 });
+
+  setIsLoggedIn(true);
+  setUserInfo({ accountId, fullname: fullname || 'Người dùng', role });
+};
+
 
   const onLogout = () => {
     Cookies.remove('accessToken');

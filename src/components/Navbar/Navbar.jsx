@@ -62,6 +62,7 @@ const Navbar = ({ onLoginClick }) => {
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
+    'admin': 'Quản trị viên',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -167,6 +168,15 @@ const Navbar = ({ onLoginClick }) => {
       icon: <WechatWorkOutlined />,
     },
   ];
+// console.log('Role:', role, typeof role); // Role: 0 "number"
+const roleRoutes = {
+  ADMIN: { path: '/admin', label: 'Admin' },
+  STAFF: { path: '/staff', label: 'Nhân viên' },
+  MANAGER: { path: '/manager', label: 'Quản lý' },
+  CONSULTANT: { path: '/consultant', label: 'Tư vấn' },
+  RECEPTIONIST: { path: '/receptionist', label: 'Lễ tân' },
+};
+
 
   const accountMenu = {
     items: [
@@ -179,30 +189,20 @@ const Navbar = ({ onLoginClick }) => {
           </Link>
         ),
       },
-      ...(role === 3 ? [] : [ // Ẩn "Cài đặt" với role 3 (CUSTOMER)
-            {
-              key: 'settings',
-              label: (
-                <Link
-                  to={
-                    role === 2 ? '/staff' :
-                    role === 1 ? '/consultant' :
-                    role === 4 ? '/manager' :
-                    role === 0 ? '/admin' :
-                    role === 5 ? '/receptionist' : '/settings'
-                  }
-                  className="dropdown-link"
-                >
-                  <AppstoreOutlined style={{ marginRight: '8px' }} />
-                  {role === 2 ? 'Staff' :
-                  role === 1 ? 'Tư vấn' :
-                  role === 4 ? 'Quản lý' :
-                  role === 0 ? 'Admin' :
-                  role === 5 ? 'Lễ tân' : 'Cài đặt'}
-                </Link>
-              ),
-            }
-          ]),
+      ...(role === 'CUSTOMER' ? [] : [
+        {
+          key: 'settings',
+          label: (
+            <Link
+              to={roleRoutes[role]?.path || '/settings'}
+              className="dropdown-link"
+            >
+              <AppstoreOutlined style={{ marginRight: '8px' }} />
+              {roleRoutes[role]?.label || 'Cài đặt'}
+            </Link>
+          ),
+        },
+      ]),
       { type: 'divider' },
       {
         key: 'logout',
