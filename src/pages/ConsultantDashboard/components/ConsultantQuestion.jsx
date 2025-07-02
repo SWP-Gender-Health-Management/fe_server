@@ -45,39 +45,47 @@ const ConsultantQuestion = () => {
 
     }
     fetchQuestions();
-  }, []);
+  }, [showModal]); // Re-fetch questions when modal is closed
 
   // Filter questions based on status
   const filteredQuestions = (filter === 'Unreply') ? questionsUnreplied : questionsReplied;
 
   // Handle question click
   const handleQuestionClick = (question) => {
-  console.log('Selected Question:', question);
-  if (!question || !question.ques_id) {
-    console.error('Question data is invalid:', question);
-    return;
-  }
-  setSelectedQuestion(question);
-  setShowModal(true);
-};
+    console.log('Selected Question:', question);
+    if (!question || !question.ques_id) {
+      console.error('Question data is invalid:', question);
+      return;
+    }
+    setSelectedQuestion(question);
+    setShowModal(true);
+  };
 
   // Handle reply submission
-  const handleReplySubmit = (questionId, reply) => {
-    setQuestions((prev) =>
-      prev.map((q) =>
-        q.id === questionId
-          ? {
-            ...q,
-            status: 'replied',
-            reply: reply,
-            consultantName:
-              sessionStorage.getItem('full_name') || 'Tư vấn viên',
-            repliedAt: new Date().toISOString(),
+  const handleReplySubmit = async (questionId, reply) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/reply/create-reply`,
+        {
+          ques_id: questionId,
+          content: reply,
+          consultant_id: sessionStorage.getItem('accountId') || '',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
           }
-          : q
-      )
-    );
-    setShowModal(false);
+        }
+      ).then(() => {
+        alert('Trả lời đã được gửi thành công!');
+        // Refresh the questions after reply submission 
+        setShowModal(false);
+      });
+    } catch (error) {
+      console.error('Error submitting reply:', error);
+      alert('Có lỗi xảy ra khi gửi câu trả lời. Vui lòng thử lại sau.');
+    }
   };
 
   // Format date

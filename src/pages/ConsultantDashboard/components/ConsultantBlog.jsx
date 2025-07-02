@@ -13,36 +13,49 @@ const ConsultantBlog = () => {
 
   // Mock data cho blogs
   const [blogs, setBlogs] = useState([]);
+  const [majors, setMajors] = useState([]);
 
   useEffect(() => {
-    async function fetchBlogs() {
-      const accountId = await sessionStorage.getItem('accountId');
-      const accessToken = await sessionStorage.getItem('accessToken');
-      // console.log('useEffect has been called!:', accountId);
-      console.log('useEffect has been called!:', accessToken);
-      const response = await axios.get(
-        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          }
-        }
-      );
-      console.log('Response:', response.data);
-      setBlogs(response.data.result || []);
-    }
+    fetchMajors();
     fetchBlogs();
-  }, []);
+  }, [showCreateModal]); // Re-fetch blogs when modal is created/edited
 
-  const majors = [
-    'Sức khỏe sinh sản',
-    'Kế hoạch hóa gia đình',
-    'Sức khỏe tình dục',
-    'Sức khỏe phụ khoa',
-    'Sức khỏe nam giới',
-    'Giáo dục giới tính',
-  ];
+  // Fetch blogs from the server
+  const fetchBlogs = async function () {
+    const accountId = await sessionStorage.getItem('accountId');
+    const accessToken = await sessionStorage.getItem('accessToken');
+    // console.log('useEffect has been called!:', accountId);
+    console.log('useEffect has been called!:', accessToken);
+    const response = await axios.get(
+      `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+    console.log('Response:', response.data);
+    setBlogs(response.data.result || []);
+  };
+
+  // Fetch majors from the server
+  const fetchMajors = async () => {
+    const accountId = await sessionStorage.getItem('accountId');
+    const accessToken = await sessionStorage.getItem('accessToken');
+
+    const response = await axios.get(
+      'http://localhost:3000/blog/get-major',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+    console.log('Majors:', response.data);
+    setMajors(response.data.result || []);
+  }
 
   // Filter blogs based on status
   const filteredBlogs = blogs.filter((blog) => {
@@ -75,7 +88,7 @@ const ConsultantBlog = () => {
   };
 
   // Handle blog submission (create or update)
-  const handleBlogSubmit = (blogData) => {
+  const handleBlogSubmit = async (blogData) => {
     if (isEditing && selectedBlog) {
       // Update existing blog
       setBlogs((prev) =>
@@ -92,15 +105,35 @@ const ConsultantBlog = () => {
       );
     } else {
       // Create new blog
-      const newBlog = {
-        id: `B${String(blogs.length + 1).padStart(3, '0')}`,
-        ...blogData,
-        status: 'false',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        author: sessionStorage.getItem('full_name') || 'Tư vấn viên',
-      };
-      setBlogs((prev) => [newBlog, ...prev]);
+      const accountId = await sessionStorage.getItem('accountId');
+      const accessToken = await sessionStorage.getItem('accessToken');
+      // Create FormData
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', blogData.title);
+      formDataToSend.append('major', blogData.major);
+      formDataToSend.append('content', blogData.content);
+      formDataToSend.append('account_id', accountId || '');
+      console.log("Creating blog with data:", formDataToSend)
+      // Append images if any
+      // Add new image files
+      blogData.images.forEach((file) => {
+        formDataToSend.append(`images`, file);
+      });
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/blog/create-blog',
+          formDataToSend,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error creating blog:", error);
+        alert("Có lỗi xảy ra khi tạo blog. Vui lòng thử lại sau.");
+        return;
+      }
     }
     setShowCreateModal(false);
   };

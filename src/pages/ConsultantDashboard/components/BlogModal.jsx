@@ -42,15 +42,15 @@ const BlogModal = ({ blog, onClose, onEdit }) => {
               </div>
               <div className="blog-dates">
                 <div className="date-info">
-                  <strong>Tạo:</strong> {formatDate(blog.createdAt)}
+                  <strong>Tạo:</strong> {formatDate(blog.created_at)}
                 </div>
-                {blog.updatedAt !== blog.createdAt && (
+                {blog.updated_at !== blog.created_at && (
                   <div className="date-info">
-                    <strong>Cập nhật:</strong> {formatDate(blog.updatedAt)}
+                    <strong>Cập nhật:</strong> {formatDate(blog.updated_at)}
                   </div>
                 )}
                 <div className="date-info">
-                  <strong>Tác giả:</strong> {blog.author}
+                  <strong>Tác giả:</strong> {blog.account.full_name}
                 </div>
               </div>
             </div>

@@ -8,7 +8,7 @@ const BlogFormModal = ({ blog, majors, onClose, onSubmit, isEditing }) => {
     content: '',
     images: [],
   });
-  const [imageInput, setImageInput] = useState('');
+  const [imageInput, setImageInput] = useState([]);
 
   useEffect(() => {
     if (isEditing && blog) {
@@ -30,20 +30,31 @@ const BlogFormModal = ({ blog, majors, onClose, onSubmit, isEditing }) => {
   };
 
   const handleAddImage = () => {
-    if (imageInput.trim()) {
+    if (imageInput.length > 0) {
+      const newImages = Array.from(imageInput).map(file => ({
+        type: 'file',
+        value: file,
+        preview: URL.createObjectURL(file) // Tạo URL tạm thời để hiển thị
+      }));
       setFormData((prev) => ({
         ...prev,
-        images: [...prev.images, imageInput.trim()],
+        images: [...prev.images, ...newImages],
       }));
-      setImageInput('');
+      setImageInput([]); // Xóa input sau khi thêm
+      // Reset input file
+      document.querySelector('input[type="file"]').value = '';
     }
   };
 
   const handleRemoveImage = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    setFormData((prev) => {
+      const updatedImages = prev.images.filter((_, i) => i !== index);
+      // Thu hồi URL tạm thời nếu là file
+      if (prev.images[index].type === 'file') {
+        URL.revokeObjectURL(prev.images[index].preview);
+      }
+      return { ...prev, images: updatedImages };
+    });
   };
 
   const handleSubmit = (e) => {
@@ -62,6 +73,8 @@ const BlogFormModal = ({ blog, majors, onClose, onSubmit, isEditing }) => {
       alert('Vui lòng nhập nội dung blog.');
       return;
     }
+
+    formData.images = formData.images.map((image) => image.value); // Chỉ giữ lại giá trị file hoặc URL
 
     onSubmit(formData);
   };
@@ -150,20 +163,20 @@ const BlogFormModal = ({ blog, majors, onClose, onSubmit, isEditing }) => {
             <div className="form-section">
               <h3>Hình Ảnh</h3>
               <div className="form-group">
-                <label>Thêm hình ảnh (URL)</label>
+                <label>Thêm hình ảnh</label>
                 <div className="image-input-group">
                   <input
-                    type="url"
-                    value={imageInput}
-                    onChange={(e) => setImageInput(e.target.value)}
-                    placeholder="Nhập URL hình ảnh..."
+                    type="file"
+                    multiple // Cho phép chọn nhiều file
+                    accept="image/*" // Chỉ chấp nhận file ảnh
+                    onChange={(e) => setImageInput(e.target.files)}
                     className="form-input"
                   />
                   <button
                     type="button"
                     onClick={handleAddImage}
                     className="btn btn-outline"
-                    disabled={!imageInput.trim()}
+                    disabled={imageInput.length === 0}
                   >
                     ➕ Thêm
                   </button>
@@ -176,7 +189,10 @@ const BlogFormModal = ({ blog, majors, onClose, onSubmit, isEditing }) => {
                   <div className="images-grid">
                     {formData.images.map((image, index) => (
                       <div key={index} className="image-preview-item">
-                        <img src={image} alt={`Preview ${index + 1}`} />
+                        <img
+                          src={image.type === 'file' ? image.preview : image.value}
+                          alt={`Preview ${index + 1}`}
+                        />
                         <button
                           type="button"
                           onClick={() => handleRemoveImage(index)}
