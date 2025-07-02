@@ -52,7 +52,7 @@
   font-size: 28px;
   font-weight: 700;
   background: linear-gradient(135deg, #f97316, #ea580c);
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   -webkit-text-fill-color: transparent;
 }
 
@@ -81,7 +81,7 @@
   font-size: 24px;
   font-weight: 700;
   background: linear-gradient(135deg, #f97316, #ea580c);
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   -webkit-text-fill-color: transparent;
   margin-bottom: 5px;
 }
@@ -350,7 +350,7 @@
   line-height: 1.4;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  /* -webkit-line-clamp: 2; */
   overflow: hidden;
   min-height: 48px;
 }
@@ -362,7 +362,7 @@
   line-height: 1.5;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  /* -webkit-line-clamp: 3; */
   overflow: hidden;
   flex: 1;
 }
