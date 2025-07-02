@@ -12,6 +12,7 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
+import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import BookingPage from '@pages/Booking/BookingPage';
@@ -47,15 +48,12 @@ const AppLayout = () => {
     setShowLogin(false);
   }, [location]);
 
+  // Kiểm tra nếu là trang consultant thì không hiển thị navbar
+  const isConsultantPage = location.pathname === '/consultant';
+
   return (
     <div className="app-container">
-      <Navbar
-        onLoginClick={() => setShowLogin(true)}
-        onLogout={handleLogout}
-        // isLoggedIn={isLoggedIn}
-        // full_name={full_name} // Sử dụng fullname từ sessionStorage
-        // onLogout={handleLogout}
-      />
+      {!isConsultantPage && <Navbar onLoginClick={() => setShowLogin(true)} />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         {/* <Route path='/login' element={<login />} />  */}
@@ -74,6 +72,7 @@ const AppLayout = () => {
         <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/consultant" element={<ConsultantDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={<MenstrualPredictorPage />}
@@ -82,8 +81,12 @@ const AppLayout = () => {
         <Route path="/payment" element={<Payment />} />
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
-      <Footer />
-      <div className="footer-spacer" />
+      {!isConsultantPage && (
+        <>
+          <Footer />
+          <div className="footer-spacer" />
+        </>
+      )}
     </div>
   );
 };
