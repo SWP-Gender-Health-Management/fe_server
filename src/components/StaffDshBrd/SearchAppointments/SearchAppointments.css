@@ -1,0 +1,341 @@
+/* SearchAppointments Component Styles */
+.search-appointments {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 20px 0;
+}
+
+.header-content h2 {
+  margin: 0;
+  color: #1a202c;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.header-content p {
+  margin: 4px 0 0 0;
+  color: #718096;
+  font-size: 16px;
+}
+
+.search-filters {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.search-filters .ant-input {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.search-filters .ant-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.search-filters .ant-select {
+  border-radius: 8px;
+}
+
+.search-filters .ant-select .ant-select-selector {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 4px 8px;
+}
+
+.search-filters .ant-picker {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+}
+
+.search-filters .ant-btn {
+  border-radius: 8px;
+  height: 40px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-filters .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.search-filters .ant-btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+}
+
+.test-item {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+}
+
+.test-item:hover {
+  background: #e8f2ff;
+  border-left-color: #4c63d2;
+}
+
+.test-name {
+  font-weight: 500;
+  color: #2d3748;
+  font-size: 14px;
+}
+
+.phone-number {
+  font-size: 12px;
+  color: #718096;
+}
+
+.results-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.results-table .ant-table {
+  border-radius: 12px;
+}
+
+.results-table .ant-table-thead > tr > th {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 16px;
+}
+
+.results-table .ant-table-tbody > tr > td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+}
+
+.results-table .ant-table-tbody > tr:hover > td {
+  background: #f8fafc;
+}
+
+.update-modal-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.update-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.update-modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.update-modal-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.update-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-actions .ant-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status and Priority Tags */
+.ant-tag {
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  margin: 2px;
+  border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .search-appointments {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-appointments {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-content h2 {
+    font-size: 24px;
+  }
+
+  .search-filters {
+    padding: 16px;
+  }
+
+  .search-filters .ant-row {
+    gap: 12px;
+  }
+
+  .search-filters .ant-col {
+    margin-bottom: 12px;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+
+  .results-table .ant-table-thead > tr > th,
+  .results-table .ant-table-tbody > tr > td {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .test-item {
+    padding: 6px 8px;
+  }
+
+  .test-name {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-appointments {
+    padding: 12px;
+  }
+
+  .search-filters {
+    padding: 12px;
+  }
+
+  .search-filters .ant-input,
+  .search-filters .ant-picker,
+  .search-filters .ant-btn {
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .header-content h2 {
+    font-size: 22px;
+  }
+
+  .header-content p {
+    font-size: 14px;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-filters,
+.results-table {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced spacing and typography */
+.ant-space-compact .ant-btn {
+  height: 40px;
+}
+
+.ant-badge-count {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+/* Table improvements */
+.results-table .ant-pagination {
+  margin: 24px 0 0 0;
+  text-align: center;
+}
+
+.results-table .ant-pagination .ant-pagination-item {
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.results-table .ant-pagination .ant-pagination-item-active {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.results-table .ant-pagination .ant-pagination-item-active a {
+  color: white;
+}
+
+/* Focus states */
+.search-filters .ant-input:focus,
+.search-filters .ant-picker:focus,
+.search-filters .ant-select-focused .ant-select-selector {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+}
