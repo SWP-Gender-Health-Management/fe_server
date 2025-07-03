@@ -1,102 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import './ConsultantBlog.css';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const ConsultantBlog = () => {
-  const [articles, setArticles] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedBlog, setSelectedBlog] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [imageInput, setImageInput] = useState([]);
+  const [majors, setMajors] = useState([]);
 
-  // Mock articles data
+
+  // Mock blogs data
   useEffect(() => {
-    const mockArticles = [
-      {
-        id: 1,
-        title: 'Kế hoạch hóa gia đình: Những điều cần biết',
-        content:
-          'Kế hoạch hóa gia đình là việc quyết định số lượng con cái, khoảng cách sinh và thời điểm sinh con phù hợp với điều kiện kinh tế, sức khỏe...',
-        excerpt:
-          'Hướng dẫn chi tiết về các phương pháp kế hoạch hóa gia đình hiện đại và an toàn.',
-        status: 'published',
-        createdAt: new Date('2024-01-15'),
-        updatedAt: new Date('2024-01-15'),
-        views: 1245,
-        likes: 89,
-        category: 'Kế hoạch hóa gia đình',
-        readingTime: 5,
-        image: '/api/placeholder/400/200',
-        tags: ['kế hoạch', 'gia đình', 'tránh thai'],
-      },
-      {
-        id: 2,
-        title: 'Chu kỳ kinh nguyệt và sức khỏe phụ nữ',
-        content:
-          'Chu kỳ kinh nguyệt là một phần quan trọng trong sức khỏe sinh sản của phụ nữ. Hiểu rõ về chu kỳ này giúp chị em theo dõi...',
-        excerpt:
-          'Tìm hiểu về chu kỳ kinh nguyệt bình thường và các dấu hiệu cần lưu ý.',
-        status: 'draft',
-        createdAt: new Date('2024-01-10'),
-        updatedAt: new Date('2024-01-12'),
-        views: 0,
-        likes: 0,
-        category: 'Sức khỏe sinh sản',
-        readingTime: 7,
-        image: '/api/placeholder/400/200',
-        tags: ['kinh nguyệt', 'sức khỏe', 'phụ nữ'],
-      },
-      {
-        id: 3,
-        title: 'Chăm sóc sức khỏe sau sinh',
-        content:
-          'Thời kỳ sau sinh là giai đoạn quan trọng đối với sức khỏe của người mẹ. Việc chăm sóc đúng cách sẽ giúp mẹ phục hồi nhanh chóng...',
-        excerpt:
-          'Hướng dẫn chăm sóc toàn diện cho mẹ trong giai đoạn sau sinh.',
-        status: 'pending',
-        createdAt: new Date('2024-01-08'),
-        updatedAt: new Date('2024-01-08'),
-        views: 567,
-        likes: 34,
-        category: 'Sau sinh',
-        readingTime: 6,
-        image: '/api/placeholder/400/200',
-        tags: ['sau sinh', 'chăm sóc', 'phục hồi'],
-      },
-    ];
-    setArticles(mockArticles);
-  }, []);
+    fetchBlogs();
+    fetchMajors();
+  }, [showCreateModal]);
 
-  const [newArticle, setNewArticle] = useState({
+  // Fetch blogs from the server
+  const fetchBlogs = async function () {
+    try {
+      const accountId = await Cookies.get('accountId');
+      const accessToken = await Cookies.get('accessToken');
+      // console.log('useEffect has been called!:', accountId);
+      console.log('useEffect has been called!:', accessToken);
+      const response = await axios.get(
+        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log('Blog Response:', response.data.result);
+      setBlogs(response.data.result || []);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      alert("Có lỗi xảy ra khi fetch blog. Vui lòng thử lại sau.");
+      return;
+    }
+  };
+
+  // Fetch majors from the server
+  const fetchMajors = async () => {
+    try {
+      const accountId = await Cookies.get('accountId');
+      const accessToken = await Cookies.get('accessToken');
+
+      const response = await axios.get(
+        'http://localhost:3000/blog/get-major',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+
+      setMajors(response.data.result || []);
+    } catch (error) {
+      console.error("Error fetching majors:", error);
+      alert("Có lỗi xảy ra khi fetch major. Vui lòng thử lại sau.");
+      return;
+    }
+
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return (
+      date.toLocaleDateString('vi-VN') +
+      ' ' +
+      date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    );
+  };
+
+  const [newBlog, setNewBlog] = useState({
     title: '',
+    major: '',
     content: '',
-    excerpt: '',
-    category: '',
-    tags: [],
-    image: null,
+    images: [],
   });
 
-  // Filter and sort articles
-  const filteredAndSortedArticles = articles
-    .filter((article) => {
+  // Filter and sort blogs
+  const filteredAndSortedBlogs = blogs
+    .filter((blog) => {
       const matchesSearch =
-        article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.content.toLowerCase().includes(searchTerm.toLowerCase());
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.content.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
-        filterStatus === 'all' || article.status === filterStatus;
+        filterStatus === 'all' || blog.status === filterStatus;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'newest':
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.created_at) - new Date(a.created_at);
         case 'oldest':
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        case 'views':
-          return b.views - a.views;
-        case 'likes':
-          return b.likes - a.likes;
+          return new Date(a.created_at) - new Date(b.created_at);
         case 'title':
           return a.title.localeCompare(b.title);
         default:
@@ -106,14 +112,14 @@ const ConsultantBlog = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'published':
+      case 'true':
         return '#10b981';
-      case 'draft':
-        return '#6b7280';
-      case 'pending':
+      case true:
+        return '#10b981';
+      case 'false':
         return '#f59e0b';
-      case 'rejected':
-        return '#ef4444';
+      case false:
+        return '#f59e0b';
       default:
         return '#6b7280';
     }
@@ -121,71 +127,130 @@ const ConsultantBlog = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'published':
+      case 'true':
         return 'Đã xuất bản';
-      case 'draft':
-        return 'Bản nháp';
-      case 'pending':
+      case true:
+        return 'Đã xuất bản';
+      case 'false':
         return 'Chờ duyệt';
-      case 'rejected':
-        return 'Bị từ chối';
+      case false:
+        return 'Chờ duyệt';
       default:
         return 'Không xác định';
     }
   };
 
-  const handleCreateArticle = () => {
-    if (!newArticle.title || !newArticle.content) {
+  const handleAddImage = () => {
+    if (imageInput.length > 0) {
+      const newImages = Array.from(imageInput).map(file => ({
+        type: 'file',
+        value: file,
+        preview: URL.createObjectURL(file) // Tạo URL tạm thời để hiển thị
+      }));
+      setNewBlog((prev) => ({
+        ...prev,
+        images: [...prev.images, ...newImages],
+      }));
+      setImageInput([]); // Xóa input sau khi thêm
+      // Reset input file
+      document.querySelector('input[type="file"]').value = '';
+    }
+  };
+
+  const handleRemoveImage = (index) => {
+    setNewBlog((prev) => {
+      const updatedImages = prev.images.filter((_, i) => i !== index);
+      // Thu hồi URL tạm thời nếu là file
+      if (prev.images[index].type === 'file') {
+        URL.revokeObjectURL(prev.images[index].preview);
+      }
+      return { ...prev, images: updatedImages };
+    });
+  };
+
+  const handleCreateBlog = async () => {
+    if (!newBlog.title || !newBlog.content) {
       alert('Vui lòng nhập tiêu đề và nội dung bài viết');
       return;
     }
+    newBlog.images = newBlog.images.map((image) => image.value);
+    const accountId = await Cookies.get('accountId');
+    const accessToken = await Cookies.get('accessToken');
 
-    const article = {
-      id: Date.now(),
-      ...newArticle,
-      status: 'draft',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      views: 0,
-      likes: 0,
-      readingTime: Math.ceil(newArticle.content.split(' ').length / 200),
-    };
 
-    setArticles([article, ...articles]);
-    setNewArticle({
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', newBlog.title);
+    formDataToSend.append('major', newBlog.major);
+    formDataToSend.append('content', newBlog.content);
+    formDataToSend.append('account_id', accountId || '');
+
+    newBlog.images.forEach((file) => {
+      formDataToSend.append(`images`, file);
+    });
+    try {
+
+      const response = await axios.post(
+        'http://localhost:3000/blog/create-blog',
+        formDataToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error creating blog:", error);
+      alert("Có lỗi xảy ra khi tạo blog. Vui lòng thử lại sau.");
+      return;
+    }
+    setNewBlog({
       title: '',
       content: '',
-      excerpt: '',
-      category: '',
-      tags: [],
-      image: null,
+      major: '',
+      images: [],
     });
     setShowCreateModal(false);
   };
 
-  const handleDeleteArticle = (articleId) => {
+  const handleDeleteBlog = async (blogId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
-      setArticles(articles.filter((article) => article.id !== articleId));
+      // setBlogs(blogs.filter((blog) => blog.blog_id !== blogId));
+      try {
+        const accountId = await Cookies.get('accountId');
+        const accessToken = await Cookies.get('accessToken');
+        await axios.delete(
+          `http://localhost:3000/blog/delete-blog/${blogId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error deleting blog:", error);
+        alert("Có lỗi xảy ra khi xóa blog. Vui lòng thử lại sau.");
+        return;
+      } finally {
+        fetchBlogs()
+      }
     }
   };
 
-  const handleStatusChange = (articleId, newStatus) => {
-    setArticles(
-      articles.map((article) =>
-        article.id === articleId
-          ? { ...article, status: newStatus, updatedAt: new Date() }
-          : article
+  const handleStatusChange = (blogId, newStatus) => {
+    setBlogs(
+      blogs.map((blog) =>
+        blog.blog_id === blogId
+          ? { ...blog, status: newStatus, updated_at: new Date() }
+          : blog
       )
     );
   };
 
   const stats = {
-    total: articles.length,
-    published: articles.filter((a) => a.status === 'published').length,
-    draft: articles.filter((a) => a.status === 'draft').length,
-    pending: articles.filter((a) => a.status === 'pending').length,
-    totalViews: articles.reduce((sum, a) => sum + a.views, 0),
-    totalLikes: articles.reduce((sum, a) => sum + a.likes, 0),
+    total: blogs.length,
+    published: blogs.filter((b) => b.status === 'true' || b.status === true).length,
+    pending: blogs.filter((b) => b.status === 'false' || b.status === false).length,
   };
 
   return (
@@ -220,13 +285,6 @@ const ConsultantBlog = () => {
           </div>
         </div>
 
-        <div className="stat-card">
-          <span className="stat-icon">📝</span>
-          <div className="stat-content">
-            <h3>{stats.draft}</h3>
-            <p>Bản nháp</p>
-          </div>
-        </div>
 
         <div className="stat-card">
           <span className="stat-icon">⏳</span>
@@ -236,13 +294,6 @@ const ConsultantBlog = () => {
           </div>
         </div>
 
-        <div className="stat-card">
-          <span className="stat-icon">👀</span>
-          <div className="stat-content">
-            <h3>{stats.totalViews}</h3>
-            <p>Lượt xem</p>
-          </div>
-        </div>
       </div>
 
       {/* Filters and Search */}
@@ -264,10 +315,8 @@ const ConsultantBlog = () => {
             className="filter-select"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="published">Đã xuất bản</option>
-            <option value="draft">Bản nháp</option>
-            <option value="pending">Chờ duyệt</option>
-            <option value="rejected">Bị từ chối</option>
+            <option value="true">Đã xuất bản</option>
+            <option value="false">Chờ duyệt</option>
           </select>
 
           <select
@@ -277,80 +326,68 @@ const ConsultantBlog = () => {
           >
             <option value="newest">Mới nhất</option>
             <option value="oldest">Cũ nhất</option>
-            <option value="views">Nhiều lượt xem</option>
-            <option value="likes">Nhiều lượt thích</option>
             <option value="title">Theo tên</option>
           </select>
         </div>
       </div>
 
-      {/* Articles Grid */}
-      <div className="articles-grid">
-        {filteredAndSortedArticles.length > 0 ? (
-          filteredAndSortedArticles.map((article) => (
-            <div key={article.id} className="article-card">
-              <div className="article-image">
-                <img src={article.image} alt={article.title} />
-                <div className="article-status">
+      {/* Blogs Grid */}
+      <div className="blogs-grid">
+        {filteredAndSortedBlogs.length > 0 ? (
+          filteredAndSortedBlogs.map((blog) => (
+            <div key={blog.blog_id} className="blog-card">
+              <div className="blog-image">
+                <img src={blog.images[0]} alt={blog.title} />
+                <div className="blog-status">
                   <span
                     className="status-badge"
-                    style={{ backgroundColor: getStatusColor(article.status) }}
+                    style={{ backgroundColor: getStatusColor(blog.status) }}
                   >
-                    {getStatusText(article.status)}
+                    {getStatusText(blog.status)}
                   </span>
                 </div>
               </div>
 
-              <div className="article-content">
-                <div className="article-meta">
-                  <span className="category">{article.category}</span>
-                  <span className="reading-time">
-                    {article.readingTime} phút đọc
-                  </span>
+              <div className="blog-content">
+                <div className="blog-meta">
+                  <span className="major">{blog.major}</span>
                 </div>
 
-                <h3 className="article-title">{article.title}</h3>
-                <p className="article-excerpt">{article.excerpt}</p>
+                <h3 className="blog-title">{blog.title}</h3>
 
-                <div className="article-tags">
-                  {article.tags.map((tag, index) => (
-                    <span key={index} className="tag">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
 
-                <div className="article-stats">
-                  <span>👀 {article.views}</span>
-                  <span>❤️ {article.likes}</span>
+
+                <div className="blog-stats">
                   <span>
-                    📅 {article.createdAt.toLocaleDateString('vi-VN')}
+                    📅 {formatDate(blog.created_at)}
                   </span>
                 </div>
               </div>
 
-              <div className="article-actions">
+              <div className="blog-actions">
                 <button
                   className="action-btn view"
                   onClick={() => {
-                    setSelectedArticle(article);
+                    setSelectedBlog(blog);
                     setShowDetailModal(true);
                   }}
                 >
                   👁️ Xem
                 </button>
-                <button className="action-btn edit">✏️ Sửa</button>
+                <button className="action-btn edit">
+                  ✏️ Sửa
+                </button>
                 <button
                   className="action-btn delete"
-                  onClick={() => handleDeleteArticle(article.id)}
+                  onClick={() => handleDeleteBlog(blog.blog_id)}
                 >
                   🗑️ Xóa
                 </button>
 
-                {article.status === 'draft' && (
+                {blog.status === 'draft' && (
                   <button
                     className="action-btn publish"
-                    onClick={() => handleStatusChange(article.id, 'pending')}
+                    onClick={() => handleStatusChange(blog.blog_id, 'pending')}
                   >
                     📤 Gửi duyệt
                   </button>
@@ -373,7 +410,7 @@ const ConsultantBlog = () => {
         )}
       </div>
 
-      {/* Create Article Modal */}
+      {/* Create Blog Modal */}
       {showCreateModal && (
         <div
           className="modal-overlay"
@@ -396,53 +433,41 @@ const ConsultantBlog = () => {
                 <input
                   type="text"
                   placeholder="Nhập tiêu đề bài viết..."
-                  value={newArticle.title}
+                  value={newBlog.title}
                   onChange={(e) =>
-                    setNewArticle({ ...newArticle, title: e.target.value })
+                    setNewBlog({ ...newBlog, title: e.target.value })
                   }
                   className="form-input"
                 />
               </div>
 
               <div className="form-group">
-                <label>Danh mục</label>
+                <label>Chuyên ngành</label>
                 <select
-                  value={newArticle.category}
+                  value={newBlog.major}
                   onChange={(e) =>
-                    setNewArticle({ ...newArticle, category: e.target.value })
+                    setNewBlog({ ...newBlog, major: e.target.value })
                   }
                   className="form-select"
                 >
-                  <option value="">Chọn danh mục</option>
-                  <option value="Kế hoạch hóa gia đình">
-                    Kế hoạch hóa gia đình
-                  </option>
-                  <option value="Sức khỏe sinh sản">Sức khỏe sinh sản</option>
-                  <option value="Sau sinh">Sau sinh</option>
-                  <option value="Tư vấn tâm lý">Tư vấn tâm lý</option>
+                  <option key={0} value="">Chọn danh mục</option>
+                  {majors.map((major, index) => (
+                    <option key={index} value={major}>
+                      {major}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Tóm tắt</label>
-                <textarea
-                  placeholder="Viết tóm tắt ngắn gọn về bài viết..."
-                  value={newArticle.excerpt}
-                  onChange={(e) =>
-                    setNewArticle({ ...newArticle, excerpt: e.target.value })
-                  }
-                  className="form-textarea short"
-                  rows="3"
-                />
-              </div>
+
 
               <div className="form-group">
                 <label>Nội dung bài viết</label>
                 <textarea
                   placeholder="Viết nội dung chi tiết của bài viết..."
-                  value={newArticle.content}
+                  value={newBlog.content}
                   onChange={(e) =>
-                    setNewArticle({ ...newArticle, content: e.target.value })
+                    setNewBlog({ ...newBlog, content: e.target.value })
                   }
                   className="form-textarea"
                   rows="10"
@@ -450,27 +475,55 @@ const ConsultantBlog = () => {
               </div>
 
               <div className="form-group">
-                <label>Tags (cách nhau bằng dấu phẩy)</label>
-                <input
-                  type="text"
-                  placeholder="tag1, tag2, tag3..."
-                  onChange={(e) => {
-                    const tags = e.target.value
-                      .split(',')
-                      .map((tag) => tag.trim())
-                      .filter((tag) => tag);
-                    setNewArticle({ ...newArticle, tags });
-                  }}
-                  className="form-input"
-                />
+                <label>Ảnh của bài Viết</label>
+                <div className="image-input-group">
+                  <input
+                    type="file"
+                    multiple // Cho phép chọn nhiều file
+                    accept="image/*" // Chỉ chấp nhận file ảnh
+                    onChange={(e) => setImageInput(e.target.files)}
+                    className="form-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImage}
+                    className="btn btn-outline"
+                    disabled={imageInput.length === 0}
+                  >
+                    ➕ Thêm
+                  </button>
+                </div>
               </div>
+              {newBlog.images.length > 0 && (
+                <div className="images-preview">
+                  <h4>Hình ảnh đã thêm ({newBlog.images.length})</h4>
+                  <div className="images-grid">
+                    {newBlog.images.map((image, index) => (
+                      <div key={index} className="image-preview-item">
+                        <img
+                          src={image.type === 'file' ? image.preview : image.value}
+                          alt={`Preview ${index + 1}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="remove-image-btn"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
 
               <div className="modal-actions">
                 <button
                   className="action-btn save"
-                  onClick={handleCreateArticle}
+                  onClick={handleCreateBlog}
                 >
-                  💾 Lưu bản nháp
+                  💾 Tạo
                 </button>
                 <button
                   className="action-btn secondary"
@@ -484,8 +537,8 @@ const ConsultantBlog = () => {
         </div>
       )}
 
-      {/* Article Detail Modal */}
-      {showDetailModal && selectedArticle && (
+      {/* Blog Detail Modal */}
+      {showDetailModal && selectedBlog && (
         <div
           className="modal-overlay"
           onClick={() => setShowDetailModal(false)}
@@ -502,10 +555,10 @@ const ConsultantBlog = () => {
             </div>
 
             <div className="modal-content">
-              <div className="article-detail">
+              <div className="blog-detail">
                 <img
-                  src={selectedArticle.image}
-                  alt={selectedArticle.title}
+                  src={selectedBlog.images[0]}
+                  alt={selectedBlog.title}
                   className="detail-image"
                 />
 
@@ -513,47 +566,44 @@ const ConsultantBlog = () => {
                   <span
                     className="status-badge"
                     style={{
-                      backgroundColor: getStatusColor(selectedArticle.status),
+                      backgroundColor: getStatusColor(selectedBlog.status),
                     }}
                   >
-                    {getStatusText(selectedArticle.status)}
+                    {getStatusText(selectedBlog.status)}
                   </span>
-                  <span className="category">{selectedArticle.category}</span>
-                  <span className="reading-time">
-                    {selectedArticle.readingTime} phút đọc
-                  </span>
+                  <span className="major">{selectedBlog.major}</span>
                 </div>
 
-                <h1 className="detail-title">{selectedArticle.title}</h1>
+                <h1 className="detail-title">{selectedBlog.title}</h1>
 
                 <div className="detail-stats">
-                  <span>👀 {selectedArticle.views} lượt xem</span>
-                  <span>❤️ {selectedArticle.likes} lượt thích</span>
                   <span>
-                    📅 {selectedArticle.createdAt.toLocaleDateString('vi-VN')}
+                    📅 {formatDate(selectedBlog.created_at)}
                   </span>
                 </div>
 
-                <div className="detail-excerpt">
-                  <h4>Tóm tắt:</h4>
-                  <p>{selectedArticle.excerpt}</p>
-                </div>
+
 
                 <div className="detail-content">
                   <h4>Nội dung:</h4>
-                  <div className="content-text">{selectedArticle.content}</div>
+                  <div className="content-text">{selectedBlog.content}</div>
                 </div>
+                {/* Blog Images */}
 
-                <div className="detail-tags">
-                  <h4>Tags:</h4>
-                  <div className="tags-list">
-                    {selectedArticle.tags.map((tag, index) => (
-                      <span key={index} className="tag">
-                        #{tag}
-                      </span>
-                    ))}
+                {selectedBlog.images && selectedBlog.images.length > 0 && (
+                  <div className="blog-images-section">
+                    <h3>Hình Ảnh ({selectedBlog.images.length})</h3>
+                    <div className="images-grid">
+                      {selectedBlog.images.map((image, index) => (
+                        <div key={index} className="image-item">
+                          <img src={image} alt={`Blog image ${index + 1}`} />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+
               </div>
             </div>
           </div>
