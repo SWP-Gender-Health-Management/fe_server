@@ -56,14 +56,13 @@ const Question = () => {
 
     setLoading(true);
     try {
-
       const res = await axios.get(
         `http://localhost:3000/question/get-question-by-id/customer/${customerId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          }
+          },
         }
       );
       console.log('Fetched questions:', res.data.result);
@@ -89,9 +88,7 @@ const Question = () => {
       return;
     }
 
-    if (
-      !newQuestion.content.trim()
-    ) {
+    if (!newQuestion.content.trim()) {
       message.warning('Vui lòng điền đầy đủ thông tin!');
       return;
     }
@@ -132,7 +129,6 @@ const Question = () => {
     setSelectedQuestion(question);
     setIsDetailModalVisible(true);
   };
-
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -314,8 +310,10 @@ const Question = () => {
               <div className="form-container">
                 <div className="form-header">
                   <div className="header-icon-large">💬</div>
-                  <h2>Đặt câu hỏi cho chuyên gia</h2>
-                  <p>
+                  <h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>
+                    Đặt câu hỏi cho chuyên gia
+                  </h2>
+                  <p style={{ fontSize: '18px', lineHeight: '1.6' }}>
                     Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7. Hãy chia sẻ vấn đề
                     để nhận được lời tư vấn tốt nhất!
                   </p>
@@ -326,29 +324,34 @@ const Question = () => {
                     className={`step ${newQuestion.content ? 'completed' : ''}`}
                   >
                     <div className="step-number">📋</div>
-                    <span>Mô tả chi tiết</span>
+                    <span style={{ fontSize: '16px', fontWeight: '500' }}>
+                      Mô tả chi tiết
+                    </span>
                   </div>
                 </div>
 
                 <div className="question-form">
-                  
-
                   {/* Detailed Description */}
-                  { (
+                  {
                     <div className="form-step fade-in">
                       <div className="step-header">
-                        <h3>📋 Mô tả chi tiết vấn đề</h3>
-                        <p>
+                        <h3 style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                          📋 Mô tả chi tiết vấn đề
+                        </h3>
+                        <p style={{ fontSize: '16px', lineHeight: '1.5' }}>
                           Càng chi tiết, bác sĩ càng có thể tư vấn chính xác cho
                           bạn
                         </p>
                       </div>
 
                       <div className="description-helper">
-                        <h4>💡 Gợi ý những thông tin nên bao gồm:</h4>
+                        <h4 style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                          💡 Gợi ý những thông tin nên bao gồm:
+                        </h4>
                         <div className="helper-tags">
                           <div
                             className="helper-tag"
+                            style={{ fontSize: '14px', padding: '8px 12px' }}
                             onClick={() => {
                               const current = newQuestion.content;
                               const addition = current
@@ -364,6 +367,7 @@ const Question = () => {
                           </div>
                           <div
                             className="helper-tag"
+                            style={{ fontSize: '14px', padding: '8px 12px' }}
                             onClick={() => {
                               const current = newQuestion.content;
                               const addition = current
@@ -379,6 +383,7 @@ const Question = () => {
                           </div>
                           <div
                             className="helper-tag"
+                            style={{ fontSize: '14px', padding: '8px 12px' }}
                             onClick={() => {
                               const current = newQuestion.content;
                               const addition = current
@@ -394,6 +399,7 @@ const Question = () => {
                           </div>
                           <div
                             className="helper-tag"
+                            style={{ fontSize: '14px', padding: '8px 12px' }}
                             onClick={() => {
                               const current = newQuestion.content;
                               const addition = current
@@ -420,80 +426,111 @@ const Question = () => {
                               content: e.target.value,
                             })
                           }
-                          rows={6}
+                          rows={8}
                           maxLength={1000}
                           className="form-textarea-enhanced"
+                          style={{
+                            fontSize: '16px',
+                            lineHeight: '1.6',
+                            padding: '16px',
+                            borderRadius: '8px',
+                          }}
                         />
                         <div className="textarea-footer">
-                          <span className="char-counter">
+                          <span
+                            className="char-counter"
+                            style={{ fontSize: '14px' }}
+                          >
                             {newQuestion.content.length}/1000 ký tự
                           </span>
                           {newQuestion.content.length >= 50 && (
-                            <span className="validation-success">
+                            <span
+                              className="validation-success"
+                              style={{ fontSize: '14px' }}
+                            >
                               ✓ Mô tả chi tiết tốt!
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
-                  )}
+                  }
 
                   {/* Submit Section */}
-                  {
-                    newQuestion.content && (
-                      <div className="submit-section fade-in">
-                        <div className="submit-preview">
-                          <h4>🔍 Xem lại câu hỏi của bạn:</h4>
-                          <div className="preview-card">
-                            <div className="preview-content">
-                              {newQuestion.content.length > 100
-                                ? newQuestion.content.substring(0, 100) + '...'
-                                : newQuestion.content}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="form-actions">
-                          <Button
-                            type="primary"
-                            size="large"
-                            onClick={handleSubmitQuestion}
-                            loading={isSubmitting}
-                            icon={<SendOutlined />}
-                            className="submit-button-enhanced"
-                            disabled={
-                              !newQuestion.content.trim()
-                            }
+                  {newQuestion.content && (
+                    <div className="submit-section fade-in">
+                      <div className="submit-preview">
+                        <h4 style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                          🔍 Xem lại câu hỏi của bạn:
+                        </h4>
+                        <div className="preview-card">
+                          <div
+                            className="preview-content"
+                            style={{ fontSize: '15px', lineHeight: '1.5' }}
                           >
-                            {isSubmitting
-                              ? 'Đang gửi câu hỏi...'
-                              : '🚀 Gửi câu hỏi ngay'}
-                          </Button>
-                          <Button
-                            size="large"
-                            onClick={() =>
-                              setNewQuestion({
-                                content: '',
-                              })
-                            }
-                            className="clear-button"
-                            icon={<ReloadOutlined />}
-                          >
-                            Làm mới form
-                          </Button>
-                        </div>
-
-                        <div className="confidence-note">
-                          <div className="confidence-icon">🛡️</div>
-                          <div className="confidence-text">
-                            <strong>An tâm tuyệt đối:</strong> Thông tin của bạn
-                            được bảo mật hoàn toàn. Chúng tôi cam kết phản hồi
-                            trong vòng 2-4 giờ làm việc.
+                            {newQuestion.content.length > 100
+                              ? newQuestion.content.substring(0, 100) + '...'
+                              : newQuestion.content}
                           </div>
                         </div>
                       </div>
-                    )}
+
+                      <div className="form-actions">
+                        <Button
+                          type="primary"
+                          size="large"
+                          onClick={handleSubmitQuestion}
+                          loading={isSubmitting}
+                          icon={<SendOutlined />}
+                          className="submit-button-enhanced"
+                          style={{
+                            fontSize: '16px',
+                            height: '50px',
+                            fontWeight: 'bold',
+                          }}
+                          disabled={!newQuestion.content.trim()}
+                        >
+                          {isSubmitting
+                            ? 'Đang gửi câu hỏi...'
+                            : '🚀 Gửi câu hỏi ngay'}
+                        </Button>
+                        <Button
+                          size="large"
+                          onClick={() =>
+                            setNewQuestion({
+                              content: '',
+                            })
+                          }
+                          className="clear-button"
+                          style={{
+                            fontSize: '16px',
+                            height: '50px',
+                          }}
+                          icon={<ReloadOutlined />}
+                        >
+                          Làm mới form
+                        </Button>
+                      </div>
+
+                      <div className="confidence-note">
+                        <div className="confidence-icon">🛡️</div>
+                        <div
+                          className="confidence-text"
+                          style={{ fontSize: '15px', lineHeight: '1.5' }}
+                        >
+                          <strong>An tâm tuyệt đối:</strong> Thông tin của bạn
+                          được bảo mật hoàn toàn. Chúng tôi cam kết phản hồi
+                          trong vòng 2-4 giờ làm việc.
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
+              </div>
+
+              {/* Hospital Info moved here */}
+              <div style={{ marginTop: '40px' }}>
+                <HospitalInfo />
               </div>
             </div>
           )}
@@ -557,7 +594,9 @@ const Question = () => {
                     <div className="answer-header">
                       <div className="doctor-info">
                         <span className="doctor-name">
-                          🩺 {"Tư vấn viên " + (selectedQuestion.reply.consultant.full_name || '')}
+                          🩺{' '}
+                          {'Tư vấn viên ' +
+                            (selectedQuestion.reply.consultant.full_name || '')}
                         </span>
                         <span className="answer-date">
                           {formatDate(
@@ -590,10 +629,6 @@ const Question = () => {
             </div>
           )}
         </Modal>
-      </div>
-
-      <div className="question-sidebar">
-        <HospitalInfo />
       </div>
     </div>
   );
