@@ -7,22 +7,15 @@ import ConsultantBlog from '@components/ConsultDshBrd/ConsultBlog/ConsultantBlog
 import ConsultantQuestion from '@components/ConsultDshBrd/ConsultQuest/ConsultantQuestion';
 import ConsultantProfile from '@components/ConsultDshBrd/ConsultProfile/ConsultantProfile';
 import './ConsultantDashboard.css';
-import axios from 'axios';
-import Cookies from 'js-cookie'; // Thư viện để quản lý cookie
 
 const ConsultantDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [consultantData, setConsultantData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [questions, setQuestions] = useState([]);
   const navigate = useNavigate();
-  const [numberOfUnrepliedQuestions, setNumberOfUnrepliedQuestions] = useState(0);
 
-  const accountId = Cookies.get('accountId') || 'default_account_id'; // Lấy accountId từ cookie hoặc giá trị mặc định
-  const accessToken = Cookies.get('accessToken'); // Lấy accessToken từ cookie
-
-
+  
   // Mock consultant data - would come from API
   useEffect(() => {
     const loadConsultantData = async () => {
@@ -48,36 +41,6 @@ const ConsultantDashboard = () => {
 
     loadConsultantData();
   }, []);
-
-  const fetchQuestions = async () => {
-    // Simulate fetching questions from an API
-    try {
-      const responseUnreplied = await axios.get(
-        'http://localhost:3000/question/get-unreplied-questions',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
-      const responseReplied = await axios.get(
-        `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
-      const unrepliedQuestions = responseUnreplied.data.result || [];
-      const repliedQuestions = responseReplied.data.result || [];
-      setQuestions([...unrepliedQuestions, ...repliedQuestions]);
-      setNumberOfUnrepliedQuestions(unrepliedQuestions.length);
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  }
-
-  const handleQuestionChange = () => {
-    fetchQuestions();
-  };
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
@@ -110,7 +73,7 @@ const ConsultantDashboard = () => {
       case 'articles':
         return <ConsultantBlog />;
       case 'questions':
-        return <ConsultantQuestion onQuestionChange={handleQuestionChange} questions={questions} />;
+        return <ConsultantQuestion />;
       case 'profile':
         return <ConsultantProfile consultantData={consultantData} />;
       default:
@@ -147,7 +110,6 @@ const ConsultantDashboard = () => {
         consultantData={consultantData}
         collapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
-        numberOfUnrepliedQuestions={numberOfUnrepliedQuestions}
       />
 
       {/* Main Content Area */}

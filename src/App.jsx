@@ -27,6 +27,7 @@ import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
 import Footer from '@components/Footer/Footer';
 import '@styles/reset.css';
+import StaffDashboard from '@pages/StaffDashboard/StaffDashboard';
 
 // Layout chung cho tất cả trang
 const AppLayout = () => {
@@ -48,12 +49,14 @@ const AppLayout = () => {
     setShowLogin(false);
   }, [location]);
 
-  // Kiểm tra nếu là trang consultant thì không hiển thị navbar
-  const isConsultantPage = location.pathname === '/consultant';
+  // Kiểm tra nếu là trang dashboard (consultant, staff, admin) thì không hiển thị navbar và footer
+  const isDashboardPage = ['/consultant', '/staff', '/admin'].includes(
+    location.pathname
+  );
 
   return (
     <div className="app-container">
-      {!isConsultantPage && <Navbar onLoginClick={() => setShowLogin(true)} />}
+      {!isDashboardPage && <Navbar onLoginClick={() => setShowLogin(true)} />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         {/* <Route path='/login' element={<login />} />  */}
@@ -73,6 +76,7 @@ const AppLayout = () => {
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/consultant" element={<ConsultantDashboard />} />
+        <Route path="/staff" element={<StaffDashboard />} />
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={<MenstrualPredictorPage />}
@@ -81,7 +85,7 @@ const AppLayout = () => {
         <Route path="/payment" element={<Payment />} />
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
-      {!isConsultantPage && (
+      {!isDashboardPage && (
         <>
           <Footer />
           <div className="footer-spacer" />

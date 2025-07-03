@@ -6,8 +6,7 @@ const ConsultantSidebar = ({
   onLogout,
   consultantData,
   collapsed,
-  onToggle,
-  numberOfUnrepliedQuestions
+  onToggle
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -24,36 +23,31 @@ const ConsultantSidebar = ({
       id: 'dashboard',
       icon: '🏠',
       label: 'Tổng quan',
-      description: 'Dashboard chính',
-      badge: null,
+      description: 'Dashboard chính'
     },
     {
       id: 'appointments',
       icon: '🗓️',
       label: 'Quản lý Lịch hẹn',
-      description: 'Xem và quản lý cuộc hẹn',
-      badge: '3', // số lịch hẹn hôm nay
+      description: 'Xem và quản lý cuộc hẹn'
     },
     {
       id: 'articles',
       icon: '📝',
       label: 'Quản lý Bài viết',
-      description: 'Viết và quản lý blog',
-      badge: '1', // số bài chờ duyệt
+      description: 'Viết và quản lý blog'
     },
     {
       id: 'questions',
       icon: '❓',
       label: 'Hỏi & Đáp',
-      description: 'Trả lời câu hỏi',
-      badge: numberOfUnrepliedQuestions === 0 ? undefined : numberOfUnrepliedQuestions, // số câu hỏi chưa trả lời
+      description: 'Trả lời câu hỏi'
     },
     {
       id: 'profile',
       icon: '👤',
       label: 'Hồ sơ cá nhân',
-      description: 'Thông tin cá nhân',
-      badge: null,
+      description: 'Thông tin cá nhân'
     },
   ];
 
@@ -146,9 +140,6 @@ const ConsultantSidebar = ({
                         {item.description}
                       </span>
                     </div>
-                    {item.badge && (
-                      <span className="nav-badge">{item.badge}</span>
-                    )}
                   </>
                 )}
               </button>
