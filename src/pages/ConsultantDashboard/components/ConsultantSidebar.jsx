@@ -7,6 +7,7 @@ const ConsultantSidebar = ({
   consultantData,
   collapsed,
   onToggle,
+  numberOfUnrepliedQuestions
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -45,7 +46,7 @@ const ConsultantSidebar = ({
       icon: '❓',
       label: 'Hỏi & Đáp',
       description: 'Trả lời câu hỏi',
-      badge: '5', // số câu hỏi chưa trả lời
+      badge: numberOfUnrepliedQuestions === 0 ? undefined : numberOfUnrepliedQuestions, // số câu hỏi chưa trả lời
     },
     {
       id: 'profile',

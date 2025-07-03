@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ConsultantQuestion.css';
+import axios from 'axios';
+import Cookies from 'js-cookie'; // Thêm import Cookies
 
-const ConsultantQuestion = () => {
-  const [questions, setQuestions] = useState([]);
+const ConsultantQuestion = ({ onQuestionChange, questions }) => {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [answerText, setAnswerText] = useState('');
   const [filterTab, setFilterTab] = useState('unanswered'); // 'unanswered' or 'answered'
@@ -11,110 +12,66 @@ const ConsultantQuestion = () => {
 
   // Mock questions data
   useEffect(() => {
-    const mockQuestions = [
-      {
-        id: 1,
-        title: 'Chu kỳ kinh nguyệt không đều có ảnh hưởng gì không?',
-        content:
-          'Em 25 tuổi, chu kỳ kinh nguyệt của em thường không đều, có khi 28 ngày, có khi 35 ngày. Em muốn hỏi điều này có ảnh hưởng đến khả năng sinh sản không và em nên làm gì để cải thiện?',
-        askedBy: 'Hoàng Thị Bích',
-        askedAt: new Date('2024-01-15T10:30:00'),
-        category: 'Sức khỏe sinh sản',
-        status: 'unanswered',
-        priority: 'medium',
-        tags: ['kinh nguyệt', 'chu kỳ', 'sinh sản'],
-        userAge: 25,
-        userGender: 'female',
-        answer: null,
-        answeredAt: null,
-        views: 45,
-      },
-      {
-        id: 2,
-        title: 'Sau sinh bao lâu thì có thể quan hệ tình dục an toàn?',
-        content:
-          'Chào bác sĩ, vợ tôi vừa sinh con được 4 tuần. Chúng tôi muốn hỏi sau sinh bao lâu thì có thể quan hệ tình dục trở lại một cách an toàn? Có những lưu ý gì đặc biệt không ạ?',
-        askedBy: 'Phạm Văn Nam',
-        askedAt: new Date('2024-01-14T14:20:00'),
-        category: 'Sau sinh',
-        status: 'unanswered',
-        priority: 'high',
-        tags: ['sau sinh', 'quan hệ', 'an toàn'],
-        userAge: 30,
-        userGender: 'male',
-        answer: null,
-        answeredAt: null,
-        views: 32,
-      },
-      {
-        id: 3,
-        title: 'Các phương pháp tránh thai hiệu quả nhất hiện nay',
-        content:
-          'Em và chồng đang tìm hiểu về các phương pháp tránh thai an toàn và hiệu quả. Em muốn hỏi về ưu nhược điểm của từng phương pháp và phương pháp nào phù hợp nhất cho cặp vợ chồng trẻ?',
-        askedBy: 'Nguyễn Thu Hằng',
-        askedAt: new Date('2024-01-13T09:15:00'),
-        category: 'Kế hoạch hóa gia đình',
-        status: 'answered',
-        priority: 'medium',
-        tags: ['tránh thai', 'kế hoạch', 'gia đình'],
-        userAge: 28,
-        userGender: 'female',
-        answer:
-          'Hiện tại có nhiều phương pháp tránh thai hiệu quả như thuốc tránh thai, que cấy, vòng tránh thai, bao cao su... Mỗi phương pháp đều có ưu nhược điểm riêng. Tôi khuyên bạn nên đến cơ sở y tế để được tư vấn cụ thể dựa trên tình trạng sức khỏe và nhu cầu của bạn.',
-        answeredAt: new Date('2024-01-13T16:30:00'),
-        views: 78,
-      },
-      {
-        id: 4,
-        title: 'Triệu chứng mang thai sớm nào cần chú ý?',
-        content:
-          'Em đang có một số triệu chứng như buồn nôn, mệt mỏi, ngực căng tức. Em nghi ngờ mình có thai nhưng chưa chắc chắn. Em muốn hỏi về các dấu hiệu mang thai sớm và khi nào nên đi khám?',
-        askedBy: 'Lê Thị Minh',
-        askedAt: new Date('2024-01-12T11:45:00'),
-        category: 'Thai kỳ',
-        status: 'answered',
-        priority: 'high',
-        tags: ['mang thai', 'triệu chứng', 'thai kỳ'],
-        userAge: 26,
-        userGender: 'female',
-        answer:
-          'Các triệu chứng bạn mô tả có thể là dấu hiệu của thai kỳ sớm. Tôi khuyên bạn nên làm test thai tại nhà hoặc xét nghiệm máu để xác định chính xác. Nếu có thai, hãy đến khám sản khoa trong 2 tuần đầu để được theo dõi và tư vấn.',
-        answeredAt: new Date('2024-01-12T17:20:00'),
-        views: 95,
-      },
-    ];
-    setQuestions(mockQuestions);
+    onQuestionChange()
   }, []);
+  const accountId = Cookies.get('accountId') || 'default_account_id'; // Lấy accountId từ cookie hoặc giá trị mặc định
+  const accessToken = Cookies.get('accessToken'); // Lấy accessToken từ cookie
+
+  // const fetchQuestions = async () => {
+  //   // Simulate fetching questions from an API
+  //   try {
+  //     const responseUnreplied = await axios.get(
+  //       'http://localhost:3000/question/get-unreplied-questions',
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       });
+  //     const responseReplied = await axios.get(
+  //       `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       });
+  //     const unrepliedQuestions = responseUnreplied.data.result || [];
+  //     const repliedQuestions = responseReplied.data.result || [];
+  //     setQuestions([...unrepliedQuestions, ...repliedQuestions]);
+  //   } catch (error) {
+  //     console.error('Error fetching questions:', error);
+  //   }
+  // }
+
+  const calculateAge = (dob) => {
+    if (!dob) return null;
+    const today = new Date();
+    const age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      return age - 1;
+    }
+    return age;
+  };
 
   // Filter questions based on tab and search
   const filteredQuestions = questions
     .filter((question) => {
       const matchesTab =
         filterTab === 'all' ||
-        (filterTab === 'unanswered' && question.status === 'unanswered') ||
-        (filterTab === 'answered' && question.status === 'answered');
+        (filterTab === 'unanswered' && !question.reply) ||
+        (filterTab === 'answered' && question.reply);
 
       const matchesSearch =
-        question.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         question.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        question.askedBy.toLowerCase().includes(searchTerm.toLowerCase());
+        question.customer.full_name.toLowerCase().includes(searchTerm.toLowerCase());
 
       return matchesTab && matchesSearch;
     })
-    .sort((a, b) => {
-      // Priority: high -> medium -> low, then by date
-      const priorityOrder = { high: 3, medium: 2, low: 1 };
-      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
-      }
-      return new Date(b.askedAt) - new Date(a.askedAt);
-    });
 
   const stats = {
     total: questions.length,
-    unanswered: questions.filter((q) => q.status === 'unanswered').length,
-    answered: questions.filter((q) => q.status === 'answered').length,
-    totalViews: questions.reduce((sum, q) => sum + q.views, 0),
+    unanswered: questions.filter((q) => !q.reply).length,
+    answered: questions.filter((q) => q.reply).length,
   };
 
   const handleAnswerSubmit = () => {
@@ -127,59 +84,32 @@ const ConsultantQuestion = () => {
 
     setIsAnswering(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setQuestions(
-        questions.map((q) =>
-          q.id === selectedQuestion.id
-            ? {
-                ...q,
-                status: 'answered',
-                answer: answerText,
-                answeredAt: new Date(),
-              }
-            : q
-        )
+    const payload = {
+      ques_id: selectedQuestion.ques_id,
+      content: answerText,
+      consultant_id: accountId,
+    };
+
+    try {
+      const response = axios.post(
+        'http://localhost:3000/reply/create-reply',
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            contentType: 'application/json',
+          }
+        }
       );
-
-      setAnswerText('');
+    } catch (error) {
+      console.error('Error answering question:', error);
+    } finally {
       setIsAnswering(false);
-
-      // Update selected question
-      setSelectedQuestion({
-        ...selectedQuestion,
-        status: 'answered',
-        answer: answerText,
-        answeredAt: new Date(),
-      });
-    }, 1000);
-  };
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high':
-        return '#ef4444';
-      case 'medium':
-        return '#f59e0b';
-      case 'low':
-        return '#10b981';
-      default:
-        return '#6b7280';
+      setAnswerText('');
+      onQuestionChange(); // Refresh questions after answering
+      setSelectedQuestion(null); // Clear selected question after answering
     }
-  };
-
-  const getPriorityText = (priority) => {
-    switch (priority) {
-      case 'high':
-        return 'Cao';
-      case 'medium':
-        return 'Trung bình';
-      case 'low':
-        return 'Thấp';
-      default:
-        return 'Không xác định';
-    }
-  };
+  }
 
   const formatTimeAgo = (date) => {
     const now = new Date();
@@ -251,34 +181,22 @@ const ConsultantQuestion = () => {
             {filteredQuestions.length > 0 ? (
               filteredQuestions.map((question) => (
                 <div
-                  key={question.id}
-                  className={`question-item ${selectedQuestion?.id === question.id ? 'selected' : ''}`}
+                  key={question.ques_id}
+                  className={`question-item ${selectedQuestion?.ques_id === question.ques_id ? 'selected' : ''} row`}
                   onClick={() => setSelectedQuestion(question)}
                 >
-                  <div className="question-item-header">
-                    <div
-                      className="priority-badge"
-                      style={{
-                        backgroundColor: getPriorityColor(question.priority),
-                      }}
-                    >
-                      {getPriorityText(question.priority)}
-                    </div>
-                    <span className="category">{question.category}</span>
-                  </div>
 
-                  <h4 className="question-title">{question.title}</h4>
+                  <h4 className="question-title col-md-8">{question.content.substring(0, 50)}...</h4>
 
-                  <div className="question-meta">
+                  <div className="question-meta col-md-2">
                     <span className="asked-by">👤 {question.askedBy}</span>
                     <span className="asked-time">
-                      ⏰ {formatTimeAgo(question.askedAt)}
+                      ⏰ {formatTimeAgo(question.created_at)}
                     </span>
-                    <span className="views">👀 {question.views}</span>
                   </div>
 
-                  {question.status === 'answered' && (
-                    <div className="answered-indicator">✅ Đã trả lời</div>
+                  {question.reply && (
+                    <div className="answered-indicator col-md-2">✅ Đã trả lời</div>
                   )}
                 </div>
               ))
@@ -296,33 +214,18 @@ const ConsultantQuestion = () => {
           {selectedQuestion ? (
             <div className="question-detail">
               <div className="detail-header">
-                <div className="question-info">
-                  <div
-                    className="priority-badge"
-                    style={{
-                      backgroundColor: getPriorityColor(
-                        selectedQuestion.priority
-                      ),
-                    }}
-                  >
-                    {getPriorityText(selectedQuestion.priority)}
-                  </div>
-                  <span className="category">{selectedQuestion.category}</span>
-                </div>
-
-                <h3 className="detail-title">{selectedQuestion.title}</h3>
 
                 <div className="user-info">
                   <div className="user-details">
                     <span>👤 {selectedQuestion.askedBy}</span>
-                    <span>🎂 {selectedQuestion.userAge} tuổi</span>
+                    <span>🎂 {calculateAge(selectedQuestion.customer.dob)} tuổi</span>
                     <span>
                       ⚥{' '}
-                      {selectedQuestion.userGender === 'female' ? 'Nữ' : 'Nam'}
+                      {selectedQuestion.customer.gender === 'female' ? 'Nữ' : 'Nam'}
                     </span>
                   </div>
                   <div className="question-time">
-                    ⏰ {selectedQuestion.askedAt.toLocaleString('vi-VN')}
+                    ⏰ {selectedQuestion.created_at.toLocaleString('vi-VN')}
                   </div>
                 </div>
               </div>
@@ -330,35 +233,24 @@ const ConsultantQuestion = () => {
               <div className="question-content-detail">
                 <h4>Nội dung câu hỏi:</h4>
                 <div className="content-text">{selectedQuestion.content}</div>
-
-                {selectedQuestion.tags && selectedQuestion.tags.length > 0 && (
-                  <div className="question-tags">
-                    {selectedQuestion.tags.map((tag, index) => (
-                      <span key={index} className="tag">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Existing Answer */}
-              {selectedQuestion.status === 'answered' &&
-                selectedQuestion.answer && (
-                  <div className="existing-answer">
-                    <h4>Câu trả lời của bạn:</h4>
-                    <div className="answer-content">
-                      {selectedQuestion.answer}
-                    </div>
-                    <div className="answer-time">
-                      Trả lời lúc:{' '}
-                      {selectedQuestion.answeredAt?.toLocaleString('vi-VN')}
-                    </div>
+              {selectedQuestion.reply && (
+                <div className="existing-answer">
+                  <h4>Câu trả lời của bạn:</h4>
+                  <div className="answer-content">
+                    {selectedQuestion.reply.content}
                   </div>
-                )}
+                  <div className="answer-time">
+                    Trả lời lúc:{' '}
+                    {selectedQuestion.reply.created_at?.toLocaleString('vi-VN')}
+                  </div>
+                </div>
+              )}
 
               {/* Answer Editor */}
-              {selectedQuestion.status === 'unanswered' && (
+              {!selectedQuestion.reply && (
                 <div className="answer-editor">
                   <h4>Viết câu trả lời:</h4>
                   <textarea
