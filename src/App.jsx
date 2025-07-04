@@ -22,6 +22,8 @@ import LabSuccess from '@pages/LabConfirmation/LabSuccess';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
 import Payment from '@pages/PaymentPage/PaymentPage';
+import PaymentSuccess from '@pages/PaymentSuccess/PaymentSuccess';
+import PaymentFailed from '@pages/PaymentFailed/PaymentFailed';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
 import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
@@ -51,43 +53,55 @@ const AppLayout = () => {
 
   return (
     <div className="app-container">
-      <Navbar
-        onLoginClick={() => setShowLogin(true)} 
-        onLogout={handleLogout} 
-        // isLoggedIn={isLoggedIn}
-        // full_name={full_name} // Sử dụng fullname từ sessionStorage
-        // onLogout={handleLogout}
-      />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        {/* <Route path='/login' element={<login />} />  */}
+        {/* Payment pages without navbar and footer */}
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+
+        {/* Other pages with navbar and footer */}
         <Route
-          path="/tai-khoan"
-          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />} // Chuyển hướng về /login
+          path="*"
+          element={
+            <>
+              <Navbar
+                onLoginClick={() => setShowLogin(true)}
+                onLogout={handleLogout}
+              />
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route
+                  path="/tai-khoan"
+                  element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
+                />
+                <Route path="/tin-tuc" element={<BlogPage />} />
+                <Route path="/ve-chung-toi" element={<AboutUs />} />
+                <Route path="/lien-he" element={<Contact />} />
+                <Route path="/dich-vu" element={<ServicePage />} />
+                <Route path="/dat-lich-tu-van" element={<BookingPage />} />
+                <Route path="/dat-lich-xet-nghiem" element={<LabSchedule />} />
+                <Route path="/chon-xet-nghiem" element={<LabTests />} />
+                <Route
+                  path="/thong-tin-xet-nghiem"
+                  element={<LabConfirmation />}
+                />
+                <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/consultant/*" element={<ConsultantDashboard />} />
+                <Route path="/staff/*" element={<StaffDashboard />} />
+                <Route
+                  path="/dich-vu/chu-ky-kinh-nguyet"
+                  element={<MenstrualPredictorPage />}
+                />
+                <Route path="/hoi-dap" element={<Question />} />
+                <Route path="/payment" element={<Payment />} />
+              </Routes>
+              <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
+              <Footer />
+              <div className="footer-spacer" />
+            </>
+          }
         />
-        <Route path="/tin-tuc" element={<BlogPage />} />
-        <Route path="/ve-chung-toi" element={<AboutUs />} />
-        <Route path="/lien-he" element={<Contact />} />
-        <Route path="/dich-vu" element={<ServicePage />} />{' '}
-        {/* Sửa thành ServicePage */}
-        <Route path="/dat-lich-tu-van" element={<BookingPage />} />
-        <Route path="/dat-lich-xet-nghiem" element={<LabSchedule />} />
-        <Route path="/chon-xet-nghiem" element={<LabTests />} />
-        <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
-        <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/consultant/*" element={<ConsultantDashboard />} />
-        <Route path="/staff/*" element={<StaffDashboard />} />
-        <Route
-          path="/dich-vu/chu-ky-kinh-nguyet"
-          element={<MenstrualPredictorPage />}
-        />
-        <Route path="/hoi-dap" element={<Question />} />
-        <Route path="/payment" element={<Payment />} />
       </Routes>
-      <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
-      <Footer />
-      <div className="footer-spacer" />
     </div>
   );
 };
