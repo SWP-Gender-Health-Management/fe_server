@@ -209,7 +209,7 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="quick-actions-section">
+      {/* <div className="quick-actions-section">
         <div className="section-header">
           <h2>Thao tác nhanh</h2>
           <p>Các chức năng quản lý thường dùng</p>
@@ -244,7 +244,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Dashboard Content */}
       <div className="dashboard-main">
