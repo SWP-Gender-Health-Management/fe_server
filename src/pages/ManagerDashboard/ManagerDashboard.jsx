@@ -5,6 +5,7 @@ import ServiceManagement from './components/ServiceManagement/ServiceManagement'
 import BlogManagement from './components/BlogManagement/BlogManagement';
 import QuestionManagement from './components/QuestionManagement/QuestionManagement';
 import ManagerProfile from './components/ManagerProfile/ManagerProfile';
+import StaffManagement from './components/StaffManagement/StaffManagement';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {
@@ -38,6 +39,11 @@ const ManagerDashboard = () => {
       path: '/manager/dashboard',
       name: 'Bảng điều khiển',
       icon: '📊',
+    },
+    {
+      path: '/manager/staff',
+      name: 'Quản lý nhân viên',
+      icon: '👥',
     },
     {
       path: '/manager/services',
@@ -187,6 +193,7 @@ const ManagerDashboard = () => {
           <Route path="/blogs" element={<BlogManagement />} />
           <Route path="/questions" element={<QuestionManagement />} />
           <Route path="/profile" element={<ManagerProfile />} />
+          <Route path="/staff" element={<StaffManagement />} />
         </Routes>
       </div>
     </div>
