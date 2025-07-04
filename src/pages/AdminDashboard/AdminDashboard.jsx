@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import AccountManagement from './components/AccountManagement';
@@ -11,8 +11,29 @@ import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
   const adminName = sessionStorage.getItem('full_name') || 'Admin';
   const adminEmail = sessionStorage.getItem('email') || 'admin@example.com';
+
+  // Loading effect when component mounts
+  useEffect(() => {
+    // Simulate loading progress
+    const progressInterval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          // Hide loading screen after progress completes
+          setTimeout(() => setIsLoading(false), 300);
+          return 100;
+        }
+        return prev + Math.random() * 20;
+      });
+    }, 100);
+
+    return () => clearInterval(progressInterval);
+  }, []);
 
   const menuItems = [
     {
@@ -51,6 +72,61 @@ const AdminDashboard = () => {
       icon: '👤',
     },
   ];
+
+  // Loading Screen Component
+  if (isLoading) {
+    return (
+      <div className="admin-loading-screen">
+        <div className="loading-container">
+          {/* Logo and Title */}
+          <div className="loading-header">
+            <div className="loading-logo">
+              <span className="loading-icon">🏥</span>
+              <div className="loading-pulse"></div>
+            </div>
+            <h1 className="loading-title">HealthAdmin</h1>
+            <p className="loading-subtitle">
+              Đang tải bảng điều khiển quản trị...
+            </p>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="loading-progress">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+            </div>
+            <div className="progress-text">{Math.round(loadingProgress)}%</div>
+          </div>
+
+          {/* Loading Animation */}
+          <div className="loading-dots">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+          </div>
+
+          {/* Feature Loading Text */}
+          <div className="loading-features">
+            <div className="feature-item">
+              <span className="feature-icon">🔒</span>
+              <span>Kiểm tra bảo mật</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">📊</span>
+              <span>Tải dữ liệu dashboard</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">👥</span>
+              <span>Đồng bộ tài khoản</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dashboard">
