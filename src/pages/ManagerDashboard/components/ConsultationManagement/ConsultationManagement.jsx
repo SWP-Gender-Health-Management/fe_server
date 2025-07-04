@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './ConsultationManagement.css';
+import dayjs from 'dayjs';
 
 const ConsultationManagement = () => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [consultantFilter, setConsultantFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [showModal, setShowModal] = useState(false);
@@ -64,7 +65,6 @@ const ConsultationManagement = () => {
         createdAt: '2024-12-20 17:10',
       },
     ];
-
     setAppointments(mockAppointments);
     setFilteredAppointments(mockAppointments);
   }, []);
@@ -72,58 +72,42 @@ const ConsultationManagement = () => {
   // Filter logic
   useEffect(() => {
     let filtered = appointments;
-
-    // Search filter
+    // Search by customer name
     if (searchTerm) {
-      filtered = filtered.filter(
-        (appointment) =>
-          appointment.customerName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          appointment.consultantName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          appointment.serviceName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+      filtered = filtered.filter((appointment) =>
+        appointment.customerName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       );
     }
-
     // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(
         (appointment) => appointment.status === statusFilter
       );
     }
-
-    // Consultant filter
-    if (consultantFilter !== 'all') {
+    // Date filter
+    if (dateFilter) {
       filtered = filtered.filter(
-        (appointment) => appointment.consultantName === consultantFilter
+        (appointment) => appointment.appointmentDate === dateFilter
       );
     }
-
     setFilteredAppointments(filtered);
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, consultantFilter, appointments]);
+  }, [searchTerm, statusFilter, dateFilter, appointments]);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
       pending: { text: 'Chờ xác nhận', color: '#f59e0b' },
       confirmed: { text: 'Đã xác nhận', color: '#10b981' },
       completed: { text: 'Đã hoàn thành', color: '#059669' },
-      cancelled: { text: 'Đã hủy', color: '#ef4444' },
+      cancelled: { text: 'Đã huỷ', color: '#ef4444' },
     };
-
     const config = statusConfig[status] || statusConfig.pending;
-
     return (
       <span
         className="status-badge"
-        style={{
-          backgroundColor: `${config.color}20`,
-          color: config.color,
-        }}
+        style={{ backgroundColor: `${config.color}20`, color: config.color }}
       >
         {config.text}
       </span>
@@ -149,38 +133,47 @@ const ConsultationManagement = () => {
         <h2>Quản lý Lịch hẹn Tư vấn</h2>
         <p>Theo dõi và quản lý các cuộc hẹn tư vấn sức khỏe sinh sản</p>
       </div>
-
       {/* Filters and Search */}
       <div className="consultation-toolbar">
-        <div className="search-section">
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
+        <div className="filter-row">
+          <div className="filter-group">
+            <label htmlFor="customer-search">Khách hàng:</label>
             <input
+              id="customer-search"
               type="text"
-              placeholder="Tìm kiếm theo tên khách hàng, bác sĩ hoặc dịch vụ..."
+              placeholder="Tìm kiếm theo tên khách hàng..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="filter-input"
             />
           </div>
-        </div>
-
-        <div className="filter-section">
           <div className="filter-group">
-            <label>Trạng thái:</label>
+            <label htmlFor="status-select">Trạng thái:</label>
             <select
+              id="status-select"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
+              className="filter-select"
             >
-              <option value="all">Tất cả</option>
+              <option value="all">Tất cả trạng thái</option>
               <option value="pending">Chờ xác nhận</option>
               <option value="confirmed">Đã xác nhận</option>
               <option value="completed">Đã hoàn thành</option>
-              <option value="cancelled">Đã hủy</option>
+              <option value="cancelled">Đã huỷ</option>
             </select>
+          </div>
+          <div className="filter-group">
+            <label htmlFor="date-filter">Ngày hẹn:</label>
+            <input
+              id="date-filter"
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="filter-date"
+            />
           </div>
         </div>
       </div>
-
       {/* Appointments Table */}
       <div className="appointments-table-container">
         <table className="appointments-table">
@@ -215,9 +208,7 @@ const ConsultationManagement = () => {
                 <td>
                   <div className="appointment-datetime">
                     <div className="date">
-                      {new Date(appointment.appointmentDate).toLocaleDateString(
-                        'vi-VN'
-                      )}
+                      {dayjs(appointment.appointmentDate).format('DD/MM/YYYY')}
                     </div>
                     <div className="time">{appointment.appointmentTime}</div>
                   </div>
@@ -255,7 +246,6 @@ const ConsultationManagement = () => {
           </tbody>
         </table>
       </div>
-
       {/* Appointment Detail Modal */}
       {showModal && selectedAppointment && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
@@ -290,14 +280,18 @@ const ConsultationManagement = () => {
                 <div className="detail-item">
                   <label>Ngày hẹn:</label>
                   <span>
-                    {new Date(
-                      selectedAppointment.appointmentDate
-                    ).toLocaleDateString('vi-VN')}
+                    {dayjs(selectedAppointment.appointmentDate).format(
+                      'DD/MM/YYYY'
+                    )}
                   </span>
                 </div>
                 <div className="detail-item">
                   <label>Trạng thái:</label>
                   <span>{getStatusBadge(selectedAppointment.status)}</span>
+                </div>
+                <div className="detail-item full-width">
+                  <label>Ghi chú:</label>
+                  <span>{selectedAppointment.notes}</span>
                 </div>
               </div>
             </div>

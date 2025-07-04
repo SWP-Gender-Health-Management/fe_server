@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import './LabManagement.css';
+import dayjs from 'dayjs';
 
 const LabManagement = () => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [testTypeFilter, setTestTypeFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [openTestDropdown, setOpenTestDropdown] = useState(null);
 
-  // Mock data for lab appointments
+  // Mock data for lab appointments (mỗi appointment có thể có nhiều xét nghiệm)
   useEffect(() => {
     const mockAppointments = [
       {
         id: 'LAB001',
         customerName: 'Lê Văn Minh',
         customerPhone: '0901234567',
-        testType: 'Xét nghiệm STD Panel',
+        tests: ['Xét nghiệm STD Panel', 'Xét nghiệm HIV'],
         appointmentDate: '2024-12-21',
         appointmentTime: '10:30',
         status: 'confirmed',
-        price: 850000,
+        price: 1150000,
         notes: 'Khách hàng đã thanh toán trước',
         resultFile: null,
         createdAt: '2024-12-20 14:30',
@@ -30,7 +32,7 @@ const LabManagement = () => {
         id: 'LAB002',
         customerName: 'Hoàng Văn Đức',
         customerPhone: '0912345678',
-        testType: 'Xét nghiệm HIV',
+        tests: ['Xét nghiệm HIV'],
         appointmentDate: '2024-12-21',
         appointmentTime: '15:30',
         status: 'confirmed',
@@ -43,11 +45,11 @@ const LabManagement = () => {
         id: 'LAB003',
         customerName: 'Nguyễn Thị Hạnh',
         customerPhone: '0923456789',
-        testType: 'Xét nghiệm Syphilis',
+        tests: ['Xét nghiệm Syphilis', 'Xét nghiệm tổng quát'],
         appointmentDate: '2024-12-20',
         appointmentTime: '09:00',
         status: 'completed',
-        price: 250000,
+        price: 850000,
         notes: 'Đã hoàn thành, có kết quả',
         resultFile: 'result_lab003.pdf',
         createdAt: '2024-12-19 16:20',
@@ -56,7 +58,7 @@ const LabManagement = () => {
         id: 'LAB004',
         customerName: 'Trần Thị Mai',
         customerPhone: '0934567890',
-        testType: 'Xét nghiệm Hepatitis B',
+        tests: ['Xét nghiệm Hepatitis B'],
         appointmentDate: '2024-12-22',
         appointmentTime: '08:30',
         status: 'pending_payment',
@@ -69,17 +71,16 @@ const LabManagement = () => {
         id: 'LAB005',
         customerName: 'Phạm Văn Tú',
         customerPhone: '0945678901',
-        testType: 'Xét nghiệm tổng quát',
+        tests: ['Xét nghiệm tổng quát', 'Xét nghiệm HIV'],
         appointmentDate: '2024-12-22',
         appointmentTime: '14:00',
         status: 'in_progress',
-        price: 600000,
+        price: 900000,
         notes: 'Đang thực hiện xét nghiệm',
         resultFile: null,
         createdAt: '2024-12-21 09:15',
       },
     ];
-
     setAppointments(mockAppointments);
     setFilteredAppointments(mockAppointments);
   }, []);
@@ -87,37 +88,28 @@ const LabManagement = () => {
   // Filter logic
   useEffect(() => {
     let filtered = appointments;
-
-    // Search filter
+    // Search by customer name
     if (searchTerm) {
-      filtered = filtered.filter(
-        (appointment) =>
-          appointment.customerName
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          appointment.testType
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          appointment.id.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter((appointment) =>
+        appointment.customerName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       );
     }
-
     // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(
         (appointment) => appointment.status === statusFilter
       );
     }
-
-    // Test type filter
-    if (testTypeFilter !== 'all') {
+    // Date filter
+    if (dateFilter) {
       filtered = filtered.filter(
-        (appointment) => appointment.testType === testTypeFilter
+        (appointment) => appointment.appointmentDate === dateFilter
       );
     }
-
     setFilteredAppointments(filtered);
-  }, [searchTerm, statusFilter, testTypeFilter, appointments]);
+  }, [searchTerm, statusFilter, dateFilter, appointments]);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -125,48 +117,17 @@ const LabManagement = () => {
       confirmed: { text: 'Đã xác nhận', color: '#10b981' },
       in_progress: { text: 'Đang thực hiện', color: '#3b82f6' },
       completed: { text: 'Đã có kết quả', color: '#059669' },
-      cancelled: { text: 'Đã hủy', color: '#ef4444' },
+      cancelled: { text: 'Đã huỷ', color: '#ef4444' },
     };
-
     const config = statusConfig[status] || statusConfig.pending_payment;
-
     return (
       <span
         className="status-badge"
-        style={{
-          backgroundColor: `${config.color}20`,
-          color: config.color,
-        }}
+        style={{ backgroundColor: `${config.color}20`, color: config.color }}
       >
         {config.text}
       </span>
     );
-  };
-
-  const handleViewAppointment = (appointment) => {
-    setSelectedAppointment(appointment);
-    setShowModal(true);
-  };
-
-  const handleUpdateStatus = (appointmentId, newStatus) => {
-    setAppointments((prev) =>
-      prev.map((app) =>
-        app.id === appointmentId ? { ...app, status: newStatus } : app
-      )
-    );
-  };
-
-  const handleUploadResult = (appointmentId) => {
-    // Simulate file upload
-    const fileName = `result_${appointmentId.toLowerCase()}.pdf`;
-    setAppointments((prev) =>
-      prev.map((app) =>
-        app.id === appointmentId
-          ? { ...app, status: 'completed', resultFile: fileName }
-          : app
-      )
-    );
-    alert(`Đã tải lên kết quả: ${fileName}`);
   };
 
   const formatCurrency = (amount) => {
@@ -176,9 +137,9 @@ const LabManagement = () => {
     }).format(amount);
   };
 
-  const getUniqueTestTypes = () => {
-    const testTypes = [...new Set(appointments.map((app) => app.testType))];
-    return testTypes.sort();
+  const handleViewAppointment = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowModal(true);
   };
 
   return (
@@ -187,54 +148,40 @@ const LabManagement = () => {
         <h2>Quản lý Lịch hẹn Xét nghiệm</h2>
         <p>Theo dõi và quản lý các cuộc hẹn xét nghiệm y tế</p>
       </div>
-
       {/* Filters and Search */}
       <div className="lab-toolbar">
-        <div className="search-section">
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên khách hàng, loại xét nghiệm hoặc ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+        <div className="filter-group">
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tên khách hàng..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="filter-input"
+          />
         </div>
-
-        <div className="filter-section">
-          <div className="filter-group">
-            <label>Trạng thái:</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">Tất cả</option>
-              <option value="pending_payment">Chờ thanh toán</option>
-              <option value="confirmed">Đã xác nhận</option>
-              <option value="in_progress">Đang thực hiện</option>
-              <option value="completed">Đã có kết quả</option>
-              <option value="cancelled">Đã hủy</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Loại xét nghiệm:</label>
-            <select
-              value={testTypeFilter}
-              onChange={(e) => setTestTypeFilter(e.target.value)}
-            >
-              <option value="all">Tất cả</option>
-              {getUniqueTestTypes().map((testType) => (
-                <option key={testType} value={testType}>
-                  {testType}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="filter-group">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="filter-select"
+          >
+            <option value="all">Tất cả trạng thái</option>
+            <option value="pending_payment">Chờ thanh toán</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="in_progress">Đang thực hiện</option>
+            <option value="completed">Đã có kết quả</option>
+            <option value="cancelled">Đã huỷ</option>
+          </select>
+        </div>
+        <div className="filter-group">
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="filter-date"
+          />
         </div>
       </div>
-
       {/* Lab Appointments Table */}
       <div className="lab-table-container">
         <table className="lab-table">
@@ -242,7 +189,7 @@ const LabManagement = () => {
             <tr>
               <th>ID</th>
               <th>Khách hàng</th>
-              <th>Loại xét nghiệm</th>
+              <th>Xét nghiệm</th>
               <th>Thời gian</th>
               <th>Giá tiền</th>
               <th>Trạng thái</th>
@@ -264,13 +211,35 @@ const LabManagement = () => {
                     </div>
                   </div>
                 </td>
-                <td className="test-type">{appointment.testType}</td>
+                <td className="test-type">
+                  <div className="test-dropdown-wrapper">
+                    <button
+                      className="test-dropdown-btn"
+                      onClick={() =>
+                        setOpenTestDropdown(
+                          openTestDropdown === appointment.id
+                            ? null
+                            : appointment.id
+                        )
+                      }
+                    >
+                      {appointment.tests.length} xét nghiệm ▼
+                    </button>
+                    {openTestDropdown === appointment.id && (
+                      <ul className="test-dropdown-list">
+                        {appointment.tests.map((test, idx) => (
+                          <li key={idx} className="test-item">
+                            {test}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </td>
                 <td>
                   <div className="appointment-datetime">
                     <div className="date">
-                      {new Date(appointment.appointmentDate).toLocaleDateString(
-                        'vi-VN'
-                      )}
+                      {dayjs(appointment.appointmentDate).format('DD/MM/YYYY')}
                     </div>
                     <div className="time">{appointment.appointmentTime}</div>
                   </div>
@@ -292,35 +261,6 @@ const LabManagement = () => {
                     >
                       👁
                     </button>
-                    {appointment.status === 'pending_payment' && (
-                      <button
-                        className="confirm-btn"
-                        onClick={() =>
-                          handleUpdateStatus(appointment.id, 'confirmed')
-                        }
-                      >
-                        ✅
-                      </button>
-                    )}
-                    {appointment.status === 'confirmed' && (
-                      <button
-                        className="progress-btn"
-                        onClick={() =>
-                          handleUpdateStatus(appointment.id, 'in_progress')
-                        }
-                      >
-                        🔄
-                      </button>
-                    )}
-                    {(appointment.status === 'in_progress' ||
-                      appointment.status === 'confirmed') && (
-                      <button
-                        className="upload-btn"
-                        onClick={() => handleUploadResult(appointment.id)}
-                      >
-                        📤
-                      </button>
-                    )}
                   </div>
                 </td>
               </tr>
@@ -328,7 +268,6 @@ const LabManagement = () => {
           </tbody>
         </table>
       </div>
-
       {/* Lab Appointment Detail Modal */}
       {showModal && selectedAppointment && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
@@ -354,15 +293,21 @@ const LabManagement = () => {
                   <span>{selectedAppointment.customerPhone}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Loại xét nghiệm:</label>
-                  <span>{selectedAppointment.testType}</span>
+                  <label>Xét nghiệm:</label>
+                  <ul className="test-list">
+                    {selectedAppointment.tests.map((test, idx) => (
+                      <li key={idx} className="test-item">
+                        {test}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
                 <div className="detail-item">
                   <label>Ngày hẹn:</label>
                   <span>
-                    {new Date(
-                      selectedAppointment.appointmentDate
-                    ).toLocaleDateString('vi-VN')}
+                    {dayjs(selectedAppointment.appointmentDate).format(
+                      'DD/MM/YYYY'
+                    )}
                   </span>
                 </div>
                 <div className="detail-item">

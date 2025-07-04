@@ -74,41 +74,37 @@
   color: #6b7280;
 }
 
-.filter-section {
+/* Filter row for both management pages */
+.filter-row {
   display: flex;
-  gap: 16px;
-  align-items: center;
+  gap: 24px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 150px;
+  gap: 4px;
 }
 
-.filter-group label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.filter-input,
+.filter-select,
+.filter-date {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
-.filter-group select {
-  padding: 10px 12px;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.filter-group select:focus {
-  outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+.filter-input:focus,
+.filter-select:focus,
+.filter-date:focus {
+  outline: 2px solid #38bdf8;
+  border-color: #38bdf8;
 }
 
 /* Table Container */
@@ -388,8 +384,10 @@
     min-width: auto;
   }
 
-  .filter-section {
-    justify-content: space-between;
+  .filter-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
   }
 }
 
@@ -431,8 +429,9 @@
     padding: 16px;
   }
 
-  .filter-section {
+  .filter-row {
     flex-direction: column;
+    gap: 12px;
     align-items: stretch;
   }
 
@@ -446,4 +445,46 @@
     height: 28px;
     font-size: 12px;
   }
+}
+
+/* Dropdown for test list in LabManagement */
+.test-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.test-dropdown-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.test-dropdown-btn:hover {
+  background: #e0f2fe;
+}
+.test-dropdown-list {
+  position: absolute;
+  left: 0;
+  top: 110%;
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  padding: 8px 0;
+  margin: 0;
+  list-style: none;
+}
+.test-dropdown-list .test-item {
+  padding: 6px 16px;
+  font-size: 0.97rem;
+  color: #334155;
+  white-space: nowrap;
+}
+.test-dropdown-list .test-item:not(:last-child) {
+  border-bottom: 1px solid #f1f5f9;
 }
