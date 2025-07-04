@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/DashBoard/Dashboard';
 import AccountManagement from './components/AccountManagement';
-import AdminProfile from './components/AdminProfile';
-import UserManagement from './components/UserManagement';
-import Reports from './components/Reports';
-import BulkEmail from './components/BulkEmail';
-import RecentActivities from './components/RecentActivities';
+import AdminProfile from './components/AdminProfile/AdminProfile';
+import UserManagement from './components/UserManagement/UserManagement';
+import Reports from './components/Report/Reports';
+import BulkEmail from './components/BulkEmail/BulkEmail';
+import RecentActivities from './components/RecentActivities/RecentActivities';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {

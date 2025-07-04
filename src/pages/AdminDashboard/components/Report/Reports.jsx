@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import LineChart from './LineChart';
-import PieChart from './PieChart';
+import LineChart from '../Chart/LineChart';
+import PieChart from '../Chart/PieChart';
 import './Reports.css';
 
 const Reports = () => {
