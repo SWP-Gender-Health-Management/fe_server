@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ConsultationManagement from './ConsultationManagement';
-import LabManagement from './LabManagement';
-import MenstrualManagement from './MenstrualManagement';
+import ConsultationManagement from '../ConsultationManagement/ConsultationManagement';
+import LabManagement from '../LabManagement/LabManagement';
+import MenstrualManagement from '../MenstrualManagement/MenstrualManagement';
 import './ServiceManagement.css';
 
 const ServiceManagement = () => {

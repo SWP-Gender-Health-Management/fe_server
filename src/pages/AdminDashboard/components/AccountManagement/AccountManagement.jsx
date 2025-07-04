@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserModal from './UserModal';
+import UserModal from '../UserModal/UserModal';
 import './AccountManagement.css';
 
 const AccountManagement = () => {

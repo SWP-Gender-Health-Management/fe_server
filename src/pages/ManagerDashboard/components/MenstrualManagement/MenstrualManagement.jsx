@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PieChart from './PieChart';
+import PieChart from '../Chart/PieChart';
 import './MenstrualManagement.css';
 
 const MenstrualManagement = () => {

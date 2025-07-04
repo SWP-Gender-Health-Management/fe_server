@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import Dashboard from './components/DashBoard/Dashboard';
-import AccountManagement from './components/AccountManagement';
+import AccountManagement from './components/AccountManagement/AccountManagement';
 import AdminProfile from './components/AdminProfile/AdminProfile';
 import UserManagement from './components/UserManagement/UserManagement';
 import Reports from './components/Report/Reports';

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import ServiceManagement from './components/ServiceManagement';
-import BlogManagement from './components/BlogManagement';
-import QuestionManagement from './components/QuestionManagement';
-import ManagerProfile from './components/ManagerProfile';
+import Dashboard from './components/Dashboard/Dashboard';
+import ServiceManagement from './components/ServiceManagement/ServiceManagement';
+import BlogManagement from './components/BlogManagement/BlogManagement';
+import QuestionManagement from './components/QuestionManagement/QuestionManagement';
+import ManagerProfile from './components/ManagerProfile/ManagerProfile';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {
