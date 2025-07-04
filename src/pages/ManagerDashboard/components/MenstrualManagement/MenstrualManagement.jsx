@@ -6,6 +6,11 @@ const MenstrualManagement = () => {
   const [stats, setStats] = useState({});
   const [cycleDistribution, setCycleDistribution] = useState([]);
   const [monthlyNotifications, setMonthlyNotifications] = useState([]);
+  const [ageDistribution, setAgeDistribution] = useState([]);
+  const [symptomData, setSymptomData] = useState([]);
+  const [usagePatterns, setUsagePatterns] = useState([]);
+  const [healthMetrics, setHealthMetrics] = useState([]);
+  const [monthlyTrends, setMonthlyTrends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -22,6 +27,17 @@ const MenstrualManagement = () => {
         notificationsSentThisMonth: 3421,
         predictionAccuracy: 87.2,
         dataRetentionCompliance: 98.5,
+        averagePeriodLength: 5.2,
+        irregularCycleUsers: 234,
+        regularCycleUsers: 1013,
+        premiumUsers: 89,
+        averageAge: 26.8,
+        mostCommonSymptom: 'Đau bụng kinh',
+        averageAppUsageTime: 8.5,
+        retentionRate: 78.3,
+        satisfactionScore: 4.6,
+        healthConsultations: 156,
+        emergencyAlerts: 23,
       };
 
       // Mock cycle length distribution
@@ -43,9 +59,75 @@ const MenstrualManagement = () => {
         { month: 'T12', predictions: 356, reminders: 634, health_tips: 223 },
       ];
 
+      // Thêm dữ liệu thống kê mới
+      const mockAgeDistribution = [
+        { label: '15-19 tuổi', value: 156, color: '#fbbf24' },
+        { label: '20-24 tuổi', value: 423, color: '#10b981' },
+        { label: '25-29 tuổi', value: 389, color: '#3b82f6' },
+        { label: '30-34 tuổi', value: 198, color: '#8b5cf6' },
+        { label: '35+ tuổi', value: 81, color: '#ef4444' },
+      ];
+
+      const mockSymptomData = [
+        { symptom: 'Đau bụng kinh', count: 892, percentage: 71.5 },
+        { symptom: 'Mệt mỏi', count: 756, percentage: 60.6 },
+        { symptom: 'Thay đổi tâm trạng', count: 634, percentage: 50.8 },
+        { symptom: 'Đau lưng', count: 523, percentage: 41.9 },
+        { symptom: 'Đau đầu', count: 445, percentage: 35.7 },
+        { symptom: 'Chuột rút', count: 378, percentage: 30.3 },
+        { symptom: 'Đầy hơi', count: 312, percentage: 25.0 },
+        { symptom: 'Mất ngủ', count: 267, percentage: 21.4 },
+      ];
+
+      const mockUsagePatterns = [
+        { time: '06:00-09:00', usage: 23.4, color: '#fbbf24' },
+        { time: '09:00-12:00', usage: 18.7, color: '#10b981' },
+        { time: '12:00-15:00', usage: 15.2, color: '#3b82f6' },
+        { time: '15:00-18:00', usage: 19.8, color: '#8b5cf6' },
+        { time: '18:00-21:00', usage: 16.3, color: '#ef4444' },
+        { time: '21:00-24:00', usage: 6.6, color: '#6b7280' },
+      ];
+
+      const mockHealthMetrics = [
+        { metric: 'Chu kỳ đều', value: 81.2, target: 85, color: '#10b981' },
+        {
+          metric: 'Ghi chép đầy đủ',
+          value: 73.8,
+          target: 80,
+          color: '#3b82f6',
+        },
+        {
+          metric: 'Theo dõi triệu chứng',
+          value: 67.4,
+          target: 75,
+          color: '#f59e0b',
+        },
+        {
+          metric: 'Tư vấn sức khỏe',
+          value: 45.2,
+          target: 60,
+          color: '#8b5cf6',
+        },
+        { metric: 'Khám định kỳ', value: 38.9, target: 50, color: '#ef4444' },
+      ];
+
+      const mockMonthlyTrends = [
+        { month: 'T7', newUsers: 134, activeUsers: 756, predictions: 245 },
+        { month: 'T8', newUsers: 145, activeUsers: 789, predictions: 267 },
+        { month: 'T9', newUsers: 167, activeUsers: 823, predictions: 289 },
+        { month: 'T10', newUsers: 178, activeUsers: 856, predictions: 312 },
+        { month: 'T11', newUsers: 189, activeUsers: 889, predictions: 334 },
+        { month: 'T12', newUsers: 201, activeUsers: 923, predictions: 356 },
+      ];
+
       setStats(mockStats);
       setCycleDistribution(mockCycleDistribution);
       setMonthlyNotifications(mockMonthlyNotifications);
+      setAgeDistribution(mockAgeDistribution);
+      setSymptomData(mockSymptomData);
+      setUsagePatterns(mockUsagePatterns);
+      setHealthMetrics(mockHealthMetrics);
+      setMonthlyTrends(mockMonthlyTrends);
       setError(null);
     } catch (err) {
       console.error('Error loading menstrual data:', err);
@@ -151,16 +233,14 @@ const MenstrualManagement = () => {
           </div>
         </div>
 
-        {/* <div className="stat-card info">
-          <div className="stat-icon">🔔</div>
+        <div className="stat-card info">
+          <div className="stat-icon">⏱️</div>
           <div className="stat-content">
-            <div className="stat-value">
-              {formatNumber(stats.notificationsSentThisMonth)}
-            </div>
-            <div className="stat-label">Thông báo đã gửi</div>
-            <div className="stat-change positive">Tháng này</div>
+            <div className="stat-value">{stats.averagePeriodLength} ngày</div>
+            <div className="stat-label">Thời gian hành kinh TB</div>
+            <div className="stat-change neutral">Trung bình</div>
           </div>
-        </div> */}
+        </div>
       </div>
 
       {/* Main Content */}
@@ -200,153 +280,41 @@ const MenstrualManagement = () => {
           </div>
         </div>
 
-        {/* Performance Metrics */}
-        {/* <div className="metrics-section">
+        {/* Age Distribution */}
+        <div className="chart-section">
           <div className="section-header">
-            <h3>Hiệu suất hệ thống</h3>
-            <p>Các chỉ số quan trọng về chất lượng dịch vụ</p>
+            <h3>Phân bổ độ tuổi người dùng</h3>
+            <p>Thống kê độ tuổi của người dùng đang theo dõi chu kỳ</p>
           </div>
-
-          <div className="metrics-grid">
-            <div className="metric-item">
-              <div className="metric-icon">🎯</div>
-              <div className="metric-content">
-                <div className="metric-value">
-                  {formatPercentage(stats.predictionAccuracy)}
-                </div>
-                <div className="metric-label">Độ chính xác dự đoán</div>
-                <div className="metric-description">
-                  Tỷ lệ dự đoán chu kỳ chính xác
-                </div>
+          <div className="chart-container">
+            {ageDistribution && ageDistribution.length > 0 ? (
+              <PieChart data={ageDistribution} />
+            ) : (
+              <div style={{ color: '#6b7280', textAlign: 'center' }}>
+                Không có dữ liệu để hiển thị
               </div>
-            </div>
-
-            <div className="metric-item">
-              <div className="metric-icon">✅</div>
-              <div className="metric-content">
-                <div className="metric-value">
-                  {formatPercentage(stats.dataRetentionCompliance)}
-                </div>
-                <div className="metric-label">Tuân thủ bảo mật</div>
-                <div className="metric-description">
-                  Tỷ lệ tuân thủ quy định lưu trữ dữ liệu
-                </div>
-              </div>
-            </div>
-
-            <div className="metric-item">
-              <div className="metric-icon">📈</div>
-              <div className="metric-content">
-                <div className="metric-value">
-                  {formatNumber(stats.newUsersThisMonth)}
-                </div>
-                <div className="metric-label">Tăng trưởng tháng</div>
-                <div className="metric-description">
-                  Số người dùng mới tham gia
-                </div>
-              </div>
-            </div>
-
-            <div className="metric-item">
-              <div className="metric-icon">💬</div>
-              <div className="metric-content">
-                <div className="metric-value">
-                  {stats.totalUsers && stats.activeUsersThisMonth
-                    ? formatPercentage(
-                        (stats.activeUsersThisMonth / stats.totalUsers) * 100
-                      )
-                    : '0%'}
-                </div>
-                <div className="metric-label">Tỷ lệ tương tác</div>
-                <div className="metric-description">
-                  Người dùng hoạt động trong tháng
-                </div>
-              </div>
-            </div>
+            )}
           </div>
-        </div> */}
-      </div>
-
-      {/* Notification Analytics */}
-      {/* <div className="notifications-section">
-        <div className="section-header">
-          <h3>Thống kê thông báo</h3>
-          <p>Số lượng thông báo được gửi trong 6 tháng gần đây</p>
-        </div>
-
-        <div className="notifications-chart">
-          <div className="chart-header">
-            <div className="chart-legend-horizontal">
-              <div className="legend-item">
-                <div
-                  className="legend-color"
-                  style={{ backgroundColor: '#10b981' }}
-                ></div>
-                <span>Dự đoán chu kỳ</span>
-              </div>
-              <div className="legend-item">
-                <div
-                  className="legend-color"
-                  style={{ backgroundColor: '#3b82f6' }}
-                ></div>
-                <span>Nhắc nhở</span>
-              </div>
-              <div className="legend-item">
-                <div
-                  className="legend-color"
-                  style={{ backgroundColor: '#8b5cf6' }}
-                ></div>
-                <span>Mẹo sức khỏe</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bar-chart">
-            {monthlyNotifications.map((month, index) => {
-              const total =
-                month.predictions + month.reminders + month.health_tips;
-              const maxTotal = Math.max(
-                ...monthlyNotifications.map(
-                  (m) => m.predictions + m.reminders + m.health_tips
-                )
-              );
-
-              return (
-                <div key={index} className="bar-group">
+          <div className="chart-legend">
+            {ageDistribution &&
+              ageDistribution.map((item, index) => (
+                <div key={index} className="legend-item">
                   <div
-                    className="bar-stack"
-                    style={{ height: `${(total / maxTotal) * 200}px` }}
-                  >
-                    <div
-                      className="bar-segment predictions"
-                      style={{
-                        height: `${(month.predictions / total) * 100}%`,
-                        backgroundColor: '#10b981',
-                      }}
-                    ></div>
-                    <div
-                      className="bar-segment reminders"
-                      style={{
-                        height: `${(month.reminders / total) * 100}%`,
-                        backgroundColor: '#3b82f6',
-                      }}
-                    ></div>
-                    <div
-                      className="bar-segment health-tips"
-                      style={{
-                        height: `${(month.health_tips / total) * 100}%`,
-                        backgroundColor: '#8b5cf6',
-                      }}
-                    ></div>
-                  </div>
-                  <div className="bar-label">{month.month}</div>
-                  <div className="bar-total">{formatNumber(total)}</div>
+                    className="legend-color"
+                    style={{ backgroundColor: item.color }}
+                  ></div>
+                  <span className="legend-label">
+                    {item.label}: {item.value} người (
+                    {stats.totalUsers
+                      ? ((item.value / stats.totalUsers) * 100).toFixed(1)
+                      : 0}
+                    %)
+                  </span>
                 </div>
-              );
-            })}
+              ))}
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Privacy & Compliance */}
       <div className="compliance-section">

@@ -1,634 +1,848 @@
-/* Staff Management Styles */
-.staff-management {
-  background: #f4f8fb;
+/* Staff Management - Modern Professional Design */
+.staff-management-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   min-height: 100vh;
-  padding: 32px 0;
+  padding: 24px;
 }
 
+/* Page Header */
 .page-header {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-  padding: 32px 40px 16px 40px;
-  margin-bottom: 32px;
-  text-align: left;
-}
-
-.page-header h1 {
-  font-size: 2.2rem;
-  color: #1a202c;
-  margin-bottom: 8px;
-}
-
-.page-header p {
-  color: #64748b;
-  font-size: 1.1rem;
-}
-
-/* Tab Styles */
-.ant-tabs {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
-  padding: 24px 24px 8px 24px;
-}
-
-.ant-tabs-tab {
-  font-size: 1.1rem;
-  font-weight: 500;
-  padding: 12px 32px;
-}
-
-.ant-tabs-tab-active {
-  color: #10b981 !important;
-}
-
-.ant-tabs-ink-bar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  height: 3px;
-}
-
-.tab-header {
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* Staff Table Styles */
-.staff-info {
-  display: flex;
-  align-items: center;
-}
-
-.staff-avatar {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #10b981 60%, #38bdf8 100%);
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 14px;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
-}
-
-.staff-details {
-  flex: 1;
-}
-
-.staff-details .staff-name {
-  font-weight: 600;
-  color: #1a202c;
-}
-
-.staff-details .staff-role {
-  color: #64748b;
-  font-size: 0.98rem;
-}
-
-.contact-info {
-  font-size: 13px;
-  color: #64748b;
-}
-
-.contact-info div:first-child {
-  font-weight: 500;
-  color: #1e293b;
-  margin-bottom: 2px;
-}
-
-.rating-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.rating-text {
-  font-weight: 600;
-  color: #f59e0b;
-}
-
-.appointment-count {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  color: #667eea;
-}
-
-/* Schedule Modal Styles */
-.staff-schedule {
-  padding: 16px 0;
-}
-
-.schedule-overview h4 {
-  margin-bottom: 16px;
-  color: #1e293b;
-  font-weight: 600;
-}
-
-.schedule-list {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.schedule-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-.day {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.time {
-  color: #667eea;
-  font-weight: 500;
-}
-
-.staff-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 16px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: #667eea;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* Pending Schedules Styles */
-.pending-schedules {
-  padding: 16px 0;
-}
-
-.pending-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  border-radius: 16px;
+  padding: 32px;
   margin-bottom: 24px;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-radius: 12px;
-  border: 1px solid #f59e0b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
 
-.pending-header h3 {
+.page-header h2 {
+  margin-bottom: 8px;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.page-header h2 .anticon {
+  margin-right: 12px;
+  color: #3b82f6;
+}
+
+/* Management Card */
+.management-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: none;
+  overflow: hidden;
+}
+
+/* Tabs Styling */
+.management-tabs .ant-tabs-nav {
+  background: #f8fafc;
   margin: 0;
-  color: #92400e;
+  padding: 0 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.management-tabs .ant-tabs-tab {
+  padding: 16px 24px;
   font-weight: 600;
-}
-
-.schedule-cards {
-  display: grid;
-  gap: 16px;
-}
-
-.schedule-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  border: none;
+  background: transparent;
   transition: all 0.3s ease;
 }
 
-.schedule-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+.management-tabs .ant-tabs-tab:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
 }
 
-.schedule-info {
-  padding: 8px 0;
+.management-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  color: #3b82f6;
+  background: white;
+  border-bottom: 3px solid #3b82f6;
 }
 
-.schedule-info .staff-name {
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
-  font-size: 16px;
+.management-tabs .ant-tabs-tab .anticon {
+  margin-right: 8px;
 }
 
-.schedule-details {
-  display: grid;
-  gap: 4px;
-  font-size: 13px;
-  color: #64748b;
+.management-tabs .ant-tabs-content-holder {
+  padding: 24px;
 }
 
-.schedule-details div {
+/* Tab Content */
+.tab-content {
+  background: white;
+  border-radius: 12px;
+}
+
+/* Filter Section */
+.filter-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #64748b;
+.filter-item .ant-typography {
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.empty-state .anticon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  opacity: 0.5;
+.filter-item .ant-input,
+.filter-item .ant-select {
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  transition: all 0.3s ease;
 }
 
-.empty-state p {
+.filter-item .ant-input:focus,
+.filter-item .ant-select:focus,
+.filter-item .ant-input:hover,
+.filter-item .ant-select:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Employee Info */
+.employee-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.employee-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
   font-size: 16px;
-  margin: 0;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* Form Styles */
-.ant-form-item-label > label {
+.employee-avatar.consultant {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.employee-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.employee-name {
   font-weight: 600;
   color: #1e293b;
+  font-size: 14px;
+}
+
+.employee-email {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.employee-phone {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* Table Styling */
+.staff-table,
+.consultant-table {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.staff-table .ant-table-thead > tr > th,
+.consultant-table .ant-table-thead > tr > th {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #475569;
+  padding: 16px;
+}
+
+.staff-table .ant-table-tbody > tr > td,
+.consultant-table .ant-table-tbody > tr > td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.staff-table .ant-table-tbody > tr:hover > td,
+.consultant-table .ant-table-tbody > tr:hover > td {
+  background: #f8fafc;
+}
+
+/* Status Tags */
+.ant-tag {
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border: none;
+}
+
+/* Action Buttons */
+.ant-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  height: 36px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Modal Styling */
+.ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-modal-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-bottom: 1px solid #e2e8f0;
+  padding: 20px 24px;
+}
+
+.ant-modal-title {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.ant-modal-title .anticon {
+  margin-right: 8px;
+  color: #3b82f6;
+}
+
+.ant-modal-body {
+  padding: 24px;
+}
+
+/* Form Styling */
+.ant-form-item-label > label {
+  font-weight: 600;
+  color: #475569;
 }
 
 .ant-input,
 .ant-select-selector,
 .ant-picker {
   border-radius: 8px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #cbd5e1;
   transition: all 0.3s ease;
 }
 
 .ant-input:focus,
-.ant-select-focused .ant-select-selector,
-.ant-picker-focused {
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+.ant-select-selector:focus,
+.ant-picker:focus,
+.ant-input:hover,
+.ant-select-selector:hover,
+.ant-picker:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.ant-btn-primary {
-  background: #10b981;
-  border-color: #10b981;
+/* Checkbox Group for Consultant Slots */
+.slot-checkbox-group {
+  width: 100%;
 }
 
-/* Table Styles */
-.ant-table {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 8px rgba(16, 185, 129, 0.07);
-  margin-top: 12px;
+.slot-checkbox-group .ant-checkbox-wrapper {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
 }
 
-.ant-table-thead > tr > th {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600;
+.slot-checkbox-group .ant-checkbox-wrapper:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+}
+
+.slot-checkbox-group .ant-checkbox-checked .ant-checkbox-wrapper {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+/* Schedule View */
+.schedule-view {
+  padding: 0;
+}
+
+.week-schedule h4 {
+  margin-bottom: 20px;
   color: #1e293b;
+  font-weight: 700;
 }
 
-.ant-table-tbody > tr:hover > td {
-  background: rgba(102, 126, 234, 0.05);
+.day-card {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  height: 100%;
 }
 
-/* Review Rating Styles */
-.review-rating {
+.day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.day-card.sunday {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  border-color: #fca5a5;
+}
+
+.day-header {
+  text-align: center;
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #f8fafc;
+  border-radius: 12px 12px 0 0;
+}
+
+.day-header .ant-typography {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.day-content {
+  padding: 16px;
+  text-align: center;
+  min-height: 80px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+}
+
+.day-off {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.staff-schedule,
+.consultant-schedule {
+  width: 100%;
+}
+
+.slot-item {
+  margin: 4px 0;
+  padding: 4px 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Pagination */
+.ant-pagination {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.ant-pagination .ant-pagination-item {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.ant-pagination .ant-pagination-item-active {
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
 /* Responsive Design */
-@media (max-width: 900px) {
-  .page-header {
-    padding: 20px 10px 10px 10px;
+@media (max-width: 768px) {
+  .staff-management-container {
+    padding: 16px;
   }
-  .ant-tabs {
-    padding: 10px 2px 2px 2px;
+
+  .page-header {
+    padding: 20px;
+  }
+
+  .management-tabs .ant-tabs-content-holder {
+    padding: 16px;
+  }
+
+  .filter-section {
+    padding: 16px;
+  }
+
+  .employee-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .employee-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .ant-table {
+    font-size: 12px;
+  }
+
+  .ant-btn {
+    font-size: 12px;
+    padding: 0 12px;
+    height: 32px;
   }
 }
 
 @media (max-width: 480px) {
-  .staff-management {
-    padding: 12px;
+  .management-tabs .ant-tabs-nav {
+    padding: 0 16px;
   }
 
-  .page-header h1 {
-    font-size: 20px;
+  .management-tabs .ant-tabs-tab {
+    padding: 12px 16px;
+    font-size: 14px;
   }
 
-  .ant-tabs-tab {
-    padding: 8px 12px;
-    font-size: 12px;
+  .day-card {
+    margin-bottom: 16px;
   }
 }
 
-/* Modal custom */
-.ant-modal-content {
-  border-radius: 16px !important;
+/* ===================================================================
+   SCHEDULE MODAL STYLES
+   =================================================================== */
+
+.schedule-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-/* Calendar custom */
-.ant-picker-calendar-date-content {
-  min-height: 36px;
-}
-.schedule-item,
-.day-off {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #10b981;
-  text-align: center;
-}
-.day-off {
-  color: #ef4444;
+.schedule-modal .ant-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
 }
 
-/* Weekly Schedule Styles */
-.weekly-schedule {
-  padding: 20px 0;
-}
-
-.schedule-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.schedule-header h3 {
-  font-size: 1.5rem;
-  color: #1a202c;
-  margin-bottom: 8px;
+.schedule-modal .ant-modal-title {
+  color: white;
   font-weight: 600;
+  font-size: 1.2rem;
 }
 
-.schedule-header p {
+.schedule-modal .ant-modal-close {
+  color: white;
+}
+
+.weekly-schedule-container {
+  padding: 20px;
+}
+
+/* Employee Info Header */
+.employee-info-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 25px;
+}
+
+.employee-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.employee-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+.status-indicator.online {
+  background: #10b981;
+}
+
+.employee-details h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 5px;
+}
+
+.employee-details .role {
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.employee-details .department {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Week Navigation */
+.week-navigation {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.week-info h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 5px;
+}
+
+.week-info p {
   color: #64748b;
   font-size: 1rem;
   margin: 0;
 }
 
+/* Schedule Grid */
 .schedule-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.schedule-day {
-  background: #fff;
-  border-radius: 16px;
-  border: 2px solid #e2e8f0;
+  grid-template-columns: 150px repeat(7, 1fr);
+  gap: 1px;
+  background: #e2e8f0;
+  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s ease;
-  min-height: 200px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.schedule-day:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+.time-column,
+.day-column {
+  background: white;
 }
 
-.schedule-day.sunday {
-  border-color: #fecaca;
-  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
-}
-
+.time-header,
 .day-header {
-  background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);
-  color: white;
-  padding: 16px 12px;
+  background: #f8fafc;
+  padding: 15px 10px;
   text-align: center;
-}
-
-.schedule-day.sunday .day-header {
-  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
-}
-
-.day-name {
   font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 4px;
-}
-
-.day-date {
-  font-size: 0.85rem;
-  opacity: 0.9;
-}
-
-.day-content {
-  padding: 20px 16px;
-  height: 140px;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  min-height: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-/* Day Off Styles */
-.day-off {
-  text-align: center;
-}
-
-.off-icon {
-  font-size: 2rem;
-  margin-bottom: 8px;
-}
-
-.off-text {
-  color: #ef4444;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-/* Work Shift Styles (for Staff) */
-.work-shift {
-  width: 100%;
-}
-
-.shift-info {
-  text-align: center;
-  margin-bottom: 12px;
-}
-
-.shift-info:last-child {
-  margin-bottom: 0;
-}
-
-.shift-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-weight: 600;
-  font-size: 0.8rem;
-  margin-bottom: 6px;
+.time-header {
+  font-size: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
-.shift-badge.morning {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+.day-header {
+  position: relative;
 }
 
-.shift-badge.afternoon {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+.day-header.today {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
 }
 
-.shift-time {
-  color: #64748b;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-bottom: 4px;
+.day-header.past-day {
+  opacity: 0.6;
 }
 
-.shift-status {
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.shift-status:contains('✓') {
-  color: #10b981;
-}
-
-.shift-status:contains('○') {
-  color: #94a3b8;
-}
-
-.shift-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-  margin: 12px 0;
-}
-
-/* Work Slots Styles (for Consultant) */
-.work-slots {
-  width: 100%;
-}
-
-.slots-count {
-  text-align: center;
-  color: #10b981;
-  font-weight: 600;
-  font-size: 0.85rem;
-  margin-bottom: 12px;
-}
-
-.slots-list {
-  max-height: 120px;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.slot-item {
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 8px;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.2s ease;
-}
-
-.slot-item.scheduled {
-  background: #f0fdf4;
-  border-color: #10b981;
-  border-left: 3px solid #10b981;
-}
-
-.slot-item.not-scheduled {
-  background: #f8fafc;
-  border-color: #e2e8f0;
-  opacity: 0.7;
-}
-
-.slot-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #64748b;
+.day-name {
+  font-size: 0.9rem;
+  font-weight: 700;
   margin-bottom: 2px;
 }
 
-.slot-time {
-  color: #1e293b;
-  font-size: 0.7rem;
-  font-weight: 500;
+.day-date {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.weekend-label {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.time-slot {
+  padding: 12px 8px;
   text-align: center;
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #f1f5f9;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.schedule-slot {
+  padding: 8px 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  border-bottom: 1px solid #f1f5f9;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.schedule-slot.available {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.schedule-slot.available:hover {
+  background: #dcfce7;
+  transform: scale(1.02);
+}
+
+.schedule-slot.scheduled {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.schedule-slot.disabled {
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.slot-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
 .slot-status {
-  font-size: 0.8rem;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
-.slot-item.scheduled .slot-status {
-  color: #10b981;
+.slot-text {
+  font-size: 0.7rem;
+  font-weight: 500;
 }
 
-.slot-item.not-scheduled .slot-status {
-  color: #94a3b8;
+/* Schedule Legend */
+.schedule-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
 }
 
-/* No Schedule Styles */
-.no-schedule {
-  text-align: center;
-}
-
-.no-schedule-icon {
-  font-size: 2rem;
-  margin-bottom: 8px;
-  opacity: 0.5;
-}
-
-.no-schedule-text {
-  color: #94a3b8;
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.9rem;
+  color: #64748b;
+}
+
+.legend-icon {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.legend-icon.available {
+  color: #16a34a;
+}
+
+.legend-icon.scheduled {
+  color: #667eea;
+}
+
+.legend-icon.disabled {
+  color: #94a3b8;
+}
+
+/* Schedule Stats */
+.schedule-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat-item {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #0ea5e9;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0c4a6e;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #0f172a;
   font-weight: 500;
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
   .schedule-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 120px repeat(7, 1fr);
+  }
+
+  .time-slot {
+    font-size: 0.7rem;
+    padding: 10px 5px;
+  }
+
+  .schedule-slot {
+    padding: 6px 3px;
+  }
+
+  .slot-text {
+    font-size: 0.65rem;
   }
 }
 
 @media (max-width: 768px) {
+  .weekly-schedule-container {
+    padding: 15px;
+  }
+
+  .employee-info-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
   .schedule-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 100px repeat(7, 1fr);
+    font-size: 0.8rem;
   }
 
-  .schedule-day {
-    min-height: 160px;
+  .time-slot {
+    font-size: 0.65rem;
+    padding: 8px 3px;
   }
 
-  .day-content {
-    height: 100px;
-    padding: 12px;
+  .schedule-slot {
+    padding: 5px 2px;
+  }
+
+  .day-name {
+    font-size: 0.8rem;
+  }
+
+  .day-date {
+    font-size: 0.7rem;
+  }
+
+  .schedule-legend {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .schedule-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .schedule-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 80px repeat(7, 1fr);
+  }
+
+  .time-slot {
+    font-size: 0.6rem;
+    padding: 6px 2px;
+  }
+
+  .schedule-slot {
+    padding: 4px 1px;
+  }
+
+  .slot-text {
+    font-size: 0.6rem;
+  }
+
+  .day-name {
+    font-size: 0.7rem;
+  }
+
+  .day-date {
+    font-size: 0.65rem;
   }
 }
