@@ -234,26 +234,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Recent Activities */}
-      <div className="recent-activities-section">
-        <h2>Hoạt động gần đây</h2>
-        <ul style={{ padding: 0, listStyle: 'none' }}>
-          {recentActivities.map((activity) => (
-            <li
-              key={activity.id}
-              style={{
-                marginBottom: 8,
-                borderBottom: '1px solid #eee',
-                paddingBottom: 4,
-              }}
-            >
-              <div style={{ fontWeight: 500 }}>{activity.message}</div>
-              <div style={{ fontSize: 12, color: '#888' }}>{activity.time}</div>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };
