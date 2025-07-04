@@ -1,46 +1,46 @@
 /* Staff Management Styles */
 .staff-management {
-  padding: 24px;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: #f4f8fb;
   min-height: 100vh;
+  padding: 32px 0;
 }
 
 .page-header {
-  margin-bottom: 24px;
-  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  padding: 32px 40px 16px 40px;
+  margin-bottom: 32px;
+  text-align: left;
 }
 
 .page-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 2.2rem;
+  color: #1a202c;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .page-header p {
-  font-size: 16px;
   color: #64748b;
-  margin: 0;
+  font-size: 1.1rem;
 }
 
 /* Tab Styles */
+.ant-tabs {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  padding: 24px 24px 8px 24px;
+}
+
 .ant-tabs-tab {
-  font-weight: 600;
-  font-size: 14px;
-  padding: 12px 20px;
-  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 12px 32px;
 }
 
-.ant-tabs-tab:hover {
-  color: #667eea;
-}
-
-.ant-tabs-tab.ant-tabs-tab-active {
-  color: #667eea;
+.ant-tabs-tab-active {
+  color: #10b981 !important;
 }
 
 .ant-tabs-ink-bar {
@@ -58,39 +58,35 @@
 .staff-info {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
 .staff-avatar {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #10b981 60%, #38bdf8 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
+  margin-right: 14px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
 }
 
 .staff-details {
   flex: 1;
 }
 
-.staff-name {
+.staff-details .staff-name {
   font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 2px;
+  color: #1a202c;
 }
 
-.staff-role {
-  font-size: 12px;
+.staff-details .staff-role {
   color: #64748b;
-  background: rgba(102, 126, 234, 0.1);
-  padding: 2px 8px;
-  border-radius: 12px;
-  display: inline-block;
+  font-size: 0.98rem;
 }
 
 .contact-info {
@@ -291,26 +287,16 @@
 }
 
 .ant-btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  height: 40px;
-  transition: all 0.3s ease;
-}
-
-.ant-btn-primary:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: #10b981;
+  border-color: #10b981;
 }
 
 /* Table Styles */
 .ant-table {
-  background: white;
+  background: #fff;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px rgba(16, 185, 129, 0.07);
+  margin-top: 12px;
 }
 
 .ant-table-thead > tr > th {
@@ -332,39 +318,12 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .staff-management {
-    padding: 16px;
+@media (max-width: 900px) {
+  .page-header {
+    padding: 20px 10px 10px 10px;
   }
-
-  .page-header h1 {
-    font-size: 24px;
-  }
-
-  .staff-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .pending-header {
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
-  }
-
-  .ant-table {
-    font-size: 12px;
-  }
-
-  .staff-info {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
-  }
-
-  .staff-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+  .ant-tabs {
+    padding: 10px 2px 2px 2px;
   }
 }
 
@@ -380,5 +339,296 @@
   .ant-tabs-tab {
     padding: 8px 12px;
     font-size: 12px;
+  }
+}
+
+/* Modal custom */
+.ant-modal-content {
+  border-radius: 16px !important;
+}
+
+/* Calendar custom */
+.ant-picker-calendar-date-content {
+  min-height: 36px;
+}
+.schedule-item,
+.day-off {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #10b981;
+  text-align: center;
+}
+.day-off {
+  color: #ef4444;
+}
+
+/* Weekly Schedule Styles */
+.weekly-schedule {
+  padding: 20px 0;
+}
+
+.schedule-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.schedule-header h3 {
+  font-size: 1.5rem;
+  color: #1a202c;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.schedule-header p {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.schedule-day {
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  min-height: 200px;
+}
+
+.schedule-day:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-day.sunday {
+  border-color: #fecaca;
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+}
+
+.day-header {
+  background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);
+  color: white;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.schedule-day.sunday .day-header {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+}
+
+.day-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.day-date {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.day-content {
+  padding: 20px 16px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Day Off Styles */
+.day-off {
+  text-align: center;
+}
+
+.off-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.off-text {
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Work Shift Styles (for Staff) */
+.work-shift {
+  width: 100%;
+}
+
+.shift-info {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.shift-info:last-child {
+  margin-bottom: 0;
+}
+
+.shift-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  color: white;
+}
+
+.shift-badge.morning {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.shift-badge.afternoon {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.shift-time {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.shift-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.shift-status:contains('✓') {
+  color: #10b981;
+}
+
+.shift-status:contains('○') {
+  color: #94a3b8;
+}
+
+.shift-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  margin: 12px 0;
+}
+
+/* Work Slots Styles (for Consultant) */
+.work-slots {
+  width: 100%;
+}
+
+.slots-count {
+  text-align: center;
+  color: #10b981;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.slots-list {
+  max-height: 120px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.slot-item {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.slot-item.scheduled {
+  background: #f0fdf4;
+  border-color: #10b981;
+  border-left: 3px solid #10b981;
+}
+
+.slot-item.not-scheduled {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  opacity: 0.7;
+}
+
+.slot-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.slot-time {
+  color: #1e293b;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.slot-status {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.slot-item.scheduled .slot-status {
+  color: #10b981;
+}
+
+.slot-item.not-scheduled .slot-status {
+  color: #94a3b8;
+}
+
+/* No Schedule Styles */
+.no-schedule {
+  text-align: center;
+}
+
+.no-schedule-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.no-schedule-text {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .schedule-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .schedule-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .schedule-day {
+    min-height: 160px;
+  }
+
+  .day-content {
+    height: 100px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-grid {
+    grid-template-columns: 1fr;
   }
 }

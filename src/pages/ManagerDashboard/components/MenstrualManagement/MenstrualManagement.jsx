@@ -151,7 +151,7 @@ const MenstrualManagement = () => {
           </div>
         </div>
 
-        <div className="stat-card info">
+        {/* <div className="stat-card info">
           <div className="stat-icon">🔔</div>
           <div className="stat-content">
             <div className="stat-value">
@@ -160,7 +160,7 @@ const MenstrualManagement = () => {
             <div className="stat-label">Thông báo đã gửi</div>
             <div className="stat-change positive">Tháng này</div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Main Content */}
@@ -201,7 +201,7 @@ const MenstrualManagement = () => {
         </div>
 
         {/* Performance Metrics */}
-        <div className="metrics-section">
+        {/* <div className="metrics-section">
           <div className="section-header">
             <h3>Hiệu suất hệ thống</h3>
             <p>Các chỉ số quan trọng về chất lượng dịch vụ</p>
@@ -264,11 +264,11 @@ const MenstrualManagement = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Notification Analytics */}
-      <div className="notifications-section">
+      {/* <div className="notifications-section">
         <div className="section-header">
           <h3>Thống kê thông báo</h3>
           <p>Số lượng thông báo được gửi trong 6 tháng gần đây</p>
@@ -346,7 +346,7 @@ const MenstrualManagement = () => {
             })}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Privacy & Compliance */}
       <div className="compliance-section">
