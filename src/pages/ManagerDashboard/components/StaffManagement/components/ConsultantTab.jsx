@@ -1,293 +1,301 @@
-// ConsultantTab.jsx
 import React, { useState } from 'react';
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Select,
-  DatePicker,
-  Checkbox,
-  message,
-  Space,
-  Calendar,
-  Tag,
-  Row,
-  Col,
-  Card,
-} from 'antd';
-import moment from 'moment';
+import { Modal, Button, Checkbox, DatePicker, Tag, Avatar } from 'antd';
+import { SearchOutlined, CalendarOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
-const ConsultantTab = ({ consultantData }) => {
-  const [isScheduleModalVisible, setScheduleModalVisible] = useState(false);
-  const [isViewScheduleModalVisible, setViewScheduleModalVisible] =
-    useState(false);
+const ConsultantTab = () => {
+  const [searchName, setSearchName] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
+  const [viewScheduleModalVisible, setViewScheduleModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
-  const [form] = Form.useForm();
 
-  const timeSlots = [
-    '07:00 - 08:30',
-    '08:30 - 10:00',
-    '10:00 - 11:30',
-    '11:30 - 13:00',
-    '13:00 - 14:30',
-    '14:30 - 16:00',
-    '16:00 - 17:30',
-    '17:30 - 18:00',
+  // Enhanced mock data for consultants
+  const consultants = [
+    { 
+      id: 1, 
+      name: 'Dr. John Doe', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/men/41.jpg',
+      specialty: 'Gynecology',
+      email: 'john.doe@gendercare.com',
+      phone: '(+84) 912-345-678'
+    },
+    { 
+      id: 2, 
+      name: 'Dr. Jane Smith', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/women/32.jpg',
+      specialty: 'Obstetrics',
+      email: 'jane.smith@gendercare.com',
+      phone: '(+84) 923-456-789'
+    },
+    { 
+      id: 3, 
+      name: 'Dr. Michael Chen', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+      specialty: 'Reproductive Medicine',
+      email: 'michael.chen@gendercare.com',
+      phone: '(+84) 934-567-890'
+    },
+    { 
+      id: 4, 
+      name: 'Dr. Sarah Johnson', 
+      status: 'blocked',
+      avatar: 'https://randomuser.me/api/portraits/women/45.jpg',
+      specialty: 'Women Health',
+      email: 'sarah.johnson@gendercare.com',
+      phone: '(+84) 945-678-901'
+    },
+    { 
+      id: 5, 
+      name: 'Dr. David Williams', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/men/36.jpg',
+      specialty: 'Gynecologic Oncology',
+      email: 'david.williams@gendercare.com',
+      phone: '(+84) 956-789-012'
+    }
   ];
 
-  // Mở Modal xếp lịch
-  const handleOpenScheduleModal = (consultant) => {
+  const timeSlots = [
+    { id: 1, time: '07:00 - 08:30' },
+    { id: 2, time: '08:30 - 10:00' },
+    { id: 3, time: '10:00 - 11:30' },
+    { id: 4, time: '11:30 - 13:00' },
+    { id: 5, time: '13:00 - 14:30' },
+    { id: 6, time: '14:30 - 16:00' },
+    { id: 7, time: '16:00 - 17:30' },
+    { id: 8, time: '17:30 - 19:00' },
+  ];
+
+  // Mock weekly schedule data - mảng chứa các slot ID cho mỗi ngày
+  const weeklySchedule = {
+    monday: [1, 3, 5],
+    tuesday: [2, 4, 6],
+    wednesday: [1, 4, 7],
+    thursday: [2, 5, 8],
+    friday: [3, 6],
+    saturday: [1, 2],
+    sunday: [] // Sunday is always empty (day off)
+  };
+
+  const handleSchedule = (consultant) => {
     setSelectedConsultant(consultant);
     setScheduleModalVisible(true);
   };
 
-  // Mở Modal xem lịch
-  const handleOpenViewScheduleModal = (consultant) => {
+  const handleViewSchedule = (consultant) => {
     setSelectedConsultant(consultant);
     setViewScheduleModalVisible(true);
   };
 
-  // Xử lý submit form xếp lịch
-  const handleScheduleSubmit = (values) => {
-    console.log('Các slot đã xếp cho consultant:', {
-      consultantId: selectedConsultant.id,
-      ...values,
+  const handleScheduleSubmit = () => {
+    // Handle schedule submission
+    console.log('Schedule submitted:', {
+      consultant: selectedConsultant,
+      date: selectedDate,
+      slots: selectedSlots
     });
-    message.success(`Đã xếp lịch cho ${selectedConsultant.name}`);
     setScheduleModalVisible(false);
-    form.resetFields();
+    setSelectedDate(null);
+    setSelectedSlots([]);
   };
 
-  // Hàm render nội dung cho từng ô ngày trong lịch
-  const dateCellRenderForConsultant = (value) => {
-    // Chủ nhật là ngày nghỉ
-    if (value.day() === 0) {
-      // 0 là Chủ Nhật trong moment.js
-      return <Tag color="red">Ngày nghỉ</Tag>;
-    }
+  const filteredConsultants = consultants.filter(consultant => {
+    const nameMatch = consultant.name.toLowerCase().includes(searchName.toLowerCase());
+    const statusMatch = statusFilter === 'all' || consultant.status === statusFilter;
+    return nameMatch && statusMatch;
+  });
 
-    const dateStr = value.format('YYYY-MM-DD');
-    const scheduleForDay = selectedConsultant?.schedules?.find((s) =>
-      moment(s.date).isSame(dateStr, 'day')
-    );
+  const renderWeeklySchedule = () => {
+    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    const scheduleKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-    if (scheduleForDay && scheduleForDay.slots.length > 0) {
-      return (
-        <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-          {scheduleForDay.slots.map((slot) => (
-            <li key={slot}>
-              <Tag color="blue">{slot}</Tag>
-            </li>
-          ))}
-        </ul>
-      );
-    }
-    return null;
-  };
-
-  // Cấu hình cột cho bảng
-  const columns = [
-    {
-      title: 'Thông tin nhân sự',
-      key: 'info',
-      render: (_, record) => (
-        <div className="staff-info">
-          <div className="staff-avatar">
-            {record.name.charAt(0).toUpperCase()}
-          </div>
-          <div className="staff-details">
-            <div className="staff-name">{record.name}</div>
-            <div className="staff-role">{record.email}</div>
-          </div>
+    return (
+      <div className="weekly-schedule">
+        <div className="schedule-header">
+          <h3>Lịch làm việc của {selectedConsultant?.name}</h3>
+          <p>Chuyên khoa: {selectedConsultant?.specialty}</p>
         </div>
-      ),
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status === 'active' ? 'Hoạt động' : 'Vô hiệu hóa'}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Thao tác',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button size="small" onClick={() => handleOpenScheduleModal(record)}>
-            Xếp lịch
-          </Button>
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => handleOpenViewScheduleModal(record)}
-          >
-            Xem lịch
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
-  // Tạo dữ liệu lịch làm việc 1 tuần hiện tại
-  const getCurrentWeekSchedule = () => {
-    const today = moment();
-    const startOfWeek = today.clone().startOf('week').add(1, 'day'); // Thứ 2
-    const weekSchedule = [];
-
-    for (let i = 0; i < 7; i++) {
-      const currentDate = startOfWeek.clone().add(i, 'days');
-      const dateStr = currentDate.format('YYYY-MM-DD');
-      const scheduleForDay = selectedConsultant?.schedules?.find((s) =>
-        moment(s.date).isSame(dateStr, 'day')
-      );
-
-      weekSchedule.push({
-        date: currentDate,
-        dayName: currentDate.format('dddd'),
-        isSunday: currentDate.day() === 0,
-        schedule: scheduleForDay,
-      });
-    }
-
-    return weekSchedule;
+        
+        <table className="schedule-table">
+          <thead>
+            <tr className="schedule-header-row">
+              <th className="time-column">Thời gian</th>
+              {days.map((day, index) => (
+                <th key={day} className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}>
+                  {day}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {timeSlots.map((slot) => (
+              <tr key={slot.id} className="schedule-row">
+                <td className="time-slot-label">{slot.time}</td>
+                {scheduleKeys.map((day) => (
+                  <td 
+                    key={`${day}-${slot.id}`} 
+                    className={`schedule-cell ${day === 'sunday' ? 'day-off' : ''}`}
+                  >
+                    {day === 'sunday' ? (
+                      <span className="day-off-icon">Nghỉ</span>
+                    ) : (
+                      weeklySchedule[day].includes(slot.id) ? (
+                        <div className="scheduled-slot">
+                          <CheckOutlined className="scheduled-icon" />
+                          <span>Làm việc</span>
+                        </div>
+                      ) : (
+                        <div className="not-scheduled-slot">
+                          <CloseOutlined className="not-scheduled-icon" />
+                          <span>Nghỉ</span>
+                        </div>
+                      )
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   return (
-    <>
-      <Table
-        columns={columns}
-        dataSource={consultantData}
-        rowKey="id"
-        pagination={{ pageSize: 8 }}
-      />
+    <div className="consultant-tab">
+      <div className="filters">
+        <div className="search-box">
+          <SearchOutlined />
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tên..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Tất cả trạng thái</option>
+          <option value="active">Hoạt động</option>
+          <option value="blocked">Bị khóa</option>
+        </select>
+      </div>
 
-      {/* Modal Xếp lịch cho Consultant */}
+      <div className="consultant-list">
+        <table className="management-table">
+          <thead>
+            <tr>
+              <th className="avatar-column"></th>
+              <th>Tên bác sĩ</th>
+              <th>Chuyên khoa</th>
+              <th>Email</th>
+              <th>Số điện thoại</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredConsultants.map(consultant => (
+              <tr key={consultant.id} className={consultant.status === 'blocked' ? 'blocked-row' : ''}>
+                <td className="avatar-column">
+                  <Avatar src={consultant.avatar} />
+                </td>
+                <td className="name-column">{consultant.name}</td>
+                <td>{consultant.specialty}</td>
+                <td>{consultant.email}</td>
+                <td>{consultant.phone}</td>
+                <td>
+                  <Tag color={consultant.status === 'active' ? 'green' : 'red'}>
+                    {consultant.status === 'active' ? 'Hoạt động' : 'Bị khóa'}
+                  </Tag>
+                </td>
+                <td className="action-column">
+                  <Button
+                    icon={<CalendarOutlined />}
+                    onClick={() => handleSchedule(consultant)}
+                    type="primary"
+                    size="small"
+                    className="action-button"
+                  >
+                    Xếp lịch
+                  </Button>
+                  <Button
+                    icon={<EyeOutlined />}
+                    onClick={() => handleViewSchedule(consultant)}
+                    size="small"
+                    className="action-button"
+                  >
+                    Xem lịch
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Schedule Modal */}
       <Modal
-        title={`Xếp lịch cho - ${selectedConsultant?.name}`}
-        open={isScheduleModalVisible}
+        title={`Xếp lịch làm việc - ${selectedConsultant?.name}`}
+        open={scheduleModalVisible}
+        onOk={handleScheduleSubmit}
         onCancel={() => setScheduleModalVisible(false)}
-        footer={null}
         width={600}
       >
-        <Form form={form} layout="vertical" onFinish={handleScheduleSubmit}>
-          <Form.Item
-            name="date"
-            label="Ngày làm việc"
-            rules={[{ required: true }]}
-          >
+        <div className="schedule-form">
+          <div className="date-picker">
+            <label>Chọn ngày:</label>
             <DatePicker
-              style={{ width: '100%' }}
-              placeholder="Chọn ngày làm việc"
+              onChange={(date) => setSelectedDate(date)}
               disabledDate={(current) => {
-                // Không cho phép chọn chủ nhật
-                return current && current.day() === 0;
+                return current && current.day() === 0; // Disable Sundays
               }}
+              placeholder="Chọn ngày làm việc"
+              className="date-picker-field"
             />
-          </Form.Item>
-          <Form.Item name="slots" label="Chọn các slot thời gian làm việc">
-            <Checkbox.Group
-              options={timeSlots}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '8px',
-              }}
-            />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Xác nhận
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Modal Xem lịch của Consultant */}
-      <Modal
-        title={`Lịch làm việc của - ${selectedConsultant?.name}`}
-        open={isViewScheduleModalVisible}
-        onCancel={() => setViewScheduleModalVisible(false)}
-        footer={null}
-        width={1200}
-      >
-        <div className="weekly-schedule">
-          <div className="schedule-header">
-            <h3>Lịch làm việc tuần hiện tại</h3>
-            <p>Thứ 2 - Chủ nhật</p>
           </div>
-
-          <div className="schedule-grid">
-            {getCurrentWeekSchedule().map((day, index) => (
-              <div
-                key={index}
-                className={`schedule-day ${day.isSunday ? 'sunday' : ''}`}
-              >
-                <div className="day-header">
-                  <div className="day-name">{day.date.format('dddd')}</div>
-                  <div className="day-date">
-                    {day.date.format('DD/MM/YYYY')}
-                  </div>
-                </div>
-
-                <div className="day-content">
-                  {day.isSunday ? (
-                    <div className="day-off">
-                      <div className="off-icon">🏖️</div>
-                      <div className="off-text">Ngày nghỉ</div>
-                    </div>
-                  ) : day.schedule && day.schedule.slots.length > 0 ? (
-                    <div className="work-slots">
-                      <div className="slots-count">
-                        {day.schedule.slots.length}/8 slot làm việc
-                      </div>
-                      <div className="slots-list">
-                        {[
-                          { time: '07:00 - 08:30', label: 'Slot 1' },
-                          { time: '08:30 - 10:00', label: 'Slot 2' },
-                          { time: '10:00 - 11:30', label: 'Slot 3' },
-                          { time: '11:30 - 13:00', label: 'Slot 4' },
-                          { time: '13:00 - 14:30', label: 'Slot 5' },
-                          { time: '14:30 - 16:00', label: 'Slot 6' },
-                          { time: '16:00 - 17:30', label: 'Slot 7' },
-                          { time: '17:30 - 18:00', label: 'Slot 8' },
-                        ].map((slot, idx) => {
-                          const isScheduled = day.schedule.slots.includes(
-                            slot.time
-                          );
-                          return (
-                            <div
-                              key={idx}
-                              className={`slot-item ${isScheduled ? 'scheduled' : 'not-scheduled'}`}
-                            >
-                              <div className="slot-label">{slot.label}</div>
-                              <div className="slot-time">{slot.time}</div>
-                              <div className="slot-status">
-                                {isScheduled ? '✓' : '○'}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="no-schedule">
-                      <div className="no-schedule-icon">📅</div>
-                      <div className="no-schedule-text">Chưa xếp lịch</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="time-slots-grid">
+            <label>Chọn các slot thời gian:</label>
+            <div className="time-slots-container">
+              {timeSlots.map(slot => (
+                <Checkbox
+                  key={slot.id}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedSlots([...selectedSlots, slot.id]);
+                    } else {
+                      setSelectedSlots(selectedSlots.filter(id => id !== slot.id));
+                    }
+                  }}
+                >
+                  {slot.time}
+                </Checkbox>
+              ))}
+            </div>
           </div>
         </div>
       </Modal>
-    </>
+
+      {/* View Schedule Modal */}
+      <Modal
+        title={`Lịch làm việc - ${selectedConsultant?.name}`}
+        open={viewScheduleModalVisible}
+        onCancel={() => setViewScheduleModalVisible(false)}
+        footer={null}
+        width={1200}
+        className="schedule-modal"
+      >
+        {renderWeeklySchedule()}
+      </Modal>
+    </div>
   );
 };
 
-export default ConsultantTab;
+export default ConsultantTab; 

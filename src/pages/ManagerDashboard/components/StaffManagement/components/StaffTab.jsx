@@ -1,264 +1,297 @@
-// StaffTab.jsx
 import React, { useState } from 'react';
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Select,
-  DatePicker,
-  message,
-  Space,
-  Tag,
-  Calendar,
-  Row,
-  Col,
-  Card,
-} from 'antd';
-import moment from 'moment'; // Cần thư viện moment.js (thường đi kèm antd)
+import { Modal, Button, Radio, DatePicker, Tag, Avatar } from 'antd';
+import { SearchOutlined, CalendarOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
-const StaffTab = ({ staffData }) => {
-  const [isScheduleModalVisible, setScheduleModalVisible] = useState(false);
-  const [isViewScheduleModalVisible, setViewScheduleModalVisible] =
-    useState(false);
+const StaffTab = () => {
+  const [searchName, setSearchName] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
+  const [viewScheduleModalVisible, setViewScheduleModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedShift, setSelectedShift] = useState('morning');
   const [selectedStaff, setSelectedStaff] = useState(null);
-  const [form] = Form.useForm();
 
-  // Mở Modal xếp lịch
-  const handleOpenScheduleModal = (staff) => {
+  // Enhanced mock data for staff
+  const staffMembers = [
+    { 
+      id: 1, 
+      name: 'Sarah Johnson', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
+      position: 'Senior Nurse',
+      department: 'Women Health',
+      email: 'sarah.johnson@gendercare.com',
+      phone: '(+84) 912-345-678'
+    },
+    { 
+      id: 2, 
+      name: 'Mike Brown', 
+      status: 'blocked',
+      avatar: 'https://randomuser.me/api/portraits/men/55.jpg',
+      position: 'Receptionist',
+      department: 'Front Office',
+      email: 'mike.brown@gendercare.com',
+      phone: '(+84) 923-456-789'
+    },
+    { 
+      id: 3, 
+      name: 'Emily Davis', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/women/33.jpg',
+      position: 'Lab Technician',
+      department: 'Laboratory',
+      email: 'emily.davis@gendercare.com',
+      phone: '(+84) 934-567-890'
+    },
+    { 
+      id: 4, 
+      name: 'Robert Wilson', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/men/42.jpg',
+      position: 'Administrative Assistant',
+      department: 'Administration',
+      email: 'robert.wilson@gendercare.com',
+      phone: '(+84) 945-678-901'
+    },
+    { 
+      id: 5, 
+      name: 'Linda Martinez', 
+      status: 'active',
+      avatar: 'https://randomuser.me/api/portraits/women/22.jpg',
+      position: 'Pharmacy Assistant',
+      department: 'Pharmacy',
+      email: 'linda.martinez@gendercare.com',
+      phone: '(+84) 956-789-012'
+    }
+  ];
+
+  const shifts = [
+    { id: 'morning', time: 'Ca sáng (7h - 12h)' },
+    { id: 'afternoon', time: 'Ca chiều (13h - 18h)' }
+  ];
+
+  // Mock weekly schedule data
+  const weeklySchedule = {
+    monday: 'morning',
+    tuesday: 'afternoon',
+    wednesday: 'morning',
+    thursday: 'afternoon',
+    friday: 'morning',
+    saturday: 'afternoon',
+    sunday: null // Sunday is always off
+  };
+
+  const handleSchedule = (staff) => {
     setSelectedStaff(staff);
     setScheduleModalVisible(true);
   };
 
-  // Mở Modal xem lịch
-  const handleOpenViewScheduleModal = (staff) => {
+  const handleViewSchedule = (staff) => {
     setSelectedStaff(staff);
     setViewScheduleModalVisible(true);
   };
 
-  // Xử lý submit form xếp lịch
-  const handleScheduleSubmit = (values) => {
-    console.log('Lịch đã xếp cho staff:', {
-      staffId: selectedStaff.id,
-      ...values,
+  const handleScheduleSubmit = () => {
+    // Handle schedule submission
+    console.log('Schedule submitted:', {
+      staff: selectedStaff,
+      date: selectedDate,
+      shift: selectedShift
     });
-    message.success(`Đã xếp lịch cho ${selectedStaff.name}`);
     setScheduleModalVisible(false);
-    form.resetFields();
+    setSelectedDate(null);
+    setSelectedShift('morning');
   };
 
-  // Hàm render nội dung cho từng ô ngày trong lịch
-  const dateCellRenderForStaff = (value) => {
-    const dateStr = value.format('YYYY-MM-DD');
-    const scheduleForDay = selectedStaff?.schedules?.find((s) =>
-      moment(s.date).isSame(dateStr, 'day')
-    );
+  const filteredStaff = staffMembers.filter(staff => {
+    const nameMatch = staff.name.toLowerCase().includes(searchName.toLowerCase());
+    const statusMatch = statusFilter === 'all' || staff.status === statusFilter;
+    return nameMatch && statusMatch;
+  });
 
-    if (scheduleForDay) {
-      const shiftText =
-        scheduleForDay.shift === 'morning' ? 'Ca Sáng' : 'Ca Chiều';
-      const shiftColor = scheduleForDay.shift === 'morning' ? 'cyan' : 'purple';
-      return <Tag color={shiftColor}>{shiftText}</Tag>;
-    }
-    return null;
-  };
+  const renderWeeklySchedule = () => {
+    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    const scheduleKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-  // Cấu hình cột cho bảng
-  const columns = [
-    {
-      title: 'Thông tin nhân sự',
-      key: 'info',
-      render: (_, record) => (
-        <div className="staff-info">
-          <div className="staff-avatar">
-            {record.name.charAt(0).toUpperCase()}
-          </div>
-          <div className="staff-details">
-            <div className="staff-name">{record.name}</div>
-            <div className="staff-role">{record.email}</div>
-          </div>
+    return (
+      <div className="weekly-schedule">
+        <div className="schedule-header">
+          <h3>Lịch làm việc của {selectedStaff?.name}</h3>
+          <p>Vị trí: {selectedStaff?.position} - Bộ phận: {selectedStaff?.department}</p>
         </div>
-      ),
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status === 'active' ? 'Hoạt động' : 'Vô hiệu hóa'}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Thao tác',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button size="small" onClick={() => handleOpenScheduleModal(record)}>
-            Xếp lịch
-          </Button>
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => handleOpenViewScheduleModal(record)}
-          >
-            Xem lịch
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
-  // Tạo dữ liệu lịch làm việc 1 tuần hiện tại
-  const getCurrentWeekSchedule = () => {
-    const today = moment();
-    const startOfWeek = today.clone().startOf('week').add(1, 'day'); // Thứ 2
-    const weekSchedule = [];
-
-    for (let i = 0; i < 7; i++) {
-      const currentDate = startOfWeek.clone().add(i, 'days');
-      const dateStr = currentDate.format('YYYY-MM-DD');
-      const scheduleForDay = selectedStaff?.schedules?.find((s) =>
-        moment(s.date).isSame(dateStr, 'day')
-      );
-
-      weekSchedule.push({
-        date: currentDate,
-        dayName: currentDate.format('dddd'),
-        isSunday: currentDate.day() === 0,
-        schedule: scheduleForDay,
-      });
-    }
-
-    return weekSchedule;
+        
+        <table className="schedule-table">
+          <thead>
+            <tr className="schedule-header-row">
+              <th className="time-column">Ca làm việc</th>
+              {days.map((day, index) => (
+                <th key={day} className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}>
+                  {day}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {shifts.map((shift) => (
+              <tr key={shift.id} className="schedule-row">
+                <td className="time-slot-label">{shift.time}</td>
+                {scheduleKeys.map((day) => (
+                  <td 
+                    key={`${day}-${shift.id}`} 
+                    className={`schedule-cell ${day === 'sunday' ? 'day-off' : ''}`}
+                  >
+                    {day === 'sunday' ? (
+                      <span className="day-off-icon">Nghỉ</span>
+                    ) : (
+                      weeklySchedule[day] === shift.id ? (
+                        <div className="scheduled-slot">
+                          <CheckOutlined className="scheduled-icon" />
+                          <span>Làm việc</span>
+                        </div>
+                      ) : (
+                        <div className="not-scheduled-slot">
+                          <CloseOutlined className="not-scheduled-icon" />
+                          <span>Nghỉ</span>
+                        </div>
+                      )
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   return (
-    <>
-      <Table
-        columns={columns}
-        dataSource={staffData}
-        rowKey="id"
-        pagination={{ pageSize: 8 }}
-      />
+    <div className="staff-tab">
+      <div className="filters">
+        <div className="search-box">
+          <SearchOutlined />
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tên..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Tất cả trạng thái</option>
+          <option value="active">Hoạt động</option>
+          <option value="blocked">Bị khóa</option>
+        </select>
+      </div>
 
-      {/* Modal Xếp lịch cho Staff */}
+      <div className="staff-list">
+        <table className="management-table">
+          <thead>
+            <tr>
+              <th className="avatar-column"></th>
+              <th>Tên nhân viên</th>
+              <th>Vị trí</th>
+              <th>Bộ phận</th>
+              <th>Email</th>
+              <th>Số điện thoại</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStaff.map(staff => (
+              <tr key={staff.id} className={staff.status === 'blocked' ? 'blocked-row' : ''}>
+                <td className="avatar-column">
+                  <Avatar src={staff.avatar} />
+                </td>
+                <td className="name-column">{staff.name}</td>
+                <td>{staff.position}</td>
+                <td>{staff.department}</td>
+                <td>{staff.email}</td>
+                <td>{staff.phone}</td>
+                <td>
+                  <Tag color={staff.status === 'active' ? 'green' : 'red'}>
+                    {staff.status === 'active' ? 'Hoạt động' : 'Bị khóa'}
+                  </Tag>
+                </td>
+                <td className="action-column">
+                  <Button
+                    icon={<CalendarOutlined />}
+                    onClick={() => handleSchedule(staff)}
+                    type="primary"
+                    size="small"
+                    className="action-button"
+                  >
+                    Xếp lịch
+                  </Button>
+                  <Button
+                    icon={<EyeOutlined />}
+                    onClick={() => handleViewSchedule(staff)}
+                    size="small"
+                    className="action-button"
+                  >
+                    Xem lịch
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Schedule Modal */}
       <Modal
-        title={`Xếp lịch cho - ${selectedStaff?.name}`}
-        open={isScheduleModalVisible}
+        title={`Xếp lịch làm việc - ${selectedStaff?.name}`}
+        open={scheduleModalVisible}
+        onOk={handleScheduleSubmit}
         onCancel={() => setScheduleModalVisible(false)}
-        footer={null}
         width={500}
       >
-        <Form form={form} layout="vertical" onFinish={handleScheduleSubmit}>
-          <Form.Item
-            name="date"
-            label="Ngày làm việc"
-            rules={[{ required: true, message: 'Vui lòng chọn ngày' }]}
-          >
+        <div className="schedule-form">
+          <div className="date-picker">
+            <label>Chọn ngày:</label>
             <DatePicker
-              style={{ width: '100%' }}
-              placeholder="Chọn ngày làm việc"
+              onChange={(date) => setSelectedDate(date)}
               disabledDate={(current) => {
-                // Không cho phép chọn chủ nhật
-                return current && current.day() === 0;
+                return current && current.day() === 0; // Disable Sundays
               }}
+              placeholder="Chọn ngày làm việc"
+              className="date-picker-field"
             />
-          </Form.Item>
-          <Form.Item
-            name="shift"
-            label="Ca làm việc"
-            rules={[{ required: true, message: 'Vui lòng chọn ca' }]}
-          >
-            <Select placeholder="Chọn ca làm việc">
-              <Select.Option value="morning">
-                Ca sáng (07:00 - 12:00)
-              </Select.Option>
-              <Select.Option value="afternoon">
-                Ca chiều (13:00 - 18:00)
-              </Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Xác nhận
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Modal Xem lịch của Staff */}
-      <Modal
-        title={`Lịch làm việc của - ${selectedStaff?.name}`}
-        open={isViewScheduleModalVisible}
-        onCancel={() => setViewScheduleModalVisible(false)}
-        footer={null}
-        width={1000}
-      >
-        <div className="weekly-schedule">
-          <div className="schedule-header">
-            <h3>Lịch làm việc tuần hiện tại</h3>
-            <p>Thứ 2 - Chủ nhật</p>
           </div>
-
-          <div className="schedule-grid">
-            {getCurrentWeekSchedule().map((day, index) => (
-              <div
-                key={index}
-                className={`schedule-day ${day.isSunday ? 'sunday' : ''}`}
-              >
-                <div className="day-header">
-                  <div className="day-name">{day.date.format('dddd')}</div>
-                  <div className="day-date">
-                    {day.date.format('DD/MM/YYYY')}
-                  </div>
-                </div>
-
-                <div className="day-content">
-                  {day.isSunday ? (
-                    <div className="day-off">
-                      <div className="off-icon">🏖️</div>
-                      <div className="off-text">Ngày nghỉ</div>
-                    </div>
-                  ) : day.schedule ? (
-                    <div className="work-shift">
-                      <div className="shift-info">
-                        <div className="shift-badge morning">Ca Sáng</div>
-                        <div className="shift-time">07:00 - 12:00</div>
-                        <div className="shift-status">
-                          {day.schedule.shift === 'morning'
-                            ? '✓ Đã xếp'
-                            : '○ Chưa xếp'}
-                        </div>
-                      </div>
-
-                      <div className="shift-divider"></div>
-
-                      <div className="shift-info">
-                        <div className="shift-badge afternoon">Ca Chiều</div>
-                        <div className="shift-time">13:00 - 18:00</div>
-                        <div className="shift-status">
-                          {day.schedule.shift === 'afternoon'
-                            ? '✓ Đã xếp'
-                            : '○ Chưa xếp'}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="no-schedule">
-                      <div className="no-schedule-icon">📅</div>
-                      <div className="no-schedule-text">Chưa xếp lịch</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="shift-selection">
+            <label>Chọn ca làm việc:</label>
+            <Radio.Group
+              value={selectedShift}
+              onChange={(e) => setSelectedShift(e.target.value)}
+              className="shift-radio-group"
+            >
+              {shifts.map(shift => (
+                <Radio.Button key={shift.id} value={shift.id} className="shift-radio-button">
+                  {shift.time}
+                </Radio.Button>
+              ))}
+            </Radio.Group>
           </div>
         </div>
       </Modal>
-    </>
+
+      {/* View Schedule Modal */}
+      <Modal
+        title={`Lịch làm việc - ${selectedStaff?.name}`}
+        open={viewScheduleModalVisible}
+        onCancel={() => setViewScheduleModalVisible(false)}
+        footer={null}
+        width={1200}
+        className="schedule-modal"
+      >
+        {renderWeeklySchedule()}
+      </Modal>
+    </div>
   );
 };
 
-export default StaffTab;
+export default StaffTab; 

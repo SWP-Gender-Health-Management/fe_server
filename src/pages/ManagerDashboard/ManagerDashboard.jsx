@@ -189,11 +189,11 @@ const ManagerDashboard = () => {
             element={<Navigate to="/manager/dashboard" replace />}
           />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/staff" element={<StaffManagement />} />
           <Route path="/services" element={<ServiceManagement />} />
           <Route path="/blogs" element={<BlogManagement />} />
           <Route path="/questions" element={<QuestionManagement />} />
           <Route path="/profile" element={<ManagerProfile />} />
-          <Route path="/staff" element={<StaffManagement />} />
         </Routes>
       </div>
     </div>
