@@ -4,20 +4,20 @@ import './BlogManagement.css';
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [blogsPerPage, setBlogsPerPage] = useState(5);
+  const [searchBy, setSearchBy] = useState('title');
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
-  const statusOptions = [
-    { value: 'all', label: 'Tất cả', count: 0 },
-    { value: 'draft', label: 'Bản nháp', count: 0 },
-    { value: 'pending', label: 'Chờ duyệt', count: 0 },
-    { value: 'approved', label: 'Đã duyệt', count: 0 },
-    { value: 'rejected', label: 'Từ chối', count: 0 },
-    { value: 'published', label: 'Đã xuất bản', count: 0 },
+  const statusSelectOptions = [
+    { value: 'draft', label: 'Bản nháp' },
+    { value: 'pending', label: 'Chờ duyệt' },
+    { value: 'approved', label: 'Đã duyệt' },
+    { value: 'rejected', label: 'Từ chối' },
+    { value: 'published', label: 'Đã xuất bản' },
   ];
 
   useEffect(() => {
@@ -135,22 +135,37 @@ const BlogManagement = () => {
   useEffect(() => {
     filterBlogs();
     setCurrentPage(1); // Reset to first page when filter changes
-  }, [blogs, statusFilter, searchTerm]);
+  }, [blogs, selectedStatus, searchTerm, searchBy]);
 
   const filterBlogs = () => {
     let filtered = blogs;
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((blog) => blog.status === statusFilter);
+    // Apply status filter
+    if (selectedStatus === 'true') {
+      filtered = filtered.filter((blog) =>
+        ['approved', 'published'].includes(blog.status)
+      );
+    } else if (selectedStatus === 'false') {
+      filtered = filtered.filter((blog) =>
+        ['draft', 'pending', 'rejected'].includes(blog.status)
+      );
     }
 
+    // Apply search filter
     if (searchTerm.trim()) {
-      filtered = filtered.filter(
-        (blog) =>
-          blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          blog.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      if (searchBy === 'title') {
+        filtered = filtered.filter((blog) =>
+          blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      } else if (searchBy === 'author') {
+        filtered = filtered.filter((blog) =>
+          blog.author.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      } else if (searchBy === 'category') {
+        filtered = filtered.filter((blog) =>
           blog.category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+        );
+      }
     }
 
     setFilteredBlogs(filtered);
@@ -178,16 +193,9 @@ const BlogManagement = () => {
     }
   };
 
-  const getStatusCounts = () => {
-    const counts = {
-      all: blogs.length,
-      draft: blogs.filter((b) => b.status === 'draft').length,
-      pending: blogs.filter((b) => b.status === 'pending').length,
-      approved: blogs.filter((b) => b.status === 'approved').length,
-      rejected: blogs.filter((b) => b.status === 'rejected').length,
-      published: blogs.filter((b) => b.status === 'published').length,
-    };
-    return counts;
+  const handleBlogsPerPageChange = (e) => {
+    setBlogsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const getStatusBadge = (status) => {
@@ -231,13 +239,6 @@ const BlogManagement = () => {
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
-  const counts = getStatusCounts();
-
-  const handleBlogsPerPageChange = (e) => {
-    setBlogsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
-
   return (
     <div className="blog-management">
       <div className="blog-header">
@@ -247,26 +248,34 @@ const BlogManagement = () => {
 
       {/* Filters */}
       <div className="blog-filters">
-        <div className="status-filters">
-          {statusOptions.map((option) => (
-            <button
-              key={option.value}
-              className={`filter-btn ${statusFilter === option.value ? 'active' : ''}`}
-              onClick={() => setStatusFilter(option.value)}
-            >
-              {option.label} ({counts[option.value]})
-            </button>
-          ))}
-        </div>
-
         <div className="search-filter">
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tiêu đề, tác giả, danh mục..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
+          <div className="search-controls">
+            <select
+              value={searchBy}
+              onChange={(e) => setSearchBy(e.target.value)}
+              className="search-by-select"
+            >
+              <option value="title">Tiêu đề</option>
+              <option value="author">Tác giả</option>
+              <option value="category">Danh mục</option>
+            </select>
+            <input
+              type="text"
+              placeholder={`Tìm kiếm theo ${searchBy === 'title' ? 'tiêu đề' : searchBy === 'author' ? 'tác giả' : 'danh mục'}...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="category-select"
+            >
+              <option value="all">Tất cả</option>
+              <option value="true">Đã duyệt</option>
+              <option value="false">Chưa duyệt</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -280,7 +289,6 @@ const BlogManagement = () => {
               <th>Danh mục</th>
               <th>Trạng thái</th>
               <th>Ngày tạo</th>
-              <th>Lượt xem</th>
               <th>Thao tác</th>
             </tr>
           </thead>
@@ -297,9 +305,25 @@ const BlogManagement = () => {
                 <td>
                   <span className="category-tag">{blog.category}</span>
                 </td>
-                <td>{getStatusBadge(blog.status)}</td>
+                <td>
+                  <div className="status-cell">
+                    {getStatusBadge(blog.status)}
+                    <select
+                      value={blog.status}
+                      onChange={(e) =>
+                        handleStatusChange(blog.id, e.target.value)
+                      }
+                      className="status-select"
+                    >
+                      {statusSelectOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </td>
                 <td>{formatDate(blog.createdAt)}</td>
-                <td>{blog.views.toLocaleString()}</td>
                 <td>
                   <div className="action-buttons">
                     <button
@@ -308,34 +332,6 @@ const BlogManagement = () => {
                     >
                       Xem
                     </button>
-                    {blog.status === 'pending' && (
-                      <>
-                        <button
-                          className="btn-approve"
-                          onClick={() =>
-                            handleStatusChange(blog.id, 'approved')
-                          }
-                        >
-                          Duyệt
-                        </button>
-                        <button
-                          className="btn-reject"
-                          onClick={() =>
-                            handleStatusChange(blog.id, 'rejected')
-                          }
-                        >
-                          Từ chối
-                        </button>
-                      </>
-                    )}
-                    {blog.status === 'approved' && (
-                      <button
-                        className="btn-publish"
-                        onClick={() => handleStatusChange(blog.id, 'published')}
-                      >
-                        Xuất bản
-                      </button>
-                    )}
                   </div>
                 </td>
               </tr>
@@ -459,39 +455,29 @@ const BlogManagement = () => {
               </div>
             </div>
             <div className="modal-footer">
-              {selectedBlog.status === 'pending' && (
-                <>
-                  <button
-                    className="btn-approve"
-                    onClick={() => {
-                      handleStatusChange(selectedBlog.id, 'approved');
-                      setShowModal(false);
-                    }}
-                  >
-                    Duyệt bài viết
-                  </button>
-                  <button
-                    className="btn-reject"
-                    onClick={() => {
-                      handleStatusChange(selectedBlog.id, 'rejected');
-                      setShowModal(false);
-                    }}
-                  >
-                    Từ chối
-                  </button>
-                </>
-              )}
-              {selectedBlog.status === 'approved' && (
-                <button
-                  className="btn-publish"
-                  onClick={() => {
-                    handleStatusChange(selectedBlog.id, 'published');
-                    setShowModal(false);
+              <div className="status-change">
+                <label htmlFor="blog-status">Thay đổi trạng thái:</label>
+                <select
+                  id="blog-status"
+                  value={selectedBlog.status}
+                  onChange={(e) => {
+                    handleStatusChange(selectedBlog.id, e.target.value);
                   }}
+                  className="status-select modal-status-select"
                 >
-                  Xuất bản
+                  {statusSelectOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="btn-save-status"
+                  onClick={() => setShowModal(false)}
+                >
+                  Lưu & Đóng
                 </button>
-              )}
+              </div>
             </div>
           </div>
         </div>
