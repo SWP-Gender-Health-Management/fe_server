@@ -45,7 +45,7 @@
   color: white;
   position: relative;
   z-index: 1;
-  max-width: 500px;
+  width: 500px;
   padding: 40px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
@@ -77,8 +77,10 @@
 }
 
 .loading-icon {
-  font-size: 60px;
-  display: inline-block;
+  font-size: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: logoRotate 3s ease-in-out infinite;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
@@ -396,7 +398,7 @@
   position: static;
 }
 
-.logo-icon {
+.logo-icon-sidebar {
   font-size: 28px;
   display: flex;
   align-items: center;
