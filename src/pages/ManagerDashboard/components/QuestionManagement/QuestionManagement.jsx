@@ -264,7 +264,7 @@ const QuestionManagement = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="stats-grid">
+      {/* <div className="stats-grid">
         <div className="stat-card total">
           <div className="stat-icon">📊</div>
           <div className="stat-content">
@@ -293,7 +293,7 @@ const QuestionManagement = () => {
             <div className="stat-label">Khẩn cấp</div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Filters */}
       <div className="filters-section">
@@ -327,8 +327,8 @@ const QuestionManagement = () => {
             <tr>
               <th>Khách hàng</th>
               <th>Câu hỏi</th>
-              <th>Danh mục</th>
-              <th>Độ ưu tiên</th>
+              {/* <th>Danh mục</th> */}
+              {/* <th>Độ ưu tiên</th> */}
               <th>Trạng thái</th>
               <th>Thời gian</th>
               <th>Hành động</th>
@@ -367,7 +367,7 @@ const QuestionManagement = () => {
                     )}
                   </div>
                 </td>
-                <td>
+                {/* <td>
                   <span className="category-badge">
                     <span className="category-icon">
                       {getCategoryIcon(question.category)}
@@ -375,7 +375,7 @@ const QuestionManagement = () => {
                     {question.category}
                   </span>
                 </td>
-                <td>{getPriorityBadge(question.priority)}</td>
+                {/* <td>{getPriorityBadge(question.priority)}</td> */}
                 <td>{getStatusBadge(question.status)}</td>
                 <td>
                   <div className="time-info">

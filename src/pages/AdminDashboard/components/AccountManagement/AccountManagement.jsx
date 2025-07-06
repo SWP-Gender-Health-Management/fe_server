@@ -30,7 +30,6 @@ const AccountManagement = () => {
         role: 'Admin',
         status: 'active',
         joinDate: '2024-01-15',
-        lastLogin: '2024-12-20 14:30',
       },
       {
         id: 2,
@@ -40,7 +39,6 @@ const AccountManagement = () => {
         role: 'Manager',
         status: 'active',
         joinDate: '2024-02-10',
-        lastLogin: '2024-12-19 09:15',
       },
       {
         id: 3,
@@ -50,7 +48,6 @@ const AccountManagement = () => {
         role: 'User',
         status: 'banned',
         joinDate: '2024-03-05',
-        lastLogin: '2024-12-15 16:45',
       },
       {
         id: 4,
@@ -60,7 +57,6 @@ const AccountManagement = () => {
         role: 'User',
         status: 'active',
         joinDate: '2024-03-20',
-        lastLogin: '2024-12-20 11:20',
       },
       {
         id: 5,
@@ -70,7 +66,6 @@ const AccountManagement = () => {
         role: 'Manager',
         status: 'active',
         joinDate: '2024-04-12',
-        lastLogin: '2024-12-18 13:10',
       },
     ];
 
@@ -89,13 +84,6 @@ const AccountManagement = () => {
       )
         .toISOString()
         .split('T')[0],
-      lastLogin: new Date(
-        2024,
-        11,
-        Math.floor(Math.random() * 20) + 1,
-        Math.floor(Math.random() * 24),
-        Math.floor(Math.random() * 60)
-      ).toLocaleString('vi-VN'),
     }));
 
     const allUsers = [...mockUsers, ...additionalUsers];
@@ -297,7 +285,7 @@ const AccountManagement = () => {
         <table className="users-table">
           <thead>
             <tr>
-              <th>
+              {/* <th>
                 <input
                   type="checkbox"
                   checked={
@@ -306,13 +294,12 @@ const AccountManagement = () => {
                   }
                   onChange={handleSelectAll}
                 />
-              </th>
+              </th> */}
               <th>Thông tin người dùng</th>
               <th>Email</th>
               <th>Vai trò</th>
               <th>Ngày tham gia</th>
               <th>Trạng thái</th>
-              <th>Lần đăng nhập cuối</th>
               <th>Hành động</th>
             </tr>
           </thead>
@@ -322,13 +309,13 @@ const AccountManagement = () => {
                 key={user.id}
                 className={selectedUsers.includes(user.id) ? 'selected' : ''}
               >
-                <td>
+                {/* <td>
                   <input
                     type="checkbox"
                     checked={selectedUsers.includes(user.id)}
                     onChange={() => handleSelectUser(user.id)}
                   />
-                </td>
+                </td> */}
                 <td>
                   <div className="user-info">
                     {getAvatar(user)}
@@ -342,7 +329,6 @@ const AccountManagement = () => {
                 <td>{getRoleBadge(user.role)}</td>
                 <td>{new Date(user.joinDate).toLocaleDateString('vi-VN')}</td>
                 <td>{getStatusBadge(user.status)}</td>
-                <td className="last-login">{user.lastLogin}</td>
                 <td>
                   <div className="actions-dropdown">
                     <button className="actions-btn">⋮</button>

@@ -211,7 +211,7 @@ const MenstrualManagement = () => {
           </div>
         </div>
 
-        <div className="stat-card secondary">
+        {/* <div className="stat-card secondary">
           <div className="stat-icon">📊</div>
           <div className="stat-content">
             <div className="stat-value">
@@ -222,7 +222,7 @@ const MenstrualManagement = () => {
               Trong tháng {new Date().getMonth() + 1}
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="stat-card accent">
           <div className="stat-icon">📅</div>

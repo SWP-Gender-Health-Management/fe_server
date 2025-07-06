@@ -8,6 +8,8 @@ const BlogManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [blogsPerPage, setBlogsPerPage] = useState(5);
 
   const statusOptions = [
     { value: 'all', label: 'Tất cả', count: 0 },
@@ -86,6 +88,44 @@ const BlogManagement = () => {
         content: 'Nội dung về tư vấn sức khỏe tâm lý cho phụ nữ...',
         rejectionReason: 'Nội dung cần bổ sung thêm tài liệu tham khảo',
       },
+      {
+        id: 6,
+        title: 'Các phương pháp tránh thai hiện đại',
+        author: 'Dr. Nguyễn Văn Tuấn',
+        status: 'published',
+        createdAt: '2024-01-05',
+        updatedAt: '2024-01-07',
+        views: 2100,
+        category: 'Kế hoạch hóa gia đình',
+        excerpt:
+          'Tổng quan về các phương pháp tránh thai hiện đại và hiệu quả...',
+        content: 'Nội dung chi tiết về các phương pháp tránh thai hiện đại...',
+      },
+      {
+        id: 7,
+        title: 'Chăm sóc sức khỏe sau sinh',
+        author: 'Dr. Trần Thị Hương',
+        status: 'published',
+        createdAt: '2024-01-03',
+        updatedAt: '2024-01-04',
+        views: 1800,
+        category: 'Sau sinh',
+        excerpt: 'Hướng dẫn chăm sóc sức khỏe cho mẹ sau khi sinh con...',
+        content: 'Nội dung chi tiết về chăm sóc sức khỏe sau sinh...',
+      },
+      {
+        id: 8,
+        title: 'Xét nghiệm tiền sản phụ khoa',
+        author: 'Dr. Lê Văn Hùng',
+        status: 'pending',
+        createdAt: '2024-01-22',
+        updatedAt: '2024-01-22',
+        views: 0,
+        category: 'Xét nghiệm',
+        excerpt:
+          'Các xét nghiệm quan trọng cần thực hiện trước khi mang thai...',
+        content: 'Nội dung chi tiết về xét nghiệm tiền sản phụ khoa...',
+      },
     ];
 
     setBlogs(mockBlogs);
@@ -94,6 +134,7 @@ const BlogManagement = () => {
 
   useEffect(() => {
     filterBlogs();
+    setCurrentPage(1); // Reset to first page when filter changes
   }, [blogs, statusFilter, searchTerm]);
 
   const filterBlogs = () => {
@@ -113,6 +154,28 @@ const BlogManagement = () => {
     }
 
     setFilteredBlogs(filtered);
+  };
+
+  // Get current blogs for pagination
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Go to next page
+  const nextPage = () => {
+    if (currentPage < Math.ceil(filteredBlogs.length / blogsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Go to previous page
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const getStatusCounts = () => {
@@ -170,6 +233,11 @@ const BlogManagement = () => {
 
   const counts = getStatusCounts();
 
+  const handleBlogsPerPageChange = (e) => {
+    setBlogsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
   return (
     <div className="blog-management">
       <div className="blog-header">
@@ -217,7 +285,7 @@ const BlogManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredBlogs.map((blog) => (
+            {currentBlogs.map((blog) => (
               <tr key={blog.id}>
                 <td>
                   <div className="blog-title">
@@ -278,6 +346,65 @@ const BlogManagement = () => {
         {filteredBlogs.length === 0 && (
           <div className="no-results">
             <p>Không tìm thấy bài viết nào phù hợp với bộ lọc</p>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {filteredBlogs.length > 0 && (
+          <div className="pagination">
+            <div className="pagination-info">
+              Hiển thị {indexOfFirstBlog + 1} đến{' '}
+              {Math.min(indexOfLastBlog, filteredBlogs.length)} trong tổng số{' '}
+              {filteredBlogs.length} bài viết
+            </div>
+            <div className="pagination-controls">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+              >
+                &laquo; Trước
+              </button>
+
+              <div className="pagination-numbers">
+                {Array.from({
+                  length: Math.ceil(filteredBlogs.length / blogsPerPage),
+                }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => paginate(index + 1)}
+                    className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={nextPage}
+                disabled={
+                  currentPage === Math.ceil(filteredBlogs.length / blogsPerPage)
+                }
+                className={`pagination-btn ${currentPage === Math.ceil(filteredBlogs.length / blogsPerPage) ? 'disabled' : ''}`}
+              >
+                Tiếp &raquo;
+              </button>
+            </div>
+
+            <div className="items-per-page">
+              <label htmlFor="blogsPerPage">Số bài viết mỗi trang:</label>
+              <select
+                id="blogsPerPage"
+                value={blogsPerPage}
+                onChange={handleBlogsPerPageChange}
+                className="per-page-select"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+              </select>
+            </div>
           </div>
         )}
       </div>
