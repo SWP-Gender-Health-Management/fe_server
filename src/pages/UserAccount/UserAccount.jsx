@@ -158,7 +158,7 @@ useEffect(() => {
 
 
   const handleSave = async (values) => {
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = Cookies.get('accessToken');
     if (!accessToken) {
       message.error('Vui lòng đăng nhập để lưu thông tin.');
       return;
@@ -197,7 +197,7 @@ useEffect(() => {
 
   const handleAvatarUpload = async (options) => {
     const { file, onSuccess, onError } = options;
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = Cookies.getm('accessToken');
     const formData = new FormData();
     formData.append('avatar', file);
 

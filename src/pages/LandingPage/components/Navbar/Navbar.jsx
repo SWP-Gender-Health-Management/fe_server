@@ -23,12 +23,13 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
 import Logo from '@assets/Blue-full.svg?react';
 import '@styles/reset.css';
 import './Navbar.css';
 import Logout from '@pages/Logout/Logout';
-import NotificationDropdown from '@components/Notification/NotificationDropdown';
-import Cookies from 'js-cookie'; // Thêm thư viện js-cookie
+import NotificationDropdown from '../Notification/NotificationDropdown';
 import { useAuth } from '@context/AuthContext';
 
 

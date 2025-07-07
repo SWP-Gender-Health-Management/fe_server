@@ -380,13 +380,16 @@
   padding: 24px 10px;
 }
 
-.logo {
+.sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
   position: relative;
   z-index: 1;
   transition: all 0.3s ease;
+  background-color: transparent;
+  width: 12em;
+  height: auto;
+  padding: 0 10px;
 }
 
 /* Collapsed State Adjustments */
@@ -703,7 +706,8 @@
   }
 
   .sidebar-header {
-    padding: 20px 16px;
+      /* padding: 20px 16px; */
+      background-color: transparent;
   }
 
   .logo-text {

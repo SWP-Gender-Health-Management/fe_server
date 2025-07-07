@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import DoctorList from '@components/DoctorList/DoctorList';
-import DoctorSchedule from '@components/DoctorScheDule/DoctorSchedule';
-import BookingForm from '@components/BookingForm/BookingForm';
-import BookingSuccess from '@components/BookingSuccess/BookingSuccess';
+import DoctorList from './components/DoctorList/DoctorList';
+import DoctorSchedule from './components/DoctorScheDule/DoctorSchedule';
+import BookingForm from './components/BookingForm/BookingForm';
+import BookingSuccess from './components/BookingSuccess/BookingSuccess';
 import './BookingPage.css';
 
 const BookingPage = () => {

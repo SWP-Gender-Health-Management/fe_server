@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
 import Dashboard from './components/DashBoard/Dashboard';
 import AccountManagement from './components/AccountManagement/AccountManagement';
 import AdminProfile from './components/AdminProfile/AdminProfile';
@@ -7,6 +7,7 @@ import UserManagement from './components/UserManagement/UserManagement';
 import Reports from './components/Report/Reports';
 import BulkEmail from './components/BulkEmail/BulkEmail';
 import RecentActivities from './components/RecentActivities/RecentActivities';
+import Logo from '@assets/Logo-full.svg?react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -84,7 +85,8 @@ const AdminDashboard = () => {
               <span className="loading-icon">🏥</span>
               <div className="loading-pulse"></div>
             </div>
-            <h1 className="loading-title">HealthAdmin</h1>
+            <h1 className="loading-title">GenderCare</h1>
+            {/* <Logo className="loading-logo-img" /> */}
             <p className="loading-subtitle">
               Đang tải bảng điều khiển quản trị...
             </p>
@@ -134,12 +136,9 @@ const AdminDashboard = () => {
       <div className={`admin-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         {/* Logo */}
         <div className="sidebar-header">
-          <div className="logo">
-            <span className="logo-icon-sidebar">🏥</span>
-            {!sidebarCollapsed && (
-              <span className="logo-text">HealthAdmin</span>
-            )}
-          </div>
+          <Link to="/" className="logo-link">
+            {!sidebarCollapsed && <Logo className="sidebar-logo" />}
+          </Link>
           <button
             className="sidebar-toggle"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}

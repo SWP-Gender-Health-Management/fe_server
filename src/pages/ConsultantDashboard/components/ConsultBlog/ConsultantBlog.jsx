@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import BlogModal from '@components/ConsultDshBrd/BlogModal/BlogModal';
-import BlogFormModal from '@components/ConsultDshBrd/BlogModal/BlogModal';
+import BlogModal from '../BlogModal/BlogModal';
+import BlogFormModal from '../BlogModal/BlogModal';
 import './ConsultantBlog.css';
 import axios, { AxiosHeaders } from 'axios';
+import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 
 const ConsultantBlog = () => {
   const [filter, setFilter] = useState('All');
@@ -16,8 +17,8 @@ const ConsultantBlog = () => {
 
   useEffect(() => {
     async function fetchBlogs() {
-      const accountId = await sessionStorage.getItem('accountId');
-      const accessToken = await sessionStorage.getItem('accessToken');
+      const accountId = await Cookies.get('accountId');
+      const accessToken = await Cookies.get('accessToken');
       // console.log('useEffect has been called!:', accountId);
       console.log('useEffect has been called!:', accessToken);
       const response = await axios.get(
@@ -98,7 +99,7 @@ const ConsultantBlog = () => {
         status: 'false',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        author: sessionStorage.getItem('full_name') || 'Tư vấn viên',
+        author: Cookies.getI('fullname') || 'Tư vấn viên',
       };
       setBlogs((prev) => [newBlog, ...prev]);
     }

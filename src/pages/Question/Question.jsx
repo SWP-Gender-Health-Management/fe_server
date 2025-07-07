@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import QuestionList from '@components/QaA/QuestionList/QuestionList';
-import QuestionForm from '@components/QaA/QuestionForm/QuestionForm';
-import HospitalInfo from '@components/Info/HospitalInfo';
+import QuestionList from './components/QuestionList/QuestionList';
+import QuestionForm from './components/QuestionForm/QuestionForm';
+import HospitalInfo from './components/Info/HospitalInfo';
 import './Question.css';
 import axios from 'axios';
 import { Divider, Modal, message } from 'antd';
 import { CommentOutlined } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext';
-
+import Cookies from 'js-cookie';
 const Question = () => {
   const [questions, setQuestions] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -15,7 +15,7 @@ const Question = () => {
 
   const fetchQuestions = async () => {
     try {
-      const accessToken = sessionStorage.getItem('accessToken');
+      const accessToken = Cookies.get('accessToken');
       const res = await axios.get('http://localhost:3000/question/get-all-question', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -43,7 +43,7 @@ const Question = () => {
       return;
     }
 
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = Cookies.get('accessToken');
     if (!accessToken) {
       setIsModalVisible(true);
       return;

@@ -12,11 +12,11 @@ import {
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
 import Logo from '@assets/Blue-full.svg?react';
-import { useAuth } from '@context/AuthContext.jsx';
-import ForgotPassword from '@pages/ForgotPassword/ForgotPassword.jsx';
+import { useAuth } from '@context/AuthContext';
+import ForgotPassword from '@pages/ForgotPassword/ForgotPassword';
 import './login.css';
 import { GoogleLogin } from '@react-oauth/google';
-import Cookies from 'js-cookie'; // Thêm import Cookies
+import Cookies from 'js-cookie';
 
 const { TabPane } = Tabs;
 

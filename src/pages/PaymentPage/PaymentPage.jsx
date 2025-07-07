@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import SummaryOrder from '@components/Payment/SummaryOrder/SummaryOrder';
-import PaymentDetails from '@components/Payment/PaymentDetails/PaymentDetails';
+import SummaryOrder from './components/SummaryOrder/SummaryOrder';
+import PaymentDetails from './components/PaymentDetails/PaymentDetails';
 import './PaymentPage.css';
 
 const PaymentPage = () => {

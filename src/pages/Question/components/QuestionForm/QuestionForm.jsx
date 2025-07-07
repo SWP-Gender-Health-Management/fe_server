@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Input, Button, message } from 'antd';
 import axios from 'axios';
-import { useAuth } from '../../../context/AuthContext.jsx'; // Điều chỉnh đường dẫn nếu cần
+import { useAuth } from '@context/AuthContext.jsx'; // Điều chỉnh đường dẫn nếu cần
 import './QuestionForm.css';
+import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 
 const QuestionForm = ({ onSubmitSuccess }) => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const QuestionForm = ({ onSubmitSuccess }) => {
       return message.warning('Vui lòng điền nội dung câu hỏi!');
     }
 
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = Cookies.getI('accessToken');
     if (!accessToken) {
       return message.warning('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!');
     }

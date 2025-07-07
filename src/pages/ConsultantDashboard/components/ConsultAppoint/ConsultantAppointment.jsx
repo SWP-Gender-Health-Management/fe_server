@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import AppointmentModal from '@components/ConsultDshBrd/Appointment/AppointmentModal' ;
+import AppointmentModal from '../Appointment/AppointmentModal' ;
 import './ConsultantAppointment.css';
 
 const ConsultantAppointment = () => {
@@ -46,7 +46,7 @@ const ConsultantAppointment = () => {
   ]);
 
   // Mock data cho schedule - những slot mà consultant có thể làm việc
-  const [schedule, setSchedule] = useState([
+  const [schedule] = useState([
     { date: '2024-01-15', slots: [1, 2, 3, 4, 5] },
     { date: '2024-01-16', slots: [2, 3, 4, 6, 7] },
     { date: '2024-01-17', slots: [1, 3, 5, 7, 8] },

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import QuestionModal from '@components/ConsultDshBrd/QuestionModal/QuestionModal';
+import QuestionModal from '../QuestionModal/QuestionModal';
 import './ConsultantQuestion.css';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 
 const ConsultantQuestion = () => {
   const [filter, setFilter] = useState('Unreply');
@@ -15,8 +16,8 @@ const ConsultantQuestion = () => {
 
   useEffect(() => {
     async function fetchQuestions() {
-      const accountId = await sessionStorage.getItem('accountId');
-      const accessToken = await sessionStorage.getItem('accessToken');
+      const accountId = await Cookies.get('accountId');
+      const accessToken = await Cookies.getm('accessToken');
       // console.log('useEffect has been called!:', accountId);
       console.log('useEffect has been called!:', accessToken);
 
@@ -63,20 +64,17 @@ const ConsultantQuestion = () => {
 
   // Handle reply submission
   const handleReplySubmit = (questionId, reply) => {
-    setQuestions((prev) =>
-      prev.map((q) =>
-        q.id === questionId
-          ? {
-            ...q,
-            status: 'replied',
-            reply: reply,
-            consultantName:
-              sessionStorage.getItem('full_name') || 'Tư vấn viên',
-            repliedAt: new Date().toISOString(),
-          }
-          : q
-      )
-    );
+    // Find the question in questionsUnreplied
+    const questionToUpdate = questionsUnreplied.find(q => q.ques_id === questionId);
+    if (questionToUpdate) {
+      const updatedQuestion = {
+        ...questionToUpdate,
+        reply: reply,
+        // Optionally update other fields if needed
+      };
+      setQuestionsUnreplied(prev => prev.filter(q => q.ques_id !== questionId));
+      setQuestionsReplied(prev => [updatedQuestion, ...prev]);
+    }
     setShowModal(false);
   };
 
