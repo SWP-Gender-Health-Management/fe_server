@@ -68,7 +68,10 @@ const AppLayout = () => {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/tai-khoan" element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />} />
+        <Route
+          path="/tai-khoan"
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
+        />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
@@ -82,7 +85,10 @@ const AppLayout = () => {
         <Route path="/manager/*" element={<ManagerDashboard />} />
         <Route path="/consultant/*" element={<ConsultantDashboard />} />
         <Route path="/staff/*" element={<StaffDashboard />} />
-        <Route path="/dich-vu/chu-ky-kinh-nguyet" element={<MenstrualPredictorPage />} />
+        <Route
+          path="/dich-vu/chu-ky-kinh-nguyet"
+          element={<MenstrualPredictorPage />}
+        />
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="*" element={<div>404 - Không tìm thấy trang</div>} />

@@ -443,3 +443,121 @@
     margin-bottom: 12px;
   }
 }
+
+/* Email Verification Modal Styles */
+.verify-email-container {
+  padding: 20px 10px;
+}
+
+.verify-email-icon {
+  font-size: 60px;
+  color: #1890ff;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.verify-email-title {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.verify-email-subtitle {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.verification-code-input {
+  letter-spacing: 12px;
+  font-size: 28px;
+  font-weight: 500;
+  text-align: center;
+  height: 60px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.verification-code-input:focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  border-color: #1890ff;
+}
+
+.verify-button {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.verify-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+}
+
+.resend-link {
+  margin-top: 16px;
+  color: #1890ff;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+/* Success and Error Result Styles */
+.result-success .ant-result-icon {
+  color: #52c41a;
+}
+
+.result-error .ant-result-icon {
+  color: #ff4d4f;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.result-subtitle {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+/* Override Ant Design Modal Styles */
+.email-verification-modal .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.email-verification-modal .ant-modal-header {
+  background: #1890ff;
+  border-radius: 12px 12px 0 0;
+  padding: 16px 24px;
+}
+
+.email-verification-modal .ant-modal-title {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.email-verification-modal .ant-modal-close-x {
+  color: white;
+}
+
+.email-verification-modal .ant-modal-body {
+  padding: 30px;
+}
+
+@media (max-width: 576px) {
+  .verification-code-input {
+    letter-spacing: 8px;
+    font-size: 24px;
+    height: 50px;
+  }
+
+  .verify-button {
+    height: 44px;
+  }
+}
