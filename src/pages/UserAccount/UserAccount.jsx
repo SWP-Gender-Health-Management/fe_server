@@ -25,6 +25,15 @@ import {
   Modal,
   Popconfirm,
   Result,
+  Pagination,
+  Table,
+  Tooltip,
+  Empty,
+  Descriptions,
+  Timeline,
+  Dropdown,
+  Menu,
+  Spin,
 } from 'antd';
 import {
   UserOutlined,
@@ -72,6 +81,316 @@ const UserAccount = () => {
   const [verifyForm] = Form.useForm();
   const [verificationSent, setVerificationSent] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState(null); // null, 'success', 'error'
+  const [appointmentsPagination, setAppointmentsPagination] = useState({
+    current: 1,
+    pageSize: 5,
+    total: 0,
+  });
+  const [healthRecordsPagination, setHealthRecordsPagination] = useState({
+    current: 1,
+    pageSize: 5,
+    total: 0,
+  });
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [appointmentDetailVisible, setAppointmentDetailVisible] =
+    useState(false);
+  const [selectedHealthRecord, setSelectedHealthRecord] = useState(null);
+  const [healthRecordDetailVisible, setHealthRecordDetailVisible] =
+    useState(false);
+
+  // Mock data cho lịch hẹn tư vấn
+  const mockAppointments = [
+    {
+      id: 'app-001',
+      consultant_pattern: {
+        id: 'cp-001',
+        title: 'Tư vấn sức khỏe phụ nữ',
+        description:
+          'Tư vấn về các vấn đề sức khỏe phụ nữ, chu kỳ kinh nguyệt, kế hoạch hóa gia đình',
+        working_slot: {
+          date: '2023-07-15',
+          time_slot: '09:00 - 10:00',
+        },
+        consultant: {
+          id: 'cons-001',
+          full_name: 'Bác sĩ Nguyễn Thị Hương',
+          avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+          specialty: 'Sản phụ khoa',
+        },
+      },
+      location: 'Phòng khám số 3, Tầng 2',
+      status: 'confirmed',
+      created_at: '2023-07-10',
+    },
+    {
+      id: 'app-002',
+      consultant_pattern: {
+        id: 'cp-002',
+        title: 'Tư vấn dinh dưỡng',
+        description:
+          'Tư vấn về chế độ ăn uống, dinh dưỡng cho phụ nữ mang thai và sau sinh',
+        working_slot: {
+          date: '2023-07-20',
+          time_slot: '14:00 - 15:00',
+        },
+        consultant: {
+          id: 'cons-002',
+          full_name: 'Bác sĩ Trần Văn Nam',
+          avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+          specialty: 'Dinh dưỡng',
+        },
+      },
+      location: 'Online',
+      status: 'pending',
+      created_at: '2023-07-12',
+    },
+    {
+      id: 'app-003',
+      consultant_pattern: {
+        id: 'cp-003',
+        title: 'Tư vấn tâm lý',
+        description: 'Tư vấn về các vấn đề tâm lý, stress, lo âu trong thai kỳ',
+        working_slot: {
+          date: '2023-07-25',
+          time_slot: '10:00 - 11:00',
+        },
+        consultant: {
+          id: 'cons-003',
+          full_name: 'Bác sĩ Lê Thị Hà',
+          avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
+          specialty: 'Tâm lý học',
+        },
+      },
+      location: 'Phòng tư vấn số 5, Tầng 3',
+      status: 'cancelled',
+      created_at: '2023-07-14',
+    },
+    {
+      id: 'app-004',
+      consultant_pattern: {
+        id: 'cp-004',
+        title: 'Tư vấn sức khỏe sinh sản',
+        description:
+          'Tư vấn về các vấn đề sức khỏe sinh sản, vô sinh, hiếm muộn',
+        working_slot: {
+          date: '2023-08-05',
+          time_slot: '15:00 - 16:00',
+        },
+        consultant: {
+          id: 'cons-004',
+          full_name: 'Bác sĩ Phạm Văn Hoàng',
+          avatar: 'https://randomuser.me/api/portraits/men/62.jpg',
+          specialty: 'Sản phụ khoa',
+        },
+      },
+      location: 'Phòng khám số 2, Tầng 1',
+      status: 'confirmed',
+      created_at: '2023-07-20',
+    },
+    {
+      id: 'app-005',
+      consultant_pattern: {
+        id: 'cp-005',
+        title: 'Tư vấn sau sinh',
+        description:
+          'Tư vấn về chăm sóc sau sinh, cho con bú, phục hồi sức khỏe',
+        working_slot: {
+          date: '2023-08-10',
+          time_slot: '09:30 - 10:30',
+        },
+        consultant: {
+          id: 'cons-001',
+          full_name: 'Bác sĩ Nguyễn Thị Hương',
+          avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+          specialty: 'Sản phụ khoa',
+        },
+      },
+      location: 'Online',
+      status: 'pending',
+      created_at: '2023-07-25',
+    },
+    {
+      id: 'app-006',
+      consultant_pattern: {
+        id: 'cp-006',
+        title: 'Tư vấn kế hoạch hóa gia đình',
+        description:
+          'Tư vấn về các biện pháp tránh thai, kế hoạch hóa gia đình',
+        working_slot: {
+          date: '2023-08-15',
+          time_slot: '13:30 - 14:30',
+        },
+        consultant: {
+          id: 'cons-005',
+          full_name: 'Bác sĩ Vũ Thị Lan',
+          avatar: 'https://randomuser.me/api/portraits/women/22.jpg',
+          specialty: 'Sản phụ khoa',
+        },
+      },
+      location: 'Phòng tư vấn số 1, Tầng 2',
+      status: 'confirmed',
+      created_at: '2023-07-30',
+    },
+  ];
+
+  // Mock data cho lịch hẹn xét nghiệm
+  const mockHealthRecords = [
+    {
+      id: 'hr-001',
+      date: '2023-07-10',
+      type: 'Xét nghiệm máu tổng quát',
+      result: 'Bình thường',
+      is_normal: true,
+      notes: 'Các chỉ số trong giới hạn bình thường',
+      tests: ['Công thức máu', 'Sinh hóa máu', 'Đường huyết', 'Chức năng gan'],
+      indicators: [
+        'Hồng cầu, Bạch cầu, Tiểu cầu',
+        'AST, ALT, GGT',
+        'HbA1c',
+        'GOT, GPT',
+      ],
+      test_results: [
+        'Bình thường',
+        'Bình thường',
+        'Bình thường',
+        'Bình thường',
+      ],
+      test_is_normal: [true, true, true, true],
+      test_values: [
+        { value: '4.5', unit: 'x10^6/µL', min: '4.0', max: '5.5', percent: 50 },
+        { value: '25', unit: 'U/L', min: '10', max: '40', percent: 50 },
+        { value: '5.2', unit: '%', min: '4.0', max: '6.0', percent: 60 },
+        { value: '30', unit: 'U/L', min: '10', max: '50', percent: 50 },
+      ],
+    },
+    {
+      id: 'hr-002',
+      date: '2023-07-20',
+      type: 'Xét nghiệm nước tiểu',
+      result: 'Có bất thường',
+      is_normal: false,
+      notes: 'Phát hiện protein trong nước tiểu, cần theo dõi thêm',
+      tests: ['Protein niệu', 'Đường niệu', 'pH nước tiểu'],
+      indicators: ['Protein', 'Glucose', 'pH'],
+      test_results: ['Cao', 'Bình thường', 'Bình thường'],
+      test_is_normal: [false, true, true],
+      test_values: [
+        { value: '150', unit: 'mg/dL', min: '0', max: '20', percent: 95 },
+        {
+          value: 'Âm tính',
+          unit: '',
+          min: 'Âm tính',
+          max: 'Âm tính',
+          percent: 50,
+        },
+        { value: '6.0', unit: '', min: '4.5', max: '8.0', percent: 40 },
+      ],
+    },
+    {
+      id: 'hr-003',
+      date: '2023-08-05',
+      type: 'Xét nghiệm nội tiết',
+      result: 'Bình thường',
+      is_normal: true,
+      notes: 'Các hormone trong giới hạn bình thường',
+      tests: ['Hormone tuyến giáp', 'Estrogen', 'Progesterone', 'Testosterone'],
+      indicators: ['TSH, T3, T4', 'Estradiol', 'Progesterone', 'Testosterone'],
+      test_results: [
+        'Bình thường',
+        'Bình thường',
+        'Bình thường',
+        'Bình thường',
+      ],
+      test_is_normal: [true, true, true, true],
+      test_values: [
+        { value: '2.5', unit: 'mIU/L', min: '0.4', max: '4.0', percent: 70 },
+        { value: '150', unit: 'pg/mL', min: '30', max: '400', percent: 40 },
+        { value: '10', unit: 'ng/mL', min: '2', max: '25', percent: 35 },
+        { value: '0.5', unit: 'ng/mL', min: '0.1', max: '0.8', percent: 50 },
+      ],
+    },
+    {
+      id: 'hr-004',
+      date: '2023-08-15',
+      type: 'Siêu âm vú',
+      result: null,
+      is_normal: null,
+      notes: 'Đang chờ kết quả',
+      tests: ['Siêu âm vú trái', 'Siêu âm vú phải'],
+      indicators: ['Cấu trúc mô', 'Cấu trúc mô'],
+      test_results: [null, null],
+      test_is_normal: [null, null],
+      test_values: null,
+    },
+    {
+      id: 'hr-005',
+      date: '2023-08-20',
+      type: 'Xét nghiệm vitamin và khoáng chất',
+      result: 'Có bất thường',
+      is_normal: false,
+      notes: 'Thiếu vitamin D, cần bổ sung',
+      tests: ['Vitamin D', 'Vitamin B12', 'Sắt', 'Canxi', 'Kẽm'],
+      indicators: ['25-OH-D', 'B12', 'Ferritin', 'Ca2+', 'Zn'],
+      test_results: [
+        'Thấp',
+        'Bình thường',
+        'Bình thường',
+        'Bình thường',
+        'Thấp',
+      ],
+      test_is_normal: [false, true, true, true, false],
+      test_values: [
+        { value: '15', unit: 'ng/mL', min: '30', max: '100', percent: 15 },
+        { value: '500', unit: 'pg/mL', min: '200', max: '900', percent: 50 },
+        { value: '100', unit: 'ng/mL', min: '20', max: '250', percent: 40 },
+        { value: '9.5', unit: 'mg/dL', min: '8.5', max: '10.5', percent: 50 },
+        { value: '60', unit: 'µg/dL', min: '70', max: '120', percent: 20 },
+      ],
+    },
+  ];
+
+  // Thêm thông tin kết quả tư vấn vào mock data
+  const mockAppointmentsWithResults = mockAppointments.map((appointment) => {
+    // Chỉ thêm kết quả cho các lịch hẹn đã xác nhận
+    if (appointment.status === 'confirmed') {
+      return {
+        ...appointment,
+        result: {
+          summary: `Tóm tắt buổi tư vấn ${appointment.consultant_pattern.title} ngày ${dayjs(appointment.consultant_pattern.working_slot.date).format('DD/MM/YYYY')}`,
+          diagnosis:
+            'Chẩn đoán: ' +
+            (appointment.id === 'app-001'
+              ? 'Rối loạn nội tiết tố'
+              : appointment.id === 'app-004'
+                ? 'Thiếu hụt vitamin D'
+                : 'Sức khỏe bình thường'),
+          recommendations: [
+            'Chế độ ăn uống cân bằng dinh dưỡng',
+            'Tập thể dục đều đặn 30 phút mỗi ngày',
+            'Uống đủ nước, ít nhất 2 lít mỗi ngày',
+            appointment.id === 'app-001'
+              ? 'Bổ sung vitamin E'
+              : appointment.id === 'app-004'
+                ? 'Bổ sung vitamin D3'
+                : 'Giữ tinh thần thoải mái',
+          ],
+          next_steps:
+            appointment.id === 'app-001'
+              ? 'Tái khám sau 2 tuần'
+              : appointment.id === 'app-004'
+                ? 'Xét nghiệm lại sau 1 tháng'
+                : 'Tái khám nếu có triệu chứng bất thường',
+          notes:
+            appointment.id === 'app-001'
+              ? 'Cần theo dõi thêm về nồng độ hormone'
+              : appointment.id === 'app-004'
+                ? 'Cần bổ sung vitamin D3 liều cao trong 2 tuần đầu'
+                : 'Không có ghi chú đặc biệt',
+        },
+      };
+    }
+    return appointment;
+  });
 
   useEffect(() => {
     const fetchAccountData = async () => {
@@ -113,6 +432,21 @@ const UserAccount = () => {
         }
         calculateProfileCompletion(accountData);
 
+        // Sử dụng mock data với kết quả thay vì gọi API
+        setAppointments(mockAppointmentsWithResults);
+        setAppointmentsPagination((prev) => ({
+          ...prev,
+          total: mockAppointmentsWithResults.length,
+        }));
+
+        setHealthRecords(mockHealthRecords);
+        setHealthRecordsPagination((prev) => ({
+          ...prev,
+          total: mockHealthRecords.length,
+        }));
+
+        // Giữ lại code gọi API nhưng comment lại để sau này có thể dễ dàng khôi phục
+        /*
         // Lấy lịch hẹn
         try {
           const appointmentRes = await axios.get(
@@ -123,7 +457,12 @@ const UserAccount = () => {
               },
             }
           );
-          setAppointments(appointmentRes.data.result || []);
+          const appointmentsData = appointmentRes.data.result || [];
+          setAppointments(appointmentsData);
+          setAppointmentsPagination(prev => ({
+            ...prev,
+            total: appointmentsData.length
+          }));
         } catch (error) {
           if (error.response?.status === 404) {
             setAppointments([]); // Không có lịch hẹn thì đặt mảng rỗng
@@ -142,7 +481,13 @@ const UserAccount = () => {
             },
           }
         );
-        setHealthRecords(healthRes.data.result || []);
+        const healthRecordsData = healthRes.data.result || [];
+        setHealthRecords(healthRecordsData);
+        setHealthRecordsPagination(prev => ({
+          ...prev,
+          total: healthRecordsData.length
+        }));
+        */
       } catch (err) {
         console.error('Lỗi khi tải dữ liệu:', err);
         message.error('Không thể tải thông tin. Vui lòng thử lại.');
@@ -421,6 +766,36 @@ const UserAccount = () => {
     sendVerificationEmail();
   };
 
+  // Hàm xử lý phân trang cho lịch hẹn tư vấn
+  const handleAppointmentsPaginationChange = (page, pageSize) => {
+    setAppointmentsPagination({
+      ...appointmentsPagination,
+      current: page,
+      pageSize: pageSize,
+    });
+  };
+
+  // Hàm xử lý phân trang cho lịch hẹn xét nghiệm
+  const handleHealthRecordsPaginationChange = (page, pageSize) => {
+    setHealthRecordsPagination({
+      ...healthRecordsPagination,
+      current: page,
+      pageSize: pageSize,
+    });
+  };
+
+  // Hàm hiển thị chi tiết lịch hẹn
+  const showAppointmentDetail = (record) => {
+    setSelectedAppointment(record);
+    setAppointmentDetailVisible(true);
+  };
+
+  // Hàm hiển thị chi tiết lịch hẹn xét nghiệm
+  const showHealthRecordDetail = (record) => {
+    setSelectedHealthRecord(record);
+    setHealthRecordDetailVisible(true);
+  };
+
   if (loading) {
     return (
       <div className="account-container">
@@ -564,96 +939,304 @@ const UserAccount = () => {
     </div>
   );
 
+  // Columns cho bảng lịch hẹn tư vấn
+  const appointmentColumns = [
+    {
+      title: 'Ngày hẹn',
+      dataIndex: 'date',
+      key: 'date',
+      render: (_, record) => (
+        <div className="appointment-date">
+          <CalendarOutlined className="date-icon" />
+          <div>
+            <div className="date">
+              {dayjs(record.consultant_pattern?.working_slot?.date).format(
+                'DD/MM/YYYY'
+              )}
+            </div>
+            <div className="time">
+              {record.consultant_pattern?.working_slot?.time_slot || 'Không rõ'}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Chuyên gia',
+      dataIndex: 'consultant',
+      key: 'consultant',
+      render: (_, record) => (
+        <div className="appointment-consultant">
+          <Avatar
+            size="small"
+            icon={<UserOutlined />}
+            src={record.consultant_pattern?.consultant?.avatar}
+          />
+          <span className="consultant-name">
+            {record.consultant_pattern?.consultant?.full_name ||
+              'Chưa xác định'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: 'Dịch vụ',
+      dataIndex: 'service',
+      key: 'service',
+      render: (_, record) => (
+        <Tooltip title={record.consultant_pattern?.description || ''}>
+          <span>{record.consultant_pattern?.title || 'Tư vấn'}</span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: 'Địa điểm',
+      dataIndex: 'location',
+      key: 'location',
+      render: (_, record) => (
+        <div className="appointment-location">
+          <EnvironmentOutlined />
+          <span>{record.location || 'Online'}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (_, record) => (
+        <Tag color={getStatusColor(record.status)}>
+          {getStatusText(record.status)}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="link"
+            size="small"
+            onClick={() => showAppointmentDetail(record)}
+            disabled={record.status !== 'confirmed'}
+          >
+            Chi tiết
+          </Button>
+          {record.status === 'pending' && (
+            <Button type="link" size="small" danger>
+              Hủy
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  // Columns cho bảng lịch hẹn xét nghiệm
+  const healthRecordColumns = [
+    {
+      title: 'Ngày xét nghiệm',
+      dataIndex: 'date',
+      key: 'date',
+      render: (text) => (
+        <div className="health-record-date">
+          <CalendarOutlined className="date-icon" />
+          <span>{dayjs(text).format('DD/MM/YYYY')}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Loại xét nghiệm',
+      dataIndex: 'type',
+      key: 'type',
+      render: (text, record) => (
+        <div>
+          <FileTextOutlined />
+          <span style={{ marginLeft: 8 }}>{text}</span>
+          {record.tests && record.tests.length > 0 && (
+            <Dropdown
+              overlay={
+                <Menu>
+                  {record.tests.map((test, index) => (
+                    <Menu.Item key={index}>
+                      <div className="test-dropdown-item">
+                        <span>{test}</span>
+                        {record.test_results && record.test_results[index] && (
+                          <Tag
+                            color={
+                              record.test_is_normal &&
+                              record.test_is_normal[index]
+                                ? 'success'
+                                : 'error'
+                            }
+                            style={{ marginLeft: 8 }}
+                          >
+                            {record.test_results[index]}
+                          </Tag>
+                        )}
+                      </div>
+                    </Menu.Item>
+                  ))}
+                </Menu>
+              }
+              trigger={['click']}
+            >
+              <Badge
+                count={record.tests.length}
+                style={{
+                  backgroundColor: '#1890ff',
+                  marginLeft: 8,
+                  cursor: 'pointer',
+                }}
+              />
+            </Dropdown>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: 'Kết quả',
+      dataIndex: 'result',
+      key: 'result',
+      render: (text, record) => {
+        if (!text) return <Tag color="processing">Đang xử lý</Tag>;
+
+        const resultColor = record.is_normal ? 'success' : 'error';
+        const resultIcon = record.is_normal ? (
+          <CheckCircleOutlined />
+        ) : (
+          <ExclamationCircleOutlined />
+        );
+
+        return (
+          <Tag color={resultColor} icon={resultIcon}>
+            {text}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'Ghi chú',
+      dataIndex: 'notes',
+      key: 'notes',
+      ellipsis: true,
+      render: (text) => (
+        <Tooltip title={text || 'Không có ghi chú'}>
+          <span>{text || 'Không có ghi chú'}</span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      render: (_, record) => (
+        <Button
+          type="link"
+          size="small"
+          disabled={!record.result}
+          onClick={() => showHealthRecordDetail(record)}
+        >
+          Xem chi tiết
+        </Button>
+      ),
+    },
+  ];
+
   const appointmentsTab = (
     <div className="tab-content">
-      <List
-        dataSource={appointments}
-        renderItem={(item) => (
-          <List.Item className="appointment-item">
-            <Card className="appointment-card">
-              <Row gutter={16} align="middle">
-                <Col xs={24} sm={6}>
-                  <div className="appointment-date">
-                    <CalendarOutlined className="date-icon" />
-                    <div>
-                      <div className="date">
-                        {dayjs(
-                          item.consultant_pattern?.working_slot?.date
-                        ).format('DD/MM/YYYY')}
-                      </div>
-                      <div className="time">
-                        {item.consultant_pattern?.working_slot?.time_slot ||
-                          'Không rõ'}
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-                <Col xs={24} sm={8}>
-                  <div className="appointment-info">
-                    <Title level={5}>
-                      {item.consultant_pattern?.title || 'Tư vấn'}
-                    </Title>
-                    <Text type="secondary">
-                      {item.consultant_pattern?.consultant?.full_name ||
-                        'Chuyên gia chưa rõ'}
-                    </Text>
-                  </div>
-                </Col>
-                <Col xs={24} sm={6}>
-                  <div className="appointment-location">
-                    <EnvironmentOutlined />
-                    <Text>{item.location || 'Online'}</Text>
-                  </div>
-                </Col>
-                <Col xs={24} sm={4}>
-                  <Tag color={getStatusColor(item.status)}>
-                    {getStatusText(item.status)}
-                  </Tag>
-                </Col>
-              </Row>
-            </Card>
-          </List.Item>
-        )}
-      />
+      <div className="appointments-table-container">
+        <Table
+          dataSource={appointments}
+          columns={appointmentColumns}
+          rowKey={(record) => record.id || Math.random().toString()}
+          pagination={{
+            current: appointmentsPagination.current,
+            pageSize: appointmentsPagination.pageSize,
+            total: appointmentsPagination.total,
+            onChange: handleAppointmentsPaginationChange,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20'],
+            showTotal: (total) => `Tổng ${total} lịch hẹn`,
+          }}
+          locale={{
+            emptyText: (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Bạn chưa có lịch hẹn tư vấn nào"
+              />
+            ),
+          }}
+        />
+      </div>
     </div>
   );
 
   const healthRecordsTab = (
     <div className="tab-content">
-      <List
-        dataSource={healthRecords}
-        renderItem={(item) => (
-          <List.Item className="health-record-item">
-            <Card className="health-record-card">
-              <Row gutter={16}>
-                <Col xs={24} sm={4}>
-                  <div className="record-date">
-                    <CalendarOutlined />
-                    <Text strong>{dayjs(item.date).format('DD/MM/YYYY')}</Text>
-                  </div>
-                </Col>
-                <Col xs={24} sm={6}>
-                  <div className="record-type">
-                    <FileTextOutlined />
-                    <Text>{item.type}</Text>
-                  </div>
-                </Col>
-                <Col xs={24} sm={6}>
-                  <div className="record-result">
-                    <CheckCircleOutlined style={{ color: '#52c41a' }} />
-                    <Text strong>{item.result}</Text>
-                  </div>
-                </Col>
-                <Col xs={24} sm={8}>
-                  <div className="record-notes">
-                    <Text type="secondary">{item.notes}</Text>
-                  </div>
-                </Col>
-              </Row>
-            </Card>
-          </List.Item>
-        )}
-      />
+      <div className="health-records-table-container">
+        <Table
+          dataSource={healthRecords}
+          columns={healthRecordColumns}
+          rowKey={(record) => record.id || Math.random().toString()}
+          pagination={{
+            current: healthRecordsPagination.current,
+            pageSize: healthRecordsPagination.pageSize,
+            total: healthRecordsPagination.total,
+            onChange: handleHealthRecordsPaginationChange,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20'],
+            showTotal: (total) => `Tổng ${total} lịch hẹn xét nghiệm`,
+          }}
+          locale={{
+            emptyText: (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Bạn chưa có lịch hẹn xét nghiệm nào"
+              />
+            ),
+          }}
+          expandable={{
+            expandedRowRender: (record) => (
+              <div className="health-record-details">
+                <Title level={5}>Chi tiết xét nghiệm</Title>
+                <Row gutter={[16, 16]}>
+                  {record.tests &&
+                    record.tests.map((test, index) => (
+                      <Col xs={24} sm={12} md={8} key={index}>
+                        <Card size="small" title={test}>
+                          <p>
+                            <strong>Chỉ số:</strong>{' '}
+                            {record.indicators?.[index] || 'Chưa có'}
+                          </p>
+                          <p>
+                            <strong>Kết quả:</strong>{' '}
+                            {record.test_results?.[index] || 'Đang xử lý'}
+                          </p>
+                          <p>
+                            <strong>Trạng thái:</strong>{' '}
+                            <Tag
+                              color={
+                                record.test_is_normal?.[index]
+                                  ? 'success'
+                                  : 'error'
+                              }
+                            >
+                              {record.test_is_normal?.[index]
+                                ? 'Bình thường'
+                                : 'Bất thường'}
+                            </Tag>
+                          </p>
+                        </Card>
+                      </Col>
+                    ))}
+                </Row>
+              </div>
+            ),
+            rowExpandable: (record) => record.tests && record.tests.length > 0,
+          }}
+        />
+      </div>
     </div>
   );
 
@@ -1083,6 +1666,318 @@ const UserAccount = () => {
             Hủy
           </Button>
         </Space>
+      </Modal>
+
+      {/* Modal Chi tiết kết quả tư vấn */}
+      <Modal
+        title={
+          <div className="appointment-detail-title">
+            <div>Chi tiết kết quả tư vấn</div>
+            {selectedAppointment && (
+              <Tag color={getStatusColor(selectedAppointment.status)}>
+                {getStatusText(selectedAppointment.status)}
+              </Tag>
+            )}
+          </div>
+        }
+        open={appointmentDetailVisible}
+        onCancel={() => setAppointmentDetailVisible(false)}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => setAppointmentDetailVisible(false)}
+          >
+            Đóng
+          </Button>,
+        ]}
+        width={700}
+        className="appointment-detail-modal"
+      >
+        {selectedAppointment && (
+          <div className="appointment-detail-content">
+            <Descriptions title="Thông tin buổi tư vấn" bordered column={2}>
+              <Descriptions.Item label="Chuyên gia" span={2}>
+                <div className="consultant-info">
+                  <Avatar
+                    size={64}
+                    src={
+                      selectedAppointment.consultant_pattern?.consultant?.avatar
+                    }
+                    icon={<UserOutlined />}
+                  />
+                  <div className="consultant-details">
+                    <div className="consultant-name">
+                      {
+                        selectedAppointment.consultant_pattern?.consultant
+                          ?.full_name
+                      }
+                    </div>
+                    <div className="consultant-specialty">
+                      {
+                        selectedAppointment.consultant_pattern?.consultant
+                          ?.specialty
+                      }
+                    </div>
+                  </div>
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item label="Dịch vụ">
+                {selectedAppointment.consultant_pattern?.title}
+              </Descriptions.Item>
+              <Descriptions.Item label="Thời gian">
+                {dayjs(
+                  selectedAppointment.consultant_pattern?.working_slot?.date
+                ).format('DD/MM/YYYY')}{' '}
+                {
+                  selectedAppointment.consultant_pattern?.working_slot
+                    ?.time_slot
+                }
+              </Descriptions.Item>
+              <Descriptions.Item label="Địa điểm">
+                {selectedAppointment.location}
+              </Descriptions.Item>
+              <Descriptions.Item label="Trạng thái">
+                <Tag color={getStatusColor(selectedAppointment.status)}>
+                  {getStatusText(selectedAppointment.status)}
+                </Tag>
+              </Descriptions.Item>
+            </Descriptions>
+
+            {selectedAppointment.result ? (
+              <div className="appointment-result">
+                <Title level={4}>Kết quả tư vấn</Title>
+                <Paragraph>{selectedAppointment.result.summary}</Paragraph>
+                <Paragraph strong>
+                  {selectedAppointment.result.diagnosis}
+                </Paragraph>
+
+                <Title level={5}>Khuyến nghị</Title>
+                <ul className="recommendation-list">
+                  {selectedAppointment.result.recommendations.map(
+                    (rec, index) => (
+                      <li key={index}>{rec}</li>
+                    )
+                  )}
+                </ul>
+
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Card
+                      size="small"
+                      title="Bước tiếp theo"
+                      className="next-steps-card"
+                    >
+                      <Paragraph>
+                        {selectedAppointment.result.next_steps}
+                      </Paragraph>
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card size="small" title="Ghi chú" className="notes-card">
+                      <Paragraph>{selectedAppointment.result.notes}</Paragraph>
+                    </Card>
+                  </Col>
+                </Row>
+              </div>
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Chưa có kết quả tư vấn"
+              />
+            )}
+          </div>
+        )}
+      </Modal>
+
+      {/* Modal Chi tiết kết quả xét nghiệm */}
+      <Modal
+        title={
+          <div className="health-record-detail-title">
+            <div>Chi tiết kết quả xét nghiệm</div>
+            {selectedHealthRecord && (
+              <Tag
+                color={selectedHealthRecord.is_normal ? 'success' : 'error'}
+                icon={
+                  selectedHealthRecord.is_normal ? (
+                    <CheckCircleOutlined />
+                  ) : (
+                    <ExclamationCircleOutlined />
+                  )
+                }
+              >
+                {selectedHealthRecord.is_normal
+                  ? 'Bình thường'
+                  : 'Có bất thường'}
+              </Tag>
+            )}
+          </div>
+        }
+        open={healthRecordDetailVisible}
+        onCancel={() => setHealthRecordDetailVisible(false)}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => setHealthRecordDetailVisible(false)}
+          >
+            Đóng
+          </Button>,
+        ]}
+        width={800}
+        className="health-record-detail-modal"
+      >
+        {selectedHealthRecord && (
+          <div className="health-record-detail-content">
+            <Descriptions title="Thông tin xét nghiệm" bordered column={2}>
+              <Descriptions.Item label="Loại xét nghiệm" span={2}>
+                {selectedHealthRecord.type}
+              </Descriptions.Item>
+              <Descriptions.Item label="Ngày xét nghiệm">
+                {dayjs(selectedHealthRecord.date).format('DD/MM/YYYY')}
+              </Descriptions.Item>
+              <Descriptions.Item label="Kết quả tổng quát">
+                <Tag
+                  color={selectedHealthRecord.is_normal ? 'success' : 'error'}
+                  icon={
+                    selectedHealthRecord.is_normal ? (
+                      <CheckCircleOutlined />
+                    ) : (
+                      <ExclamationCircleOutlined />
+                    )
+                  }
+                >
+                  {selectedHealthRecord.result || 'Đang xử lý'}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="Ghi chú" span={2}>
+                {selectedHealthRecord.notes || 'Không có ghi chú'}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <div className="test-results-section">
+              <Title level={4}>Chi tiết các xét nghiệm</Title>
+
+              <Row gutter={[16, 16]}>
+                {selectedHealthRecord.tests &&
+                  selectedHealthRecord.tests.map((test, index) => (
+                    <Col xs={24} sm={12} md={8} key={index}>
+                      <Card
+                        className="test-result-card"
+                        title={
+                          <div className="test-card-title">
+                            <span>{test}</span>
+                            {selectedHealthRecord.test_results &&
+                              selectedHealthRecord.test_results[index] && (
+                                <Tag
+                                  color={
+                                    selectedHealthRecord.test_is_normal &&
+                                    selectedHealthRecord.test_is_normal[index]
+                                      ? 'success'
+                                      : 'error'
+                                  }
+                                >
+                                  {selectedHealthRecord.test_results[index]}
+                                </Tag>
+                              )}
+                          </div>
+                        }
+                      >
+                        <div className="test-indicator">
+                          <div className="indicator-label">
+                            <span>Chỉ số:</span>
+                            <span>
+                              {selectedHealthRecord.indicators?.[index] ||
+                                'Chưa có'}
+                            </span>
+                          </div>
+
+                          {selectedHealthRecord.test_results &&
+                          selectedHealthRecord.test_results[index] ? (
+                            <div className="indicator-result">
+                              <div className="result-label">
+                                <span>Kết quả:</span>
+                                <span>
+                                  {selectedHealthRecord.test_results[index]}
+                                </span>
+                              </div>
+
+                              <div className="result-status">
+                                <span>Trạng thái:</span>
+                                <Tag
+                                  color={
+                                    selectedHealthRecord.test_is_normal?.[index]
+                                      ? 'success'
+                                      : 'error'
+                                  }
+                                >
+                                  {selectedHealthRecord.test_is_normal?.[index]
+                                    ? 'Bình thường'
+                                    : 'Bất thường'}
+                                </Tag>
+                              </div>
+
+                              {selectedHealthRecord.test_values &&
+                                selectedHealthRecord.test_values[index] && (
+                                  <div className="result-progress">
+                                    <Progress
+                                      percent={
+                                        selectedHealthRecord.test_values[index]
+                                          .percent
+                                      }
+                                      status={
+                                        selectedHealthRecord.test_is_normal?.[
+                                          index
+                                        ]
+                                          ? 'success'
+                                          : 'exception'
+                                      }
+                                      strokeWidth={8}
+                                      format={() =>
+                                        `${selectedHealthRecord.test_values[index].value} ${selectedHealthRecord.test_values[index].unit}`
+                                      }
+                                    />
+                                    <div className="range-labels">
+                                      <span>
+                                        Min:{' '}
+                                        {
+                                          selectedHealthRecord.test_values[
+                                            index
+                                          ].min
+                                        }
+                                      </span>
+                                      <span>
+                                        Max:{' '}
+                                        {
+                                          selectedHealthRecord.test_values[
+                                            index
+                                          ].max
+                                        }
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                            </div>
+                          ) : (
+                            <div className="processing-status">
+                              <Spin size="small" />
+                              <span>Đang xử lý kết quả</span>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    </Col>
+                  ))}
+              </Row>
+
+              {(!selectedHealthRecord.tests ||
+                selectedHealthRecord.tests.length === 0) && (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="Không có chi tiết xét nghiệm"
+                />
+              )}
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );
