@@ -1196,45 +1196,6 @@ const UserAccount = () => {
               />
             ),
           }}
-          // expandable={{
-          //   expandedRowRender: (record) => (
-          //     <div className="health-record-details">
-          //       <Title level={5}>Chi tiết xét nghiệm</Title>
-          //       <Row gutter={[16, 16]}>
-          //         {record.tests &&
-          //           record.tests.map((test, index) => (
-          //             <Col xs={24} sm={12} md={8} key={index}>
-          //               <Card size="small" title={test}>
-          //                 <p>
-          //                   <strong>Chỉ số:</strong>{' '}
-          //                   {record.indicators?.[index] || 'Chưa có'}
-          //                 </p>
-          //                 <p>
-          //                   <strong>Kết quả:</strong>{' '}
-          //                   {record.test_results?.[index] || 'Đang xử lý'}
-          //                 </p>
-          //                 <p>
-          //                   <strong>Trạng thái:</strong>{' '}
-          //                   <Tag
-          //                     color={
-          //                       record.test_is_normal?.[index]
-          //                         ? 'success'
-          //                         : 'error'
-          //                     }
-          //                   >
-          //                     {record.test_is_normal?.[index]
-          //                       ? 'Bình thường'
-          //                       : 'Bất thường'}
-          //                   </Tag>
-          //                 </p>
-          //               </Card>
-          //             </Col>
-          //           ))}
-          //       </Row>
-          //     </div>
-          //   ),
-          //   rowExpandable: (record) => record.tests && record.tests.length > 0,
-          // }}
         />
       </div>
     </div>
@@ -1856,120 +1817,111 @@ const UserAccount = () => {
             <div className="test-results-section">
               <Title level={4}>Chi tiết các xét nghiệm</Title>
 
-              <Row gutter={[16, 16]}>
-                {selectedHealthRecord.tests &&
-                  selectedHealthRecord.tests.map((test, index) => (
-                    <Col xs={24} sm={12} md={8} key={index}>
-                      <Card
-                        className="test-result-card"
-                        title={
-                          <div className="test-card-title">
-                            <span>{test}</span>
-                            {selectedHealthRecord.test_results &&
-                              selectedHealthRecord.test_results[index] && (
-                                <Tag
-                                  color={
-                                    selectedHealthRecord.test_is_normal &&
-                                    selectedHealthRecord.test_is_normal[index]
-                                      ? 'success'
-                                      : 'error'
-                                  }
-                                >
-                                  {selectedHealthRecord.test_results[index]}
-                                </Tag>
-                              )}
+              {selectedHealthRecord.tests &&
+              selectedHealthRecord.tests.length > 0 ? (
+                <Table
+                  dataSource={selectedHealthRecord.tests.map((test, index) => ({
+                    key: index,
+                    name: test,
+                    indicator:
+                      selectedHealthRecord.indicators?.[index] || 'Chưa có',
+                    result:
+                      selectedHealthRecord.test_results?.[index] ||
+                      'Đang xử lý',
+                    is_normal: selectedHealthRecord.test_is_normal?.[index],
+                    value: selectedHealthRecord.test_values?.[index]?.value,
+                    unit: selectedHealthRecord.test_values?.[index]?.unit,
+                    min: selectedHealthRecord.test_values?.[index]?.min,
+                    max: selectedHealthRecord.test_values?.[index]?.max,
+                    percent: selectedHealthRecord.test_values?.[index]?.percent,
+                  }))}
+                  columns={[
+                    {
+                      title: 'Tên xét nghiệm',
+                      dataIndex: 'name',
+                      key: 'name',
+                      width: '20%',
+                    },
+                    {
+                      title: 'Chỉ số',
+                      dataIndex: 'indicator',
+                      key: 'indicator',
+                      width: '20%',
+                    },
+                    {
+                      title: 'Kết quả',
+                      dataIndex: 'result',
+                      key: 'result',
+                      width: '15%',
+                      render: (text, record) => (
+                        <span>
+                          {record.value
+                            ? `${record.value} ${record.unit}`
+                            : text}
+                        </span>
+                      ),
+                    },
+                    {
+                      title: 'Khoảng tham chiếu',
+                      dataIndex: 'range',
+                      key: 'range',
+                      width: '20%',
+                      render: (_, record) => (
+                        <span>
+                          {record.min && record.max
+                            ? `${record.min} - ${record.max} ${record.unit}`
+                            : 'Không có'}
+                        </span>
+                      ),
+                    },
+                    {
+                      title: 'Trạng thái',
+                      dataIndex: 'status',
+                      key: 'status',
+                      width: '15%',
+                      render: (_, record) =>
+                        record.result === 'Đang xử lý' ? (
+                          <div className="processing-status">
+                            <Spin size="small" />
+                            <span style={{ marginLeft: 8 }}>Đang xử lý</span>
                           </div>
-                        }
-                      >
-                        <div className="test-indicator">
-                          <div className="indicator-label">
-                            <span>Chỉ số:</span>
-                            <span>
-                              {selectedHealthRecord.indicators?.[index] ||
-                                'Chưa có'}
-                            </span>
-                          </div>
-
-                          {selectedHealthRecord.test_results &&
-                          selectedHealthRecord.test_results[index] ? (
-                            <div className="indicator-result">
-                              <div className="result-label">
-                                <span>Kết quả:</span>
-                                <span>
-                                  {selectedHealthRecord.test_results[index]}
-                                </span>
-                              </div>
-
-                              <div className="result-status">
-                                <span>Trạng thái:</span>
-                                <Tag
-                                  color={
-                                    selectedHealthRecord.test_is_normal?.[index]
-                                      ? 'success'
-                                      : 'error'
-                                  }
-                                >
-                                  {selectedHealthRecord.test_is_normal?.[index]
-                                    ? 'Bình thường'
-                                    : 'Bất thường'}
-                                </Tag>
-                              </div>
-
-                              {selectedHealthRecord.test_values &&
-                                selectedHealthRecord.test_values[index] && (
-                                  <div className="result-progress">
-                                    <Progress
-                                      percent={
-                                        selectedHealthRecord.test_values[index]
-                                          .percent
-                                      }
-                                      status={
-                                        selectedHealthRecord.test_is_normal?.[
-                                          index
-                                        ]
-                                          ? 'success'
-                                          : 'exception'
-                                      }
-                                      strokeWidth={8}
-                                      format={() =>
-                                        `${selectedHealthRecord.test_values[index].value} ${selectedHealthRecord.test_values[index].unit}`
-                                      }
-                                    />
-                                    <div className="range-labels">
-                                      <span>
-                                        Min:{' '}
-                                        {
-                                          selectedHealthRecord.test_values[
-                                            index
-                                          ].min
-                                        }
-                                      </span>
-                                      <span>
-                                        Max:{' '}
-                                        {
-                                          selectedHealthRecord.test_values[
-                                            index
-                                          ].max
-                                        }
-                                      </span>
-                                    </div>
-                                  </div>
-                                )}
-                            </div>
-                          ) : (
-                            <div className="processing-status">
-                              <Spin size="small" />
-                              <span>Đang xử lý kết quả</span>
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-                    </Col>
-                  ))}
-              </Row>
-
-              {(!selectedHealthRecord.tests ||
-                selectedHealthRecord.tests.length === 0) && (
+                        ) : (
+                          <Tag
+                            color={record.is_normal ? 'success' : 'error'}
+                            icon={
+                              record.is_normal ? (
+                                <CheckCircleOutlined />
+                              ) : (
+                                <ExclamationCircleOutlined />
+                              )
+                            }
+                          >
+                            {record.is_normal ? 'Bình thường' : 'Bất thường'}
+                          </Tag>
+                        ),
+                    },
+                    // {
+                    //   title: 'Biểu đồ',
+                    //   dataIndex: 'chart',
+                    //   key: 'chart',
+                    //   width: '10%',
+                    //   render: (_, record) =>
+                    //     record.percent !== undefined ? (
+                    //       <Progress
+                    //         percent={record.percent}
+                    //         size="small"
+                    //         status={record.is_normal ? 'success' : 'exception'}
+                    //         showInfo={false}
+                    //       />
+                    //     ) : null,
+                    // },
+                  ]}
+                  pagination={false}
+                  bordered
+                  size="middle"
+                  className="test-results-table"
+                />
+              ) : (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description="Không có chi tiết xét nghiệm"
