@@ -41,7 +41,7 @@ const ConsultantBlog = () => {
       setBlogs(response.data.result || []);
     } catch (error) {
       console.error("Error fetching blogs:", error);
-      alert("Có lỗi xảy ra khi fetch blog. Vui lòng thử lại sau.");
+  
       return;
     }
   };
@@ -65,7 +65,7 @@ const ConsultantBlog = () => {
       setMajors(response.data.result || []);
     } catch (error) {
       console.error("Error fetching majors:", error);
-      alert("Có lỗi xảy ra khi fetch major. Vui lòng thử lại sau.");
+
       return;
     }
 

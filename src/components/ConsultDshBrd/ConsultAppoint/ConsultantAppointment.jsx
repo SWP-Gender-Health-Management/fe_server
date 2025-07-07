@@ -1,80 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import './ConsultantAppointment.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const ConsultantAppointment = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [viewMode, setViewMode] = useState('week'); // 'week' or 'month'
   const [showModal, setShowModal] = useState(false);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [appointments, setAppointments] = useState([]);
 
-  // Mock appointment data
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      date: new Date(),
-      time: '09:30',
-      endTime: '10:30',
-      customerName: 'Nguyễn Thị Lan',
-      customerPhone: '0123456789',
-      customerEmail: 'lan@email.com',
-      issue:
-        'Tư vấn về kế hoạch hóa gia đình và các phương pháp tránh thai an toàn',
-      type: 'Online',
-      status: 'confirmed',
-      priority: 'high',
-      notes: '',
-    },
-    {
-      id: 2,
-      date: new Date(),
-      time: '14:00',
-      endTime: '15:00',
-      customerName: 'Trần Minh Hoa',
-      customerPhone: '0987654321',
-      customerEmail: 'hoa@email.com',
-      issue: 'Sức khỏe sinh sản sau sinh và chăm sóc em bé',
-      type: 'Offline',
-      status: 'pending',
-      priority: 'medium',
-      notes: '',
-    },
-    {
-      id: 3,
-      date: new Date(Date.now() + 86400000), // tomorrow
-      time: '10:00',
-      endTime: '11:00',
-      customerName: 'Lê Thị Mai',
-      customerPhone: '0555555555',
-      customerEmail: 'mai@email.com',
-      issue: 'Tư vấn chu kỳ kinh nguyệt không đều',
-      type: 'Online',
-      status: 'confirmed',
-      priority: 'low',
-      notes: '',
-    },
-  ]);
 
-  const timeSlots = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-  ];
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/working-slot/get-slot-by-type/1`
+        );
+        console.log('Slot Response:', response.data.result);
+        setTimeSlots(response.data.result || []);
+      } catch (error) {
+        console.error("Error fetching Slot:", error);
+        return;
+      } finally {
+        console.log("Time slot: ", timeSlots)
+      }
+    }
+    fetchTimeSlots();
+
+  }, []);
+
+  useEffect(() => {
+    fetchWeekAppointment();
+  }, [selectedDate]);
 
   const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+  const fetchWeekAppointment = async () => {
+      try {
+        const accountId = Cookies.get("accountId");
+        const accessToken = Cookies.get("accessToken");
+        const startWeekDay = getWeekStartDay(selectedDate || new Date());
+        const startWeekDayString = startWeekDay.toISOString().split("T")[0];
+        console.log("Check selected date: ", startWeekDayString);
+        const response = await axios.get(
+          `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
+          {
+            params: {
+              weekStartDate: startWeekDayString
+            },
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+        console.log('Consult Appointment Response:', response.data.result);
+        setAppointments(response.data.result || []);
+      } catch (error) {
+        console.error("Error fetching Consult Appointment:", error);
+        setAppointments([]);
+        return;
+      } finally {
+        console.log("Consult Appointment: ", appointments);
+        appointments.map((appointment) => {
+          const appDate = new Date(appointment.consultant_pattern.date);
+          appointment.consultant_pattern.date = appDate;
+        })
+      }
+    }
 
   const getWeekDates = (date) => {
     const week = [];
     const startOfWeek = new Date(date);
     const day = startOfWeek.getDay();
     startOfWeek.setDate(startOfWeek.getDate() - day);
-
     for (let i = 0; i < 7; i++) {
       const weekDate = new Date(startOfWeek);
       weekDate.setDate(startOfWeek.getDate() + i);
@@ -83,15 +84,22 @@ const ConsultantAppointment = () => {
     return week;
   };
 
+  const getWeekStartDay = (date) => {
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    startOfWeek.setDate(startOfWeek.getDate() - day);
+    return startOfWeek;
+  };
+
   const getAppointmentsForDate = (date) => {
     return appointments.filter(
-      (apt) => apt.date.toDateString() === date.toDateString()
+      (apt) => new Date(apt.consultant_pattern.date).toDateString() === date.toDateString()
     );
   };
 
   const getAppointmentForSlot = (date, timeSlot) => {
     const dayAppointments = getAppointmentsForDate(date);
-    return dayAppointments.find((apt) => apt.time === timeSlot);
+    return dayAppointments.find((apt) => apt.consultant_pattern.working_slot.name === timeSlot.name);
   };
 
   const handleAppointmentClick = (appointment) => {
@@ -99,15 +107,37 @@ const ConsultantAppointment = () => {
     setShowModal(true);
   };
 
-  const updateAppointmentStatus = (appointmentId, status) => {
-    setAppointments((prev) =>
-      prev.map((apt) => (apt.id === appointmentId ? { ...apt, status } : apt))
-    );
+  const updateAppointmentStatus = async (appointmentId, status) => {
+    // setAppointments((prev) =>
+    //   prev.map((apt) => (apt.app_id === appointmentId ? { ...apt, status } : apt))
+    // );
+    try {
+      const accountId = Cookies.get("accountId");
+      const accessToken = Cookies.get("accessToken");
+      const response = await axios.put(
+        `http://localhost:3000/consult-appointment/update-consult-appointment/${appointmentId}`,
+        {
+          status
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log('Update Response:', response.data.result);
+    } catch (error) {
+      console.error("Error update appointment status:", error);
+      return;
+    } finally {
+      fetchWeekAppointment();
+    }
   };
 
   const addNotes = (appointmentId, notes) => {
     setAppointments((prev) =>
-      prev.map((apt) => (apt.id === appointmentId ? { ...apt, notes } : apt))
+      prev.map((apt) => (apt.app_id === appointmentId ? { ...apt, notes } : apt))
     );
   };
 
@@ -126,18 +156,6 @@ const ConsultantAppointment = () => {
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high':
-        return '#ef4444';
-      case 'medium':
-        return '#f59e0b';
-      case 'low':
-        return '#10b981';
-      default:
-        return '#6b7280';
-    }
-  };
 
   const formatDate = (date) => {
     return date.toLocaleDateString('vi-VN', {
@@ -214,8 +232,9 @@ const ConsultantAppointment = () => {
           <div className="time-column">
             <div className="time-header"></div>
             {timeSlots.map((time) => (
-              <div key={time} className="time-slot">
-                {time}
+              <div key={time.slot_id} className="time-slot">
+                {time.name.split("-")[0]} <br />
+                {time.start_at}
               </div>
             ))}
           </div>
@@ -235,7 +254,7 @@ const ConsultantAppointment = () => {
                 const appointment = getAppointmentForSlot(date, timeSlot);
                 return (
                   <div
-                    key={`${dayIndex}-${timeSlot}`}
+                    key={`${dayIndex}-${timeSlot.start_at}`}
                     className={`time-cell ${appointment ? 'has-appointment' : ''}`}
                   >
                     {appointment && (
@@ -247,30 +266,12 @@ const ConsultantAppointment = () => {
                         }}
                       >
                         <div className="appointment-time">
-                          {appointment.time} - {appointment.endTime}
+                          {appointment.consultant_pattern.working_slot.start_at} - {appointment.consultant_pattern.working_slot.end_at}
                         </div>
                         <div className="appointment-customer">
-                          {appointment.customerName}
+                          {appointment.customer.full_name}
                         </div>
-                        <div className="appointment-type">
-                          <span
-                            className={`type-badge ${appointment.type.toLowerCase()}`}
-                          >
-                            {appointment.type}
-                          </span>
-                          <span
-                            className="priority-badge"
-                            style={{
-                              backgroundColor: getPriorityColor(
-                                appointment.priority
-                              ),
-                            }}
-                          >
-                            {appointment.priority === 'high' && '🔴'}
-                            {appointment.priority === 'medium' && '🟡'}
-                            {appointment.priority === 'low' && '🟢'}
-                          </span>
-                        </div>
+
                       </div>
                     )}
                   </div>
@@ -340,33 +341,26 @@ const ConsultantAppointment = () => {
               <div className="appointment-info">
                 <div className="info-row">
                   <label>Khách hàng:</label>
-                  <span>{selectedAppointment.customerName}</span>
+                  <span>{selectedAppointment.customer.full_name}</span>
                 </div>
 
                 <div className="info-row">
                   <label>Thời gian:</label>
                   <span>
-                    {selectedAppointment.date.toLocaleDateString('vi-VN')} -
-                    {selectedAppointment.time} đến {selectedAppointment.endTime}
+                    {new Date(selectedAppointment.consultant_pattern.date).toLocaleDateString('vi-VN')} -
+                    {selectedAppointment.consultant_pattern.working_slot.start_at} đến {selectedAppointment.consultant_pattern.working_slot.end_at}
                   </span>
                 </div>
 
                 <div className="info-row">
                   <label>Liên hệ:</label>
                   <div className="contact-info">
-                    <span>📞 {selectedAppointment.customerPhone}</span>
-                    <span>📧 {selectedAppointment.customerEmail}</span>
+                    <span>📞 {selectedAppointment.customer.phone}</span>
+                    <span>📧 {selectedAppointment.customer.email}</span>
                   </div>
                 </div>
 
-                <div className="info-row">
-                  <label>Loại:</label>
-                  <span
-                    className={`type-badge ${selectedAppointment.type.toLowerCase()}`}
-                  >
-                    {selectedAppointment.type}
-                  </span>
-                </div>
+
 
                 <div className="info-row">
                   <label>Trạng thái:</label>
@@ -389,20 +383,10 @@ const ConsultantAppointment = () => {
 
                 <div className="info-row">
                   <label>Vấn đề:</label>
-                  <p className="issue-text">{selectedAppointment.issue}</p>
+                  <p className="issue-text">{selectedAppointment.description}</p>
                 </div>
 
-                <div className="info-row">
-                  <label>Ghi chú:</label>
-                  <textarea
-                    className="notes-textarea"
-                    placeholder="Thêm ghi chú về cuộc hẹn..."
-                    value={selectedAppointment.notes}
-                    onChange={(e) =>
-                      addNotes(selectedAppointment.id, e.target.value)
-                    }
-                  />
-                </div>
+
               </div>
 
               <div className="modal-actions">
@@ -412,7 +396,7 @@ const ConsultantAppointment = () => {
                       className="action-btn confirm"
                       onClick={() => {
                         updateAppointmentStatus(
-                          selectedAppointment.id,
+                          selectedAppointment.app_id,
                           'confirmed'
                         );
                         setShowModal(false);
@@ -424,7 +408,7 @@ const ConsultantAppointment = () => {
                       className="action-btn cancel"
                       onClick={() => {
                         updateAppointmentStatus(
-                          selectedAppointment.id,
+                          selectedAppointment.app_id,
                           'cancelled'
                         );
                         setShowModal(false);
@@ -440,7 +424,7 @@ const ConsultantAppointment = () => {
                     className="action-btn complete"
                     onClick={() => {
                       updateAppointmentStatus(
-                        selectedAppointment.id,
+                        selectedAppointment.app_id,
                         'completed'
                       );
                       setShowModal(false);
