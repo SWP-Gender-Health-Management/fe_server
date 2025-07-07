@@ -1196,45 +1196,45 @@ const UserAccount = () => {
               />
             ),
           }}
-          expandable={{
-            expandedRowRender: (record) => (
-              <div className="health-record-details">
-                <Title level={5}>Chi tiết xét nghiệm</Title>
-                <Row gutter={[16, 16]}>
-                  {record.tests &&
-                    record.tests.map((test, index) => (
-                      <Col xs={24} sm={12} md={8} key={index}>
-                        <Card size="small" title={test}>
-                          <p>
-                            <strong>Chỉ số:</strong>{' '}
-                            {record.indicators?.[index] || 'Chưa có'}
-                          </p>
-                          <p>
-                            <strong>Kết quả:</strong>{' '}
-                            {record.test_results?.[index] || 'Đang xử lý'}
-                          </p>
-                          <p>
-                            <strong>Trạng thái:</strong>{' '}
-                            <Tag
-                              color={
-                                record.test_is_normal?.[index]
-                                  ? 'success'
-                                  : 'error'
-                              }
-                            >
-                              {record.test_is_normal?.[index]
-                                ? 'Bình thường'
-                                : 'Bất thường'}
-                            </Tag>
-                          </p>
-                        </Card>
-                      </Col>
-                    ))}
-                </Row>
-              </div>
-            ),
-            rowExpandable: (record) => record.tests && record.tests.length > 0,
-          }}
+          // expandable={{
+          //   expandedRowRender: (record) => (
+          //     <div className="health-record-details">
+          //       <Title level={5}>Chi tiết xét nghiệm</Title>
+          //       <Row gutter={[16, 16]}>
+          //         {record.tests &&
+          //           record.tests.map((test, index) => (
+          //             <Col xs={24} sm={12} md={8} key={index}>
+          //               <Card size="small" title={test}>
+          //                 <p>
+          //                   <strong>Chỉ số:</strong>{' '}
+          //                   {record.indicators?.[index] || 'Chưa có'}
+          //                 </p>
+          //                 <p>
+          //                   <strong>Kết quả:</strong>{' '}
+          //                   {record.test_results?.[index] || 'Đang xử lý'}
+          //                 </p>
+          //                 <p>
+          //                   <strong>Trạng thái:</strong>{' '}
+          //                   <Tag
+          //                     color={
+          //                       record.test_is_normal?.[index]
+          //                         ? 'success'
+          //                         : 'error'
+          //                     }
+          //                   >
+          //                     {record.test_is_normal?.[index]
+          //                       ? 'Bình thường'
+          //                       : 'Bất thường'}
+          //                   </Tag>
+          //                 </p>
+          //               </Card>
+          //             </Col>
+          //           ))}
+          //       </Row>
+          //     </div>
+          //   ),
+          //   rowExpandable: (record) => record.tests && record.tests.length > 0,
+          // }}
         />
       </div>
     </div>
