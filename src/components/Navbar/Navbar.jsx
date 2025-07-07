@@ -31,7 +31,6 @@ import NotificationDropdown from '@components/Notification/NotificationDropdown'
 import Cookies from 'js-cookie'; // Thêm thư viện js-cookie
 import { useAuth } from '@context/AuthContext';
 
-
 const Navbar = ({ onLoginClick }) => {
   const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context
   const { fullname, role } = userInfo || {};
@@ -62,7 +61,7 @@ const Navbar = ({ onLoginClick }) => {
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
-    'admin': 'Quản trị viên',
+    admin: 'Quản trị viên',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -141,7 +140,7 @@ const Navbar = ({ onLoginClick }) => {
           trigger={['hover']}
           overlayClassName="services-dropdown"
         >
-          <span className="nav-link dropdown-trigger">Dịch vụ</span>
+          <span className="nav-link-1 dropdown-trigger">Dịch vụ</span>
         </Dropdown>
       ),
       key: 'services',
@@ -168,15 +167,14 @@ const Navbar = ({ onLoginClick }) => {
       icon: <WechatWorkOutlined />,
     },
   ];
-// console.log('Role:', role, typeof role); // Role: 0 "number"
-const roleRoutes = {
-  ADMIN: { path: '/admin', label: 'Admin' },
-  STAFF: { path: '/staff', label: 'Nhân viên' },
-  MANAGER: { path: '/manager', label: 'Quản lý' },
-  CONSULTANT: { path: '/consultant', label: 'Tư vấn' },
-  RECEPTIONIST: { path: '/receptionist', label: 'Lễ tân' },
-};
-
+  // console.log('Role:', role, typeof role); // Role: 0 "number"
+  const roleRoutes = {
+    ADMIN: { path: '/admin', label: 'Admin' },
+    STAFF: { path: '/staff', label: 'Nhân viên' },
+    MANAGER: { path: '/manager', label: 'Quản lý' },
+    CONSULTANT: { path: '/consultant', label: 'Tư vấn' },
+    RECEPTIONIST: { path: '/receptionist', label: 'Lễ tân' },
+  };
 
   const accountMenu = {
     items: [
@@ -189,20 +187,22 @@ const roleRoutes = {
           </Link>
         ),
       },
-      ...(role === 'CUSTOMER' ? [] : [
-        {
-          key: 'settings',
-          label: (
-            <Link
-              to={roleRoutes[role]?.path || '/settings'}
-              className="dropdown-link"
-            >
-              <AppstoreOutlined style={{ marginRight: '8px' }} />
-              {roleRoutes[role]?.label || 'Cài đặt'}
-            </Link>
-          ),
-        },
-      ]),
+      ...(role === 'CUSTOMER'
+        ? []
+        : [
+            {
+              key: 'settings',
+              label: (
+                <Link
+                  to={roleRoutes[role]?.path || '/settings'}
+                  className="dropdown-link"
+                >
+                  <AppstoreOutlined style={{ marginRight: '8px' }} />
+                  {roleRoutes[role]?.label || 'Cài đặt'}
+                </Link>
+              ),
+            },
+          ]),
       { type: 'divider' },
       {
         key: 'logout',
@@ -298,7 +298,7 @@ const roleRoutes = {
               mode="horizontal"
               items={menuItems}
               selectedKeys={[location.pathname.split('/')[1] || 'home']}
-              className="nav-menu"
+              className="nav-menu-1"
             />
           </div>
 
@@ -370,7 +370,7 @@ const roleRoutes = {
                 trigger={['click']}
                 overlayClassName="services-dropdown mobile-services-dropdown"
               >
-                <span className="nav-link dropdown-trigger">Dịch vụ</span>
+                <span className="nav-link-1 dropdown-trigger">Dịch vụ</span>
               </Dropdown>
             </div>
             <div className="mobile-menu-item">
