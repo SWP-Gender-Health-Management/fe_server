@@ -1,16 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LineChart from '../Chart/LineChart';
+import axios from 'axios';
 import './Dashboard.css';
+
+const API_URL = 'http://localhost:3000/manager';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [kpiData, setKpiData] = useState({
-    totalUsers: 2847,
-    newUsers: 156,
-    revenue: 45200000,
-    activities: 89,
+  const [isLoading, setIsLoading] = useState(true);
+  const [kpiDatas, setKpiDatas] = useState({
+    totalUsers: 0,
+    newUsers: 0,
+    revenue: 0,
+    activities: 0,
   });
+
+  const kpiData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/get-overall-kpis`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: {
+          day: new Date().toISOString().split('T')[0],
+        },
+      });
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.error('Error fetching KPI data:', error);
+      // return null;
+    } finally {
+      console.log('KPI data fetched successfully');
+      setIsLoading(false);
+    }
+  };
 
   const [chartData, setChartData] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
@@ -126,6 +151,11 @@ const Dashboard = () => {
     return new Intl.NumberFormat('vi-VN').format(num);
   };
 
+  useEffect(() => {
+    const kpiDatas = kpiData();
+    setKpiDatas(kpiDatas);
+  }, []);
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -135,6 +165,7 @@ const Dashboard = () => {
 
       {/* KPI Cards */}
       <div className="kpi-grid">
+        {/* Total Users */}
         <div className="kpi-card">
           <div
             className="kpi-icon"
@@ -146,11 +177,12 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Tổng số người dùng</div>
-            <div className="kpi-value">{formatNumber(kpiData.totalUsers)}</div>
+            <div className="kpi-value">{formatNumber(kpiDatas.totalUsers)}</div>
             <div className="kpi-change positive">+12% từ tháng trước</div>
           </div>
         </div>
 
+        {/* New Users */}
         <div className="kpi-card">
           <div
             className="kpi-icon"
@@ -162,11 +194,12 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Người dùng mới (30 ngày)</div>
-            <div className="kpi-value">{formatNumber(kpiData.newUsers)}</div>
+            <div className="kpi-value">{formatNumber(kpiDatas.newUsers)}</div>
             <div className="kpi-change positive">+8% từ tháng trước</div>
           </div>
         </div>
 
+        {/* Revenue */}
         <div className="kpi-card">
           <div
             className="kpi-icon"
@@ -178,11 +211,12 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Doanh thu</div>
-            <div className="kpi-value">{formatCurrency(kpiData.revenue)}</div>
+            <div className="kpi-value">{formatCurrency(kpiDatas.revenue)}</div>
             <div className="kpi-change positive">+15% từ tháng trước</div>
           </div>
         </div>
 
+        {/* Activities */}
         <div className="kpi-card">
           <div
             className="kpi-icon"
@@ -194,7 +228,7 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Hoạt động quan trọng</div>
-            <div className="kpi-value">{formatNumber(kpiData.activities)}</div>
+            <div className="kpi-value">{formatNumber(kpiDatas.activities)}</div>
             <div className="kpi-change neutral">Trong 24h qua</div>
           </div>
         </div>

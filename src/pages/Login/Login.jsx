@@ -61,22 +61,32 @@ const Login = ({ visible, onCancel }) => {
 
       console.log('Phản hồi từ API view-account:', viewResponse.data);
       if (!viewResponse.data.result) {
-        throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
+        throw new Error(
+          'Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.'
+        );
       }
       const { account_id, full_name } = viewResponse.data.result || {};
       if (!account_id) throw new Error('Không lấy được account_id');
       sessionStorage.setItem('accountId', account_id);
-      setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng' });
+      setUserInfo({
+        accountId: account_id,
+        fullname: full_name || 'Người dùng',
+      });
 
       Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
       onCancel();
     } catch (error) {
-      console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
+      console.error(
+        'Lỗi đăng nhập hoặc lấy thông tin:',
+        error.response?.data || error.message
+      );
       Modal.error({
         title: 'Đăng nhập thất bại',
-        content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
+        content:
+          error.response?.data?.message ||
+          'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
       });
-    }finally {
+    } finally {
       setLoginLoading(false);
     }
   };
