@@ -106,6 +106,13 @@ const Dashboard = () => {
       color: '#3b82f6',
       action: () => navigate('/admin/reports'),
     },
+    {
+      title: 'Gửi email hàng loạt',
+      description: 'Gửi email hàng loạt cho người dùng',
+      icon: '📧',
+      color: '#f59e0b',
+      action: () => navigate('/admin/bulk-email'),
+    },
   ];
 
   const formatCurrency = (amount) => {
@@ -194,7 +201,7 @@ const Dashboard = () => {
       </div>
 
       {/* Charts and Activity Section */}
-      <div className="dashboard-main">
+      <div className="dashboard-main-1">
         {/* User Growth Chart */}
         <div className="chart-section">
           <div className="section-header">
