@@ -12,6 +12,7 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import Login from '@pages/Login/Login';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
+import ManagerDashboard from '@pages/ManagerDashboard/ManagerDashboard';
 import BlogPage from '@pages/Blog/BlogPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import BookingPage from '@pages/Booking/BookingPage';
@@ -40,6 +41,11 @@ const AppLayout = () => {
 
   // Lấy fullname từ sessionStorage hoặc mặc định
 
+  // Kiểm tra xem có phải trang admin/manager dashboard không
+  const isDashboardPage =
+    location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/manager');
+
   // Hàm handleLogout sử dụng navigate thay vì window.location.href
   const handleLogout = () => {
     logout(); // Gọi logout từ useAuth để cập nhật trạng thái
@@ -53,12 +59,35 @@ const AppLayout = () => {
 
   return (
     <div className="app-container">
+      {/* Chỉ hiển thị Navbar khi không ở trang dashboard */}
+      {!isDashboardPage && (
+        <Navbar
+          onLoginClick={() => setShowLogin(true)}
+          isLoggedIn={isLoggedIn}
+          full_name={full_name} // Sử dụng fullname từ sessionStorage
+          onLogout={handleLogout}
+        />
+      )}
       <Routes>
-        {/* Payment pages without navbar and footer */}
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/" element={<LandingPage />} />
+        {/* <Route path='/login' element={<login />} />  */}
+        <Route
+          path="/tai-khoan"
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />} // Chuyển hướng về /login
+        />
+        <Route path="/tin-tuc" element={<BlogPage />} />
+        <Route path="/ve-chung-toi" element={<AboutUs />} />
+        <Route path="/lien-he" element={<Contact />} />
+        <Route path="/dich-vu" element={<ServicePage />} />{' '}
+        {/* Sửa thành ServicePage */}
+        <Route path="/dat-lich-tu-van" element={<BookingPage />} />
+        <Route path="/dat-lich-xet-nghiem" element={<LabSchedule />} />
+        <Route path="/chon-xet-nghiem" element={<LabTests />} />
+        <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
+        <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route path="/manager/*" element={<ManagerDashboard />} />
 
-        {/* Other pages with navbar and footer */}
         <Route
           path="*"
           element={
@@ -102,6 +131,10 @@ const AppLayout = () => {
           }
         />
       </Routes>
+      <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
+      {/* Chỉ hiển thị Footer khi không ở trang dashboard */}
+      {!isDashboardPage && <Footer />}
+      {!isDashboardPage && <div className="footer-spacer" />}
     </div>
   );
 };

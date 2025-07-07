@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import Dashboard from './components/DashBoard/Dashboard';
-import AccountManagement from './components/AccountManagement/AccountManagement';
-import AdminProfile from './components/AdminProfile/AdminProfile';
-import UserManagement from './components/UserManagement/UserManagement';
-import Reports from './components/Report/Reports';
-import BulkEmail from './components/BulkEmail/BulkEmail';
-import RecentActivities from './components/RecentActivities/RecentActivities';
-import './AdminDashboard.css';
+import Dashboard from './components/Dashboard/Dashboard';
+import ServiceManagement from './components/ServiceManagement/ServiceManagement';
+import BlogManagement from './components/BlogManagement/BlogManagement';
+import QuestionManagement from './components/QuestionManagement/QuestionManagement';
+import ManagerProfile from './components/ManagerProfile/ManagerProfile';
+import StaffManagement from './components/StaffManagement/StaffManagement';
+import './ManagerDashboard.css';
 
-const AdminDashboard = () => {
+const ManagerDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  const adminName = sessionStorage.getItem('full_name') || 'Admin';
-  const adminEmail = sessionStorage.getItem('email') || 'admin@example.com';
+  const managerName = sessionStorage.getItem('full_name') || 'Manager';
+  const managerEmail = sessionStorage.getItem('email') || 'manager@example.com';
 
   // Loading effect when component mounts
   useEffect(() => {
@@ -37,37 +36,32 @@ const AdminDashboard = () => {
 
   const menuItems = [
     {
-      path: '/admin/dashboard',
+      path: '/manager/dashboard',
       name: 'Bảng điều khiển',
       icon: '📊',
     },
     {
-      path: '/admin/accounts',
-      name: 'Quản lý tài khoản',
+      path: '/manager/staff',
+      name: 'Quản lý nhân viên',
       icon: '👥',
     },
     {
-      path: '/admin/users',
-      name: 'Thêm người dùng',
-      icon: '➕',
+      path: '/manager/services',
+      name: 'Quản lý dịch vụ',
+      icon: '🏥',
     },
     {
-      path: '/admin/reports',
-      name: 'Báo cáo',
-      icon: '📈',
+      path: '/manager/blogs',
+      name: 'Quản lý bài viết',
+      icon: '📝',
     },
     {
-      path: '/admin/bulk-email',
-      name: 'Gửi email hàng loạt',
-      icon: '📧',
+      path: '/manager/questions',
+      name: 'Quản lý câu hỏi',
+      icon: '💬',
     },
     {
-      path: '/admin/activities',
-      name: 'Hoạt động gần đây',
-      icon: '⚡',
-    },
-    {
-      path: '/admin/profile',
+      path: '/manager/profile',
       name: 'Hồ sơ cá nhân',
       icon: '👤',
     },
@@ -76,7 +70,7 @@ const AdminDashboard = () => {
   // Loading Screen Component
   if (isLoading) {
     return (
-      <div className="admin-loading-screen">
+      <div className="manager-loading-screen">
         <div className="loading-container">
           {/* Logo and Title */}
           <div className="loading-header">
@@ -84,9 +78,9 @@ const AdminDashboard = () => {
               <span className="loading-icon">🏥</span>
               <div className="loading-pulse"></div>
             </div>
-            <h1 className="loading-title">HealthAdmin</h1>
+            <h1 className="loading-title">HealthManager</h1>
             <p className="loading-subtitle">
-              Đang tải bảng điều khiển quản trị...
+              Đang tải bảng điều khiển quản lý...
             </p>
           </div>
 
@@ -111,16 +105,16 @@ const AdminDashboard = () => {
           {/* Feature Loading Text */}
           {/* <div className="loading-features">
             <div className="feature-item">
-              <span className="feature-icon">🔒</span>
-              <span>Kiểm tra bảo mật</span>
+              <span className="feature-icon">🏥</span>
+              <span>Tải dữ liệu dịch vụ</span>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">📊</span>
-              <span>Tải dữ liệu dashboard</span>
+              <span className="feature-icon">📝</span>
+              <span>Đồng bộ bài viết</span>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">👥</span>
-              <span>Đồng bộ tài khoản</span>
+              <span className="feature-icon">💬</span>
+              <span>Cập nhật câu hỏi</span>
             </div>
           </div> */}
         </div>
@@ -129,15 +123,15 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="admin-dashboard">
+    <div className="manager-dashboard">
       {/* Sidebar */}
-      <div className={`admin-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      <div className={`manager-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         {/* Logo */}
         <div className="sidebar-header">
           <div className="logo">
-            <span className="logo-icon-sidebar">🏥</span>
+            <span className="logo-icon">🏥</span>
             {!sidebarCollapsed && (
-              <span className="logo-text">HealthAdmin</span>
+              <span className="logo-text">HealthManager</span>
             )}
           </div>
           <button
@@ -170,17 +164,17 @@ const AdminDashboard = () => {
           ))}
         </nav>
 
-        {/* Admin Info */}
+        {/* Manager Info */}
         <div className="sidebar-footer">
-          <div className="admin-info">
-            <div className="admin-avatar">
-              {adminName.charAt(0).toUpperCase()}
+          <div className="manager-info">
+            <div className="manager-avatar">
+              {managerName.charAt(0).toUpperCase()}
             </div>
             {!sidebarCollapsed && (
-              <div className="admin-details">
-                <div className="admin-name">{adminName}</div>
-                <div className="admin-email">{adminEmail}</div>
-                <div className="admin-role">Admin</div>
+              <div className="manager-details">
+                <div className="manager-name">{managerName}</div>
+                <div className="manager-email">{managerEmail}</div>
+                <div className="manager-role">Manager</div>
               </div>
             )}
           </div>
@@ -188,23 +182,22 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="admin-content">
+      <div className="manager-content">
         <Routes>
           <Route
             path="/"
-            element={<Navigate to="/admin/dashboard" replace />}
+            element={<Navigate to="/manager/dashboard" replace />}
           />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/accounts" element={<AccountManagement />} />
-          <Route path="/users" element={<UserManagement />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/bulk-email" element={<BulkEmail />} />
-          <Route path="/activities" element={<RecentActivities />} />
-          <Route path="/profile" element={<AdminProfile />} />
+          <Route path="/staff" element={<StaffManagement />} />
+          <Route path="/services" element={<ServiceManagement />} />
+          <Route path="/blogs" element={<BlogManagement />} />
+          <Route path="/questions" element={<QuestionManagement />} />
+          <Route path="/profile" element={<ManagerProfile />} />
         </Routes>
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default ManagerDashboard;

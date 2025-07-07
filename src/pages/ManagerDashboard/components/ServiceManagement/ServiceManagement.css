@@ -1,0 +1,140 @@
+/* Service Management Main Container */
+.service-management {
+  padding: 32px;
+  background: #f0fdf4;
+  min-height: 100vh;
+}
+
+/* Service Header */
+.service-header {
+  margin-bottom: 32px;
+}
+
+.service-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.service-header p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  background: white;
+  border-radius: 16px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.1);
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background: rgba(16, 185, 129, 0.05);
+  color: #059669;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.tab-btn.active:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+}
+
+.tab-icon {
+  font-size: 20px;
+}
+
+.tab-name {
+  font-weight: 600;
+}
+
+/* Tab Content */
+.tab-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.1);
+  overflow: hidden;
+  min-height: 600px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .service-management {
+    padding: 20px;
+  }
+
+  .service-header h1 {
+    font-size: 24px;
+  }
+
+  .tab-navigation {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .tab-btn {
+    min-width: 160px;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .tab-name {
+    font-size: 12px;
+  }
+
+  .tab-icon {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-management {
+    padding: 16px;
+  }
+
+  .tab-navigation {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tab-btn {
+    min-width: auto;
+    width: 100%;
+  }
+}
