@@ -23,10 +23,14 @@ import LabSuccess from '@pages/LabConfirmation/LabSuccess';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import Question from '@pages/Question/Question';
 import Payment from '@pages/PaymentPage/PaymentPage';
+import PaymentSuccess from '@pages/PaymentSuccess/PaymentSuccess';
+import PaymentFailed from '@pages/PaymentFailed/PaymentFailed';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
+import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import Footer from '@components/Footer/Footer';
 import '@styles/reset.css';
+import StaffDashboard from './pages/StaffDashboard/StaffDashboard';
 
 // Layout chung cho tất cả trang
 const AppLayout = () => {
@@ -36,7 +40,6 @@ const AppLayout = () => {
   const navigate = useNavigate();
 
   // Lấy fullname từ sessionStorage hoặc mặc định
-  const full_name = sessionStorage.getItem('full_name') || 'Người dùng';
 
   // Kiểm tra xem có phải trang admin/manager dashboard không
   const isDashboardPage =
@@ -84,12 +87,49 @@ const AppLayout = () => {
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
         <Route path="/manager/*" element={<ManagerDashboard />} />
+
         <Route
-          path="/dich-vu/chu-ky-kinh-nguyet"
-          element={<MenstrualPredictorPage />}
+          path="*"
+          element={
+            <>
+              <Navbar
+                onLoginClick={() => setShowLogin(true)}
+                onLogout={handleLogout}
+              />
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route
+                  path="/tai-khoan"
+                  element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
+                />
+                <Route path="/tin-tuc" element={<BlogPage />} />
+                <Route path="/ve-chung-toi" element={<AboutUs />} />
+                <Route path="/lien-he" element={<Contact />} />
+                <Route path="/dich-vu" element={<ServicePage />} />
+                <Route path="/dat-lich-tu-van" element={<BookingPage />} />
+                <Route path="/dat-lich-xet-nghiem" element={<LabSchedule />} />
+                <Route path="/chon-xet-nghiem" element={<LabTests />} />
+                <Route
+                  path="/thong-tin-xet-nghiem"
+                  element={<LabConfirmation />}
+                />
+                <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/consultant/*" element={<ConsultantDashboard />} />
+                <Route path="/staff/*" element={<StaffDashboard />} />
+                <Route
+                  path="/dich-vu/chu-ky-kinh-nguyet"
+                  element={<MenstrualPredictorPage />}
+                />
+                <Route path="/hoi-dap" element={<Question />} />
+                <Route path="/payment" element={<Payment />} />
+              </Routes>
+              <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
+              <Footer />
+              <div className="footer-spacer" />
+            </>
+          }
         />
-        <Route path="/hoi-dap" element={<Question />} />
-        <Route path="/payment" element={<Payment />} />
       </Routes>
       <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
       {/* Chỉ hiển thị Footer khi không ở trang dashboard */}

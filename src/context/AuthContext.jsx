@@ -1,33 +1,58 @@
-import React, { createContext, useContext, useState } from 'react'; // Thêm useContext
+// src/context/AuthContext.jsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem('account_id'));
+  const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get('accountId'));
   const [userInfo, setUserInfo] = useState({
-    accountId: sessionStorage.getItem('account_id') || null,
-    fullname: sessionStorage.getItem('fullname') || null,
+    accountId: Cookies.get('accountId') || null,
+    fullname: Cookies.get('fullname') || null,
+    role: Cookies.get('role') || null,
   });
 
-  const login = (accessToken, refreshToken, accountId, fullname) => {
-    sessionStorage.setItem('accessToken', accessToken);
-    sessionStorage.setItem('accountId', accountId || null);
-    sessionStorage.setItem('fullname', fullname || 'Người dùng');
-    setIsLoggedIn(true);
-    setUserInfo({ accountId, fullname: fullname || 'Người dùng' }); // Cập nhật userInfo
-  };
+  // Cập nhật trạng thái khi cookie thay đổi
+useEffect(() => {
+  const interval = setInterval(() => {
+    const accountId = Cookies.get('accountId');
+    const fullname = Cookies.get('fullname');
+    const role = Cookies.get('role');
+    setIsLoggedIn(!!accountId);
+    setUserInfo({
+      accountId: accountId || null,
+      fullname: fullname || null,
+      role: role,
+    });
+  }, 1000);
 
-  const logout = () => {
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('refreshToken');
-    sessionStorage.removeItem('account_id');
-    sessionStorage.removeItem('fullname');
+  return () => clearInterval(interval);
+}, []);
+
+
+const login = (accessToken, refreshToken, accountId, fullname, role) => {
+  Cookies.set('accessToken', accessToken, { expires: 1 });
+  Cookies.set('accountId', accountId || null, { expires: 1 });
+  Cookies.set('fullname', fullname || 'Người dùng', { expires: 1 });
+  Cookies.set('role', role, { expires: 1 });
+
+  setIsLoggedIn(true);
+  setUserInfo({ accountId, fullname: fullname || 'Người dùng', role });
+};
+
+
+  const onLogout = () => {
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    Cookies.remove('accountId');
+    Cookies.remove('fullname');
+    Cookies.remove('role');
     setIsLoggedIn(false);
-    setUserInfo({ accountId: null, fullname: null });
+    setUserInfo({ accountId: null, fullname: null, role: null });
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userInfo, login, logout, setUserInfo }}>
+    <AuthContext.Provider value={{ isLoggedIn, userInfo, login, onLogout, setUserInfo }}>
       {children}
     </AuthContext.Provider>
   );

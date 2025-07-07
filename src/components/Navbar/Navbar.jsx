@@ -28,8 +28,13 @@ import '@styles/reset.css';
 import './Navbar.css';
 import Logout from '@pages/Logout/Logout';
 import NotificationDropdown from '@components/Notification/NotificationDropdown';
+import Cookies from 'js-cookie'; // Thêm thư viện js-cookie
+import { useAuth } from '@context/AuthContext';
 
-const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
+
+const Navbar = ({ onLoginClick }) => {
+  const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context
+  const { fullname, role } = userInfo || {};
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -57,6 +62,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
+    'admin': 'Quản trị viên',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -162,6 +168,15 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
       icon: <WechatWorkOutlined />,
     },
   ];
+// console.log('Role:', role, typeof role); // Role: 0 "number"
+const roleRoutes = {
+  ADMIN: { path: '/admin', label: 'Admin' },
+  STAFF: { path: '/staff', label: 'Nhân viên' },
+  MANAGER: { path: '/manager', label: 'Quản lý' },
+  CONSULTANT: { path: '/consultant', label: 'Tư vấn' },
+  RECEPTIONIST: { path: '/receptionist', label: 'Lễ tân' },
+};
+
 
   const accountMenu = {
     items: [
@@ -174,15 +189,20 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
           </Link>
         ),
       },
-      {
-        key: 'settings',
-        label: (
-          <span className="dropdown-link">
-            <AppstoreOutlined style={{ marginRight: '8px' }} />
-            Cài đặt
-          </span>
-        ),
-      },
+      ...(role === 'CUSTOMER' ? [] : [
+        {
+          key: 'settings',
+          label: (
+            <Link
+              to={roleRoutes[role]?.path || '/settings'}
+              className="dropdown-link"
+            >
+              <AppstoreOutlined style={{ marginRight: '8px' }} />
+              {roleRoutes[role]?.label || 'Cài đặt'}
+            </Link>
+          ),
+        },
+      ]),
       { type: 'divider' },
       {
         key: 'logout',
@@ -206,7 +226,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const userId = sessionStorage.getItem('accountId') || 1; // Lấy userId từ sessionStorage, mặc định 1 nếu không có
+      const userId = Cookies.get('accountId') || 1; // Thay sessionStorage bằng Cookies
       const res = await axios.get(
         `http://localhost:3000/api/notifications?userId=${userId}`
       );
@@ -268,7 +288,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout, fullname }) => {
         <div className="nav-content">
           <div className="nav-left">
             <Link to="/" className="logo-container">
-              <Logo className="logo" />
+              <Logo className="nav-logo" />
             </Link>
           </div>
 
