@@ -233,7 +233,7 @@ const ConsultantAppointment = () => {
             <div className="time-header"></div>
             {timeSlots.map((time) => (
               <div key={time.slot_id} className="time-slot">
-                {time.name.split("-")[0]} <br />
+                {time.name.split("-")[0]} <br/>
                 {time.start_at}
               </div>
             ))}
@@ -265,10 +265,10 @@ const ConsultantAppointment = () => {
                           borderLeft: `4px solid ${getStatusColor(appointment.status)}`,
                         }}
                       >
-                        <div className="appointment-time">
+                        <div className="appointment-time" style={{color: 'black'}}>
                           {appointment.consultant_pattern.working_slot.start_at} - {appointment.consultant_pattern.working_slot.end_at}
                         </div>
-                        <div className="appointment-customer">
+                        <div className="appointment-customer" style={{color: 'black'}}>
                           {appointment.customer.full_name}
                         </div>
 
@@ -370,6 +370,7 @@ const ConsultantAppointment = () => {
                       backgroundColor: getStatusColor(
                         selectedAppointment.status
                       ),
+                      color: "white"
                     }}
                   >
                     {selectedAppointment.status === 'confirmed' &&
