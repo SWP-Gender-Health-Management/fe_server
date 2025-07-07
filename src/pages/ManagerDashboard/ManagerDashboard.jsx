@@ -85,7 +85,7 @@ const ManagerDashboard = () => {
           </div>
 
           {/* Progress Bar */}
-          <div className="loading-progress">
+          {/* <div className="loading-progress">
             <div className="progress-bar">
               <div
                 className="progress-fill"
@@ -93,17 +93,17 @@ const ManagerDashboard = () => {
               ></div>
             </div>
             <div className="progress-text">{Math.round(loadingProgress)}%</div>
-          </div>
+          </div> */}
 
           {/* Loading Animation */}
-          <div className="loading-dots">
+          {/* <div className="loading-dots">
             <div className="dot"></div>
             <div className="dot"></div>
             <div className="dot"></div>
-          </div>
+          </div> */}
 
           {/* Feature Loading Text */}
-          <div className="loading-features">
+          {/* <div className="loading-features">
             <div className="feature-item">
               <span className="feature-icon">🏥</span>
               <span>Tải dữ liệu dịch vụ</span>
@@ -116,7 +116,7 @@ const ManagerDashboard = () => {
               <span className="feature-icon">💬</span>
               <span>Cập nhật câu hỏi</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );

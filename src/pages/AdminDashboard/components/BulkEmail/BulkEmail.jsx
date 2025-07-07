@@ -292,7 +292,7 @@ const BulkEmail = () => {
               </small>
             </div>
 
-            <div className="form-row">
+            {/* <div className="form-row">
               <div className="form-group">
                 <label htmlFor="priority">Mức độ ưu tiên</label>
                 <select
@@ -318,7 +318,7 @@ const BulkEmail = () => {
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="form-section">
