@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Menu, Button, Breadcrumb, Dropdown, Tooltip } from 'antd';
+import { Menu, Button, Breadcrumb, Dropdown, Tooltip, Result } from 'antd';
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -32,7 +32,6 @@ import Logout from '@pages/Logout/Logout';
 import NotificationDropdown from '../Notification/NotificationDropdown';
 import { useAuth } from '@context/AuthContext';
 
-
 const Navbar = ({ onLoginClick }) => {
   const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context
   const { fullname, role } = userInfo || {};
@@ -63,7 +62,7 @@ const Navbar = ({ onLoginClick }) => {
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
-    'admin': 'Quản trị viên',
+    admin: 'Quản trị viên',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -169,15 +168,14 @@ const Navbar = ({ onLoginClick }) => {
       icon: <WechatWorkOutlined />,
     },
   ];
-// console.log('Role:', role, typeof role); // Role: 0 "number"
-const roleRoutes = {
-  ADMIN: { path: '/admin', label: 'Admin' },
-  STAFF: { path: '/staff', label: 'Nhân viên' },
-  MANAGER: { path: '/manager', label: 'Quản lý' },
-  CONSULTANT: { path: '/consultant', label: 'Tư vấn' },
-  RECEPTIONIST: { path: '/receptionist', label: 'Lễ tân' },
-};
-
+  // console.log('Role:', role, typeof role); // Role: 0 "number"
+  const roleRoutes = {
+    ADMIN: { path: '/admin', label: 'Admin' },
+    STAFF: { path: '/staff', label: 'Nhân viên' },
+    MANAGER: { path: '/manager', label: 'Quản lý' },
+    CONSULTANT: { path: '/consultant', label: 'Tư vấn' },
+    RECEPTIONIST: { path: '/receptionist', label: 'Lễ tân' },
+  };
 
   const accountMenu = {
     items: [
@@ -190,20 +188,22 @@ const roleRoutes = {
           </Link>
         ),
       },
-      ...(role === 'CUSTOMER' ? [] : [
-        {
-          key: 'settings',
-          label: (
-            <Link
-              to={roleRoutes[role]?.path || '/settings'}
-              className="dropdown-link"
-            >
-              <AppstoreOutlined style={{ marginRight: '8px' }} />
-              {roleRoutes[role]?.label || 'Cài đặt'}
-            </Link>
-          ),
-        },
-      ]),
+      ...(role === 'CUSTOMER'
+        ? []
+        : [
+            {
+              key: 'settings',
+              label: (
+                <Link
+                  to={roleRoutes[role]?.path || '/settings'}
+                  className="dropdown-link"
+                >
+                  <AppstoreOutlined style={{ marginRight: '8px' }} />
+                  {roleRoutes[role]?.label || 'Cài đặt'}
+                </Link>
+              ),
+            },
+          ]),
       { type: 'divider' },
       {
         key: 'logout',

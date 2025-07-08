@@ -412,7 +412,9 @@ const UserAccount = () => {
         // Lấy thông tin tài khoản
         const accountRes = await axios.post(
           'http://localhost:3000/account/view-account',
-          { account_id: accountId },
+          {
+            /*account_id: accountId */
+          },
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
