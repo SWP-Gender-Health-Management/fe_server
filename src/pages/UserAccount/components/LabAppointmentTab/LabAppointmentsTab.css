@@ -1,0 +1,45 @@
+/* Lab Appointments Tab Styles */
+.lab-apps-table-container {
+  margin-top: 16px;
+}
+
+.lab-app-date {
+  display: flex;
+  align-items: center;
+}
+
+.lab-app-details {
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.lab-app-details .ant-card {
+  margin-bottom: 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.lab-app-details .ant-card-head {
+  background-color: #f0f5ff;
+  border-radius: 6px 6px 0 0;
+}
+
+.lab-app-details p {
+  margin-bottom: 8px;
+}
+
+/* Test Results Table Styles */
+.test-results-table .ant-table-thead > tr > th {
+  background-color: #f0f7ff;
+  font-weight: 600;
+}
+
+.test-results-table .ant-table-tbody > tr:hover > td {
+  background-color: #f5f9ff;
+}
+
+.test-results-table .ant-progress {
+  margin-right: 0;
+  margin-left: 0;
+}
