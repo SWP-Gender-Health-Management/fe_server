@@ -28,6 +28,7 @@ import LabSuccess from '@pages/LabConfirmation/LabSuccess';
 import Payment from '@pages/PaymentPage/PaymentPage';
 import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import StaffDashboard from '@pages/StaffDashboard/StaffDashboard';
+import NotFound from '@pages/NotFound/NotFound.jsx';
 import '@styles/reset.css';
 import Cookies from 'js-cookie';
 
@@ -54,10 +55,37 @@ const AppLayout = () => {
     location.pathname.startsWith(prefix)
   );
 
+  const notFoundPaths = [
+    // Các path không khớp route nào sẽ match *
+    // Có thể kiểm tra bằng cách so sánh với các path đã định nghĩa
+  ];
+  const isNotFoundPage =
+    location.pathname !== '/' &&
+    ![
+      '/',
+      '/tai-khoan',
+      '/tin-tuc',
+      '/ve-chung-toi',
+      '/lien-he',
+      '/dich-vu',
+      '/dat-lich-tu-van',
+      '/dat-lich-xet-nghiem',
+      '/chon-xet-nghiem',
+      '/thong-tin-xet-nghiem',
+      '/xac-nhan-xet-nghiem',
+      '/admin',
+      '/manager',
+      '/consultant',
+      '/staff',
+      '/dich-vu/chu-ky-kinh-nguyet',
+      '/hoi-dap',
+      '/payment',
+    ].some((p) => location.pathname.startsWith(p));
+
   return (
     <div className="app-container">
       {/* ✅ Chỉ hiện Navbar nếu không ở trang dashboard */}
-      {!shouldHideNavbar && (
+      {!shouldHideNavbar && !isNotFoundPage && (
         <Navbar
           onLoginClick={() => setShowLogin(true)}
           isLoggedIn={isLoggedIn}
@@ -68,7 +96,10 @@ const AppLayout = () => {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/tai-khoan" element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />} />
+        <Route
+          path="/tai-khoan"
+          element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
+        />
         <Route path="/tin-tuc" element={<BlogPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
@@ -82,14 +113,17 @@ const AppLayout = () => {
         <Route path="/manager/*" element={<ManagerDashboard />} />
         <Route path="/consultant/*" element={<ConsultantDashboard />} />
         <Route path="/staff/*" element={<StaffDashboard />} />
-        <Route path="/dich-vu/chu-ky-kinh-nguyet" element={<MenstrualPredictorPage />} />
+        <Route
+          path="/dich-vu/chu-ky-kinh-nguyet"
+          element={<MenstrualPredictorPage />}
+        />
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
-        <Route path="*" element={<div>404 - Không tìm thấy trang</div>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       {/* ✅ Chỉ hiện Footer & Login nếu không ở trang dashboard */}
-      {!shouldHideNavbar && (
+      {!shouldHideNavbar && !isNotFoundPage && (
         <>
           <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
           <Footer />
