@@ -52,11 +52,15 @@ import {
   ClockCircleOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  PrinterOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext.jsx';
 import dayjs from 'dayjs';
 import Cookies from 'js-cookie'; // nhớ import nếu chưa có
 import './UserAccount.css';
+
+const API_URL = 'http://localhost:3000';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -70,8 +74,8 @@ const UserAccount = () => {
   const [form] = Form.useForm();
   const { isLoggedIn } = useAuth();
   const [profileCompletion, setProfileCompletion] = useState(0);
-  const [appointments, setAppointments] = useState([]);
-  const [healthRecords, setHealthRecords] = useState([]);
+  const [conApps, setConApps] = useState([]);
+  const [labApps, setLabApps] = useState([]);
   const [avatarUrl, setAvatarUrl] = useState(''); // State để lưu URL avatar
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [emailVerifyModalVisible, setEmailVerifyModalVisible] = useState(false);
@@ -81,316 +85,20 @@ const UserAccount = () => {
   const [verifyForm] = Form.useForm();
   const [verificationSent, setVerificationSent] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState(null); // null, 'success', 'error'
-  const [appointmentsPagination, setAppointmentsPagination] = useState({
+  const [conAppsPagination, setConAppsPagination] = useState({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [healthRecordsPagination, setHealthRecordsPagination] = useState({
+  const [labAppsPagination, setLabAppsPagination] = useState({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [appointmentDetailVisible, setAppointmentDetailVisible] =
-    useState(false);
-  const [selectedHealthRecord, setSelectedHealthRecord] = useState(null);
-  const [healthRecordDetailVisible, setHealthRecordDetailVisible] =
-    useState(false);
-
-  // Mock data cho lịch hẹn tư vấn
-  const mockAppointments = [
-    {
-      id: 'app-001',
-      consultant_pattern: {
-        id: 'cp-001',
-        title: 'Tư vấn sức khỏe phụ nữ',
-        description:
-          'Tư vấn về các vấn đề sức khỏe phụ nữ, chu kỳ kinh nguyệt, kế hoạch hóa gia đình',
-        working_slot: {
-          date: '2023-07-15',
-          time_slot: '09:00 - 10:00',
-        },
-        consultant: {
-          id: 'cons-001',
-          full_name: 'Bác sĩ Nguyễn Thị Hương',
-          avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-          specialty: 'Sản phụ khoa',
-        },
-      },
-      location: 'Phòng khám số 3, Tầng 2',
-      status: 'confirmed',
-      created_at: '2023-07-10',
-    },
-    {
-      id: 'app-002',
-      consultant_pattern: {
-        id: 'cp-002',
-        title: 'Tư vấn dinh dưỡng',
-        description:
-          'Tư vấn về chế độ ăn uống, dinh dưỡng cho phụ nữ mang thai và sau sinh',
-        working_slot: {
-          date: '2023-07-20',
-          time_slot: '14:00 - 15:00',
-        },
-        consultant: {
-          id: 'cons-002',
-          full_name: 'Bác sĩ Trần Văn Nam',
-          avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-          specialty: 'Dinh dưỡng',
-        },
-      },
-      location: 'Online',
-      status: 'pending',
-      created_at: '2023-07-12',
-    },
-    {
-      id: 'app-003',
-      consultant_pattern: {
-        id: 'cp-003',
-        title: 'Tư vấn tâm lý',
-        description: 'Tư vấn về các vấn đề tâm lý, stress, lo âu trong thai kỳ',
-        working_slot: {
-          date: '2023-07-25',
-          time_slot: '10:00 - 11:00',
-        },
-        consultant: {
-          id: 'cons-003',
-          full_name: 'Bác sĩ Lê Thị Hà',
-          avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
-          specialty: 'Tâm lý học',
-        },
-      },
-      location: 'Phòng tư vấn số 5, Tầng 3',
-      status: 'cancelled',
-      created_at: '2023-07-14',
-    },
-    {
-      id: 'app-004',
-      consultant_pattern: {
-        id: 'cp-004',
-        title: 'Tư vấn sức khỏe sinh sản',
-        description:
-          'Tư vấn về các vấn đề sức khỏe sinh sản, vô sinh, hiếm muộn',
-        working_slot: {
-          date: '2023-08-05',
-          time_slot: '15:00 - 16:00',
-        },
-        consultant: {
-          id: 'cons-004',
-          full_name: 'Bác sĩ Phạm Văn Hoàng',
-          avatar: 'https://randomuser.me/api/portraits/men/62.jpg',
-          specialty: 'Sản phụ khoa',
-        },
-      },
-      location: 'Phòng khám số 2, Tầng 1',
-      status: 'confirmed',
-      created_at: '2023-07-20',
-    },
-    {
-      id: 'app-005',
-      consultant_pattern: {
-        id: 'cp-005',
-        title: 'Tư vấn sau sinh',
-        description:
-          'Tư vấn về chăm sóc sau sinh, cho con bú, phục hồi sức khỏe',
-        working_slot: {
-          date: '2023-08-10',
-          time_slot: '09:30 - 10:30',
-        },
-        consultant: {
-          id: 'cons-001',
-          full_name: 'Bác sĩ Nguyễn Thị Hương',
-          avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-          specialty: 'Sản phụ khoa',
-        },
-      },
-      location: 'Online',
-      status: 'pending',
-      created_at: '2023-07-25',
-    },
-    {
-      id: 'app-006',
-      consultant_pattern: {
-        id: 'cp-006',
-        title: 'Tư vấn kế hoạch hóa gia đình',
-        description:
-          'Tư vấn về các biện pháp tránh thai, kế hoạch hóa gia đình',
-        working_slot: {
-          date: '2023-08-15',
-          time_slot: '13:30 - 14:30',
-        },
-        consultant: {
-          id: 'cons-005',
-          full_name: 'Bác sĩ Vũ Thị Lan',
-          avatar: 'https://randomuser.me/api/portraits/women/22.jpg',
-          specialty: 'Sản phụ khoa',
-        },
-      },
-      location: 'Phòng tư vấn số 1, Tầng 2',
-      status: 'confirmed',
-      created_at: '2023-07-30',
-    },
-  ];
-
-  // Mock data cho lịch hẹn xét nghiệm
-  const mockHealthRecords = [
-    {
-      id: 'hr-001',
-      date: '2023-07-10',
-      type: 'Xét nghiệm máu tổng quát',
-      result: 'Bình thường',
-      is_normal: true,
-      notes: 'Các chỉ số trong giới hạn bình thường',
-      tests: ['Công thức máu', 'Sinh hóa máu', 'Đường huyết', 'Chức năng gan'],
-      indicators: [
-        'Hồng cầu, Bạch cầu, Tiểu cầu',
-        'AST, ALT, GGT',
-        'HbA1c',
-        'GOT, GPT',
-      ],
-      test_results: [
-        'Bình thường',
-        'Bình thường',
-        'Bình thường',
-        'Bình thường',
-      ],
-      test_is_normal: [true, true, true, true],
-      test_values: [
-        { value: '4.5', unit: 'x10^6/µL', min: '4.0', max: '5.5', percent: 50 },
-        { value: '25', unit: 'U/L', min: '10', max: '40', percent: 50 },
-        { value: '5.2', unit: '%', min: '4.0', max: '6.0', percent: 60 },
-        { value: '30', unit: 'U/L', min: '10', max: '50', percent: 50 },
-      ],
-    },
-    {
-      id: 'hr-002',
-      date: '2023-07-20',
-      type: 'Xét nghiệm nước tiểu',
-      result: 'Có bất thường',
-      is_normal: false,
-      notes: 'Phát hiện protein trong nước tiểu, cần theo dõi thêm',
-      tests: ['Protein niệu', 'Đường niệu', 'pH nước tiểu'],
-      indicators: ['Protein', 'Glucose', 'pH'],
-      test_results: ['Cao', 'Bình thường', 'Bình thường'],
-      test_is_normal: [false, true, true],
-      test_values: [
-        { value: '150', unit: 'mg/dL', min: '0', max: '20', percent: 95 },
-        {
-          value: 'Âm tính',
-          unit: '',
-          min: 'Âm tính',
-          max: 'Âm tính',
-          percent: 50,
-        },
-        { value: '6.0', unit: '', min: '4.5', max: '8.0', percent: 40 },
-      ],
-    },
-    {
-      id: 'hr-003',
-      date: '2023-08-05',
-      type: 'Xét nghiệm nội tiết',
-      result: 'Bình thường',
-      is_normal: true,
-      notes: 'Các hormone trong giới hạn bình thường',
-      tests: ['Hormone tuyến giáp', 'Estrogen', 'Progesterone', 'Testosterone'],
-      indicators: ['TSH, T3, T4', 'Estradiol', 'Progesterone', 'Testosterone'],
-      test_results: [
-        'Bình thường',
-        'Bình thường',
-        'Bình thường',
-        'Bình thường',
-      ],
-      test_is_normal: [true, true, true, true],
-      test_values: [
-        { value: '2.5', unit: 'mIU/L', min: '0.4', max: '4.0', percent: 70 },
-        { value: '150', unit: 'pg/mL', min: '30', max: '400', percent: 40 },
-        { value: '10', unit: 'ng/mL', min: '2', max: '25', percent: 35 },
-        { value: '0.5', unit: 'ng/mL', min: '0.1', max: '0.8', percent: 50 },
-      ],
-    },
-    {
-      id: 'hr-004',
-      date: '2023-08-15',
-      type: 'Siêu âm vú',
-      result: null,
-      is_normal: null,
-      notes: 'Đang chờ kết quả',
-      tests: ['Siêu âm vú trái', 'Siêu âm vú phải'],
-      indicators: ['Cấu trúc mô', 'Cấu trúc mô'],
-      test_results: [null, null],
-      test_is_normal: [null, null],
-      test_values: null,
-    },
-    {
-      id: 'hr-005',
-      date: '2023-08-20',
-      type: 'Xét nghiệm vitamin và khoáng chất',
-      result: 'Có bất thường',
-      is_normal: false,
-      notes: 'Thiếu vitamin D, cần bổ sung',
-      tests: ['Vitamin D', 'Vitamin B12', 'Sắt', 'Canxi', 'Kẽm'],
-      indicators: ['25-OH-D', 'B12', 'Ferritin', 'Ca2+', 'Zn'],
-      test_results: [
-        'Thấp',
-        'Bình thường',
-        'Bình thường',
-        'Bình thường',
-        'Thấp',
-      ],
-      test_is_normal: [false, true, true, true, false],
-      test_values: [
-        { value: '15', unit: 'ng/mL', min: '30', max: '100', percent: 15 },
-        { value: '500', unit: 'pg/mL', min: '200', max: '900', percent: 50 },
-        { value: '100', unit: 'ng/mL', min: '20', max: '250', percent: 40 },
-        { value: '9.5', unit: 'mg/dL', min: '8.5', max: '10.5', percent: 50 },
-        { value: '60', unit: 'µg/dL', min: '70', max: '120', percent: 20 },
-      ],
-    },
-  ];
-
-  // Thêm thông tin kết quả tư vấn vào mock data
-  const mockAppointmentsWithResults = mockAppointments.map((appointment) => {
-    // Chỉ thêm kết quả cho các lịch hẹn đã xác nhận
-    if (appointment.status === 'confirmed') {
-      return {
-        ...appointment,
-        result: {
-          summary: `Tóm tắt buổi tư vấn ${appointment.consultant_pattern.title} ngày ${dayjs(appointment.consultant_pattern.working_slot.date).format('DD/MM/YYYY')}`,
-          diagnosis:
-            'Chẩn đoán: ' +
-            (appointment.id === 'app-001'
-              ? 'Rối loạn nội tiết tố'
-              : appointment.id === 'app-004'
-                ? 'Thiếu hụt vitamin D'
-                : 'Sức khỏe bình thường'),
-          recommendations: [
-            'Chế độ ăn uống cân bằng dinh dưỡng',
-            'Tập thể dục đều đặn 30 phút mỗi ngày',
-            'Uống đủ nước, ít nhất 2 lít mỗi ngày',
-            appointment.id === 'app-001'
-              ? 'Bổ sung vitamin E'
-              : appointment.id === 'app-004'
-                ? 'Bổ sung vitamin D3'
-                : 'Giữ tinh thần thoải mái',
-          ],
-          next_steps:
-            appointment.id === 'app-001'
-              ? 'Tái khám sau 2 tuần'
-              : appointment.id === 'app-004'
-                ? 'Xét nghiệm lại sau 1 tháng'
-                : 'Tái khám nếu có triệu chứng bất thường',
-          notes:
-            appointment.id === 'app-001'
-              ? 'Cần theo dõi thêm về nồng độ hormone'
-              : appointment.id === 'app-004'
-                ? 'Cần bổ sung vitamin D3 liều cao trong 2 tuần đầu'
-                : 'Không có ghi chú đặc biệt',
-        },
-      };
-    }
-    return appointment;
-  });
+  const [selectedConApp, setSelectedConApp] = useState(null);
+  const [conAppDetailVisible, setConAppDetailVisible] = useState(false);
+  const [selectedLabApp, setSelectedLabApp] = useState(null);
+  const [labAppDetailVisible, setLabAppDetailVisible] = useState(false);
 
   useEffect(() => {
     const fetchAccountData = async () => {
@@ -411,9 +119,11 @@ const UserAccount = () => {
       try {
         // Lấy thông tin tài khoản
         const accountRes = await axios.post(
-          'http://localhost:3000/account/view-account',
+          `${API_URL}/account/view-account`,
           {
-            /*account_id: accountId */
+            /*account_id: accountId 
+            account_id: sẽ được lấy từ access token khi decode chứ ko phải là truyền vô
+            */
           },
           {
             headers: {
@@ -434,62 +144,52 @@ const UserAccount = () => {
         }
         calculateProfileCompletion(accountData);
 
-        // Sử dụng mock data với kết quả thay vì gọi API
-        setAppointments(mockAppointmentsWithResults);
-        setAppointmentsPagination((prev) => ({
-          ...prev,
-          total: mockAppointmentsWithResults.length,
-        }));
-
-        setHealthRecords(mockHealthRecords);
-        setHealthRecordsPagination((prev) => ({
-          ...prev,
-          total: mockHealthRecords.length,
-        }));
-
-        // Giữ lại code gọi API nhưng comment lại để sau này có thể dễ dàng khôi phục
-        /*
-        // Lấy lịch hẹn
+        // Lấy lịch hẹn tư vấn
         try {
           const appointmentRes = await axios.get(
-            `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/customer/${accountId}`,
+            `${API_URL}/consult-appointment/customer/get-con-apps-by-id`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
               },
-            }
+            },
+            {}
           );
-          const appointmentsData = appointmentRes.data.result || [];
-          setAppointments(appointmentsData);
-          setAppointmentsPagination(prev => ({
+          const conAppsData = appointmentRes.data.result.conApp || [];
+          // const totalPages = appointmentRes.data.pages || 1;
+          setConApps(conAppsData);
+          setConAppsPagination((prev) => ({
             ...prev,
-            total: appointmentsData.length
+            total: conAppsData.length,
           }));
         } catch (error) {
           if (error.response?.status === 404) {
-            setAppointments([]); // Không có lịch hẹn thì đặt mảng rỗng
+            setConApps([]); // Không có lịch hẹn thì đặt mảng rỗng
           } else {
             console.error('Lỗi khi tải dữ liệu:', error);
             message.error('Lỗi khi tải lịch hẹn');
           }
         }
 
-        // Lấy hồ sơ sức khỏe
-        const healthRes = await axios.get(
-          `http://localhost:3000/health-record/list?account_id=${accountId}`,
+        // Lấy lịch hẹn xét nghiệm
+        const labAppRes = await axios.get(
+          `${API_URL}/customer/get-laborarity-appointments`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
             },
-          }
+          },
+          {}
         );
-        const healthRecordsData = healthRes.data.result || [];
-        setHealthRecords(healthRecordsData);
-        setHealthRecordsPagination(prev => ({
+        const labAppData = labAppRes.data.result.labApp || [];
+        console.log(labAppData);
+        setLabApps(labAppData);
+        setLabAppsPagination((prev) => ({
           ...prev,
-          total: healthRecordsData.length
+          total: labAppData.length,
         }));
-        */
       } catch (err) {
         console.error('Lỗi khi tải dữ liệu:', err);
         message.error('Không thể tải thông tin. Vui lòng thử lại.');
@@ -501,8 +201,17 @@ const UserAccount = () => {
     fetchAccountData();
   }, [isLoggedIn, form]);
 
+  // Tính toán tỷ lệ hoàn thành hồ sơ
   const calculateProfileCompletion = (data) => {
-    const fields = ['full_name', 'email', 'phone', 'dob', 'gender', 'address'];
+    const fields = [
+      'full_name',
+      'email',
+      'phone',
+      'dob',
+      'gender',
+      'address',
+      'description',
+    ];
     const completed = fields.filter((field) => {
       const value = data[field];
       if (value == null) return false;
@@ -513,6 +222,7 @@ const UserAccount = () => {
     setProfileCompletion(percentage);
   };
 
+  // Xử lý lưu thông tin
   const handleSave = async (values) => {
     const accessToken = Cookies.get('accessToken');
     if (!accessToken) {
@@ -546,11 +256,13 @@ const UserAccount = () => {
     }
   };
 
+  // Xử lý hủy thay đổi
   const handleCancel = () => {
     form.setFieldsValue(editedInfo);
     setIsEditing(false);
   };
 
+  // Xử lý upload ảnh đại diện
   const handleAvatarUpload = async (options) => {
     const { file, onSuccess, onError } = options;
     const accessToken = Cookies.getm('accessToken');
@@ -583,6 +295,7 @@ const UserAccount = () => {
     }
   };
 
+  // Hàm lấy màu sắc cho trạng thái lịch hẹn
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed':
@@ -596,6 +309,7 @@ const UserAccount = () => {
     }
   };
 
+  // Hàm lấy văn bản cho trạng thái lịch hẹn
   const getStatusText = (status) => {
     switch (status) {
       case 'confirmed':
@@ -769,35 +483,36 @@ const UserAccount = () => {
   };
 
   // Hàm xử lý phân trang cho lịch hẹn tư vấn
-  const handleAppointmentsPaginationChange = (page, pageSize) => {
-    setAppointmentsPagination({
-      ...appointmentsPagination,
+  const handleConAppsPaginationChange = (page, pageSize) => {
+    setConAppsPagination({
+      ...conAppsPagination,
       current: page,
       pageSize: pageSize,
     });
   };
 
   // Hàm xử lý phân trang cho lịch hẹn xét nghiệm
-  const handleHealthRecordsPaginationChange = (page, pageSize) => {
-    setHealthRecordsPagination({
-      ...healthRecordsPagination,
+  const handleLabAppsPaginationChange = (page, pageSize) => {
+    setLabAppsPagination({
+      ...labAppsPagination,
       current: page,
       pageSize: pageSize,
     });
   };
 
   // Hàm hiển thị chi tiết lịch hẹn
-  const showAppointmentDetail = (record) => {
-    setSelectedAppointment(record);
-    setAppointmentDetailVisible(true);
+  const showConAppDetail = (record) => {
+    setSelectedConApp(record);
+    setConAppDetailVisible(true);
   };
 
   // Hàm hiển thị chi tiết lịch hẹn xét nghiệm
-  const showHealthRecordDetail = (record) => {
-    setSelectedHealthRecord(record);
-    setHealthRecordDetailVisible(true);
+  const showLabAppDetail = (record) => {
+    setSelectedLabApp(record);
+    setLabAppDetailVisible(true);
   };
 
+  // Hiển thị loading
   if (loading) {
     return (
       <div className="account-container">
@@ -808,6 +523,7 @@ const UserAccount = () => {
     );
   }
 
+  // Hiển thị thông tin cá nhân
   const personalInfoTab = (
     <div className="tab-content">
       <Form
@@ -854,7 +570,7 @@ const UserAccount = () => {
               label="Số điện thoại"
               name="phone"
               rules={[
-                { required: true, message: 'Vui lòng nhập số điện thoại' },
+                { required: false, message: 'Vui lòng nhập số điện thoại' },
               ]}
             >
               <Input
@@ -912,7 +628,7 @@ const UserAccount = () => {
 
         <Row gutter={24}>
           <Col xs={24}>
-            <Form.Item label="Ghi chú sức khỏe" name="health_notes">
+            <Form.Item label="Ghi chú sức khỏe" name="description">
               <TextArea
                 rows={4}
                 placeholder="Ghi chú về tình trạng sức khỏe, dị ứng, thuốc đang sử dụng..."
@@ -942,7 +658,7 @@ const UserAccount = () => {
   );
 
   // Columns cho bảng lịch hẹn tư vấn
-  const appointmentColumns = [
+  const conAppColumns = [
     {
       title: 'Ngày hẹn',
       dataIndex: 'date',
@@ -952,13 +668,9 @@ const UserAccount = () => {
           <CalendarOutlined className="date-icon" />
           <div>
             <div className="date">
-              {dayjs(record.consultant_pattern?.working_slot?.date).format(
-                'DD/MM/YYYY'
-              )}
+              {dayjs(record.date).format('DD/MM/YYYY')}
             </div>
-            <div className="time">
-              {record.consultant_pattern?.working_slot?.time_slot || 'Không rõ'}
-            </div>
+            <div className="time">{record.time || 'Không rõ'}</div>
           </div>
         </div>
       ),
@@ -972,11 +684,10 @@ const UserAccount = () => {
           <Avatar
             size="small"
             icon={<UserOutlined />}
-            src={record.consultant_pattern?.consultant?.avatar}
+            src={record.consultant_avatar}
           />
           <span className="consultant-name">
-            {record.consultant_pattern?.consultant?.full_name ||
-              'Chưa xác định'}
+            {record.consultant || 'Chưa xác định'}
           </span>
         </div>
       ),
@@ -986,8 +697,8 @@ const UserAccount = () => {
       dataIndex: 'service',
       key: 'service',
       render: (_, record) => (
-        <Tooltip title={record.consultant_pattern?.description || ''}>
-          <span>{record.consultant_pattern?.title || 'Tư vấn'}</span>
+        <Tooltip title={record.description || ''}>
+          <span>{record.description || 'Tư vấn'}</span>
         </Tooltip>
       ),
     },
@@ -1020,7 +731,7 @@ const UserAccount = () => {
           <Button
             type="link"
             size="small"
-            onClick={() => showAppointmentDetail(record)}
+            onClick={() => showConAppDetail(record)}
             disabled={record.status !== 'confirmed'}
           >
             Chi tiết
@@ -1036,98 +747,73 @@ const UserAccount = () => {
   ];
 
   // Columns cho bảng lịch hẹn xét nghiệm
-  const healthRecordColumns = [
+  const labAppColumns = [
     {
-      title: 'Ngày xét nghiệm',
+      title: 'Ngày hẹn',
       dataIndex: 'date',
       key: 'date',
-      render: (text) => (
-        <div className="health-record-date">
+      render: (_, record) => (
+        <div className="appointment-date">
           <CalendarOutlined className="date-icon" />
-          <span>{dayjs(text).format('DD/MM/YYYY')}</span>
+          <div>
+            <div className="date">
+              {dayjs(record.date).format('DD/MM/YYYY')}
+            </div>
+            <div className="time">{record.time || 'Không rõ'}</div>
+          </div>
         </div>
       ),
     },
     {
       title: 'Loại xét nghiệm',
-      dataIndex: 'type',
-      key: 'type',
+      dataIndex: 'description',
+      key: 'description',
       render: (text, record) => (
         <div>
           <FileTextOutlined />
-          <span style={{ marginLeft: 8 }}>{text}</span>
-          {record.tests && record.tests.length > 0 && (
-            <Dropdown
-              overlay={
-                <Menu>
-                  {record.tests.map((test, index) => (
-                    <Menu.Item key={index}>
-                      <div className="test-dropdown-item">
-                        <span>{test}</span>
-                        {record.test_results && record.test_results[index] && (
-                          <Tag
-                            color={
-                              record.test_is_normal &&
-                              record.test_is_normal[index]
-                                ? 'success'
-                                : 'error'
-                            }
-                            style={{ marginLeft: 8 }}
-                          >
-                            {record.test_results[index]}
-                          </Tag>
-                        )}
-                      </div>
-                    </Menu.Item>
-                  ))}
-                </Menu>
-              }
-              trigger={['click']}
-            >
-              <Badge
-                count={record.tests.length}
-                style={{
-                  backgroundColor: '#1890ff',
-                  marginLeft: 8,
-                  cursor: 'pointer',
-                }}
-              />
-            </Dropdown>
+          <span style={{ marginLeft: 8 }}>{text || 'Xét nghiệm'}</span>
+          {record.result && record.result.length > 0 && (
+            <Badge
+              count={record.result.length}
+              style={{ backgroundColor: '#1890ff', marginLeft: 8 }}
+              title={`${record.result.length} xét nghiệm`}
+            />
           )}
         </div>
       ),
     },
     {
-      title: 'Kết quả',
-      dataIndex: 'result',
-      key: 'result',
-      render: (text, record) => {
-        if (!text) return <Tag color="processing">Đang xử lý</Tag>;
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        let color = 'default';
+        let text = 'Chưa xác định';
 
-        const resultColor = record.is_normal ? 'success' : 'error';
-        const resultIcon = record.is_normal ? (
-          <CheckCircleOutlined />
-        ) : (
-          <ExclamationCircleOutlined />
-        );
+        switch (status) {
+          case 'pending':
+            color = 'warning';
+            text = 'Đang chờ';
+            break;
+          case 'processing':
+            color = 'processing';
+            text = 'Đang xử lý';
+            break;
+          case 'completed':
+            color = 'success';
+            text = 'Hoàn thành';
+            break;
+          case 'cancelled':
+            color = 'error';
+            text = 'Đã hủy';
+            break;
+          default:
+            color = 'default';
+            text = 'Chưa xác định';
+        }
 
-        return (
-          <Tag color={resultColor} icon={resultIcon}>
-            {text}
-          </Tag>
-        );
+        return <Tag color={color}>{text}</Tag>;
       },
-    },
-    {
-      title: 'Ghi chú',
-      dataIndex: 'notes',
-      key: 'notes',
-      ellipsis: true,
-      render: (text) => (
-        <Tooltip title={text || 'Không có ghi chú'}>
-          <span>{text || 'Không có ghi chú'}</span>
-        </Tooltip>
-      ),
     },
     {
       title: 'Hành động',
@@ -1136,8 +822,8 @@ const UserAccount = () => {
         <Button
           type="link"
           size="small"
-          disabled={!record.result}
-          onClick={() => showHealthRecordDetail(record)}
+          disabled={record.status !== 'completed'}
+          onClick={() => showLabAppDetail(record)}
         >
           Xem chi tiết
         </Button>
@@ -1145,18 +831,19 @@ const UserAccount = () => {
     },
   ];
 
-  const appointmentsTab = (
+  // Hiển thị bảng lịch hẹn tư vấn
+  const conAppsTab = (
     <div className="tab-content">
       <div className="appointments-table-container">
         <Table
-          dataSource={appointments}
-          columns={appointmentColumns}
+          dataSource={conApps}
+          columns={conAppColumns}
           rowKey={(record) => record.id || Math.random().toString()}
           pagination={{
-            current: appointmentsPagination.current,
-            pageSize: appointmentsPagination.pageSize,
-            total: appointmentsPagination.total,
-            onChange: handleAppointmentsPaginationChange,
+            current: conAppsPagination.current,
+            pageSize: conAppsPagination.pageSize,
+            total: conAppsPagination.total,
+            onChange: handleConAppsPaginationChange,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
             showTotal: (total) => `Tổng ${total} lịch hẹn`,
@@ -1174,18 +861,19 @@ const UserAccount = () => {
     </div>
   );
 
-  const healthRecordsTab = (
+  // Hiển thị bảng lịch hẹn xét nghiệm
+  const labAppTab = (
     <div className="tab-content">
-      <div className="health-records-table-container">
+      <div className="lab-apps-table-container">
         <Table
-          dataSource={healthRecords}
-          columns={healthRecordColumns}
+          dataSource={labApps}
+          columns={labAppColumns}
           rowKey={(record) => record.id || Math.random().toString()}
           pagination={{
-            current: healthRecordsPagination.current,
-            pageSize: healthRecordsPagination.pageSize,
-            total: healthRecordsPagination.total,
-            onChange: handleHealthRecordsPaginationChange,
+            current: labAppsPagination.current,
+            pageSize: labAppsPagination.pageSize,
+            total: labAppsPagination.total,
+            onChange: handleLabAppsPaginationChange,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
             showTotal: (total) => `Tổng ${total} lịch hẹn xét nghiệm`,
@@ -1203,37 +891,9 @@ const UserAccount = () => {
     </div>
   );
 
+  // Hiển thị tab cài đặt
   const settingsTab = (
     <div className="tab-content">
-      {/* <Card title="Thông báo" className="settings-card">
-        <Row gutter={16}>
-          <Col span={18}>
-            <Text>Nhận thông báo về lịch hẹn</Text>
-          </Col>
-          <Col span={6}>
-            <Switch defaultChecked />
-          </Col>
-        </Row>
-        <Divider />
-        <Row gutter={16}>
-          <Col span={18}>
-            <Text>Nhận email nhắc nhở</Text>
-          </Col>
-          <Col span={6}>
-            <Switch defaultChecked />
-          </Col>
-        </Row>
-        <Divider />
-        <Row gutter={16}>
-          <Col span={18}>
-            <Text>Nhận tin tức sức khỏe</Text>
-          </Col>
-          <Col span={6}>
-            <Switch />
-          </Col>
-        </Row>
-      </Card> */}
-
       <Card title="Bảo mật" className="settings-card">
         <Space direction="vertical" style={{ width: '100%' }}>
           <Button
@@ -1260,6 +920,7 @@ const UserAccount = () => {
     </div>
   );
 
+  // Hiển thị tab
   const tabItems = [
     {
       key: '1',
@@ -1276,20 +937,20 @@ const UserAccount = () => {
       label: (
         <span>
           <CalendarOutlined />
-          Lịch hẹn tư vấn ({appointments.length})
+          Lịch hẹn tư vấn ({conApps.length})
         </span>
       ),
-      children: appointmentsTab,
+      children: conAppsTab,
     },
     {
       key: '3',
       label: (
         <span>
           <HeartOutlined />
-          Lịch hẹn xét nghiệm ({healthRecords.length})
+          Lịch hẹn xét nghiệm ({labApps.length})
         </span>
       ),
-      children: healthRecordsTab,
+      children: labAppTab,
     },
     {
       key: '4',
@@ -1361,14 +1022,14 @@ const UserAccount = () => {
                 <Col span={12}>
                   <Statistic
                     title="Lịch hẹn"
-                    value={appointments.length}
+                    value={conApps.length}
                     prefix={<CalendarOutlined />}
                   />
                 </Col>
                 <Col span={12}>
                   <Statistic
                     title="Hồ sơ"
-                    value={healthRecords.length}
+                    value={labApps.length}
                     prefix={<FileTextOutlined />}
                   />
                 </Col>
@@ -1636,91 +1297,68 @@ const UserAccount = () => {
         title={
           <div className="appointment-detail-title">
             <div>Chi tiết kết quả tư vấn</div>
-            {selectedAppointment && (
-              <Tag color={getStatusColor(selectedAppointment.status)}>
-                {getStatusText(selectedAppointment.status)}
+            {selectedConApp && (
+              <Tag color={getStatusColor(selectedConApp.status)}>
+                {getStatusText(selectedConApp.status)}
               </Tag>
             )}
           </div>
         }
-        open={appointmentDetailVisible}
-        onCancel={() => setAppointmentDetailVisible(false)}
+        open={conAppDetailVisible}
+        onCancel={() => setConAppDetailVisible(false)}
         footer={[
-          <Button
-            key="close"
-            onClick={() => setAppointmentDetailVisible(false)}
-          >
+          <Button key="close" onClick={() => setConAppDetailVisible(false)}>
             Đóng
           </Button>,
         ]}
         width={700}
         className="appointment-detail-modal"
       >
-        {selectedAppointment && (
+        {selectedConApp && (
           <div className="appointment-detail-content">
             <Descriptions title="Thông tin buổi tư vấn" bordered column={2}>
               <Descriptions.Item label="Chuyên gia" span={2}>
                 <div className="consultant-info">
                   <Avatar
                     size={64}
-                    src={
-                      selectedAppointment.consultant_pattern?.consultant?.avatar
-                    }
+                    src={selectedConApp.consultant_pattern?.consultant?.avatar}
                     icon={<UserOutlined />}
                   />
                   <div className="consultant-details">
                     <div className="consultant-name">
-                      {
-                        selectedAppointment.consultant_pattern?.consultant
-                          ?.full_name
-                      }
+                      {selectedConApp.consultant_pattern?.consultant?.full_name}
                     </div>
                     <div className="consultant-specialty">
-                      {
-                        selectedAppointment.consultant_pattern?.consultant
-                          ?.specialty
-                      }
+                      {selectedConApp.consultant_pattern?.consultant?.specialty}
                     </div>
                   </div>
                 </div>
               </Descriptions.Item>
               <Descriptions.Item label="Dịch vụ">
-                {selectedAppointment.consultant_pattern?.title}
+                {selectedConApp.consultant_pattern?.title}
               </Descriptions.Item>
               <Descriptions.Item label="Thời gian">
                 {dayjs(
-                  selectedAppointment.consultant_pattern?.working_slot?.date
+                  selectedConApp.consultant_pattern?.working_slot?.date
                 ).format('DD/MM/YYYY')}{' '}
-                {
-                  selectedAppointment.consultant_pattern?.working_slot
-                    ?.time_slot
-                }
+                {selectedConApp.consultant_pattern?.working_slot?.time_slot}
               </Descriptions.Item>
               <Descriptions.Item label="Địa điểm">
-                {selectedAppointment.location}
-              </Descriptions.Item>
-              <Descriptions.Item label="Trạng thái">
-                <Tag color={getStatusColor(selectedAppointment.status)}>
-                  {getStatusText(selectedAppointment.status)}
-                </Tag>
+                {selectedConApp.location}
               </Descriptions.Item>
             </Descriptions>
 
-            {selectedAppointment.result ? (
+            {selectedConApp.result ? (
               <div className="appointment-result">
                 <Title level={4}>Kết quả tư vấn</Title>
-                <Paragraph>{selectedAppointment.result.summary}</Paragraph>
-                <Paragraph strong>
-                  {selectedAppointment.result.diagnosis}
-                </Paragraph>
+                <Paragraph>{selectedConApp.result.summary}</Paragraph>
+                <Paragraph strong>{selectedConApp.result.diagnosis}</Paragraph>
 
                 <Title level={5}>Khuyến nghị</Title>
                 <ul className="recommendation-list">
-                  {selectedAppointment.result.recommendations.map(
-                    (rec, index) => (
-                      <li key={index}>{rec}</li>
-                    )
-                  )}
+                  {selectedConApp.result.recommendations.map((rec, index) => (
+                    <li key={index}>{rec}</li>
+                  ))}
                 </ul>
 
                 <Row gutter={16}>
@@ -1730,14 +1368,12 @@ const UserAccount = () => {
                       title="Bước tiếp theo"
                       className="next-steps-card"
                     >
-                      <Paragraph>
-                        {selectedAppointment.result.next_steps}
-                      </Paragraph>
+                      <Paragraph>{selectedConApp.result.next_steps}</Paragraph>
                     </Card>
                   </Col>
                   <Col span={12}>
                     <Card size="small" title="Ghi chú" className="notes-card">
-                      <Paragraph>{selectedAppointment.result.notes}</Paragraph>
+                      <Paragraph>{selectedConApp.result.notes}</Paragraph>
                     </Card>
                   </Col>
                 </Row>
@@ -1755,100 +1391,91 @@ const UserAccount = () => {
       {/* Modal Chi tiết kết quả xét nghiệm */}
       <Modal
         title={
-          <div className="health-record-detail-title">
+          <div className="lab-app-detail-title">
             <div>Chi tiết kết quả xét nghiệm</div>
-            {selectedHealthRecord && (
+            {selectedLabApp && (
               <Tag
-                color={selectedHealthRecord.is_normal ? 'success' : 'error'}
+                color={
+                  selectedLabApp.status === 'completed'
+                    ? 'success'
+                    : 'processing'
+                }
                 icon={
-                  selectedHealthRecord.is_normal ? (
+                  selectedLabApp.status === 'completed' ? (
                     <CheckCircleOutlined />
                   ) : (
-                    <ExclamationCircleOutlined />
+                    <ClockCircleOutlined />
                   )
                 }
               >
-                {selectedHealthRecord.is_normal
-                  ? 'Bình thường'
-                  : 'Có bất thường'}
+                {selectedLabApp.status === 'completed'
+                  ? 'Hoàn thành'
+                  : 'Đang xử lý'}
               </Tag>
             )}
           </div>
         }
-        open={healthRecordDetailVisible}
-        onCancel={() => setHealthRecordDetailVisible(false)}
+        open={labAppDetailVisible}
+        onCancel={() => setLabAppDetailVisible(false)}
         footer={[
-          <Button
-            key="close"
-            onClick={() => setHealthRecordDetailVisible(false)}
-          >
-            Đóng
-          </Button>,
+          <Space key="actions">
+            <Button icon={<PrinterOutlined />} onClick={() => window.print()}>
+              In kết quả
+            </Button>
+            <Button
+              icon={<DownloadOutlined />}
+              onClick={() =>
+                message.success('Tính năng đang phát triển. Sẽ sớm có mặt!')
+              }
+            >
+              Tải PDF
+            </Button>
+            <Button onClick={() => setLabAppDetailVisible(false)}>Đóng</Button>
+          </Space>,
         ]}
         width={800}
-        className="health-record-detail-modal"
+        className="lab-app-detail-modal"
       >
-        {selectedHealthRecord && (
-          <div className="health-record-detail-content">
+        {selectedLabApp && (
+          <div className="lab-app-detail-content">
             <Descriptions title="Thông tin xét nghiệm" bordered column={2}>
-              <Descriptions.Item label="Loại xét nghiệm" span={2}>
-                {selectedHealthRecord.type}
+              <Descriptions.Item label="Ngày xét nghiệm" span={1}>
+                <CalendarOutlined style={{ marginRight: 8 }} />
+                {dayjs(selectedLabApp.date).format('DD/MM/YYYY')}
               </Descriptions.Item>
-              <Descriptions.Item label="Ngày xét nghiệm">
-                {dayjs(selectedHealthRecord.date).format('DD/MM/YYYY')}
+              <Descriptions.Item label="Thời gian" span={1}>
+                <ClockCircleOutlined style={{ marginRight: 8 }} />
+                {selectedLabApp.time || 'Không có thông tin'}
               </Descriptions.Item>
-              <Descriptions.Item label="Kết quả tổng quát">
-                <Tag
-                  color={selectedHealthRecord.is_normal ? 'success' : 'error'}
-                  icon={
-                    selectedHealthRecord.is_normal ? (
-                      <CheckCircleOutlined />
-                    ) : (
-                      <ExclamationCircleOutlined />
-                    )
-                  }
-                >
-                  {selectedHealthRecord.result || 'Đang xử lý'}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Ghi chú" span={2}>
-                {selectedHealthRecord.notes || 'Không có ghi chú'}
+              <Descriptions.Item label="Mô tả" span={2}>
+                <FileTextOutlined style={{ marginRight: 8 }} />
+                {selectedLabApp.description || 'Không có mô tả'}
               </Descriptions.Item>
             </Descriptions>
+
+            <Divider />
 
             <div className="test-results-section">
               <Title level={4}>Chi tiết các xét nghiệm</Title>
 
-              {selectedHealthRecord.tests &&
-              selectedHealthRecord.tests.length > 0 ? (
+              {selectedLabApp.result && selectedLabApp.result.length > 0 ? (
                 <Table
-                  dataSource={selectedHealthRecord.tests.map((test, index) => ({
-                    key: index,
-                    name: test,
-                    indicator:
-                      selectedHealthRecord.indicators?.[index] || 'Chưa có',
-                    result:
-                      selectedHealthRecord.test_results?.[index] ||
-                      'Đang xử lý',
-                    is_normal: selectedHealthRecord.test_is_normal?.[index],
-                    value: selectedHealthRecord.test_values?.[index]?.value,
-                    unit: selectedHealthRecord.test_values?.[index]?.unit,
-                    min: selectedHealthRecord.test_values?.[index]?.min,
-                    max: selectedHealthRecord.test_values?.[index]?.max,
-                    percent: selectedHealthRecord.test_values?.[index]?.percent,
+                  dataSource={selectedLabApp.result.map((test) => ({
+                    key: test.result_id,
+                    name: test.name,
+                    result: test.result,
+                    unit: test.unit,
+                    normal_range: test.normal_range,
+                    conclusion: test.conclusion,
+                    created_at: test.created_at,
+                    updated_at: test.updated_at,
                   }))}
                   columns={[
                     {
                       title: 'Tên xét nghiệm',
                       dataIndex: 'name',
                       key: 'name',
-                      width: '20%',
-                    },
-                    {
-                      title: 'Chỉ số',
-                      dataIndex: 'indicator',
-                      key: 'indicator',
-                      width: '20%',
+                      width: '25%',
                     },
                     {
                       title: 'Kết quả',
@@ -1857,66 +1484,25 @@ const UserAccount = () => {
                       width: '15%',
                       render: (text, record) => (
                         <span>
-                          {record.value
-                            ? `${record.value} ${record.unit}`
-                            : text}
+                          {text} {record.unit}
                         </span>
                       ),
                     },
                     {
                       title: 'Khoảng tham chiếu',
-                      dataIndex: 'range',
-                      key: 'range',
+                      dataIndex: 'normal_range',
+                      key: 'normal_range',
                       width: '20%',
-                      render: (_, record) => (
-                        <span>
-                          {record.min && record.max
-                            ? `${record.min} - ${record.max} ${record.unit}`
-                            : 'Không có'}
-                        </span>
-                      ),
                     },
                     {
-                      title: 'Trạng thái',
-                      dataIndex: 'status',
-                      key: 'status',
-                      width: '15%',
-                      render: (_, record) =>
-                        record.result === 'Đang xử lý' ? (
-                          <div className="processing-status">
-                            <Spin size="small" />
-                            <span style={{ marginLeft: 8 }}>Đang xử lý</span>
-                          </div>
-                        ) : (
-                          <Tag
-                            color={record.is_normal ? 'success' : 'error'}
-                            icon={
-                              record.is_normal ? (
-                                <CheckCircleOutlined />
-                              ) : (
-                                <ExclamationCircleOutlined />
-                              )
-                            }
-                          >
-                            {record.is_normal ? 'Bình thường' : 'Bất thường'}
-                          </Tag>
-                        ),
+                      title: 'Kết luận',
+                      dataIndex: 'conclusion',
+                      key: 'conclusion',
+                      width: '40%',
+                      render: (text) => (
+                        <div style={{ whiteSpace: 'pre-line' }}>{text}</div>
+                      ),
                     },
-                    // {
-                    //   title: 'Biểu đồ',
-                    //   dataIndex: 'chart',
-                    //   key: 'chart',
-                    //   width: '10%',
-                    //   render: (_, record) =>
-                    //     record.percent !== undefined ? (
-                    //       <Progress
-                    //         percent={record.percent}
-                    //         size="small"
-                    //         status={record.is_normal ? 'success' : 'exception'}
-                    //         showInfo={false}
-                    //       />
-                    //     ) : null,
-                    // },
                   ]}
                   pagination={false}
                   bordered
@@ -1929,6 +1515,46 @@ const UserAccount = () => {
                   description="Không có chi tiết xét nghiệm"
                 />
               )}
+            </div>
+
+            <Divider />
+
+            <div className="lab-results-footer">
+              <Row gutter={24}>
+                <Col xs={24} md={12}>
+                  <Card
+                    size="small"
+                    title="Lưu ý quan trọng"
+                    className="note-card"
+                  >
+                    <ul>
+                      <li>
+                        Kết quả xét nghiệm chỉ có giá trị tham khảo và cần được
+                        bác sĩ đánh giá.
+                      </li>
+                      <li>
+                        Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với bác sĩ
+                        hoặc nhân viên y tế.
+                      </li>
+                      <li>
+                        Đề nghị tái khám định kỳ theo chỉ định của bác sĩ.
+                      </li>
+                    </ul>
+                  </Card>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Card size="small" title="Hỗ trợ" className="support-card">
+                    <p>
+                      Nếu bạn cần giải thích thêm về kết quả xét nghiệm, vui
+                      lòng:
+                    </p>
+                    <Space>
+                      <Button type="primary">Đặt lịch tư vấn</Button>
+                      <Button>Gọi hỗ trợ</Button>
+                    </Space>
+                  </Card>
+                </Col>
+              </Row>
             </div>
           </div>
         )}

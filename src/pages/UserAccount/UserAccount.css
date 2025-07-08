@@ -168,6 +168,7 @@
 
 /* Tab Content */
 .tab-content {
+  padding: 20px 10px 0px 10px;
   min-height: 400px;
 }
 
@@ -304,19 +305,19 @@
 }
 
 /* Health Record Cards */
-.health-record-item {
+.lab-app-item {
   margin-bottom: 16px;
   border: none !important;
 }
 
-.health-record-card {
+.lab-app-card {
   border-radius: 12px !important;
   border: 1px solid #e5e7eb !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
   transition: all 0.3s ease !important;
 }
 
-.health-record-card:hover {
+.lab-app-card:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-2px);
 }
@@ -382,7 +383,7 @@
 
 /* Table Styles */
 .appointments-table-container,
-.health-records-table-container {
+.lab-apps-table-container {
   margin-top: 16px;
 }
 
@@ -426,29 +427,29 @@
   margin-right: 8px;
 }
 
-.health-record-date {
+.lab-app-date {
   display: flex;
   align-items: center;
 }
 
-.health-record-details {
+.lab-app-details {
   padding: 16px;
   background-color: #f9f9f9;
   border-radius: 8px;
 }
 
-.health-record-details .ant-card {
+.lab-app-details .ant-card {
   margin-bottom: 8px;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.health-record-details .ant-card-head {
+.lab-app-details .ant-card-head {
   background-color: #f0f5ff;
   border-radius: 6px 6px 0 0;
 }
 
-.health-record-details p {
+.lab-app-details p {
   margin-bottom: 8px;
 }
 
@@ -758,32 +759,91 @@
 }
 
 /* Health Record Detail Modal Styles */
-.health-record-detail-modal .ant-modal-header {
+.lab-app-detail-modal .ant-modal-header {
   border-bottom: 1px solid #f0f0f0;
-  padding: 16px 24px;
+  padding-bottom: 16px;
 }
 
-.health-record-detail-title {
+.lab-app-detail-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.health-record-detail-content {
-  padding: 10px 0;
+.lab-app-detail-content {
+  margin-top: 16px;
 }
 
 .test-results-section {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px dashed #e8e8e8;
+  margin: 20px 0;
 }
 
-/* Test Results Table Styles */
 .test-results-table {
   margin-top: 16px;
 }
 
+.lab-results-footer {
+  margin-top: 20px;
+}
+
+.note-card ul {
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+
+.support-card p {
+  margin-bottom: 15px;
+}
+
+/* Print styles */
+@media print {
+  .ant-modal-mask,
+  .ant-modal-wrap,
+  .ant-modal-close,
+  .ant-modal-footer,
+  .support-card {
+    display: none !important;
+  }
+
+  .ant-modal {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .ant-modal-content {
+    box-shadow: none !important;
+  }
+
+  .ant-modal-body {
+    padding: 0 !important;
+  }
+
+  .lab-app-detail-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .ant-descriptions-title,
+  .test-results-section h4 {
+    font-size: 16px;
+  }
+
+  .ant-table {
+    font-size: 12px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px;
+  }
+}
+
+/* Test Results Table Styles */
 .test-results-table .ant-table-thead > tr > th {
   background-color: #f0f7ff;
   font-weight: 600;
