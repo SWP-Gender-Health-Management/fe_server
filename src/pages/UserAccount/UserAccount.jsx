@@ -34,6 +34,7 @@ import {
   Dropdown,
   Menu,
   Spin,
+  Alert,
 } from 'antd';
 import {
   UserOutlined,
@@ -73,6 +74,7 @@ const UserAccount = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [form] = Form.useForm();
   const { isLoggedIn } = useAuth();
+  const [isGoogleAccount, setIsGoogleAccount] = useState(false);
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [conApps, setConApps] = useState([]);
   const [labApps, setLabApps] = useState([]);
@@ -142,6 +144,12 @@ const UserAccount = () => {
         if (accountData.avatar) {
           setAvatarUrl(accountData.avatar);
         }
+
+        // Kiểm tra nếu tài khoản đăng nhập bằng Google
+        if (accountData.is_google_account === true) {
+          setIsGoogleAccount(true);
+        }
+
         calculateProfileCompletion(accountData);
 
         // Lấy lịch hẹn tư vấn
@@ -304,6 +312,8 @@ const UserAccount = () => {
         return 'orange';
       case 'cancelled':
         return 'red';
+      case 'completed':
+        return 'blue';
       default:
         return 'default';
     }
@@ -318,6 +328,8 @@ const UserAccount = () => {
         return 'Chờ xác nhận';
       case 'cancelled':
         return 'Đã hủy';
+      case 'completed':
+        return 'Đã hoàn thành';
       default:
         return 'Không xác định';
     }
@@ -693,9 +705,9 @@ const UserAccount = () => {
       ),
     },
     {
-      title: 'Dịch vụ',
-      dataIndex: 'service',
-      key: 'service',
+      title: 'Ghi chú',
+      dataIndex: 'description',
+      key: 'description',
       render: (_, record) => (
         <Tooltip title={record.description || ''}>
           <span>{record.description || 'Tư vấn'}</span>
@@ -732,7 +744,7 @@ const UserAccount = () => {
             type="link"
             size="small"
             onClick={() => showConAppDetail(record)}
-            disabled={record.status !== 'confirmed'}
+            disabled={record.status !== 'completed'}
           >
             Chi tiết
           </Button>
@@ -899,12 +911,24 @@ const UserAccount = () => {
           <Button
             icon={<SecurityScanOutlined />}
             onClick={() => setPasswordModalVisible(true)}
+            disabled={isGoogleAccount}
+            title={
+              isGoogleAccount
+                ? 'Không khả dụng cho tài khoản đăng nhập bằng Google'
+                : ''
+            }
           >
             Đổi mật khẩu
           </Button>
           <Button
             icon={<SecurityScanOutlined />}
             onClick={openEmailVerification}
+            disabled={isGoogleAccount}
+            title={
+              isGoogleAccount
+                ? 'Không khả dụng cho tài khoản đăng nhập bằng Google'
+                : ''
+            }
           >
             Xác thực email
           </Button>
@@ -915,6 +939,16 @@ const UserAccount = () => {
           >
             Xóa tài khoản
           </Button>
+
+          {isGoogleAccount && (
+            <Alert
+              message="Tài khoản Google"
+              description="Bạn đang sử dụng tài khoản Google để đăng nhập. Một số tính năng không khả dụng."
+              type="info"
+              showIcon
+              style={{ marginTop: 16 }}
+            />
+          )}
         </Space>
       </Card>
     </div>
@@ -1321,62 +1355,62 @@ const UserAccount = () => {
                 <div className="consultant-info">
                   <Avatar
                     size={64}
-                    src={selectedConApp.consultant_pattern?.consultant?.avatar}
+                    src={selectedConApp.consultant_avatar}
                     icon={<UserOutlined />}
                   />
                   <div className="consultant-details">
                     <div className="consultant-name">
-                      {selectedConApp.consultant_pattern?.consultant?.full_name}
+                      {selectedConApp.consultant}
                     </div>
-                    <div className="consultant-specialty">
-                      {selectedConApp.consultant_pattern?.consultant?.specialty}
-                    </div>
+                    {/* <div className="consultant-specialty">
+                      {selectedConApp.consultant_specialty  }
+                    </div> */}
                   </div>
                 </div>
               </Descriptions.Item>
-              <Descriptions.Item label="Dịch vụ">
-                {selectedConApp.consultant_pattern?.title}
-              </Descriptions.Item>
+              <Descriptions.Item label="Dịch vụ">Tư vấn</Descriptions.Item>
               <Descriptions.Item label="Thời gian">
-                {dayjs(
-                  selectedConApp.consultant_pattern?.working_slot?.date
-                ).format('DD/MM/YYYY')}{' '}
-                {selectedConApp.consultant_pattern?.working_slot?.time_slot}
+                {dayjs(selectedConApp.date).format('DD/MM/YYYY')}{' '}
+                {selectedConApp.time}
               </Descriptions.Item>
-              <Descriptions.Item label="Địa điểm">
-                {selectedConApp.location}
-              </Descriptions.Item>
+              <Descriptions.Item label="Địa điểm">Online</Descriptions.Item>
             </Descriptions>
 
-            {selectedConApp.result ? (
+            {selectedConApp.report ? (
               <div className="appointment-result">
                 <Title level={4}>Kết quả tư vấn</Title>
-                <Paragraph>{selectedConApp.result.summary}</Paragraph>
-                <Paragraph strong>{selectedConApp.result.diagnosis}</Paragraph>
+                <Paragraph>{selectedConApp.report.name}</Paragraph>
+                <Paragraph strong style={{ whiteSpace: 'pre-line' }}>
+                  {selectedConApp.report.description?.split('. ').join('.\n')}
+                </Paragraph>
 
-                <Title level={5}>Khuyến nghị</Title>
+                {/* <Title level={5}>Khuyến nghị</Title>
                 <ul className="recommendation-list">
-                  {selectedConApp.result.recommendations.map((rec, index) => (
+                  {selectedConApp.report.recommendations.map((rec, index) => (
                     <li key={index}>{rec}</li>
                   ))}
-                </ul>
+                </ul> */}
 
-                <Row gutter={16}>
+                {/* <Row gutter={16}>
                   <Col span={12}>
                     <Card
                       size="small"
                       title="Bước tiếp theo"
                       className="next-steps-card"
                     >
-                      <Paragraph>{selectedConApp.result.next_steps}</Paragraph>
+                      <Paragraph>
+                        {selectedConApp.report?.next_steps || 'Không có'}
+                      </Paragraph>
                     </Card>
                   </Col>
                   <Col span={12}>
                     <Card size="small" title="Ghi chú" className="notes-card">
-                      <Paragraph>{selectedConApp.result.notes}</Paragraph>
+                      <Paragraph>
+                        {selectedConApp.report?.notes || 'Không có'}
+                      </Paragraph>
                     </Card>
                   </Col>
-                </Row>
+                </Row> */}
               </div>
             ) : (
               <Empty
