@@ -487,11 +487,11 @@ const LabConfirmation = () => {
 
         {/* Order Summary */}
         <div className="order-summary">
-          <div className="summary-card">
+          <div className="lab-summary-card">
             <h3>📋 Tóm tắt đơn hàng</h3>
 
             {/* Schedule Info */}
-            <div className="summary-section">
+            <div className="lab-summary-section">
               <h4>📅 Lịch đã chọn</h4>
               <p>
                 <strong>Ngày:</strong> {labSchedule.dateString}
@@ -503,13 +503,13 @@ const LabConfirmation = () => {
             </div>
 
             {/* Tests Info */}
-            <div className="summary-section">
+            <div className="lab-summary-section">
               <h4>🧪 Xét nghiệm ({selectedTests.length})</h4>
-              <div className="tests-list">
+              <div className="lab-tests-list">
                 {selectedTests.map((test) => (
-                  <div key={test.id} className="test-item">
-                    <span className="test-name">{test.name}</span>
-                    <span className="test-price">
+                  <div key={test.id} className="lab-test-item">
+                    <span className="lab-test-name">{test.name}</span>
+                    <span className="lab-test-price">
                       {formatPrice(test.price)}
                     </span>
                   </div>

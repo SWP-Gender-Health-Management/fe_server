@@ -63,7 +63,7 @@
   margin: 0 auto;
 }
 
-.stat-item {
+.about-stat-item {
   background: rgba(255, 255, 255, 0.1) !important;
   backdrop-filter: blur(10px);
   border-radius: 20px;
@@ -79,13 +79,13 @@
   justify-content: center;
 }
 
-.stat-item:hover {
+.about-stat-item:hover {
   transform: translateY(-5px);
   background: rgba(255, 255, 255, 0.15);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
 }
 
-.stat-icon {
+.about-stat-icon {
   font-size: 2.5rem;
   margin-bottom: 15px;
   text-align: center;
@@ -93,7 +93,7 @@
   margin: 0 !important;
 }
 
-.stat-number {
+.about-stat-number {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 10px;
@@ -110,7 +110,7 @@
   width: 100% !important;
 }
 
-.stat-label {
+.about-stat-label {
   font-size: 1rem;
   color: #ffffff !important;
   font-weight: 500;
@@ -118,7 +118,7 @@
   width: 100%;
 }
 
-.hero-stats .stat-item .stat-number {
+.hero-stats .about-stat-item .about-stat-number {
   color: #ffffff !important;
   background: none !important;
   -webkit-background-clip: unset !important;

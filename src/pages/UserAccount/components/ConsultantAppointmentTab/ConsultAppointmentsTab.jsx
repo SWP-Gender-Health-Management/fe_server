@@ -26,6 +26,9 @@ import { Link } from 'react-router-dom';
 
 const API_URL = 'http://localhost:3000';
 
+const accountId = Cookies.get('account_id');
+
+
 const ConsultAppointmentsTab = ({
   conApps,
   conAppsPagination,

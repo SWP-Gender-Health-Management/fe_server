@@ -180,7 +180,7 @@
     top: 20px;
   }
   
-  .summary-card {
+  .lab-summary-card {
     background: white;
     border-radius: 20px;
     padding: 30px;
@@ -188,7 +188,7 @@
     border: 2px solid #f1f5f9;
   }
   
-  .summary-card h3 {
+  .lab-summary-card h3 {
     font-size: 1.4rem;
     font-weight: 600;
     color: #334155;
@@ -200,18 +200,18 @@
     gap: 10px;
   }
   
-  .summary-section {
+  .lab-summary-section {
     margin-bottom: 25px;
     padding-bottom: 20px;
     border-bottom: 1px solid #f1f5f9;
   }
   
-  .summary-section:last-of-type {
+  .lab-summary-section:last-of-type {
     border-bottom: none;
     margin-bottom: 0;
   }
   
-  .summary-section h4 {
+  .lab-summary-section h4 {
     font-size: 1.1rem;
     font-weight: 600;
     color: #475569;
@@ -221,18 +221,18 @@
     gap: 8px;
   }
   
-  .summary-section p {
+  .lab-summary-section p {
     color: #64748b;
     margin-bottom: 6px;
     font-size: 0.95rem;
   }
   
-  .tests-list {
+  .lab-tests-list {
     max-height: 200px;
     overflow-y: auto;
   }
   
-  .test-item {
+  .lab-test-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -240,11 +240,11 @@
     border-bottom: 1px solid #f8fafc;
   }
   
-  .test-item:last-child {
+  .lab-test-item:last-child {
     border-bottom: none;
   }
   
-  .test-name {
+  .lab-test-name {
     font-size: 0.9rem;
     color: #475569;
     flex: 1;
@@ -252,7 +252,7 @@
     line-height: 1.4;
   }
   
-  .test-price {
+  .lab-test-price {
     font-weight: 600;
     color: #059669;
     font-size: 0.9rem;

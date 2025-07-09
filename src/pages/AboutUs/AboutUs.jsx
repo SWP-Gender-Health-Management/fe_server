@@ -121,10 +121,10 @@ const AboutUs = () => {
           </p>
           <div className="hero-stats">
             {stats.map((stat, index) => (
-              <div key={index} className="stat-item">
-                <div className="stat-icon">{stat.icon}</div>
-                <div className="stat-number">{stat.number}</div>
-                <div className="stat-label">{stat.label}</div>
+              <div key={index} className="about-stat-item">
+                <div className="about-stat-icon">{stat.icon}</div>
+                <div className="about-stat-number">{stat.number}</div>
+                <div className="about-stat-label">{stat.label}</div>
               </div>
             ))}
           </div>
