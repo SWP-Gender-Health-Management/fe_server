@@ -76,14 +76,13 @@ const StaffDashboard = () => {
       label: 'Tổng quan',
       icon: <HomeOutlined />,
       description: 'Dashboard chính',
-      badge: null,
     },
     {
       id: 'today-appointments',
       label: 'Lịch hẹn Hôm nay',
       icon: <CalendarOutlined />,
       description: 'Xét nghiệm trong ngày',
-      badge: 12, // Số lịch hẹn pending
+
     },
     {
       id: 'search-appointments',
@@ -96,7 +95,7 @@ const StaffDashboard = () => {
       label: 'Quản lý Bài viết',
       icon: <EditOutlined />,
       description: 'Viết bài & chia sẻ',
-      badge: 3, // Số bài draft
+
     },
     {
       id: 'profile',
@@ -241,9 +240,7 @@ const StaffDashboard = () => {
                   <div className="nav-description">{item.description}</div>
                 </div>
               )}
-              {!sidebarCollapsed && item.badge && (
-                <div className="nav-badge">{item.badge}</div>
-              )}
+          
             </button>
           ))}
         </nav>

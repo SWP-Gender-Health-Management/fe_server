@@ -9,7 +9,8 @@ const ConsultantAppointment = () => {
   const [viewMode, setViewMode] = useState('week'); // 'week' or 'month'
   const [showModal, setShowModal] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
-  const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const [reportText, setReportText] = useState('');
 
 
   useEffect(() => {
@@ -32,44 +33,40 @@ const ConsultantAppointment = () => {
   }, []);
 
   useEffect(() => {
-    fetchWeekAppointment();
+    fetchWeekAppointment(selectedDate);
   }, [selectedDate]);
 
   const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
-  const fetchWeekAppointment = async () => {
-      try {
-        const accountId = Cookies.get("accountId");
-        const accessToken = Cookies.get("accessToken");
-        const startWeekDay = getWeekStartDay(selectedDate || new Date());
-        const startWeekDayString = startWeekDay.toISOString().split("T")[0];
-        console.log("Check selected date: ", startWeekDayString);
-        const response = await axios.get(
-          `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
-          {
-            params: {
-              weekStartDate: startWeekDayString
-            },
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            }
+  const fetchWeekAppointment = async (selectedDate) => {
+    try {
+      const accountId = Cookies.get("accountId");
+      const accessToken = Cookies.get("accessToken");
+      const startWeekDay = getWeekStartDay(selectedDate || new Date());
+      const startWeekDayString = startWeekDay.toISOString().split("T")[0];
+      console.log("Check selected date: ", startWeekDayString);
+      const response = await axios.get(
+        `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
+        {
+          params: {
+            weekStartDate: startWeekDayString
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
           }
-        );
-        console.log('Consult Appointment Response:', response.data.result);
-        setAppointments(response.data.result || []);
-      } catch (error) {
-        console.error("Error fetching Consult Appointment:", error);
-        setAppointments([]);
-        return;
-      } finally {
-        console.log("Consult Appointment: ", appointments);
-        appointments.map((appointment) => {
-          const appDate = new Date(appointment.consultant_pattern.date);
-          appointment.consultant_pattern.date = appDate;
-        })
-      }
+        }
+      );
+      console.log('Consult Appointment Response:', response.data.result);
+      setFilteredAppointments(response.data.result || []);
+    } catch (error) {
+      console.error("Error fetching Consult Appointment:", error);
+      setFilteredAppointments([]);
+      return;
+    } finally {
+      console.log("Consult Appointment: ", appointments);
     }
+  }
 
   const getWeekDates = (date) => {
     const week = [];
@@ -92,7 +89,7 @@ const ConsultantAppointment = () => {
   };
 
   const getAppointmentsForDate = (date) => {
-    return appointments.filter(
+    return filteredAppointments.filter(
       (apt) => new Date(apt.consultant_pattern.date).toDateString() === date.toDateString()
     );
   };
@@ -107,15 +104,48 @@ const ConsultantAppointment = () => {
     setShowModal(true);
   };
 
-  const updateAppointmentStatus = async (appointmentId, status) => {
-    // setAppointments((prev) =>
-    //   prev.map((apt) => (apt.app_id === appointmentId ? { ...apt, status } : apt))
-    // );
+  const updateAppointmentStatus = async (appointment, status, reportText) => {
+    const accountId = Cookies.get("accountId");
+    const accessToken = Cookies.get("accessToken");
+    let report = null;
+
+    if (status == 'completed') {
+      if (!reportText.trim()) {
+        alert('Vui lòng nhập báo cáo');
+        return;
+      }
+
+      const reportForm = {
+        app_id: appointment.app_id,
+        name: appointment.customer ? `Báo cáo tư vấn cho ${appointment.customer.full_name}` : 'Báo cáo tư vấn',
+        description: reportText
+      }
+
+      try {
+        const response = await axios.post(
+          `http://localhost:3000/consult-report/create-consult-report`,
+          reportForm,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+        console.log('Createed report:', response.data.result);
+        if (response.data.result) {
+          report = response.data.result
+        }
+      } catch (error) {
+        console.error("Error update appointment status:", error);
+        return;
+      } finally {
+        setReportText('');
+      }
+    }
     try {
-      const accountId = Cookies.get("accountId");
-      const accessToken = Cookies.get("accessToken");
       const response = await axios.put(
-        `http://localhost:3000/consult-appointment/update-consult-appointment/${appointmentId}`,
+        `http://localhost:3000/consult-appointment/update-consult-appointment/${appointment.app_id}`,
         {
           status
         },
@@ -131,14 +161,9 @@ const ConsultantAppointment = () => {
       console.error("Error update appointment status:", error);
       return;
     } finally {
-      fetchWeekAppointment();
+      fetchWeekAppointment(selectedDate);
+      setSelectedAppointment(null);
     }
-  };
-
-  const addNotes = (appointmentId, notes) => {
-    setAppointments((prev) =>
-      prev.map((apt) => (apt.app_id === appointmentId ? { ...apt, notes } : apt))
-    );
   };
 
   const getStatusColor = (status) => {
@@ -233,7 +258,7 @@ const ConsultantAppointment = () => {
             <div className="time-header"></div>
             {timeSlots.map((time) => (
               <div key={time.slot_id} className="time-slot">
-                {time.name.split("-")[0]} <br/>
+                {time.name.split("-")[0]} <br />
                 {time.start_at}
               </div>
             ))}
@@ -265,10 +290,10 @@ const ConsultantAppointment = () => {
                           borderLeft: `4px solid ${getStatusColor(appointment.status)}`,
                         }}
                       >
-                        <div className="appointment-time" style={{color: 'black'}}>
+                        <div className="appointment-time" style={{ color: 'black' }}>
                           {appointment.consultant_pattern.working_slot.start_at} - {appointment.consultant_pattern.working_slot.end_at}
                         </div>
-                        <div className="appointment-customer" style={{color: 'black'}}>
+                        <div className="appointment-customer" style={{ color: 'black' }}>
                           {appointment.customer.full_name}
                         </div>
 
@@ -287,7 +312,7 @@ const ConsultantAppointment = () => {
         <div className="stat-card">
           <span className="stat-icon">📊</span>
           <div className="stat-content">
-            <h3>{appointments.length}</h3>
+            <h3>{filteredAppointments.length}</h3>
             <p>Tổng cuộc hẹn</p>
           </div>
         </div>
@@ -296,7 +321,7 @@ const ConsultantAppointment = () => {
           <span className="stat-icon">✅</span>
           <div className="stat-content">
             <h3>
-              {appointments.filter((apt) => apt.status === 'confirmed').length}
+              {filteredAppointments.filter((apt) => apt.status === 'confirmed').length}
             </h3>
             <p>Đã xác nhận</p>
           </div>
@@ -306,7 +331,7 @@ const ConsultantAppointment = () => {
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
             <h3>
-              {appointments.filter((apt) => apt.status === 'pending').length}
+              {filteredAppointments.filter((apt) => apt.status === 'pending').length}
             </h3>
             <p>Chờ xác nhận</p>
           </div>
@@ -316,7 +341,7 @@ const ConsultantAppointment = () => {
           <span className="stat-icon">🔄</span>
           <div className="stat-content">
             <h3>
-              {appointments.filter((apt) => apt.status === 'completed').length}
+              {filteredAppointments.filter((apt) => apt.status === 'completed').length}
             </h3>
             <p>Đã hoàn thành</p>
           </div>
@@ -387,6 +412,22 @@ const ConsultantAppointment = () => {
                   <p className="issue-text">{selectedAppointment.description}</p>
                 </div>
 
+                {selectedAppointment.status === 'confirmed' && <div className="info-row">
+                  <label>Report:</label><br/>
+                  <textarea
+                    placeholder="Nhập báo cáo chi tiết và chuyên nghiệp..."
+                    value={reportText}
+                    onChange={(e) => setReportText(e.target.value)}
+                    className="report-textarea"
+                    rows="10"
+                  />
+                </div>}
+
+                {selectedAppointment.status === 'completed' && selectedAppointment.report && <div className="info-row">
+                  <label>Report:</label><br/>
+                  <p className="issue-text">{selectedAppointment.report.description}</p>
+                </div>}
+
 
               </div>
 
@@ -425,8 +466,9 @@ const ConsultantAppointment = () => {
                     className="action-btn complete"
                     onClick={() => {
                       updateAppointmentStatus(
-                        selectedAppointment.app_id,
-                        'completed'
+                        selectedAppointment,
+                        'completed',
+                        reportText
                       );
                       setShowModal(false);
                     }}

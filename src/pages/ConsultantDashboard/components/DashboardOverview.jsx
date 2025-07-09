@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-const DashboardOverview = ({ consultantData, onSectionChange }) => {
+const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [kpiData, setKpiData] = useState({
-    todayAppointments: 3,
-    unansweredQuestions: 5,
-    pendingArticles: 1,
-    averageRating: 4.8,
+    todayAppointments: consultantData.todayAppointments || 0,
+    unansweredQuestions: consultantData.unansweredQuestions || 0,
+    pendingBlogs: consultantData.pendingBlogs || 0,
+    averageFeedBackRating: consultantData.averageFeedBackRating || 0,
   });
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([
@@ -36,29 +36,6 @@ const DashboardOverview = ({ consultantData, onSectionChange }) => {
     },
   ]);
 
-  const [recentQuestions, setRecentQuestions] = useState([
-    {
-      id: 1,
-      title: 'Chu kỳ kinh nguyệt không đều có ảnh hưởng gì không?',
-      askedBy: 'Hoàng Thị Bích',
-      timeAgo: '2 giờ trước',
-      category: 'Sức khỏe sinh sản',
-    },
-    {
-      id: 2,
-      title: 'Sau sinh bao lâu thì có thể quan hệ tình dục an toàn?',
-      askedBy: 'Phạm Văn Nam',
-      timeAgo: '4 giờ trước',
-      category: 'Sau sinh',
-    },
-    {
-      id: 3,
-      title: 'Các phương pháp tránh thai hiệu quả nhất hiện nay',
-      askedBy: 'Nguyễn Thu Hằng',
-      timeAgo: '6 giờ trước',
-      category: 'Kế hoạch hóa gia đình',
-    },
-  ]);
 
   // Update time every minute
   useEffect(() => {
@@ -75,7 +52,6 @@ const DashboardOverview = ({ consultantData, onSectionChange }) => {
       icon: '🗓️',
       color: 'blue',
       description: 'Cuộc hẹn được lên lịch',
-      trend: '+2 so với hôm qua',
       action: () => onSectionChange('appointments'),
     },
     {
@@ -84,25 +60,22 @@ const DashboardOverview = ({ consultantData, onSectionChange }) => {
       icon: '❓',
       color: 'orange',
       description: 'Chưa được trả lời',
-      trend: '+3 câu hỏi mới',
       action: () => onSectionChange('questions'),
     },
     {
       title: 'Bài viết chờ duyệt',
-      value: kpiData.pendingArticles,
+      value: kpiData.pendingBlogs,
       icon: '📝',
       color: 'purple',
       description: 'Đang chờ phê duyệt',
-      trend: 'Stable',
-      action: () => onSectionChange('articles'),
+      action: () => onSectionChange('blogs'),
     },
     {
       title: 'Đánh giá trung bình',
-      value: kpiData.averageRating,
+      value: consultantData.averageFeedBackRating,
       icon: '⭐',
       color: 'green',
       description: 'Từ khách hàng',
-      trend: '+0.2 điểm',
       action: () => onSectionChange('profile'),
     },
   ];
@@ -188,7 +161,6 @@ const DashboardOverview = ({ consultantData, onSectionChange }) => {
             >
               <div className="kpi-header">
                 <div className="kpi-icon">{card.icon}</div>
-                <div className="kpi-trend">{card.trend}</div>
               </div>
 
               <div className="kpi-content">
@@ -239,21 +211,7 @@ const DashboardOverview = ({ consultantData, onSectionChange }) => {
                     </p>
                   </div>
 
-                  <div className="appointment-actions">
-                    <span
-                      className="priority-badge compact"
-                      style={{
-                        backgroundColor: getPriorityColor(appointment.priority),
-                      }}
-                    >
-                      {appointment.priority === 'high' && '🔴'}
-                      {appointment.priority === 'medium' && '🟡'}
-                      {appointment.priority === 'low' && '🟢'}
-                    </span>
-                    <button className="enter-room-btn compact">
-                      Vào phòng
-                    </button>
-                  </div>
+                 
                 </div>
               ))
             ) : (
@@ -279,25 +237,21 @@ const DashboardOverview = ({ consultantData, onSectionChange }) => {
 
           <div className="questions-list compact-list list-style">
             {recentQuestions.length > 0 ? (
-              recentQuestions.slice(0, 5).map((question, index) => (
+              recentQuestions.map((question, index) => (
                 <div key={question.id} className="question-item list-item">
                   <div className="question-number">{index + 1}</div>
 
                   <div className="question-content-full">
                     <h4 className="question-title-list">
-                      {question.title.length > 80
-                        ? question.title.substring(0, 80) + '...'
-                        : question.title}
+                      {question.content.length > 80
+                        ? question.content.substring(0, 80) + '...'
+                        : question.content}
                     </h4>
-
                     <div className="question-meta-list">
                       <div className="meta-row">
-                        <span className="asked-by">👤 {question.askedBy}</span>
-                        <span className="time-ago">🕒 {question.timeAgo}</span>
+                        <span className="asked-by">👤 {question.customer.full_name}</span>
+                        {/* <span className="time-ago">🕒 {question.timeAgo}</span> */}
                       </div>
-                      <span className="category-tag list">
-                        📂 {question.category}
-                      </span>
                     </div>
 
                     <div className="question-actions-list">

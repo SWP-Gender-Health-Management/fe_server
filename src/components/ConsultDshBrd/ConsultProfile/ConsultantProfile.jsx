@@ -16,28 +16,7 @@ const ConsultantProfile = ({ consultantData }) => {
   }
 
   // Mock additional profile data
-  const profileStats = {
-    totalAppointments: 245,
-    completedAppointments: 228,
-    totalArticles: 18,
-    publishedArticles: 15,
-    questionsAnswered: 156,
-    averageRating: 4.8,
-    totalReviews: 89,
-    joinDate: '2023-01-15',
-    lastLogin: new Date(),
-    specializations: [
-      'Sức khỏe sinh sản',
-      'Kế hoạch hóa gia đình',
-      'Tư vấn tâm lý',
-    ],
-    certifications: [
-      'Bằng Thạc sĩ Sản phụ khoa',
-      'Chứng chỉ Tư vấn sức khỏe sinh sản',
-      'Chứng chỉ Kế hoạch hóa gia đình',
-    ],
-    workingHours: 'Thứ 2 - Thứ 6: 8:00 - 17:00',
-    languages: ['Tiếng Việt', 'Tiếng Anh'],
+  const defaultStats = {
     consultationTypes: ['Online', 'Offline'],
   };
 
@@ -113,17 +92,16 @@ const ConsultantProfile = ({ consultantData }) => {
       <div className="profile-card">
         <div className="profile-main">
           <div className="profile-avatar">
-            <img src={consultantData.avatar} alt={consultantData.name} />
+            <img src={consultantData.avatar} alt={consultantData.full_name} />
             <div className="status-indicator active"></div>
           </div>
 
           <div className="profile-info">
-            <h3>{consultantData.name}</h3>
-            <p className="specialization">{consultantData.specialization}</p>
+            <h3>{consultantData.full_name}</h3>
+            {/* <p className="specialization">{consultantData.specialization}</p> */}
             <div className="rating">
-              <span className="stars">⭐⭐⭐⭐⭐</span>
               <span className="rating-value">
-                {profileStats.averageRating} ({profileStats.totalReviews} đánh
+                {consultantData.averageFeedBackRating} ⭐ ({consultantData.totalFeedBack} đánh
                 giá)
               </span>
             </div>
@@ -137,24 +115,24 @@ const ConsultantProfile = ({ consultantData }) => {
         <div className="profile-stats">
           <div className="stat-item">
             <span className="stat-number">
-              {profileStats.totalAppointments}
+              {consultantData.totalAppointments}
             </span>
             <span className="stat-label">Cuộc hẹn</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
-              {profileStats.publishedArticles}
+              {consultantData.publishedBlogs}
             </span>
             <span className="stat-label">Bài viết</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
-              {profileStats.questionsAnswered}
+              {consultantData.questionsAnswered}
             </span>
             <span className="stat-label">Câu trả lời</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">{profileStats.averageRating}</span>
+            <span className="stat-number">{consultantData.averageFeedBackRating}</span>
             <span className="stat-label">Đánh giá</span>
           </div>
         </div>
@@ -192,7 +170,7 @@ const ConsultantProfile = ({ consultantData }) => {
                 <div className="info-grid">
                   <div className="info-row">
                     <label>Họ và tên:</label>
-                    <span>{consultantData.name}</span>
+                    <span>{consultantData.full_name}</span>
                   </div>
                   <div className="info-row">
                     <label>Email:</label>
@@ -204,64 +182,64 @@ const ConsultantProfile = ({ consultantData }) => {
                   </div>
                   <div className="info-row">
                     <label>Ngày tham gia:</label>
-                    <span>{formatDate(profileStats.joinDate)}</span>
+                    <span>{formatDate(consultantData.created_at)}</span>
                   </div>
-                  <div className="info-row">
+                  {/* <div className="info-row">
                     <label>Lần đăng nhập cuối:</label>
-                    <span>{formatDateTime(profileStats.lastLogin)}</span>
-                  </div>
+                    <span>{formatDateTime(consultantData.lastLogin)}</span>
+                  </div> */}
                 </div>
               </div>
 
               <div className="info-section">
                 <h4>🏥 Thông tin chuyên môn</h4>
                 <div className="info-grid">
-                  <div className="info-row">
+                  {/* <div className="info-row">
                     <label>Chuyên khoa:</label>
                     <span>{consultantData.specialization}</span>
-                  </div>
-                  <div className="info-row">
+                  </div> */}
+                  {/* <div className="info-row">
                     <label>Lĩnh vực tư vấn:</label>
                     <div className="specializations">
-                      {profileStats.specializations.map((spec, index) => (
+                      {consultantData.specializations.map((spec, index) => (
                         <span key={index} className="spec-tag">
                           {spec}
                         </span>
                       ))}
                     </div>
-                  </div>
-                  <div className="info-row">
+                  </div> */}
+                  {/* <div className="info-row">
                     <label>Giờ làm việc:</label>
-                    <span>{profileStats.workingHours}</span>
-                  </div>
+                    <span>{consultantData.workingHours}</span>
+                  </div> */}
                   <div className="info-row">
                     <label>Hình thức tư vấn:</label>
                     <div className="consultation-types">
-                      {profileStats.consultationTypes.map((type, index) => (
+                      {defaultStats.consultationTypes.map((type, index) => (
                         <span key={index} className="type-tag">
                           {type}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <div className="info-row">
+                  {/* <div className="info-row">
                     <label>Ngôn ngữ:</label>
-                    <span>{profileStats.languages.join(', ')}</span>
-                  </div>
+                    <span>{consultantData.languages.join(', ')}</span>
+                  </div> */}
                 </div>
               </div>
 
-              <div className="info-section">
+              {/* <div className="info-section">
                 <h4>🎓 Bằng cấp & Chứng chỉ</h4>
                 <div className="certifications">
-                  {profileStats.certifications.map((cert, index) => (
+                  {consultantData.certifications.map((cert, index) => (
                     <div key={index} className="certification-item">
                       <span className="cert-icon">🏆</span>
                       <span className="cert-name">{cert}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
@@ -274,16 +252,16 @@ const ConsultantProfile = ({ consultantData }) => {
                 <div className="performance-metrics">
                   <div className="metric">
                     <span className="metric-value">
-                      {profileStats.completedAppointments}/
-                      {profileStats.totalAppointments}
+                      {consultantData.completedAppointments}/
+                      {consultantData.totalAppointments}
                     </span>
                     <span className="metric-label">Cuộc hẹn hoàn thành</span>
                   </div>
                   <div className="metric">
                     <span className="metric-value">
                       {(
-                        (profileStats.completedAppointments /
-                          profileStats.totalAppointments) *
+                        (consultantData.completedAppointments /
+                          consultantData.totalAppointments) *
                         100
                       ).toFixed(1)}
                       %
@@ -298,14 +276,14 @@ const ConsultantProfile = ({ consultantData }) => {
                 <div className="content-metrics">
                   <div className="metric">
                     <span className="metric-value">
-                      {profileStats.publishedArticles}/
-                      {profileStats.totalArticles}
+                      {consultantData.publishedBlogs}/
+                      {consultantData.totalBlogs}
                     </span>
                     <span className="metric-label">Bài viết đã xuất bản</span>
                   </div>
                   <div className="metric">
                     <span className="metric-value">
-                      {profileStats.questionsAnswered}
+                      {consultantData.questionsAnswered}
                     </span>
                     <span className="metric-label">Câu hỏi đã trả lời</span>
                   </div>
@@ -313,7 +291,7 @@ const ConsultantProfile = ({ consultantData }) => {
               </div>
             </div>
 
-            <div className="recent-activities">
+            {/* <div className="recent-activities">
               <h4>🕒 Hoạt động gần đây</h4>
               <div className="activities-list">
                 {recentActivities.map((activity) => (
@@ -328,7 +306,7 @@ const ConsultantProfile = ({ consultantData }) => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         )}
 
@@ -357,10 +335,10 @@ const ConsultantProfile = ({ consultantData }) => {
                     </span>
                     <span className="status-active">✅ Đang hoạt động</span>
                   </div>
-                  <div className="security-item">
+                  {/* <div className="security-item">
                     <span className="security-label">Lần đăng nhập cuối:</span>
-                    <span>{formatDateTime(profileStats.lastLogin)}</span>
-                  </div>
+                    <span>{formatDateTime(consultantData.lastLogin)}</span>
+                  </div> */}
                   <div className="security-item">
                     <span className="security-label">Phiên đăng nhập:</span>
                     <span className="session-info">

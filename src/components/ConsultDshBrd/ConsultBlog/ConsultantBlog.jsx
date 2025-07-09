@@ -3,8 +3,8 @@ import './ConsultantBlog.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-const ConsultantBlog = () => {
-  const [blogs, setBlogs] = useState([]);
+const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
+  // const [blogs, setBlogs] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -21,30 +21,34 @@ const ConsultantBlog = () => {
     fetchMajors();
   }, [showCreateModal]);
 
+  // useEffect(() => {
+  //   fetchMajors();
+  // }, []);
+
   // Fetch blogs from the server
-  const fetchBlogs = async function () {
-    try {
-      const accountId = await Cookies.get('accountId');
-      const accessToken = await Cookies.get('accessToken');
-      // console.log('useEffect has been called!:', accountId);
-      console.log('useEffect has been called!:', accessToken);
-      const response = await axios.get(
-        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          }
-        }
-      );
-      console.log('Blog Response:', response.data.result);
-      setBlogs(response.data.result || []);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-  
-      return;
-    }
-  };
+  // const fetchBlogs = async function () {
+  //   try {
+  //     const accountId = await Cookies.get('accountId');
+  //     const accessToken = await Cookies.get('accessToken');
+  //     // console.log('useEffect has been called!:', accountId);
+  //     console.log('useEffect has been called!:', accessToken);
+  //     const response = await axios.get(
+  //       `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //           'Content-Type': 'application/json',
+  //         }
+  //       }
+  //     );
+  //     console.log('Blog Response:', response.data.result);
+  //     setBlogs(response.data.result || []);
+  //   } catch (error) {
+  //     console.error("Error fetching blogs:", error);
+
+  //     return;
+  //   }
+  // };
 
   // Fetch majors from the server
   const fetchMajors = async () => {
@@ -94,7 +98,7 @@ const ConsultantBlog = () => {
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.content.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
-        filterStatus === 'all' || blog.status === filterStatus;
+        filterStatus === 'all' || blog.status.toString() === filterStatus;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
@@ -202,14 +206,17 @@ const ConsultantBlog = () => {
       console.error("Error creating blog:", error);
       alert("Có lỗi xảy ra khi tạo blog. Vui lòng thử lại sau.");
       return;
+    } finally {
+      setNewBlog({
+        title: '',
+        content: '',
+        major: '',
+        images: [],
+      });
+      setShowCreateModal(false);
+      fetchBlogs();
     }
-    setNewBlog({
-      title: '',
-      content: '',
-      major: '',
-      images: [],
-    });
-    setShowCreateModal(false);
+
   };
 
   const handleDeleteBlog = async (blogId) => {
@@ -374,15 +381,16 @@ const ConsultantBlog = () => {
                 >
                   👁️ Xem
                 </button>
-                <button className="action-btn edit">
+                {!blog.status && <button className="action-btn edit">
                   ✏️ Sửa
                 </button>
-                <button
+                }
+                {!blog.status && <button
                   className="action-btn delete"
                   onClick={() => handleDeleteBlog(blog.blog_id)}
                 >
                   🗑️ Xóa
-                </button>
+                </button>}
 
                 {blog.status === 'draft' && (
                   <button

@@ -32,7 +32,7 @@ const ConsultantSidebar = ({
       description: 'Xem và quản lý cuộc hẹn'
     },
     {
-      id: 'articles',
+      id: 'blogs',
       icon: '📝',
       label: 'Quản lý Bài viết',
       description: 'Viết và quản lý blog'
@@ -81,20 +81,19 @@ const ConsultantSidebar = ({
           <div className="consultant-avatar-section">
             <img
               src={consultantData.avatar}
-              alt={consultantData.name}
+              alt={consultantData.full_name}
               className="consultant-avatar-large"
             />
             <div className="status-indicator active"></div>
           </div>
 
           <div className="consultant-info-details">
-            <h4>{consultantData.name}</h4>
-            <p>{consultantData.specialization}</p>
+            <h4>{consultantData.full_name}</h4>
             <div className="rating-section">
-              <span className="rating">⭐ {consultantData.rating}</span>
-              <span className="appointments-count">
+              <span className="rating">⭐ {consultantData.averageFeedBackRating}</span>
+              {/* <span className="appointments-count">
                 {consultantData.totalAppointments} cuộc hẹn
-              </span>
+              </span> */}
             </div>
           </div>
         </div>

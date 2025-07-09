@@ -3,52 +3,52 @@ import './ConsultantQuestion.css';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Thêm import Cookies
 
-const ConsultantQuestion = () => {
-  const [questions, setQuestions] = useState([]);
+const ConsultantQuestion = ({questions = [], fetchQuestions}) => {
+  // const [questions, setQuestions] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [answerText, setAnswerText] = useState('');
   const [filterTab, setFilterTab] = useState('unanswered'); // 'unanswered' or 'answered'
   const [searchTerm, setSearchTerm] = useState('');
   const [isAnswering, setIsAnswering] = useState(false);
 
-  // Mock questions data
   useEffect(() => {
     fetchQuestions();
   }, []);
   const accountId = Cookies.get('accountId') || 'default_account_id'; // Lấy accountId từ cookie hoặc giá trị mặc định
   const accessToken = Cookies.get('accessToken'); // Lấy accessToken từ cookie
 
-  const fetchQuestions = async () => {
-    // Simulate fetching questions from an API
-    try {
-      const responseUnreplied = await axios.get(
-        'http://localhost:3000/question/get-unreplied-questions',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
-      const responseReplied = await axios.get(
-        `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
-      const unrepliedQuestions = responseUnreplied.data.result || [];
-      const repliedQuestions = responseReplied.data.result || [];
-      setQuestions([...unrepliedQuestions, ...repliedQuestions]);
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  }
+  // const fetchQuestions = async () => {
+  //   // Simulate fetching questions from an API
+  //   try {
+  //     const responseUnreplied = await axios.get(
+  //       'http://localhost:3000/question/get-unreplied-questions',
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       });
+  //     const responseReplied = await axios.get(
+  //       `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       });
+  //     const unrepliedQuestions = responseUnreplied.data.result || [];
+  //     const repliedQuestions = responseReplied.data.result || [];
+  //     setQuestions([...unrepliedQuestions, ...repliedQuestions]);
+  //   } catch (error) {
+  //     console.error('Error fetching questions:', error);
+  //   }
+  // }
 
   const calculateAge = (dob) => {
     if (!dob) return null;
     const today = new Date();
-    const age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    const dobDate = new Date(dob);
+    const age = today.getFullYear() - dobDate.getFullYear();
+    const monthDiff = today.getMonth() - dobDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
       return age - 1;
     }
     return age;
@@ -75,7 +75,7 @@ const ConsultantQuestion = () => {
     answered: questions.filter((q) => q.reply).length,
   };
 
-  const handleAnswerSubmit = () => {
+  const handleAnswerSubmit = async () => {
     if (!answerText.trim()) {
       alert('Vui lòng nhập câu trả lời');
       return;
@@ -92,7 +92,7 @@ const ConsultantQuestion = () => {
     };
 
     try {
-      const response = axios.post(
+      const response = await axios.post(
         'http://localhost:3000/reply/create-reply',
         payload,
         {
