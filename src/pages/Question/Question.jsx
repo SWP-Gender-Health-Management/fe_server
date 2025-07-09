@@ -12,6 +12,8 @@ import {
   Tag,
   Empty,
   Spin,
+  Pagination,
+  List,
 } from 'antd';
 import {
   CommentOutlined,
@@ -51,6 +53,13 @@ const Question = () => {
 
   const { isLoggedIn, userInfo } = useAuth();
 
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'answered', 'pending'
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
+
   const fetchMyQuestions = async () => {
     if (!isLoggedIn) return;
 
@@ -63,10 +72,20 @@ const Question = () => {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
+        },
+        {
+          params: {
+            page: currentPage,
+            limit: 10,
+          },
         }
       );
-      console.log('Fetched questions:', res.data.result);
-      setMyQuestions(res.data.result || []);
+      console.log('Fetched questions:', res.data.result.questions);
+      console.log('Result:', res.data.result);
+
+      setMyQuestions(res.data.result.questions || []);
+      setTotalQuestions(res.data.result.total_questions || 0);
+      setTotalPages(res.data.result.total_pages || 0);
     } catch (error) {
       console.error('Failed to fetch my questions:', error);
       message.error('Không thể tải danh sách câu hỏi của bạn.');
@@ -140,6 +159,22 @@ const Question = () => {
     });
   };
 
+  // Filtered and searched questions
+  const filteredQuestions = myQuestions.filter((q) => {
+    const matchStatus =
+      statusFilter === 'all' ||
+      (statusFilter === 'answered' && q.reply) ||
+      (statusFilter === 'pending' && !q.reply);
+    const matchSearch = q.content
+      .toLowerCase()
+      .includes(searchText.toLowerCase());
+    return matchStatus && matchSearch;
+  });
+  // const paginatedQuestions = filteredQuestions.slice(
+  //   (currentPage - 1) * 10,
+  //   currentPage * 10
+  // );
+
   if (!isLoggedIn) {
     return (
       <div className="question-page">
@@ -212,7 +247,7 @@ const Question = () => {
           {/* My Questions Tab */}
           {activeTab === 'my-questions' && (
             <div className="my-questions-section">
-              <div className="section-header">
+              <div className="section-header-1">
                 <h2>Danh sách câu hỏi của bạn</h2>
                 <Button
                   icon={<ReloadOutlined />}
@@ -222,21 +257,44 @@ const Question = () => {
                   Làm mới
                 </Button>
               </div>
-
+              {/* Filter & Search */}
+              <div className="question-filter-bar">
+                <Input.Search
+                  placeholder="Tìm kiếm nội dung câu hỏi..."
+                  className="question-search-input"
+                  allowClear
+                  value={searchText}
+                  onChange={(e) => {
+                    setSearchText(e.target.value);
+                    setCurrentPage(currentPage);
+                  }}
+                  // style={{ width: 300 }}
+                />
+                <Select
+                  value={statusFilter}
+                  onChange={(val) => {
+                    setStatusFilter(val);
+                    setCurrentPage(1);
+                  }}
+                  style={{ width: 180 }}
+                >
+                  <Option value="all">Tất cả trạng thái</Option>
+                  <Option value="answered">Đã trả lời</Option>
+                  <Option value="pending">Chưa trả lời</Option>
+                </Select>
+              </div>
               {loading ? (
                 <div className="loading-container">
                   <Spin size="large" />
                   <p>Đang tải câu hỏi...</p>
                 </div>
-              ) : myQuestions.length === 0 ? (
+              ) : filteredQuestions.length === 0 ? (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description={
                     <div className="empty-description">
-                      <h3>Chưa có câu hỏi nào</h3>
-                      <p>
-                        Hãy đặt câu hỏi đầu tiên để nhận tư vấn từ chuyên gia!
-                      </p>
+                      <h3>Không tìm thấy câu hỏi phù hợp</h3>
+                      <p>Hãy thử thay đổi bộ lọc hoặc đặt câu hỏi mới!</p>
                     </div>
                   }
                 >
@@ -249,57 +307,95 @@ const Question = () => {
                   </Button>
                 </Empty>
               ) : (
-                <div className="questions-grid">
-                  {myQuestions.map((question, index) => {
-                    return (
-                      <Card
-                        key={question.ques_id || index}
-                        className="question-card"
-                        hoverable
+                <>
+                  <List
+                    itemLayout="vertical"
+                    dataSource={myQuestions}
+                    renderItem={(question) => (
+                      <List.Item
+                        key={question.ques_id}
+                        className="question-list-item"
                         onClick={() => handleQuestionClick(question)}
+                        style={{
+                          cursor: 'pointer',
+                          background: '#fff',
+                          marginBottom: 12,
+                          borderRadius: 8,
+                          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                        }}
                       >
-                        <div className="card-header">
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                          }}
+                        >
                           <div
                             className={`status-indicator ${question.reply ? 'answered' : 'pending'}`}
+                            style={{ minWidth: 110 }}
                           >
                             {question.reply ? (
                               <>
-                                <CheckCircleOutlined />
+                                <CheckCircleOutlined
+                                  style={{ color: '#52c41a' }}
+                                />{' '}
                                 <span>Đã trả lời</span>
                               </>
                             ) : (
                               <>
-                                <ClockCircleOutlined />
+                                <ClockCircleOutlined
+                                  style={{ color: '#faad14' }}
+                                />{' '}
                                 <span>Chờ trả lời</span>
                               </>
                             )}
                           </div>
-                        </div>
-
-                        <p className="question-preview">
-                          {question.content.length > 120
-                            ? question.content.substring(0, 120) + '...'
-                            : question.content}
-                        </p>
-
-                        <div className="card-footer">
-                          <div className="question-date">
-                            <CalendarOutlined />
-                            <span>
+                          <div style={{ flex: 1 }}>
+                            <div
+                              className="question-preview"
+                              style={{ fontWeight: 500, fontSize: 16 }}
+                            >
+                              {question.content.length > 100
+                                ? question.content.substring(0, 100) + '...'
+                                : question.content}
+                            </div>
+                            <div
+                              style={{
+                                color: '#888',
+                                fontSize: 13,
+                                marginTop: 4,
+                              }}
+                            >
+                              <CalendarOutlined />{' '}
                               {formatDate(question.created_at || new Date())}
-                            </span>
+                            </div>
                           </div>
                           {question.reply && (
-                            <div className="answer-available">
-                              <MessageOutlined />
-                              <span>Có câu trả lời</span>
+                            <div
+                              className="answer-available"
+                              style={{ color: '#1890ff', fontWeight: 500 }}
+                            >
+                              <MessageOutlined /> <span>Có câu trả lời</span>
                             </div>
                           )}
                         </div>
-                      </Card>
-                    );
-                  })}
-                </div>
+                      </List.Item>
+                    )}
+                  />
+                  <div style={{ textAlign: 'center', marginTop: 24 }}>
+                    <Pagination
+                      className="question-pagination"
+                      current={currentPage}
+                      pageSize={pageSize}
+                      total={totalQuestions}
+                      onChange={(page) => setCurrentPage(page)}
+                      showSizeChanger={true}
+                      showQuickJumper
+                      showLessItems={false}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -319,7 +415,7 @@ const Question = () => {
                   </p>
                 </div>
 
-                <div className="progress-indicator">
+                {/* <div className="progress-indicator">
                   <div
                     className={`step ${newQuestion.content ? 'completed' : ''}`}
                   >
@@ -328,7 +424,7 @@ const Question = () => {
                       Mô tả chi tiết
                     </span>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="question-form">
                   {/* Detailed Description */}
@@ -426,9 +522,9 @@ const Question = () => {
                               content: e.target.value,
                             })
                           }
-                          rows={8}
                           maxLength={1000}
                           className="form-textarea-enhanced"
+                          autoSize={{ minRows: 6, maxRows: 16 }}
                           style={{
                             fontSize: '16px',
                             lineHeight: '1.6',
@@ -466,11 +562,16 @@ const Question = () => {
                         <div className="preview-card">
                           <div
                             className="preview-content"
-                            style={{ fontSize: '15px', lineHeight: '1.5' }}
+                            style={{
+                              fontSize: '15px',
+                              lineHeight: '1.5',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word',
+                              overflow: 'hidden',
+                              padding: '12px 0',
+                            }}
                           >
-                            {newQuestion.content.length > 100
-                              ? newQuestion.content.substring(0, 100) + '...'
-                              : newQuestion.content}
+                            {newQuestion.content}
                           </div>
                         </div>
                       </div>
