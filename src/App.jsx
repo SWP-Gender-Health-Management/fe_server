@@ -16,7 +16,9 @@ import BlogPage from '@pages/Blog/BlogPage';
 import Question from '@pages/Question/Question';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
-import Login from '@pages/Login/Login';
+
+import Login from '@components/Login/Login';
+import SessionManager from '@components/SessionManager/SessionManager';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import ManagerDashboard from '@pages/ManagerDashboard/ManagerDashboard';
@@ -122,10 +124,20 @@ const AppLayout = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
+
+
       {/* ✅ Chỉ hiện Footer & Login nếu không ở trang dashboard */}
       {!shouldHideNavbar && !isNotFoundPage && (
         <>
           <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
+          <SessionManager
+            onCancel={() => {
+              setShowLogin(false);
+            }}
+            onLoginClick={() => {
+              setShowLogin(true);
+            }}
+          />
           <Footer />
           <div className="footer-spacer" />
         </>

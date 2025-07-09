@@ -58,7 +58,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext.jsx';
 import dayjs from 'dayjs';
-import Cookies from 'js-cookie'; // nhớ import nếu chưa có
+import Cookies from 'js-cookie'; 
 import './UserAccount.css';
 import PersonalInfoTab from './components/PersonalInfoTab/PersonalInfoTab';
 import ConsultAppointmentsTab from './components/ConsultantAppointmentTab/ConsultAppointmentsTab';

@@ -21,7 +21,6 @@ const LabAppointmentsTab = ({
   setLabAppDetailVisible,
   selectedLabApp,
   dayjs,
-  message,
 }) => {
   // Columns cho bảng lịch hẹn xét nghiệm
   const labAppColumns = [

@@ -28,7 +28,7 @@ import Cookies from 'js-cookie';
 import Logo from '@assets/Blue-full.svg?react';
 import '@styles/reset.css';
 import './Navbar.css';
-import Logout from '@pages/Logout/Logout';
+import Logout from '@components/Logout/Logout';
 import NotificationDropdown from '../Notification/NotificationDropdown';
 import { useAuth } from '@context/AuthContext';
 
@@ -168,7 +168,6 @@ const Navbar = ({ onLoginClick }) => {
       icon: <WechatWorkOutlined />,
     },
   ];
-  // console.log('Role:', role, typeof role); // Role: 0 "number"
   const roleRoutes = {
     ADMIN: { path: '/admin', label: 'Admin' },
     STAFF: { path: '/staff', label: 'Nhân viên' },

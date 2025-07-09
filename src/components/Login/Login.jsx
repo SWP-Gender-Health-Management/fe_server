@@ -137,7 +137,6 @@ const Login = ({ visible, onCancel }) => {
 
       // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
       login(accessToken, null, account_id, full_name || 'Người dùng', role);
-      // setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
       Cookies.set('accountId', account_id, { expires: 1 });
       Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
       Cookies.set('role', role || null, { expires: 1 });
