@@ -1,764 +1,371 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  Row,
-  Col,
-  Avatar,
-  Button,
-  Descriptions,
-  Tag,
-  Space,
-  Statistic,
-  Progress,
-  Timeline,
-  Badge,
-  Divider,
-  Typography,
-  List,
-  Rate,
-  Tooltip,
-  Modal,
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  Upload,
-  message,
-} from 'antd';
-import {
-  UserOutlined,
-  EditOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  HomeOutlined,
-  CalendarOutlined,
-  TrophyOutlined,
-  StarOutlined,
-  ExperimentOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  TeamOutlined,
-  SafetyOutlined,
-  BookOutlined,
-  UploadOutlined,
-  CameraOutlined,
-  IdcardOutlined,
-  BankOutlined,
-} from '@ant-design/icons';
-import dayjs from 'dayjs';
+import React, { useState } from 'react';
 import './StaffProfile.css';
+import { Statistic } from 'antd';
+import { BookOutlined, CheckCircleOutlined, ExperimentOutlined, TrophyOutlined } from '@ant-design/icons';
 
-const { Title, Text, Paragraph } = Typography;
-const { TextArea } = Input;
-const { Option } = Select;
+const StaffProfile = ({ staffData }) => {
+  const [activeTab, setActiveTab] = useState('info');
 
-const StaffProfile = () => {
-  const [loading, setLoading] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [profileData, setProfileData] = useState(null);
-  const [updating, setUpdating] = useState(false);
-  const [form] = Form.useForm();
-
-  // Mock profile data
-  const mockProfileData = {
-    // Thông tin cơ bản
-    id: 'ST001',
-    employeeCode: 'EMP2023001',
-    fullName: 'Nguyễn Thị Mai',
-    avatar: 'https://via.placeholder.com/150',
-    position: 'Kỹ thuật viên xét nghiệm',
-    department: 'Phòng xét nghiệm',
-    level: 'Trung cấp',
-    status: 'active',
-
-    // Thông tin liên hệ
-    email: 'mai.nguyen@hospital.com',
-    phone: '0901234567',
-    address: '123 Nguyễn Trãi, Quận 1, TP.HCM',
-    emergencyContact: {
-      name: 'Nguyễn Văn Hùng',
-      relationship: 'Chồng',
-      phone: '0907654321',
-    },
-
-    // Thông tin công việc
-    hireDate: '2023-03-15',
-    contractType: 'Toàn thời gian',
-    workingHours: '8:00 - 17:00',
-    salary: 'Theo quy định',
-    workLocation: 'Tầng 2, Tòa nhà A',
-
-    // Chuyên môn
-    specializations: ['Huyết học', 'Sinh hóa', 'Vi sinh'],
-    certifications: [
-      {
-        name: 'Chứng chỉ kỹ thuật viên xét nghiệm',
-        issuer: 'Bộ Y tế',
-        issueDate: '2023-01-15',
-        expiryDate: '2026-01-15',
-        status: 'active',
-      },
-      {
-        name: 'Chứng chỉ an toàn sinh học',
-        issuer: 'Viện Pasteur',
-        issueDate: '2023-06-20',
-        expiryDate: '2025-06-20',
-        status: 'active',
-      },
-    ],
-
-    // Thống kê công việc
-    workStats: {
-      totalTests: 1247,
-      completedTests: 1189,
-      accuracyRate: 99.2,
-      avgTimePerTest: 25, // minutes
-      totalWorkingDays: 310,
-      overtimeHours: 45,
-      leaveDays: 12,
-    },
-
-    // Đánh giá và thành tích
-    rating: 4.9,
-    achievements: [
-      {
-        title: 'Nhân viên xuất sắc tháng 12/2023',
-        date: '2023-12-01',
-        description: 'Hoàn thành xuất sắc 98% công việc được giao',
-      },
-      {
-        title: 'Chứng nhận đào tạo nâng cao',
-        date: '2023-10-15',
-        description: 'Hoàn thành khóa đào tạo nâng cao về xét nghiệm huyết học',
-      },
-    ],
-
-    // Lịch sử làm việc
-    workHistory: [
-      {
-        date: '2024-01-16',
-        activity: 'Hoàn thành 15 xét nghiệm máu',
-        status: 'completed',
-        time: '08:30',
-      },
-      {
-        date: '2024-01-16',
-        activity: 'Tham gia họp phòng ban',
-        status: 'completed',
-        time: '14:00',
-      },
-      {
-        date: '2024-01-15',
-        activity: 'Đào tạo quy trình mới',
-        status: 'completed',
-        time: '16:00',
-      },
-    ],
-
-    // Thông tin bổ sung
-    skills: [
-      { name: 'Xét nghiệm máu', level: 95 },
-      { name: 'Xét nghiệm nước tiểu', level: 90 },
-      { name: 'Vi sinh', level: 85 },
-      { name: 'Sinh hóa', level: 92 },
-      { name: 'An toàn sinh học', level: 98 },
-    ],
-
-    languages: [
-      { name: 'Tiếng Việt', level: 'Bản ngữ' },
-      { name: 'Tiếng Anh', level: 'Trung cấp' },
-    ],
-  };
-
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
-
-  const fetchProfileData = async () => {
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setProfileData(mockProfileData);
-      setLoading(false);
-    }, 800);
-  };
-
-  const handleEditProfile = () => {
-    form.setFieldsValue({
-      fullName: profileData.fullName,
-      email: profileData.email,
-      phone: profileData.phone,
-      address: profileData.address,
-      emergencyContactName: profileData.emergencyContact.name,
-      emergencyContactPhone: profileData.emergencyContact.phone,
-      emergencyContactRelationship: profileData.emergencyContact.relationship,
-    });
-    setEditModalVisible(true);
-  };
-
-  const handleUpdateProfile = async (values) => {
-    setUpdating(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      const updatedProfile = {
-        ...profileData,
-        fullName: values.fullName,
-        email: values.email,
-        phone: values.phone,
-        address: values.address,
-        emergencyContact: {
-          name: values.emergencyContactName,
-          phone: values.emergencyContactPhone,
-          relationship: values.emergencyContactRelationship,
-        },
-      };
-
-      setProfileData(updatedProfile);
-      setEditModalVisible(false);
-      setUpdating(false);
-      form.resetFields();
-
-      message.success('Cập nhật thông tin cá nhân thành công!');
-    }, 1500);
-  };
-
-  const getStatusColor = (status) => {
-    const colors = {
-      active: 'green',
-      inactive: 'red',
-      pending: 'orange',
-    };
-    return colors[status] || 'default';
-  };
-
-  const getStatusText = (status) => {
-    const texts = {
-      active: 'Đang làm việc',
-      inactive: 'Nghỉ việc',
-      pending: 'Chờ xử lý',
-    };
-    return texts[status] || status;
-  };
-
-  if (loading || !profileData) {
+  if (!staffData) {
     return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
-        <div className="loading-spinner">Đang tải thông tin...</div>
+      <div className="staff-profile">
+        <div className="loading-state">
+          <span>⏳</span>
+          <p>Đang tải thông tin hồ sơ...</p>
+        </div>
       </div>
     );
   }
 
-  const uploadProps = {
-    name: 'avatar',
-    action: '/api/upload',
-    beforeUpload: () => false,
-    accept: 'image/*',
-    maxCount: 1,
-    showUploadList: false,
+  // Mock additional profile data
+  const defaultStats = {
+    consultationTypes: ['Online', 'Offline'],
   };
+
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const formatDateTime = (date) => {
+    return new Date(date).toLocaleString('vi-VN');
+  };
+
+  const getTimeAgo = (date) => {
+    const now = new Date();
+    const diffInMs = now - new Date(date);
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays > 0) {
+      return `${diffInDays} ngày trước`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours} giờ trước`;
+    } else {
+      return 'Vừa xong';
+    }
+  };
+
 
   return (
     <div className="staff-profile">
       {/* Header */}
-      <div className="page-header">
+      <div className="profile-header">
         <div className="header-content">
-          <h2>Hồ sơ cá nhân</h2>
-          <p>Thông tin chi tiết về nhân viên và hiệu suất công việc</p>
+          <p>Thông tin chi tiết về tài khoản và hoạt động của bạn</p>
         </div>
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={handleEditProfile}
-          size="large"
-        >
-          Chỉnh sửa thông tin
-        </Button>
       </div>
 
-      <Row gutter={[24, 24]}>
-        {/* Left Column - Basic Info */}
-        <Col xs={24} lg={8}>
-          {/* Profile Card */}
-          <Card className="profile-card">
-            <div className="profile-header">
-              <div className="avatar-section">
-                <Badge
-                  count={
-                    <Tooltip title="Thay đổi ảnh đại diện">
-                      <Upload {...uploadProps}>
-                        <Button
-                          type="primary"
-                          shape="circle"
-                          icon={<CameraOutlined />}
-                          size="small"
-                          className="avatar-upload-btn"
-                        />
-                      </Upload>
-                    </Tooltip>
-                  }
-                  offset={[-10, 10]}
-                >
-                  <Avatar
-                    size={120}
-                    src={profileData.avatar}
-                    icon={<UserOutlined />}
-                    className="profile-avatar"
-                  />
-                </Badge>
-              </div>
+      {/* Profile Card */}
+      <div className="profile-card">
+        <div className="profile-main">
+          <div className="profile-avatar">
+            <img src={staffData.avatar} alt={staffData.full_name} />
+            <div className="status-indicator active"></div>
+          </div>
 
-              <div className="profile-info">
-                <Title level={3} style={{ marginBottom: 8 }}>
-                  {profileData.fullName}
-                </Title>
-                <Text type="secondary" style={{ fontSize: 16 }}>
-                  {profileData.position}
-                </Text>
-                <div style={{ marginTop: 8 }}>
-                  <Tag
-                    color={getStatusColor(profileData.status)}
-                    icon={<CheckCircleOutlined />}
-                  >
-                    {getStatusText(profileData.status)}
-                  </Tag>
-                  <Tag color="blue">{profileData.level}</Tag>
-                </div>
-
-                <div className="rating-section" style={{ marginTop: 16 }}>
-                  <Space>
-                    <Rate
-                      disabled
-                      defaultValue={profileData.rating}
-                      allowHalf
-                    />
-                    <Text strong>{profileData.rating}</Text>
-                  </Space>
-                </div>
-              </div>
+          <div className="profile-info">
+            <h3>{staffData.full_name}</h3>
+            {/* <p className="specialization">{staffData.specialization}</p> */}
+            <div className="rating">
+              <span className="rating-value">
+                {staffData.averageFeedBackRating} ⭐ ({staffData.totalFeedBack} đánh giá)
+              </span>
             </div>
-
-            <Divider />
-
-            {/* Contact Info */}
             <div className="contact-info">
-              <Title level={5}>Thông tin liên hệ</Title>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <div>
-                  <Space>
-                    <IdcardOutlined />
-                    <Text strong>Mã NV:</Text>
-                    <Text>{profileData.employeeCode}</Text>
-                  </Space>
+              <span>📧 {staffData.email}</span>
+              <span>📞 {staffData.phone}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-stats">
+          <div className="stat-item">
+            <span className="stat-number">
+              {staffData.totalAppointments}
+            </span>
+            <span className="stat-label">Xét nghiệm</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">
+              {staffData.publishedBlogs}
+            </span>
+            <span className="stat-label">Bài viết</span>
+          </div>
+          {/* <div className="stat-item">
+            <span className="stat-number">{staffData.averageFeedBackRating}</span>
+            <span className="stat-label">Đánh giá</span>
+          </div> */}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="profile-tabs">
+        <button
+          className={`tab ${activeTab === 'info' ? 'active' : ''}`}
+          onClick={() => setActiveTab('info')}
+        >
+          📋 Thông tin chi tiết
+        </button>
+        <button
+          className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
+          onClick={() => setActiveTab('activity')}
+        >
+          📊 Thống kê công việc
+        </button>
+        <button
+          className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          ⚙️ Cài đặt
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        {activeTab === 'info' && (
+          <div className="info-tab">
+            <div className="info-sections">
+              <div className="info-section">
+                <h4>📋 Thông tin cơ bản</h4>
+                <div className="info-grid">
+                  <div className="info-row">
+                    <label>Họ và tên:</label>
+                    <span>{staffData.full_name}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Email:</label>
+                    <span>{staffData.email}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Số điện thoại:</label>
+                    <span>{staffData.phone}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Ngày tham gia:</label>
+                    <span>{formatDate(staffData.created_at)}</span>
+                  </div>
+                  {/* <div className="info-row">
+                    <label>Lần đăng nhập cuối:</label>
+                    <span>{formatDateTime(staffData.lastLogin)}</span>
+                  </div> */}
                 </div>
-                <div>
-                  <Space>
-                    <MailOutlined />
-                    <Text strong>Email:</Text>
-                    <Text copyable>{profileData.email}</Text>
-                  </Space>
+              </div>
+
+              <div className="info-section">
+                <h4>🏥 Thông tin chuyên môn</h4>
+                <div className="info-grid">
+                  {/* <div className="info-row">
+                    <label>Chuyên khoa:</label>
+                    <span>{staffData.specialization}</span>
+                  </div> */}
+                  {/* <div className="info-row">
+                    <label>Lĩnh vực tư vấn:</label>
+                    <div className="specializations">
+                      {staffData.specializations.map((spec, index) => (
+                        <span key={index} className="spec-tag">
+                          {spec}
+                        </span>
+                      ))}
+                    </div>
+                  </div> */}
+
+                  <div className="info-row">
+                    <label>Hình thức tư vấn:</label>
+                    <div className="consultation-types">
+                      {defaultStats.consultationTypes.map((type, index) => (
+                        <span key={index} className="type-tag">
+                          {type}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="info-row">
+                    <label>Phòng Ban: </label>
+                    <span> {staffData.department} </span>
+                  </div>
                 </div>
-                <div>
-                  <Space>
-                    <PhoneOutlined />
-                    <Text strong>Điện thoại:</Text>
-                    <Text copyable>{profileData.phone}</Text>
-                  </Space>
+              </div>
+
+              {/* <div className="info-section">
+                <h4>🎓 Bằng cấp & Chứng chỉ</h4>
+                <div className="certifications">
+                  {staffData.certifications.map((cert, index) => (
+                    <div key={index} className="certification-item">
+                      <span className="cert-icon">🏆</span>
+                      <span className="cert-name">{cert}</span>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <Space>
-                    <HomeOutlined />
-                    <Text strong>Địa chỉ:</Text>
-                  </Space>
-                  <Text>{profileData.address}</Text>
+              </div> */}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'activity' && (
+          <div className="activity-tab">
+            <div className="activity-stats">
+              <div className="stat-card">
+                <h4>Hiệu suất tư vấn</h4>
+                <div className="performance-metrics">
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {staffData.completedAppointments}/
+                      {staffData.totalAppointments}
+                    </span>
+                    <span className="metric-label">Cuộc hẹn hoàn thành</span> */}
+                    <Statistic
+                      title="Tổng số xét nghiệm"
+                      value={staffData.totalAppointments}
+                      prefix={<ExperimentOutlined />}
+                      valueStyle={{ color: '#3f8600' }}
+                    />
+                  </div>
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {(
+                        (staffData.completedAppointments /
+                          staffData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span> */}
+                    <Statistic
+                      title="Đã hoàn thành"
+                      value={staffData.completedAppointments}
+                      prefix={<CheckCircleOutlined />}
+                      valueStyle={{ color: '#1890ff' }}
+                    />
+                  </div>
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {(
+                        (staffData.completedAppointments /
+                          staffData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span> */}
+                    <Statistic
+                      title="Tỷ lệ hoàn thành"
+                      value={(
+                        (staffData.completedAppointments /
+                          staffData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      precision={1}
+                      suffix="%"
+                      prefix={<TrophyOutlined />}
+                      valueStyle={{ color: '#52c41a' }}
+                    />
+                  </div>
                 </div>
-              </Space>
+              </div>
+
+              <div className="stat-card">
+                <h4>Hoạt động nội dung</h4>
+                <div className="content-metrics">
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {staffData.publishedBlogs}/
+                      {staffData.totalBlogs}
+                    </span>
+                    <span className="metric-label">Bài viết đã xuất bản</span> */}
+                    <Statistic
+                      title="Bài Viết Xuất Bản"
+                      value={`${staffData.publishedBlogs}/
+                      ${staffData.totalBlogs}`}
+                      prefix={<BookOutlined />}
+                      valueStyle={{ color: '#722ed1' }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <Divider />
+            {/* <div className="recent-activities">
+              <h4>🕒 Hoạt động gần đây</h4>
+              <div className="activities-list">
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="activity-item">
+                    <div className="activity-icon">{activity.icon}</div>
+                    <div className="activity-content">
+                      <p>{activity.description}</p>
+                      <span className="activity-time">
+                        {getTimeAgo(activity.time)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div> */}
+          </div>
+        )}
 
-            {/* Emergency Contact */}
-            <div className="emergency-contact">
-              <Title level={5}>Liên hệ khẩn cấp</Title>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <Text strong>{profileData.emergencyContact.name}</Text>
-                <Text>({profileData.emergencyContact.relationship})</Text>
-                <Text copyable>{profileData.emergencyContact.phone}</Text>
-              </Space>
+        {activeTab === 'settings' && (
+          <div className="settings-tab">
+            <div className="settings-note">
+              <div className="note-icon">ℹ️</div>
+              <div className="note-content">
+                <h4>Thông báo quan trọng</h4>
+                <p>
+                  Thông tin cá nhân của bạn được quản lý bởi Administrator. Nếu
+                  bạn cần thay đổi thông tin như tên, email, chuyên khoa hoặc
+                  các thông tin khác, vui lòng liên hệ với quản trị viên hệ
+                  thống.
+                </p>
+              </div>
             </div>
-          </Card>
 
-          {/* Skills Card */}
-          <Card title="Kỹ năng chuyên môn" style={{ marginTop: 24 }}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              {profileData.skills.map((skill, index) => (
-                <div key={index}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      marginBottom: 4,
-                    }}
-                  >
-                    <Text>{skill.name}</Text>
-                    <Text strong>{skill.level}%</Text>
+            <div className="settings-sections">
+              <div className="settings-section">
+                <h4>🔐 Bảo mật tài khoản</h4>
+                <div className="security-info">
+                  <div className="security-item">
+                    <span className="security-label">
+                      Trạng thái tài khoản:
+                    </span>
+                    <span className="status-active">✅ Đang hoạt động</span>
                   </div>
-                  <Progress
-                    percent={skill.level}
-                    strokeColor={{
-                      '0%': '#108ee9',
-                      '100%': '#87d068',
-                    }}
-                    showInfo={false}
-                  />
-                </div>
-              ))}
-            </Space>
-          </Card>
-        </Col>
-
-        {/* Right Column - Work Info */}
-        <Col xs={24} lg={16}>
-          {/* Work Statistics */}
-          <Card title="Thống kê công việc" style={{ marginBottom: 24 }}>
-            <Row gutter={[16, 16]}>
-              <Col xs={12} sm={8} lg={6}>
-                <Statistic
-                  title="Tổng số xét nghiệm"
-                  value={profileData.workStats.totalTests}
-                  prefix={<ExperimentOutlined />}
-                  valueStyle={{ color: '#3f8600' }}
-                />
-              </Col>
-              <Col xs={12} sm={8} lg={6}>
-                <Statistic
-                  title="Đã hoàn thành"
-                  value={profileData.workStats.completedTests}
-                  prefix={<CheckCircleOutlined />}
-                  valueStyle={{ color: '#1890ff' }}
-                />
-              </Col>
-              <Col xs={12} sm={8} lg={6}>
-                <Statistic
-                  title="Độ chính xác"
-                  value={profileData.workStats.accuracyRate}
-                  precision={1}
-                  suffix="%"
-                  prefix={<TrophyOutlined />}
-                  valueStyle={{ color: '#cf1322' }}
-                />
-              </Col>
-              <Col xs={12} sm={8} lg={6}>
-                <Statistic
-                  title="Thời gian TB"
-                  value={profileData.workStats.avgTimePerTest}
-                  suffix="phút"
-                  prefix={<ClockCircleOutlined />}
-                  valueStyle={{ color: '#722ed1' }}
-                />
-              </Col>
-            </Row>
-
-            <Divider />
-
-            <Row gutter={[16, 16]}>
-              <Col xs={12} sm={6}>
-                <Statistic
-                  title="Ngày làm việc"
-                  value={profileData.workStats.totalWorkingDays}
-                  prefix={<CalendarOutlined />}
-                />
-              </Col>
-              <Col xs={12} sm={6}>
-                <Statistic
-                  title="Giờ làm thêm"
-                  value={profileData.workStats.overtimeHours}
-                  suffix="h"
-                  prefix={<ClockCircleOutlined />}
-                />
-              </Col>
-              <Col xs={12} sm={6}>
-                <Statistic
-                  title="Ngày nghỉ"
-                  value={profileData.workStats.leaveDays}
-                  prefix={<CalendarOutlined />}
-                />
-              </Col>
-              <Col xs={12} sm={6}>
-                <div style={{ textAlign: 'center' }}>
-                  <div
-                    style={{
-                      fontSize: 24,
-                      fontWeight: 'bold',
-                      color: '#52c41a',
-                    }}
-                  >
-                    {(
-                      (profileData.workStats.completedTests /
-                        profileData.workStats.totalTests) *
-                      100
-                    ).toFixed(1)}
-                    %
-                  </div>
-                  <div style={{ color: '#999' }}>Tỷ lệ hoàn thành</div>
-                </div>
-              </Col>
-            </Row>
-          </Card>
-
-          {/* Work Details */}
-          <Row gutter={[24, 24]}>
-            <Col xs={24} lg={12}>
-              <Card title="Thông tin công việc">
-                <Descriptions column={1} size="small">
-                  <Descriptions.Item label="Phòng ban">
-                    <Tag color="blue" icon={<BankOutlined />}>
-                      {profileData.department}
-                    </Tag>
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Ngày vào làm">
-                    {dayjs(profileData.hireDate).format('DD/MM/YYYY')}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Loại hợp đồng">
-                    {profileData.contractType}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Giờ làm việc">
-                    {profileData.workingHours}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Địa điểm làm việc">
-                    {profileData.workLocation}
-                  </Descriptions.Item>
-                </Descriptions>
-              </Card>
-            </Col>
-
-            <Col xs={24} lg={12}>
-              <Card title="Chuyên môn">
-                <div style={{ marginBottom: 16 }}>
-                  <Text strong>Lĩnh vực chuyên môn:</Text>
-                  <div style={{ marginTop: 8 }}>
-                    {profileData.specializations.map((spec, index) => (
-                      <Tag
-                        key={index}
-                        color="purple"
-                        style={{ marginBottom: 4 }}
-                      >
-                        {spec}
-                      </Tag>
-                    ))}
+                  {/* <div className="security-item">
+                    <span className="security-label">Lần đăng nhập cuối:</span>
+                    <span>{formatDateTime(staffData.lastLogin)}</span>
+                  </div> */}
+                  <div className="security-item">
+                    <span className="security-label">Phiên đăng nhập:</span>
+                    <span className="session-info">
+                      Đang hoạt động từ thiết bị này
+                    </span>
                   </div>
                 </div>
+              </div>
 
-                <div>
-                  <Text strong>Ngôn ngữ:</Text>
-                  <div style={{ marginTop: 8 }}>
-                    {profileData.languages.map((lang, index) => (
-                      <div key={index} style={{ marginBottom: 4 }}>
-                        <Text>{lang.name}: </Text>
-                        <Tag color="green">{lang.level}</Tag>
-                      </div>
-                    ))}
+              <div className="settings-section">
+                <h4>📞 Hỗ trợ</h4>
+                <div className="support-info">
+                  <p>Nếu bạn gặp vấn đề kỹ thuật hoặc cần hỗ trợ:</p>
+                  <div className="support-contacts">
+                    <div className="support-item">
+                      <span>📧 Email hỗ trợ:</span>
+                      <a href="mailto:support@clinic.com">support@clinic.com</a>
+                    </div>
+                    <div className="support-item">
+                      <span>📞 Hotline:</span>
+                      <a href="tel:1900-1234">1900-1234</a>
+                    </div>
                   </div>
                 </div>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* Certifications */}
-          <Card title="Chứng chỉ và bằng cấp" style={{ marginTop: 24 }}>
-            <List
-              dataSource={profileData.certifications}
-              renderItem={(cert, index) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        icon={<SafetyOutlined />}
-                        style={{ backgroundColor: '#52c41a' }}
-                      />
-                    }
-                    title={
-                      <Space>
-                        <Text strong>{cert.name}</Text>
-                        <Tag color={cert.status === 'active' ? 'green' : 'red'}>
-                          {cert.status === 'active'
-                            ? 'Còn hiệu lực'
-                            : 'Hết hiệu lực'}
-                        </Tag>
-                      </Space>
-                    }
-                    description={
-                      <div>
-                        <Text>Cấp bởi: {cert.issuer}</Text>
-                        <br />
-                        <Text type="secondary">
-                          Cấp ngày: {dayjs(cert.issueDate).format('DD/MM/YYYY')}{' '}
-                          - Hết hạn:{' '}
-                          {dayjs(cert.expiryDate).format('DD/MM/YYYY')}
-                        </Text>
-                      </div>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-
-          {/* Achievements */}
-          <Card title="Thành tích và khen thưởng" style={{ marginTop: 24 }}>
-            <Timeline
-              items={profileData.achievements.map((achievement, index) => ({
-                dot: <TrophyOutlined style={{ color: '#faad14' }} />,
-                children: (
-                  <div key={index}>
-                    <Text strong>{achievement.title}</Text>
-                    <br />
-                    <Text type="secondary">
-                      {dayjs(achievement.date).format('DD/MM/YYYY')}
-                    </Text>
-                    <br />
-                    <Text>{achievement.description}</Text>
-                  </div>
-                ),
-              }))}
-            />
-          </Card>
-
-          {/* Recent Work History */}
-          <Card title="Hoạt động gần đây" style={{ marginTop: 24 }}>
-            <Timeline
-              items={profileData.workHistory.map((activity, index) => ({
-                dot:
-                  activity.status === 'completed' ? (
-                    <CheckCircleOutlined style={{ color: '#52c41a' }} />
-                  ) : (
-                    <ClockCircleOutlined style={{ color: '#1890ff' }} />
-                  ),
-                children: (
-                  <div key={index}>
-                    <Text strong>{activity.activity}</Text>
-                    <br />
-                    <Text type="secondary">
-                      {dayjs(activity.date).format('DD/MM/YYYY')} -{' '}
-                      {activity.time}
-                    </Text>
-                  </div>
-                ),
-              }))}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Edit Profile Modal */}
-      <Modal
-        title={
-          <Space>
-            <EditOutlined />
-            Chỉnh sửa thông tin cá nhân
-          </Space>
-        }
-        open={editModalVisible}
-        onCancel={() => {
-          setEditModalVisible(false);
-          form.resetFields();
-        }}
-        onOk={() => form.submit()}
-        confirmLoading={updating}
-        width={700}
-        okText="Cập nhật"
-        cancelText="Hủy"
-      >
-        <Form form={form} layout="vertical" onFinish={handleUpdateProfile}>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="fullName"
-                label="Họ và tên"
-                rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập email!' },
-                  { type: 'email', message: 'Email không hợp lệ!' },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="phone"
-                label="Số điện thoại"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="address"
-                label="Địa chỉ"
-                rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Divider>Thông tin liên hệ khẩn cấp</Divider>
-
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="emergencyContactName"
-                label="Tên người liên hệ"
-                rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="emergencyContactPhone"
-                label="Số điện thoại"
-                rules={[{ required: true, message: 'Vui lòng nhập SĐT!' }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="emergencyContactRelationship"
-                label="Mối quan hệ"
-                rules={[
-                  { required: true, message: 'Vui lòng chọn mối quan hệ!' },
-                ]}
-              >
-                <Select>
-                  <Option value="Vợ/Chồng">Vợ/Chồng</Option>
-                  <Option value="Con">Con</Option>
-                  <Option value="Cha/Mẹ">Cha/Mẹ</Option>
-                  <Option value="Anh/Chị/Em">Anh/Chị/Em</Option>
-                  <Option value="Bạn">Bạn</Option>
-                  <Option value="Khác">Khác</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 /* ===== CONSULTANT BLOG STYLES ===== */
 
-.consultant-blog {
+.staff-blog {
   padding: 0;
   background: transparent;
   min-height: 100vh;
@@ -923,7 +923,7 @@
     gap: 15px;
   }
 
-  .consultant-blog {
+  .staff-blog {
     padding: 0;
   }
 

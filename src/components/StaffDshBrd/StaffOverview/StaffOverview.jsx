@@ -62,7 +62,6 @@ const StaffOverview = ({ staffData }) => {
     avgProcessTime: 25, // minutes
     weeklyTests: 145,
     monthlyTests: 580,
-    accuracy: 99.2,
   };
 
   const recentActivities = [
@@ -121,9 +120,6 @@ const StaffOverview = ({ staffData }) => {
               Hôm nay là {formatDate(currentTime)} - {formatTime(currentTime)}
             </p>
             <div className="shift-info">
-              <Tag color="blue" icon={<ClockCircleOutlined />}>
-                {staffData?.shift} • {staffData?.workingHours}
-              </Tag>
               <Tag color="green" icon={<CheckCircleOutlined />}>
                 Trực tuyến
               </Tag>
@@ -196,65 +192,26 @@ const StaffOverview = ({ staffData }) => {
                 </div>
               </div>
 
-              <div className="metric-item">
-                <div className="metric-label">Độ chính xác</div>
-                <Progress
-                  percent={performanceStats.accuracy}
-                  strokeColor="#1890ff"
-                  size="small"
-                />
-                <div className="metric-value">{performanceStats.accuracy}%</div>
-              </div>
 
-              <Row gutter={16} style={{ marginTop: '16px' }}>
-                <Col span={12}>
-                  <div className="stat-box">
-                    <div className="stat-number">
-                      {performanceStats.avgProcessTime}
-                    </div>
-                    <div className="stat-label">Phút/XN TB</div>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className="stat-box">
-                    <div className="stat-number">
-                      {performanceStats.weeklyTests}
-                    </div>
-                    <div className="stat-label">XN tuần này</div>
-                  </div>
-                </Col>
-              </Row>
+              <div className="stat-box">
+                <div className="stat-number">
+                  {performanceStats.weeklyTests}
+                </div>
+                <div className="stat-label">XN tuần này</div>
+              </div>
             </div>
           </Card>
         </Col>
 
         {/* Recent Activities */}
         <Col xs={24} lg={12}>
-          <Card title="Hoạt động gần đây" className="activities-card">
-            <Timeline mode="left" size="small">
-              {recentActivities.map((activity, index) => (
-                <Timeline.Item
-                  key={index}
-                  color={
-                    activity.status === 'completed'
-                      ? 'green'
-                      : activity.status === 'in-progress'
-                        ? 'blue'
-                        : 'orange'
-                  }
-                >
-                  <div className="activity-item">
-                    <div className="activity-time">{activity.time}</div>
-                    <div className="activity-content">
-                      <div className="activity-action">{activity.action}</div>
-                      <div className="activity-patient">
-                        Bệnh nhân: {activity.patient}
-                      </div>
-                    </div>
-                  </div>
-                </Timeline.Item>
-              ))}
-            </Timeline>
+          <Card title="Bài viết chưa được duyện" className="activities-card">
+            <div className="stat-box">
+                <div className="stat-number">
+                  {staffData.pendingBlogs}
+                </div>
+                <div className="stat-label">Bài viết</div>
+              </div>
           </Card>
         </Col>
       </Row>
@@ -286,7 +243,7 @@ const StaffOverview = ({ staffData }) => {
 
         {/* Upcoming Tasks */}
         <Col xs={24} lg={16}>
-          <Card title="Công việc sắp tới" className="tasks-card">
+          <Card title="Xét nghiệm sắp tới" className="tasks-card">
             <div className="tasks-list">
               {upcomingTasks.map((task, index) => (
                 <div key={index} className="task-item">
@@ -320,7 +277,7 @@ const StaffOverview = ({ staffData }) => {
       </Row>
 
       {/* Quick Actions */}
-      <Card title="Hành động nhanh" style={{ marginTop: '24px' }}>
+      {/* <Card title="Hành động nhanh" style={{ marginTop: '24px' }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <Button
@@ -348,7 +305,7 @@ const StaffOverview = ({ staffData }) => {
             </Button>
           </Col>
         </Row>
-      </Card>
+      </Card> */}
     </div>
   );
 };

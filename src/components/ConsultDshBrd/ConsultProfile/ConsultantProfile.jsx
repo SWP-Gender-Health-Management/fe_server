@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './ConsultantProfile.css';
+import { Statistic } from 'antd';
+import { BookOutlined, CheckCircleOutlined, ExperimentOutlined, MessageOutlined, QuestionCircleOutlined, TeamOutlined, TrophyOutlined } from '@ant-design/icons';
 
 const ConsultantProfile = ({ consultantData }) => {
   const [activeTab, setActiveTab] = useState('info');
@@ -78,6 +80,24 @@ const ConsultantProfile = ({ consultantData }) => {
     }
   };
 
+  const getDepartment = (role) => {
+    console.log("role: ", role)
+    switch (role) {
+      case "0" || 0:
+        return "Quản trị viên";
+      case "1" || 1:
+        return "Bộ phận tư vấn";
+      case "2" || 2:
+        return "Phòng xét nghiệm";
+      case "4" || 4:
+        return "Phòng QUản Lý";
+      case "5" || 5:
+        return "Tiếp tân";
+      default:
+        return "Khách hàng";
+    }
+  }
+
   return (
     <div className="consultant-profile">
       {/* Header */}
@@ -150,7 +170,7 @@ const ConsultantProfile = ({ consultantData }) => {
           className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
           onClick={() => setActiveTab('activity')}
         >
-          📊 Hoạt động gần đây
+          📊 Thống kê công việc
         </button>
         <button
           className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
@@ -222,10 +242,10 @@ const ConsultantProfile = ({ consultantData }) => {
                       ))}
                     </div>
                   </div>
-                  {/* <div className="info-row">
-                    <label>Ngôn ngữ:</label>
-                    <span>{consultantData.languages.join(', ')}</span>
-                  </div> */}
+                  <div className="info-row">
+                    <label>Phòng Ban: </label>
+                    <span> {getDepartment(consultantData.role)} </span>
+                  </div>
                 </div>
               </div>
 
@@ -251,14 +271,20 @@ const ConsultantProfile = ({ consultantData }) => {
                 <h4>Hiệu suất tư vấn</h4>
                 <div className="performance-metrics">
                   <div className="metric">
-                    <span className="metric-value">
+                    {/* <span className="metric-value">
                       {consultantData.completedAppointments}/
                       {consultantData.totalAppointments}
                     </span>
-                    <span className="metric-label">Cuộc hẹn hoàn thành</span>
+                    <span className="metric-label">Cuộc hẹn hoàn thành</span> */}
+                    <Statistic
+                      title="Tổng số cuộc hẹn"
+                      value={consultantData.totalAppointments}
+                      prefix={<TeamOutlined />}
+                      valueStyle={{ color: '#3f8600' }}
+                    />
                   </div>
                   <div className="metric">
-                    <span className="metric-value">
+                    {/* <span className="metric-value">
                       {(
                         (consultantData.completedAppointments /
                           consultantData.totalAppointments) *
@@ -266,7 +292,36 @@ const ConsultantProfile = ({ consultantData }) => {
                       ).toFixed(1)}
                       %
                     </span>
-                    <span className="metric-label">Tỷ lệ hoàn thành</span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span> */}
+                    <Statistic
+                      title="Đã hoàn thành"
+                      value={consultantData.completedAppointments}
+                      prefix={<CheckCircleOutlined />}
+                      valueStyle={{ color: '#1890ff' }}
+                    />
+                  </div>
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {(
+                        (consultantData.completedAppointments /
+                          consultantData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span> */}
+                    <Statistic
+                      title="Tỷ lệ hoàn thành"
+                      value={(
+                        (consultantData.completedAppointments /
+                          consultantData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      precision={1}
+                      suffix="%"
+                      prefix={<TrophyOutlined />}
+                      valueStyle={{ color: '#52c41a' }}
+                    />
                   </div>
                 </div>
               </div>
@@ -275,17 +330,30 @@ const ConsultantProfile = ({ consultantData }) => {
                 <h4>Hoạt động nội dung</h4>
                 <div className="content-metrics">
                   <div className="metric">
-                    <span className="metric-value">
+                    {/* <span className="metric-value">
                       {consultantData.publishedBlogs}/
                       {consultantData.totalBlogs}
                     </span>
-                    <span className="metric-label">Bài viết đã xuất bản</span>
+                    <span className="metric-label">Bài viết đã xuất bản</span> */}
+                    <Statistic
+                      title="Bài Viết Xuất Bản"
+                      value={`${consultantData.publishedBlogs}/
+                      ${consultantData.totalBlogs}`}
+                      prefix={<BookOutlined />}
+                      valueStyle={{ color: '#722ed1' }}
+                    />
                   </div>
                   <div className="metric">
-                    <span className="metric-value">
+                    {/* <span className="metric-value">
                       {consultantData.questionsAnswered}
                     </span>
-                    <span className="metric-label">Câu hỏi đã trả lời</span>
+                    <span className="metric-label">Câu hỏi đã trả lời</span> */}
+                    <Statistic
+                      title="Câu hỏi đã trả lời"
+                      value={consultantData.questionsAnswered}
+                      prefix={<QuestionCircleOutlined />}
+                      valueStyle={{ color: '#722ed1' }}
+                    />
                   </div>
                 </div>
               </div>

@@ -513,11 +513,6 @@ const TodayAppointments = () => {
               </Select>
             </Space>
           </Col>
-          <Col>
-            <Badge count={filteredAppointments.length} showZero>
-              <span>Tổng số lịch hẹn</span>
-            </Badge>
-          </Col>
         </Row>
       </Card>
 

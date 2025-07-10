@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './StaffDashboard.css';
+import Cookies from 'js-cookie'; // Thêm import Cookies
+import axios from 'axios';
 
 // Import components
 import StaffOverview from '@components/StaffDshBrd/StaffOverview/StaffOverview';
@@ -29,9 +31,13 @@ const StaffDashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [blogs, setBlogs] = useState([]);
+
+  const accessToken = Cookies.get("accessToken");
+  const accountId = Cookies.get("accountId");
 
   // Mock staff data
-  const [staffData, setStaffData] = useState(null);
+  const [staffData, setStaffData] = useState({});
 
   // Load staff data - simulate API call
   useEffect(() => {
@@ -41,21 +47,21 @@ const StaffDashboard = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setStaffData({
-        id: 'SF001',
-        name: 'Nguyễn Thị Mai',
+        account_id: 'SF001',
+        full_name: 'Duy Đẹp Trai',
         email: 'mai.nguyen@healthcare.com',
         phone: '0901234567',
-        position: 'Kỹ thuật viên Xét nghiệm',
-        department: 'Phòng Xét nghiệm',
+        position: "Kỹ thuật viên Xét nghiệm",
+        department: 'Phòng Xét nghiệm',// Get from Role
         avatar: 'https://via.placeholder.com/80x80',
-        workingHours: '08:00 - 17:00',
-        shift: 'Ca sáng',
-        rating: 4.9,
-        totalTests: 1247,
-        accuracy: 99.2,
-        joinDate: '2023-03-15',
-        status: 'active',
+        averageFeedBackRating: 4.9,
+        totalFeedBack: 15,
+        totalAppointments: 1247, 
+        created_at: '2023-03-15',
       });
+      await fetchStaffData()
+      await fetchBlogs();
+
       setIsLoading(false);
     };
 
@@ -69,6 +75,79 @@ const StaffDashboard = () => {
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+
+  const fetchStaffData = async () => {
+    try {
+      const accessToken = Cookies.get("accessToken")
+      const viewResponse = await axios.post(
+        'http://localhost:3000/account/view-account',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      // const ratingResponse = await axios.get(
+      //   'http://localhost:3000/feedback/get-staff-rating-feedback',
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //       'Content-Type': 'application/json',
+      //     },
+      //   }
+      // );
+      setStaffData((prev) => {
+        if (viewResponse.data.result) {
+          prev = { 
+            ...prev, 
+            ...viewResponse.data.result,
+            department: getDepartment(viewResponse.data.result.role),
+            position: getPosition(viewResponse.data.result.role)
+          }
+        }
+        // if (ratingResponse.data.result) {
+        //   prev = { ...prev, ...ratingResponse.data.result }
+        // }
+        return prev;
+      });
+
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+    }
+  }
+
+  const fetchBlogs = async function () {
+    try {
+      // console.log('useEffect has been called!:', accountId);
+      // console.log('useEffect has been called!:', accessToken);
+      const response = await axios.get(
+        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      // console.log('Blog Response:', response.data.result);
+      setBlogs(response.data.result || []);
+      setStaffData((prev) => {
+        if (response.data.result) {
+          const totalBlogs = response.data.result.length;
+          const publishedBlogs = response.data.result.filter((blog) => {
+            return blog.status == 'true' || blog.status == true
+          }).length;
+          prev = { ...prev, totalBlogs, publishedBlogs, pendingBlogs: totalBlogs - publishedBlogs }
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      return;
+    }
+  };
 
   const menuItems = [
     {
@@ -140,6 +219,41 @@ const StaffDashboard = () => {
     });
   };
 
+  const getPosition = (role) => {
+    switch (role) {
+      case  0:
+        return "Quản trị viên";
+      case 1:
+        return "Tư vấn viên";
+      case 2:
+        return "Kỹ thuật viên Xét nghiệm";
+      case 4:
+        return "Quản Lý";
+      case 5:
+        return "Tiếp tân";
+      default:
+        return "Khách hàng";
+    }
+  }
+
+  const getDepartment = (role) => {
+    console.log("role: ", role)
+    switch (role) {
+      case  0:
+        return "Quản trị viên";
+      case 1:
+        return "Bộ phận tư vấn";
+      case 2:
+        return "Phòng xét nghiệm";
+      case 4:
+        return "Phòng QUản Lý";
+      case 5:
+        return "Tiếp tân";
+      default:
+        return "Khách hàng";
+    }
+  }
+
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
@@ -149,7 +263,7 @@ const StaffDashboard = () => {
       case 'search-appointments':
         return <SearchAppointments />;
       case 'blog-management':
-        return <StaffBlog />;
+        return <StaffBlog blogs={blogs} fetchBlogs={fetchBlogs} />;
       case 'profile':
         return <StaffProfile staffData={staffData} />;
       default:
@@ -205,12 +319,12 @@ const StaffDashboard = () => {
               <div className="status-indicator active"></div>
             </div>
             <div className="staff-info-details">
-              <h4>{staffData.name}</h4>
+              <h4>{staffData.full_name}</h4>
               <p>{staffData.position}</p>
               <p>{staffData.department}</p>
               <div className="rating-section">
-                <span>⭐ {staffData.rating}</span>
-                <span className="rating">{staffData.totalTests} tests</span>
+                <span>⭐ {staffData.averageFeedBackRating}</span>
+                <span className="rating">{staffData.totalAppointments} tests</span>
               </div>
             </div>
           </div>
@@ -240,7 +354,7 @@ const StaffDashboard = () => {
                   <div className="nav-description">{item.description}</div>
                 </div>
               )}
-          
+
             </button>
           ))}
         </nav>

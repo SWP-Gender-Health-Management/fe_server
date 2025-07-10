@@ -6,7 +6,6 @@ import Cookies from 'js-cookie';
 const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [viewMode, setViewMode] = useState('week'); // 'week' or 'month'
   const [showModal, setShowModal] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
@@ -231,20 +230,6 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
         </div>
 
         <div className="header-actions">
-          <div className="view-toggle">
-            <button
-              className={`toggle-btn ${viewMode === 'week' ? 'active' : ''}`}
-              onClick={() => setViewMode('week')}
-            >
-              Tuần
-            </button>
-            <button
-              className={`toggle-btn ${viewMode === 'month' ? 'active' : ''}`}
-              onClick={() => setViewMode('month')}
-            >
-              Tháng
-            </button>
-          </div>
 
           <div className="date-navigation">
             <button
@@ -350,7 +335,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
           <span className="stat-icon">✅</span>
           <div className="stat-content">
             <h3>
-              {filteredAppointments.filter((apt) => apt.status === 'confirmed').length}
+              {appointments.filter((apt) => apt.status === 'confirmed').length}
             </h3>
             <p>Đã xác nhận</p>
           </div>
@@ -360,7 +345,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
             <h3>
-              {filteredAppointments.filter((apt) => apt.status === 'pending').length}
+              {appointments.filter((apt) => apt.status === 'pending').length}
             </h3>
             <p>Chờ xác nhận</p>
           </div>
@@ -370,7 +355,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
           <span className="stat-icon">🔄</span>
           <div className="stat-content">
             <h3>
-              {filteredAppointments.filter((apt) => apt.status === 'completed').length}
+              {appointments.filter((apt) => apt.status === 'completed').length}
             </h3>
             <p>Đã hoàn thành</p>
           </div>
