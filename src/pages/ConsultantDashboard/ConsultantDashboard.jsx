@@ -218,13 +218,13 @@ const ConsultantDashboard = () => {
             onSectionChange={handleSectionChange}
             upcomingAppointments={appointments.filter((app) => {
               const date = new Date(app.consultant_pattern.date);
-              return !isNaN(date) && date >= new Date();
+              return !isNaN(date) && date >= new Date() && app.status !== "completed";
             }).sort((a, b) => new Date(a.consultant_pattern.date) - new Date(b.consultant_pattern.date)).slice(0, 5)}
             recentQuestions={questions.filter((ques) => !ques.status).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).slice(0, 5)}
           />
         );
       case 'appointments':
-        return <ConsultantAppointment appointments={appointments} fetchAppointments={fetchAppointments} />;
+        return <ConsultantAppointment />;
       case 'blogs':
         return <ConsultantBlog blogs={blogs} fetchBlogs={fetchBlogs} />;
       case 'questions':
@@ -238,7 +238,7 @@ const ConsultantDashboard = () => {
             onSectionChange={handleSectionChange}
             upcomingAppointments={appointments.filter((app) => {
               const date = new Date(app.consultant_pattern.date);
-              return !isNaN(date) && date >= new Date();
+              return !isNaN(date) && date >= new Date() && app.status !== "completed";
             }).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5)}
             recentQuestions={questions.filter((ques) => !ques.status).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).slice(0, 5)}
           />
