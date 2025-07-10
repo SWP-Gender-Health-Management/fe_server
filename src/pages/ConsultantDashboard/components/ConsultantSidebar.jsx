@@ -91,9 +91,9 @@ const ConsultantSidebar = ({
             <h4>{consultantData.full_name}</h4>
             <div className="rating-section">
               <span className="rating">⭐ {consultantData.averageFeedBackRating}</span>
-              {/* <span className="appointments-count">
+              <span className="appointments-count">
                 {consultantData.totalAppointments} cuộc hẹn
-              </span> */}
+              </span>
             </div>
           </div>
         </div>

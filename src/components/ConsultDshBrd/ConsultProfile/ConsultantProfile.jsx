@@ -20,36 +20,36 @@ const ConsultantProfile = ({ consultantData }) => {
     consultationTypes: ['Online', 'Offline'],
   };
 
-  const recentActivities = [
-    {
-      id: 1,
-      type: 'appointment',
-      description: 'Hoàn thành tư vấn với khách hàng Nguyễn Thị Lan',
-      time: new Date('2024-01-15T14:30:00'),
-      icon: '🗓️',
-    },
-    {
-      id: 2,
-      type: 'article',
-      description: 'Xuất bản bài viết "Kế hoạch hóa gia đình hiện đại"',
-      time: new Date('2024-01-15T10:15:00'),
-      icon: '📝',
-    },
-    {
-      id: 3,
-      type: 'question',
-      description: 'Trả lời câu hỏi về chu kỳ kinh nguyệt',
-      time: new Date('2024-01-14T16:45:00'),
-      icon: '❓',
-    },
-    {
-      id: 4,
-      type: 'appointment',
-      description: 'Xác nhận lịch hẹn với Trần Minh Hoa',
-      time: new Date('2024-01-14T09:20:00'),
-      icon: '✅',
-    },
-  ];
+  // const recentActivities = [
+  //   {
+  //     id: 1,
+  //     type: 'appointment',
+  //     description: 'Hoàn thành tư vấn với khách hàng Nguyễn Thị Lan',
+  //     time: new Date('2024-01-15T14:30:00'),
+  //     icon: '🗓️',
+  //   },
+  //   {
+  //     id: 2,
+  //     type: 'article',
+  //     description: 'Xuất bản bài viết "Kế hoạch hóa gia đình hiện đại"',
+  //     time: new Date('2024-01-15T10:15:00'),
+  //     icon: '📝',
+  //   },
+  //   {
+  //     id: 3,
+  //     type: 'question',
+  //     description: 'Trả lời câu hỏi về chu kỳ kinh nguyệt',
+  //     time: new Date('2024-01-14T16:45:00'),
+  //     icon: '❓',
+  //   },
+  //   {
+  //     id: 4,
+  //     type: 'appointment',
+  //     description: 'Xác nhận lịch hẹn với Trần Minh Hoa',
+  //     time: new Date('2024-01-14T09:20:00'),
+  //     icon: '✅',
+  //   },
+  // ];
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('vi-VN', {
@@ -131,10 +131,10 @@ const ConsultantProfile = ({ consultantData }) => {
             </span>
             <span className="stat-label">Câu trả lời</span>
           </div>
-          <div className="stat-item">
+          {/* <div className="stat-item">
             <span className="stat-number">{consultantData.averageFeedBackRating}</span>
             <span className="stat-label">Đánh giá</span>
-          </div>
+          </div> */}
         </div>
       </div>
 

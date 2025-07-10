@@ -3,7 +3,7 @@ import './ConsultantQuestion.css';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Thêm import Cookies
 
-const ConsultantQuestion = ({questions = [], fetchQuestions}) => {
+const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   // const [questions, setQuestions] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [answerText, setAnswerText] = useState('');
@@ -112,20 +112,38 @@ const ConsultantQuestion = ({questions = [], fetchQuestions}) => {
     }
   }
 
-  const formatTimeAgo = (date) => {
-    const now = new Date();
-    const diffInMs = now - new Date(date);
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInHours / 24);
+  function getTimeAgo(date) {
+    // Chuyển đổi date thành đối tượng Date nếu là chuỗi
+    const inputDate = typeof date === 'string' ? new Date(date) : date;
 
-    if (diffInDays > 0) {
-      return `${diffInDays} ngày trước`;
-    } else if (diffInHours > 0) {
-      return `${diffInHours} giờ trước`;
-    } else {
-      return 'Vừa xong';
+    // Kiểm tra tính hợp lệ của date
+    if (!(inputDate instanceof Date) || isNaN(inputDate)) {
+      return 'Ngày không hợp lệ';
     }
-  };
+
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - inputDate) / 1000); // Chênh lệch thời gian tính bằng giây
+
+    // Định nghĩa các khoảng thời gian
+    const intervals = [
+      { label: 'năm', seconds: 31536000 },
+      { label: 'tháng', seconds: 2592000 },
+      { label: 'ngày', seconds: 86400 },
+      { label: 'giờ', seconds: 3600 },
+      { label: 'phút', seconds: 60 },
+      { label: 'giây', seconds: 1 }
+    ];
+
+    // Tìm khoảng thời gian phù hợp
+    for (const interval of intervals) {
+      const count = Math.floor(diffInSeconds / interval.seconds);
+      if (count >= 1) {
+        return `${count} ${interval.label}${count > 1 ? '' : ''} trước`;
+      }
+    }
+
+    return 'vừa xong';
+  }
 
   return (
     <div className="consultant-question">
@@ -192,7 +210,7 @@ const ConsultantQuestion = ({questions = [], fetchQuestions}) => {
                   <div className="question-meta col-md-2">
                     <span className="asked-by">👤 {question.askedBy}</span>
                     <span className="asked-time">
-                      ⏰ {formatTimeAgo(question.created_at)}
+                      ⏰ {getTimeAgo(question.created_at)}
                     </span>
                   </div>
 

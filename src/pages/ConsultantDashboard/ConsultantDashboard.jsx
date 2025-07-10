@@ -131,7 +131,7 @@ const ConsultantDashboard = () => {
   const fetchBlogs = async function () {
     try {
       // console.log('useEffect has been called!:', accountId);
-      console.log('useEffect has been called!:', accessToken);
+      // console.log('useEffect has been called!:', accessToken);
       const response = await axios.get(
         `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
         {
@@ -141,7 +141,7 @@ const ConsultantDashboard = () => {
           }
         }
       );
-      console.log('Blog Response:', response.data.result);
+      // console.log('Blog Response:', response.data.result);
       setBlogs(response.data.result || []);
       setConsultantData((prev) => {
         if (response.data.result) {
@@ -160,39 +160,37 @@ const ConsultantDashboard = () => {
   };
 
   const fetchAppointments = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/consultant/${accountId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            }
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/consultant/${accountId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
           }
-        );
-        console.log('Consult Appointment Response:', response.data.result);
-        setAppointments(response.data.result || []);
-        setConsultantData((prev) => {
-          if(response.data.result) {
-            const totalAppointments = response.data.result.length;
-            const completedAppointments = response.data.result.filter((app) => {
-              return (app.status == 'completed');
-            }).length
-            prev = {
-              ...prev,
-              totalAppointments,
-              completedAppointments
-            }
+        }
+      );
+      console.log('Consult Appointment Response:', response.data.result);
+      setAppointments(response.data.result || []);
+      setConsultantData((prev) => {
+        if (response.data.result) {
+          const totalAppointments = response.data.result.length;
+          const completedAppointments = response.data.result.filter((app) => {
+            return (app.status == 'completed');
+          }).length
+          prev = {
+            ...prev,
+            totalAppointments,
+            completedAppointments
           }
-          return prev
-        });
-      } catch (error) {
-        console.error("Error fetching Consult Appointment:", error);
-        setAppointments([]);
-      } finally {
-        console.log("Consult Appointment: ", appointments);
-      }
+        }
+        return prev
+      });
+    } catch (error) {
+      console.error("Error fetching Consult Appointment:", error);
+      setAppointments([]);
     }
+  }
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
@@ -218,11 +216,15 @@ const ConsultantDashboard = () => {
           <DashboardOverview
             consultantData={consultantData}
             onSectionChange={handleSectionChange}
+            upcomingAppointments={appointments.filter((app) => {
+              const date = new Date(app.consultant_pattern.date);
+              return !isNaN(date) && date >= new Date();
+            }).sort((a, b) => new Date(a.consultant_pattern.date) - new Date(b.consultant_pattern.date)).slice(0, 5)}
             recentQuestions={questions.filter((ques) => !ques.status).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).slice(0, 5)}
           />
         );
       case 'appointments':
-        return <ConsultantAppointment appointments={appointments} />;
+        return <ConsultantAppointment appointments={appointments} fetchAppointments={fetchAppointments} />;
       case 'blogs':
         return <ConsultantBlog blogs={blogs} fetchBlogs={fetchBlogs} />;
       case 'questions':
@@ -234,6 +236,10 @@ const ConsultantDashboard = () => {
           <DashboardOverview
             consultantData={consultantData}
             onSectionChange={handleSectionChange}
+            upcomingAppointments={appointments.filter((app) => {
+              const date = new Date(app.consultant_pattern.date);
+              return !isNaN(date) && date >= new Date();
+            }).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5)}
             recentQuestions={questions.filter((ques) => !ques.status).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)).slice(0, 5)}
           />
         );

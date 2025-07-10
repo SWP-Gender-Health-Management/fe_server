@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions }) => {
+const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, upcomingAppointments }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [kpiData, setKpiData] = useState({
     todayAppointments: consultantData.todayAppointments || 0,
@@ -9,32 +9,6 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions })
     averageFeedBackRating: consultantData.averageFeedBackRating || 0,
   });
 
-  const [upcomingAppointments, setUpcomingAppointments] = useState([
-    {
-      id: 1,
-      time: '09:30',
-      customerName: 'Nguyễn Thị Lan',
-      issue: 'Tư vấn về kế hoạch hóa gia đình',
-      type: 'Online',
-      priority: 'high',
-    },
-    {
-      id: 2,
-      time: '14:00',
-      customerName: 'Trần Minh Hoa',
-      issue: 'Sức khỏe sinh sản sau sinh',
-      type: 'Offline',
-      priority: 'medium',
-    },
-    {
-      id: 3,
-      time: '16:30',
-      customerName: 'Lê Thị Mai',
-      issue: 'Tư vấn chu kỳ kinh nguyệt',
-      type: 'Online',
-      priority: 'low',
-    },
-  ]);
 
 
   // Update time every minute
@@ -42,6 +16,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions })
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
+    console.log("upcomingAppointments: ", upcomingAppointments)
     return () => clearInterval(timer);
   }, []);
 
@@ -99,6 +74,39 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions })
         return '#70a1ff';
     }
   };
+
+  function getTimeAgo(date) {
+    // Chuyển đổi date thành đối tượng Date nếu là chuỗi
+    const inputDate = typeof date === 'string' ? new Date(date) : date;
+
+    // Kiểm tra tính hợp lệ của date
+    if (!(inputDate instanceof Date) || isNaN(inputDate)) {
+      return 'Ngày không hợp lệ';
+    }
+
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - inputDate) / 1000); // Chênh lệch thời gian tính bằng giây
+
+    // Định nghĩa các khoảng thời gian
+    const intervals = [
+      { label: 'năm', seconds: 31536000 },
+      { label: 'tháng', seconds: 2592000 },
+      { label: 'ngày', seconds: 86400 },
+      { label: 'giờ', seconds: 3600 },
+      { label: 'phút', seconds: 60 },
+      { label: 'giây', seconds: 1 }
+    ];
+
+    // Tìm khoảng thời gian phù hợp
+    for (const interval of intervals) {
+      const count = Math.floor(diffInSeconds / interval.seconds);
+      if (count >= 1) {
+        return `${count} ${interval.label}${count > 1 ? '' : ''} trước`;
+      }
+    }
+
+    return 'vừa xong';
+  }
 
   return (
     <div className="dashboard-overview">
@@ -193,25 +201,25 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions })
 
           <div className="appointments-list compact-list">
             {upcomingAppointments.length > 0 ? (
-              upcomingAppointments.slice(0, 3).map((appointment) => (
-                <div key={appointment.id} className="appointment-item compact">
+              upcomingAppointments.map((appointment) => (
+                <div key={appointment.app_id} className="appointment-item compact">
                   <div className="appointment-time">
-                    <span className="time">{appointment.time}</span>
-                    <span className={`type ${appointment.type.toLowerCase()}`}>
-                      {appointment.type}
+                    <span className="time">{appointment.consultant_pattern.date}</span>
+                    <span className={`type online`}>
+                      Online
                     </span>
                   </div>
 
                   <div className="appointment-info">
-                    <h4>{appointment.customerName}</h4>
+                    <h4>{appointment.customer.full_name}</h4>
                     <p className="issue-brief">
-                      {appointment.issue.length > 40
-                        ? appointment.issue.substring(0, 40) + '...'
-                        : appointment.issue}
+                      {appointment.description.length > 40
+                        ? appointment.description.substring(0, 40) + '...'
+                        : appointment.description}
                     </p>
                   </div>
 
-                 
+
                 </div>
               ))
             ) : (
@@ -250,7 +258,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions })
                     <div className="question-meta-list">
                       <div className="meta-row">
                         <span className="asked-by">👤 {question.customer.full_name}</span>
-                        {/* <span className="time-ago">🕒 {question.timeAgo}</span> */}
+                        <span className="time-ago">🕒 {getTimeAgo(question.created_at)}</span>
                       </div>
                     </div>
 
