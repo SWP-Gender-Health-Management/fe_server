@@ -10,7 +10,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const [hasRejectedSessionLogin, setHasRejectedSessionLogin] = useState(false);
 
-  const SESSION_TIMEOUT = 5000; // 1 giờ = 3600000ms
+  const SESSION_TIMEOUT = 1000* 60 * 60; // 1 giờ = 3600000ms
 
   const resetTimer = () => {
     clearTimeout(timeoutRef.current);
@@ -37,7 +37,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const res = await axios.post('http://localhost:3000/account/refresh-token', {
+      const res = await axios.post('http://localhost:3000/account/create-access-token', {
         refreshToken,
       });
 

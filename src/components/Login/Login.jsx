@@ -9,6 +9,7 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone,
   GoogleOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import doctor from '@/assets/doctor.jpg';
 import Logo from '@assets/Blue-full.svg?react';
@@ -19,6 +20,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import Cookies from 'js-cookie';
 
 const { TabPane } = Tabs;
+const { confirm } = Modal;
 
 const Login = ({ visible, onCancel }) => {
   const { login } = useAuth();
@@ -30,6 +32,83 @@ const Login = ({ visible, onCancel }) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   /* -------------------------------------------------- */
+  /* HELPER FUNCTIONS                                   */
+  /* -------------------------------------------------- */
+  
+  // Hàm helper để xử lý lỗi validation chi tiết
+  const formatErrorMessage = (errorData) => {
+    if (!errorData) return 'Đã có lỗi xảy ra! Vui lòng thử lại.';
+    
+    // Nếu có errors object (validation errors)
+    if (errorData.errors && typeof errorData.errors === 'object') {
+      const errorMessages = [];
+      
+      // Lặp qua tất cả các field có lỗi
+      for (const [field, fieldError] of Object.entries(errorData.errors)) {
+        let fieldName = field;
+        
+        // Chuyển đổi tên field sang tiếng Việt
+        const fieldTranslations = {
+          'email': 'Email',
+          'password': 'Mật khẩu',
+          'fullname': 'Họ tên',
+          'confirmPassword': 'Xác nhận mật khẩu'
+        };
+        
+        if (fieldTranslations[field]) {
+          fieldName = fieldTranslations[field];
+        }
+        
+        if (fieldError.message) {
+          errorMessages.push(`${fieldName}: ${fieldError.message}`);
+        } else if (typeof fieldError === 'string') {
+          errorMessages.push(`${fieldName}: ${fieldError}`);
+        } else if (Array.isArray(fieldError)) {
+          errorMessages.push(`${fieldName}: ${fieldError.join(', ')}`);
+        }
+      }
+      
+      if (errorMessages.length > 0) {
+        return errorMessages.join('\n');
+      }
+    }
+    
+    // Fallback về message chính
+    return errorData.message || 'Đã có lỗi xảy ra! Vui lòng thử lại.';
+  };
+
+  // Hàm hiển thị lỗi bằng Modal
+  const showErrorModal = (title, content) => {
+    Modal.error({
+      title: title,
+      content: content,
+      okText: 'Đóng',
+      centered: true,
+      maskClosable: true,
+      width: 450,
+      okButtonProps: {
+        size: 'large',
+      },
+    });
+  };
+
+  // Hàm hiển thị thành công bằng Modal
+  const showSuccessModal = (title, content, onOk) => {
+    Modal.success({
+      title: title,
+      content: content,
+      okText: 'Đóng',
+      centered: true,
+      maskClosable: true,
+      width: 450,
+      okButtonProps: {
+        size: 'large',
+      },
+      onOk: onOk,
+    });
+  };
+
+  /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG NHẬP                                    */
   /* -------------------------------------------------- */
   const handleLogin = async (values) => {
@@ -39,17 +118,18 @@ const Login = ({ visible, onCancel }) => {
         email: values.email,
         password: values.password,
       });
-      console.log('Response:', response.data);
+      
+      console.log('Login Response:', response.data);
 
       const { accessToken } = response.data.result || {};
       if (!accessToken) {
-        throw new Error('Thiếu accessToken trong phản hồi');
+        throw new Error('Thiếu accessToken trong phản hồi từ server');
       }
 
-      // Lưu accessToken ban đầu vào Cookies
+      // Lưu accessToken vào Cookies
       Cookies.set('accessToken', accessToken, { expires: 1 });
 
-      // Gọi API view-account chỉ với token
+      // Gọi API view-account để lấy thông tin người dùng
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
         {},
@@ -60,43 +140,71 @@ const Login = ({ visible, onCancel }) => {
           },
         }
       );
-      console.log('Phản hồi đầy đủ từ view-account:', viewResponse.data);
+      
+      console.log('View Account Response:', viewResponse.data);
 
       if (!viewResponse.data.result) {
-        throw new Error(
-          'Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.'
-        );
+        throw new Error('Không lấy được thông tin người dùng từ server');
       }
 
       const { account_id, full_name, role } = viewResponse.data.result || {};
-      if (!account_id) throw new Error('Không lấy được account_id');
-      // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
+      if (!account_id) {
+        throw new Error('Không lấy được ID tài khoản');
+      }
+
+      // Cập nhật thông tin vào AuthContext và Cookies
       login(accessToken, null, account_id, full_name || 'Người dùng', role);
-      // setUserInfo({ accountId: account_id, fullname: full_name || 'Người dùng', role });
       Cookies.set('accountId', account_id, { expires: 1 });
       Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
-      Cookies.set('role', role || null, { expires: 1 });
+      Cookies.set('role', role || '', { expires: 1 });
 
-      Modal.success({ title: 'Thành công!', content: 'Đăng nhập thành công.' });
+      // Tắt modal ngay lập tức
       onCancel();
-    } catch (error) {
-      console.error(
-        'Lỗi đăng nhập hoặc lấy thông tin:',
-        error.response?.data || error.message
-      );
-      Modal.error({
-        title: 'Đăng nhập thất bại',
-        content:
-          error.response?.data?.message ||
-          'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
+
+      // Hiển thị thông báo thành công
+      message.success({
+        content: `Đăng nhập thành công! Chào mừng ${full_name || 'bạn'} đã quay trở lại!`,
+        duration: 4,
       });
+
+      // Hiển thị modal thành công (tùy chọn)
+      setTimeout(() => {
+        showSuccessModal(
+          'Đăng nhập thành công! 🎉',
+          `Chào mừng ${full_name || 'bạn'} đã quay trở lại hệ thống!`
+        );
+      }, 500);
+
+    } catch (error) {
+      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+      
+      // Xử lý lỗi chi tiết
+      const errorMessage = formatErrorMessage(error.response?.data);
+      
+      // Hiển thị message lỗi ngắn NGAY LẬP TỨC
+      message.error({
+        content: errorMessage,
+        duration: 6,
+        style: {
+          marginTop: '20px',
+          fontSize: '14px',
+        },
+      });
+
+      // Hiển thị modal lỗi chi tiết
+      setTimeout(() => {
+        showErrorModal(
+          'Đăng nhập thất bại ❌',
+          errorMessage
+        );
+      }, 300);
     } finally {
       setLoginLoading(false);
     }
   };
 
   /* -------------------------------------------------- */
-  /* XỬ LÝ ĐĂNG NHẬP VỚI GOOGLE                            */
+  /* XỬ LÝ ĐĂNG NHẬP VỚI GOOGLE                        */
   /* -------------------------------------------------- */
   const handleGoogleLogin = async (credentialResponse) => {
     setLoginLoading(true);
@@ -105,17 +213,18 @@ const Login = ({ visible, onCancel }) => {
       const res = await axios.post('http://localhost:3000/account/google-verify', {
         idToken,
       });
-      console.log('Backend response:', res.data);
+      
+      console.log('Google Login Response:', res.data);
 
       const { accessToken } = res.data.result || {};
       if (!accessToken) {
-        throw new Error('Thiếu accessToken trong phản hồi');
+        throw new Error('Thiếu accessToken trong phản hồi từ server');
       }
 
-      // Lưu accessToken ban đầu vào Cookies
+      // Lưu accessToken vào Cookies
       Cookies.set('accessToken', accessToken, { expires: 1 });
 
-      // Gọi API view-account bằng đúng token
+      // Gọi API view-account để lấy thông tin người dùng
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
         {},
@@ -126,57 +235,146 @@ const Login = ({ visible, onCancel }) => {
           },
         }
       );
-      console.log('Phản hồi đầy đủ từ view-account:', viewResponse.data);
+      
+      console.log('View Account Response:', viewResponse.data);
 
       if (!viewResponse.data.result) {
-        throw new Error('Không lấy được thông tin người dùng từ view-account. Kiểm tra token hoặc API.');
+        throw new Error('Không lấy được thông tin người dùng từ server');
       }
 
       const { account_id, full_name, role } = viewResponse.data.result || {};
-      if (!account_id) throw new Error('Không lấy được account_id');
+      if (!account_id) {
+        throw new Error('Không lấy được ID tài khoản');
+      }
 
-      // Cập nhật useAuth với thông tin đầy đủ sau khi lấy từ view-account
+      // Cập nhật thông tin vào AuthContext và Cookies
       login(accessToken, null, account_id, full_name || 'Người dùng', role);
       Cookies.set('accountId', account_id, { expires: 1 });
       Cookies.set('fullname', full_name || 'Người dùng', { expires: 1 });
-      Cookies.set('role', role || null, { expires: 1 });
+      Cookies.set('role', role || '', { expires: 1 });
 
-      Modal.success({ title: 'Thành công!', content: 'Đăng nhập Google thành công.' });
+      // Tắt modal ngay lập tức
       onCancel();
-    } catch (error) {
-      console.error('Lỗi đăng nhập hoặc lấy thông tin:', error.response?.data || error.message);
-      Modal.error({
-        title: 'Đăng nhập thất bại',
-        content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra token hoặc liên hệ admin.',
+
+      // Hiển thị thông báo thành công
+      message.success({
+        content: `Đăng nhập Google thành công! Chào mừng ${full_name || 'bạn'}!`,
+        duration: 4,
       });
+
+      // Hiển thị modal thành công (tùy chọn)
+      setTimeout(() => {
+        showSuccessModal(
+          'Đăng nhập Google thành công! 🎉',
+          `Chào mừng ${full_name || 'bạn'} đã đăng nhập bằng Google!`
+        );
+      }, 500);
+
+    } catch (error) {
+      console.error('Lỗi đăng nhập Google:', error.response?.data || error.message);
+      
+      // Xử lý lỗi chi tiết
+      const errorMessage = formatErrorMessage(error.response?.data);
+      
+      // Hiển thị message lỗi ngắn NGAY LẬP TỨC
+      message.error({
+        content: errorMessage,
+        duration: 6,
+        style: {
+          marginTop: '20px',
+          fontSize: '14px',
+        },
+      });
+
+      // Hiển thị modal lỗi chi tiết
+      setTimeout(() => {
+        showErrorModal(
+          'Đăng nhập Google thất bại ❌',
+          errorMessage
+        );
+      }, 300);
     } finally {
       setLoginLoading(false);
     }
   };
 
   const handleLoginError = () => {
-    console.log('Đăng nhập thất bại');
-    message.error('Đăng nhập Google thất bại!');
+    console.log('Google Login Error');
+    
+    // Hiển thị message lỗi ngắn NGAY LẬP TỨC
+    message.error({
+      content: 'Đăng nhập Google thất bại! Vui lòng thử lại.',
+      duration: 5,
+      style: {
+        marginTop: '20px',
+        fontSize: '14px',
+      },
+    });
+
+    // Hiển thị modal lỗi chi tiết
+    setTimeout(() => {
+      showErrorModal(
+        'Đăng nhập Google thất bại ❌',
+        'Có lỗi xảy ra trong quá trình đăng nhập Google. Vui lòng thử lại!'
+      );
+    }, 300);
   };
 
   /* -------------------------------------------------- */
-  /* XỬ LÝ ĐĂNG KÝ                                       */
+  /* XỬ LÝ ĐĂNG KÝ                                      */
   /* -------------------------------------------------- */
   const handleRegister = async (values) => {
     setRegisterLoading(true);
     try {
-      await axios.post('http://localhost:3000/account/register', {
+      const response = await axios.post('http://localhost:3000/account/register', {
         fullname: values.fullname,
         email: values.email,
         password: values.password,
       });
 
-      message.success('Đăng ký thành công! Bạn có thể đăng nhập ngay.');
+      console.log('Register Response:', response.data);
+
+      // Hiển thị thông báo thành công NGAY LẬP TỨC
+      message.success({
+        content: 'Đăng ký thành công! Bạn có thể đăng nhập ngay.',
+        duration: 4,
+      });
+
+      // Reset form và chuyển về tab đăng nhập
       registerForm.resetFields();
       setActiveTab('1');
+
+      // Hiển thị modal thành công (tùy chọn)
+      setTimeout(() => {
+        showSuccessModal(
+          'Đăng ký thành công! 🎉',
+          'Tài khoản của bạn đã được tạo thành công. Bạn có thể đăng nhập ngay bây giờ!'
+        );
+      }, 500);
+
     } catch (err) {
       console.error('Lỗi đăng ký:', err.response?.data || err.message);
-      message.error(err.response?.data?.message || 'Đăng ký thất bại!');
+      
+      // Xử lý lỗi chi tiết
+      const errorMessage = formatErrorMessage(err.response?.data);
+      
+      // Hiển thị message lỗi ngắn NGAY LẬP TỨC
+      message.error({
+        content: errorMessage,
+        duration: 6,
+        style: {
+          marginTop: '20px',
+          fontSize: '14px',
+        },
+      });
+
+      // Hiển thị modal lỗi chi tiết
+      setTimeout(() => {
+        showErrorModal(
+          'Đăng ký thất bại ❌',
+          errorMessage
+        );
+      }, 300);
     } finally {
       setRegisterLoading(false);
     }
