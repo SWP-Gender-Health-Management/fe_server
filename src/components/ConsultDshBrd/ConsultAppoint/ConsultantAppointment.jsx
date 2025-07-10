@@ -3,7 +3,7 @@ import './ConsultantAppointment.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const ConsultantAppointment = () => {
+const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [viewMode, setViewMode] = useState('week'); // 'week' or 'month'
@@ -38,35 +38,68 @@ const ConsultantAppointment = () => {
 
   const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
+  // const fetchWeekAppointment = async (selectedDate) => {
+  //   try {
+  //     const accountId = Cookies.get("accountId");
+  //     const accessToken = Cookies.get("accessToken");
+  //     const startWeekDay = getWeekStartDay(selectedDate || new Date());
+  //     const startWeekDayString = startWeekDay.toISOString().split("T")[0];
+  //     console.log("Check selected date: ", startWeekDayString);
+  //     const response = await axios.get(
+  //       `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
+  //       {
+  //         params: {
+  //           weekStartDate: startWeekDayString
+  //         },
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //           'Content-Type': 'application/json',
+  //         }
+  //       }
+  //     );
+  //     console.log('Consult Appointment Response:', response.data.result);
+  //     setFilteredAppointments(response.data.result || []);
+  //   } catch (error) {
+  //     console.error("Error fetching Consult Appointment:", error);
+  //     setFilteredAppointments([]);
+  //     return;
+  //   } finally {
+  //     console.log("Consult Appointment: ", appointments);
+  //   }
+  // }
+
   const fetchWeekAppointment = async (selectedDate) => {
     try {
-      const accountId = Cookies.get("accountId");
-      const accessToken = Cookies.get("accessToken");
       const startWeekDay = getWeekStartDay(selectedDate || new Date());
-      const startWeekDayString = startWeekDay.toISOString().split("T")[0];
-      console.log("Check selected date: ", startWeekDayString);
-      const response = await axios.get(
-        `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
-        {
-          params: {
-            weekStartDate: startWeekDayString
-          },
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          }
-        }
-      );
-      console.log('Consult Appointment Response:', response.data.result);
-      setFilteredAppointments(response.data.result || []);
+      const endWeekDay = new Date(startWeekDay);
+      endWeekDay.setDate(startWeekDay.getDate() + 6);
+
+      // Chuẩn hóa ngày để chỉ so sánh ngày, tháng, năm
+      const startWeekDayNormalized = new Date(startWeekDay.getFullYear(), startWeekDay.getMonth(), startWeekDay.getDate());
+      const endWeekDayNormalized = new Date(endWeekDay.getFullYear(), endWeekDay.getMonth(), endWeekDay.getDate());
+
+      console.log("Week Start:", startWeekDayNormalized, "Week End:", endWeekDayNormalized);
+      console.log("Appointments:", appointments);
+
+      const filtered = appointments.filter((app) => {
+        const appDate = new Date(app?.consultant_pattern?.date);
+        const isValidDate = !isNaN(appDate);
+        if (!isValidDate) return false;
+
+        // Chuẩn hóa ngày của appDate
+        const appDateNormalized = new Date(appDate.getFullYear(), appDate.getMonth(), appDate.getDate());
+        console.log("Checking app:", app, "Date:", appDateNormalized);
+
+        return startWeekDayNormalized <= appDateNormalized && appDateNormalized <= endWeekDayNormalized;
+      });
+
+      console.log("Filtered Appointments:", filtered);
+      setFilteredAppointments(filtered);
     } catch (error) {
-      console.error("Error fetching Consult Appointment:", error);
+      console.error("Error in fetchWeekAppointment:", error);
       setFilteredAppointments([]);
-      return;
-    } finally {
-      console.log("Consult Appointment: ", appointments);
     }
-  }
+  };
 
   const getWeekDates = (date) => {
     const week = [];
@@ -107,7 +140,6 @@ const ConsultantAppointment = () => {
   const updateAppointmentStatus = async (appointment, status, reportText) => {
     const accountId = Cookies.get("accountId");
     const accessToken = Cookies.get("accessToken");
-    let report = null;
 
     if (status == 'completed') {
       if (!reportText.trim()) {
@@ -133,9 +165,6 @@ const ConsultantAppointment = () => {
           }
         );
         console.log('Createed report:', response.data.result);
-        if (response.data.result) {
-          report = response.data.result
-        }
       } catch (error) {
         console.error("Error update appointment status:", error);
         return;
@@ -161,7 +190,7 @@ const ConsultantAppointment = () => {
       console.error("Error update appointment status:", error);
       return;
     } finally {
-      fetchWeekAppointment(selectedDate);
+      fetchAppointments();
       setSelectedAppointment(null);
     }
   };
@@ -413,7 +442,7 @@ const ConsultantAppointment = () => {
                 </div>
 
                 {selectedAppointment.status === 'confirmed' && <div className="info-row">
-                  <label>Report:</label><br/>
+                  <label>Report:</label><br />
                   <textarea
                     placeholder="Nhập báo cáo chi tiết và chuyên nghiệp..."
                     value={reportText}
@@ -424,7 +453,7 @@ const ConsultantAppointment = () => {
                 </div>}
 
                 {selectedAppointment.status === 'completed' && selectedAppointment.report && <div className="info-row">
-                  <label>Report:</label><br/>
+                  <label>Report:</label><br />
                   <p className="issue-text">{selectedAppointment.report.description}</p>
                 </div>}
 

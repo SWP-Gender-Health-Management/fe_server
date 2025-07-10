@@ -224,7 +224,7 @@ const ConsultantDashboard = () => {
           />
         );
       case 'appointments':
-        return <ConsultantAppointment />;
+        return <ConsultantAppointment appointments={appointments} fetchAppointments={fetchAppointments} />;
       case 'blogs':
         return <ConsultantBlog blogs={blogs} fetchBlogs={fetchBlogs} />;
       case 'questions':
