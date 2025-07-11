@@ -1,0 +1,14 @@
+.phase-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
+}
+
+.phase-card .ant-card-head {
+  border-bottom: none;
+}
+
+.phase-card .ant-card-body {
+  padding: 16px 24px;
+}

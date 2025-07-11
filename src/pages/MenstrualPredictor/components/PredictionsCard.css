@@ -1,0 +1,12 @@
+.prediction-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.prediction-item:last-child {
+  border-bottom: none;
+}
