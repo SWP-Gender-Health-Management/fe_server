@@ -181,14 +181,6 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
         return;
       }
 
-      const api = axios.create({
-        baseURL: 'http://localhost:3000',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
       let payload;
 
       payload = {
@@ -198,7 +190,16 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
         note: values.description || 'Đăng ký theo dõi chu kỳ lần đầu',
       };
 
-      const response = await api.post('/customer/track-period', payload);
+      const response = await axios.post(
+        'http://localhost:3000/customer/track-period',
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       message.success('Thiết lập theo dõi chu kỳ kinh nguyệt thành công! 🎉');
 

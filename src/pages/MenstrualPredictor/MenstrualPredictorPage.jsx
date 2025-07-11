@@ -1,6 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
-import { Row, Col, message, Spin } from 'antd';
+import { Row, Col, message, Spin, Modal, Button } from 'antd';
+import { HomeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import CalendarView from './components/CalendarView';
 import CurrentPhaseCard from './components/CurrentPhaseCard';
 import CycleSettingsCard from './components/CycleSettingsCard';
@@ -34,8 +36,10 @@ const MenstrualPredictorPage = () => {
   const [isTrackingSetup, setIsTrackingSetup] = useState(false);
   const [showSetupForm, setShowSetupForm] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [showNotFemaleModal, setShowNotFemaleModal] = useState(false);
 
   const token = Cookies.get('accessToken');
+  const navigate = useNavigate();
   console.log('Token:', token);
 
   /**
@@ -58,7 +62,8 @@ const MenstrualPredictorPage = () => {
       }
     );
     console.log('getMenstrualCycleData response:', response.data);
-    return response.data?.result;
+    const result = response.data?.result;
+    return result;
   };
 
   // 2. If true, fetch prediction data (/customer/predict-period) - returns full cycle data
@@ -142,182 +147,42 @@ const MenstrualPredictorPage = () => {
     }
   };
 
-  const fetchCheckTrackingStatus = useCallback(async () => {
-    console.log('fetchCheckTrackingStatus called...');
-
-    if (!token) {
-      console.log('No token found, showing setup form');
-      setShowSetupForm(false);
-      setIsTrackingSetup(false);
-      setInitialLoading(false);
-      return;
-    }
-
-    try {
-      console.log('Making API call to check tracking status...');
-
-      // Step 1: Check if customer has menstrual cycle data
-      const checkResponse = await axios.get(
-        `http://localhost:3000/customer/get-menstrual-cycle`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Check API response:', checkResponse.data);
-      const hasTrackingData = checkResponse.data?.result || false;
-
-      // If no tracking data exists, show setup form
-      if (!hasTrackingData) {
-        console.log(
-          'No tracking data found (result: false), showing setup form'
-        );
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-        setInitialLoading(false);
-        return;
-      }
-
-      // Step 2: If tracking data exists, get prediction data
-      console.log(
-        'Tracking data exists (result: true), fetching predictions...'
-      );
-      const predictionResponse = await axios.get(
-        `http://localhost:3000/customer/predict-period`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('Prediction API response:', predictionResponse.data);
-      const data = predictionResponse.data?.data;
-
-      if (!data) {
-        console.log('No prediction data available, showing setup form');
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-      } else {
-        console.log('Complete tracking data found, showing main interface');
-        setIsTrackingSetup(true);
-        setShowSetupForm(false);
-
-        // Set basic cycle information from API response
-        if (data.current_start_date) {
-          setLastPeriodStart(data.current_start_date);
-        }
-        if (data.current_period) {
-          setPeriodLength(data.current_period);
-        }
-        if (data.current_end_date && data.current_start_date) {
-          // Calculate cycle length from start to end date
-          const cycleLength =
-            Math.ceil(
-              (new Date(data.current_end_date) -
-                new Date(data.current_start_date)) /
-                (1000 * 60 * 60 * 24)
-            ) + 1;
-          setCycleLength(cycleLength);
-        }
-
-        // Set calendar data from API response
-        setPeriodDays(data.periodDaysMap || {});
-        setOvulationDays(data.ovulationDaysMap || {});
-
-        // Calculate predictions for next cycle
-        if (data.current_start_date && data.current_period) {
-          const currentStart = new Date(data.current_start_date);
-          const averageCycleLength = 28; // Default cycle length for predictions
-
-          // Calculate next period start (current start + cycle length)
-          const nextPeriodStart = new Date(currentStart);
-          nextPeriodStart.setDate(currentStart.getDate() + averageCycleLength);
-          setNextStartDate(nextPeriodStart);
-
-          // Calculate ovulation date (14 days before next period)
-          const ovulationDate = new Date(nextPeriodStart);
-          ovulationDate.setDate(nextPeriodStart.getDate() - 14);
-          setOvulationDate(ovulationDate);
-
-          // Calculate fertile window (2 days before to 2 days after ovulation)
-          const fertileStart = new Date(ovulationDate);
-          fertileStart.setDate(ovulationDate.getDate() - 2);
-          const fertileEnd = new Date(ovulationDate);
-          fertileEnd.setDate(ovulationDate.getDate() + 2);
-          setFertileRange({ start: fertileStart, end: fertileEnd });
-
-          // Calculate next period end date
-          const nextPeriodEnd = new Date(nextPeriodStart);
-          nextPeriodEnd.setDate(
-            nextPeriodStart.getDate() + (data.current_period - 1)
-          );
-          setNextEndDate(nextPeriodEnd);
-        }
-      }
-    } catch (error) {
-      console.error('Lỗi khi kiểm tra trạng thái theo dõi:', error);
-
-      // Handle different error cases
-      if (error.response?.status === 404) {
-        console.log(
-          'API returned 404 - No tracking data exists, showing setup form'
-        );
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-      } else if (error.response?.status === 400) {
-        console.log('API returned 400 - Bad request, showing setup form');
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-      } else if (error.response?.status === 401) {
-        console.log('API returned 401 - Unauthorized');
-        message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-      } else if (error.code === 'ECONNREFUSED' || !error.response) {
-        console.log('API connection failed');
-        message.error(
-          'Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng!'
-        );
-      } else {
-        console.log('Other API error:', error.response?.status);
-        message.error('Có lỗi xảy ra khi kiểm tra dữ liệu. Vui lòng thử lại!');
-        // Show setup form as fallback
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-      }
-    } finally {
-      console.log('Setting initial loading to false');
-      setInitialLoading(false);
-    }
-  }, [token]);
+  const handleGoHome = () => {
+    setShowNotFemaleModal(false);
+    navigate('/');
+  };
 
   useEffect(() => {
-    console.assert('useEffect triggered, calling fetchCheckTrackingStatus');
-    try {
-      const hasTrackingData = getMenstrualCycleData();
-      console.log('hasTrackingData:', hasTrackingData);
-      if (hasTrackingData) {
-        getPredictionData();
-      } else {
-        console.log(
-          'No tracking data found (result: false), showing setup form'
-        );
+    const checkTrackingStatus = async () => {
+      // console.assert('useEffect triggered, calling fetchCheckTrackingStatus');
+      try {
+        const hasTrackingData = await getMenstrualCycleData();
+        console.log('hasTrackingData:', hasTrackingData);
+        if (hasTrackingData === '11') {
+          await getPredictionData();
+        } else if (hasTrackingData === '10') {
+          console.log(
+            'No tracking data found (result: false), showing setup form'
+          );
+          setShowSetupForm(true);
+          setIsTrackingSetup(false);
+          setInitialLoading(false);
+          return;
+        } else if (hasTrackingData === '01') {
+          console.log('Customer is not female, showing notification modal');
+          setShowNotFemaleModal(true);
+          setInitialLoading(false);
+          return;
+        } else {
+        }
+      } catch (error) {
+        console.error('Lỗi khi kiểm tra trạng thái theo dõi:', error);
         setShowSetupForm(true);
         setIsTrackingSetup(false);
-        setInitialLoading(false);
-        return;
       }
-    } catch (error) {
-      console.error('Lỗi khi kiểm tra trạng thái theo dõi:', error);
-      setShowSetupForm(true);
-      setIsTrackingSetup(false);
-    }
-  }, [fetchCheckTrackingStatus]);
+    };
+    checkTrackingStatus();
+  }, []);
 
   // Calculate cycle phase
   const getCurrentPhase = () => {
@@ -413,14 +278,6 @@ const MenstrualPredictorPage = () => {
       return;
     }
 
-    const api = axios.create({
-      baseURL: 'http://localhost:3000',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
     try {
       // Calculate end date from start date and period length
       const startDate = new Date(lastPeriodStart);
@@ -428,14 +285,23 @@ const MenstrualPredictorPage = () => {
       endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
 
       // Update menstrual cycle information using update API
-      await api.post('/customer/update-menstrual-cycle', {
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
-      });
+      const response = await axios.post(
+        'http://localhost:3000/customer/update-menstrual-cycle',
+        {
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+          note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       // Refresh data after successful update
-      await fetchCheckTrackingStatus();
+      await getPredictionData();
       message.success('Cập nhật thành công!');
     } catch (err) {
       console.error('Lỗi khi cập nhật chu kỳ:', err);
@@ -449,14 +315,14 @@ const MenstrualPredictorPage = () => {
         message.error('Không thể cập nhật chu kỳ. Vui lòng thử lại!');
       }
     }
-  }, [lastPeriodStart, periodLength, fetchCheckTrackingStatus]);
+  }, [lastPeriodStart, periodLength, getPredictionData]);
 
   // Handle setup completion
   const handleSetupComplete = () => {
     setShowSetupForm(false);
     setIsTrackingSetup(true);
     // Fetch the updated data
-    fetchCheckTrackingStatus();
+    getPredictionData();
   };
 
   const currentPhase = getCurrentPhase();
@@ -561,6 +427,105 @@ const MenstrualPredictorPage = () => {
           </div>
         </Col>
       </Row>
+
+      <Modal
+        title={
+          <div style={{ textAlign: 'center', color: '#faad14' }}>
+            <ExclamationCircleOutlined
+              style={{ marginRight: '8px', fontSize: '20px' }}
+            />
+            Thông Báo Quan Trọng
+          </div>
+        }
+        open={showNotFemaleModal}
+        onCancel={handleGoHome}
+        footer={[
+          <Button
+            key="home"
+            type="primary"
+            icon={<HomeOutlined />}
+            onClick={handleGoHome}
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              border: 'none',
+              borderRadius: '8px',
+            }}
+          >
+            Quay Về Trang Chủ
+          </Button>,
+        ]}
+        width={500}
+        centered
+        closable={false}
+        maskClosable={false}
+      >
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #faad14 0%, #ffc53d 100%)',
+              borderRadius: '50%',
+              width: '80px',
+              height: '80px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px',
+              boxShadow: '0 8px 32px rgba(250, 173, 20, 0.3)',
+            }}
+          >
+            <ExclamationCircleOutlined
+              style={{
+                fontSize: '40px',
+                color: '#ffffff',
+              }}
+            />
+          </div>
+
+          <h3
+            style={{ color: '#262626', marginBottom: '12px', fontSize: '18px' }}
+          >
+            Tính Năng Không Khả Dụng
+          </h3>
+
+          <p
+            style={{
+              color: '#666',
+              fontSize: '14px',
+              lineHeight: '1.6',
+              marginBottom: '16px',
+            }}
+          >
+            Tính năng theo dõi chu kỳ kinh nguyệt chỉ dành cho người nữ.
+          </p>
+
+          <p style={{ color: '#888', fontSize: '13px', lineHeight: '1.5' }}>
+            Vui lòng quay về trang chủ để sử dụng các tính năng khác phù hợp với
+            bạn.
+          </p>
+
+          <div
+            style={{
+              marginTop: '20px',
+              padding: '12px',
+              background: '#fff7e6',
+              borderRadius: '8px',
+              border: '1px solid #ffd591',
+            }}
+          >
+            <p
+              style={{
+                color: '#faad14',
+                fontSize: '12px',
+                margin: '0',
+                fontWeight: '500',
+              }}
+            >
+              💡 Gợi ý: Bạn có thể khám phá các dịch vụ khác như đặt lịch khám,
+              tư vấn sức khỏe, hoặc xem thông tin bệnh viện
+            </p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
