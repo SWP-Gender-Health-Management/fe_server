@@ -1,16 +1,19 @@
 import { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
 import { Row, Col, message, Spin, Modal, Button } from 'antd';
-import { HomeOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  HomeOutlined,
+  ExclamationCircleOutlined,
+  EditOutlined,
+  CalendarOutlined,
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import CalendarView from './components/CalendarView';
-import CurrentPhaseCard from './components/CurrentPhaseCard';
-import CycleSettingsCard from './components/CycleSettingsCard';
-import PredictionsCard from './components/PredictionsCard';
-import HealthTipsCard from './components/HealthTipsCard';
-import SetupMenstrualForm from './components/SetupMenstrualForm';
+import CycleUpdateModal from './components/CycleUpdateModal';
+import DayInfoModal from './components/DayInfoModal';
 import './MenstrualPredictorPage.css';
 import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 const MenstrualPredictorPage = () => {
   console.log('MenstrualPredictorPage component is rendering...');
@@ -38,19 +41,47 @@ const MenstrualPredictorPage = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [showNotFemaleModal, setShowNotFemaleModal] = useState(false);
 
+  // New modal states
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showDayInfoModal, setShowDayInfoModal] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [accountId, setAccountId] = useState(null);
+
   const token = Cookies.get('accessToken');
   const navigate = useNavigate();
   console.log('Token:', token);
 
-  /**
-   * API Flow for checking menstrual tracking status:
-   * 1. Check if customer has any menstrual cycle data (/customer/get-menstrual-cycle) - returns true/false
-   * 2. If true, fetch prediction data (/customer/predict-period) - returns full cycle data
-   * 3. If false, show setup form that calls (/customer/track-period) to create initial data
-   * 4. For updates, use (/customer/update-menstrual-cycle)
-   */
+  useEffect(() => {
+    const checkTrackingStatus = async () => {
+      try {
+        const hasTrackingData = await getMenstrualCycleData();
+        console.log('hasTrackingData:', hasTrackingData);
+        if (hasTrackingData === '11') {
+          await getPredictionData();
+          return;
+        } else if (hasTrackingData === '10') {
+          console.log(
+            'No tracking data found (result: false), showing setup form'
+          );
+          setShowSetupForm(true);
+          setIsTrackingSetup(false);
+          setInitialLoading(false);
+          return;
+        } else {
+          console.log('Customer is not female, showing notification modal');
+          setShowNotFemaleModal(true);
+          setInitialLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Lỗi khi kiểm tra trạng thái theo dõi:', error);
+        setShowSetupForm(true);
+        setIsTrackingSetup(false);
+      }
+    };
+    checkTrackingStatus();
+  }, []);
 
-  // 1. Check if customer has any menstrual cycle data (/customer/get-menstrual-cycle) - returns true/false
   const getMenstrualCycleData = async () => {
     const response = await axios.get(
       `http://localhost:3000/customer/get-menstrual-cycle`,
@@ -66,7 +97,6 @@ const MenstrualPredictorPage = () => {
     return result;
   };
 
-  // 2. If true, fetch prediction data (/customer/predict-period) - returns full cycle data
   const getPredictionData = async () => {
     const response = await axios.get(
       `http://localhost:3000/customer/predict-period`,
@@ -78,7 +108,7 @@ const MenstrualPredictorPage = () => {
       }
     );
     console.log('getPredictionData response:', response.data);
-    const data = response.data?.data;
+    const data = response.data?.result;
 
     if (!data) {
       console.log('No prediction data available, showing setup form');
@@ -89,7 +119,7 @@ const MenstrualPredictorPage = () => {
       setIsTrackingSetup(true);
       setShowSetupForm(false);
       setInitialLoading(false);
-      // Set basic cycle information from API response
+
       if (data.current_start_date) {
         setLastPeriodStart(data.current_start_date);
       }
@@ -97,7 +127,6 @@ const MenstrualPredictorPage = () => {
         setPeriodLength(data.current_period);
       }
       if (data.current_end_date && data.current_start_date) {
-        // Calculate cycle length from start to end date
         const cycleLength =
           Math.ceil(
             (new Date(data.current_end_date) -
@@ -107,11 +136,9 @@ const MenstrualPredictorPage = () => {
         setCycleLength(cycleLength);
       }
 
-      // Set calendar data from API response
       setPeriodDays(data.periodDaysMap || {});
       setOvulationDays(data.ovulationDaysMap || {});
 
-      // Calculate predictions for next cycle
       if (
         data.current_start_date &&
         data.current_end_date &&
@@ -120,24 +147,20 @@ const MenstrualPredictorPage = () => {
         const currentStart = new Date(data.current_start_date);
         const averageCycleLength = data.current_period;
 
-        // Calculate next period start (current start + cycle length)
         const nextPeriodStart = new Date(currentStart);
         nextPeriodStart.setDate(currentStart.getDate() + averageCycleLength);
         setNextStartDate(nextPeriodStart);
 
-        // Calculate ovulation date (14 days before next period)
         const ovulationDate = new Date(nextPeriodStart);
         ovulationDate.setDate(nextPeriodStart.getDate() - 14);
         setOvulationDate(ovulationDate);
 
-        // Calculate fertile window (2 days before to 2 days after ovulation)
         const fertileStart = new Date(ovulationDate);
         fertileStart.setDate(ovulationDate.getDate() - 2);
         const fertileEnd = new Date(ovulationDate);
         fertileEnd.setDate(ovulationDate.getDate() + 2);
         setFertileRange({ start: fertileStart, end: fertileEnd });
 
-        // Calculate next period end date
         const nextPeriodEnd = new Date(nextPeriodStart);
         nextPeriodEnd.setDate(
           nextPeriodStart.getDate() + (data.current_period - 1)
@@ -152,38 +175,6 @@ const MenstrualPredictorPage = () => {
     navigate('/');
   };
 
-  useEffect(() => {
-    const checkTrackingStatus = async () => {
-      // console.assert('useEffect triggered, calling fetchCheckTrackingStatus');
-      try {
-        const hasTrackingData = await getMenstrualCycleData();
-        console.log('hasTrackingData:', hasTrackingData);
-        if (hasTrackingData === '11') {
-          await getPredictionData();
-        } else if (hasTrackingData === '10') {
-          console.log(
-            'No tracking data found (result: false), showing setup form'
-          );
-          setShowSetupForm(true);
-          setIsTrackingSetup(false);
-          setInitialLoading(false);
-          return;
-        } else if (hasTrackingData === '01') {
-          console.log('Customer is not female, showing notification modal');
-          setShowNotFemaleModal(true);
-          setInitialLoading(false);
-          return;
-        } else {
-        }
-      } catch (error) {
-        console.error('Lỗi khi kiểm tra trạng thái theo dõi:', error);
-        setShowSetupForm(true);
-        setIsTrackingSetup(false);
-      }
-    };
-    checkTrackingStatus();
-  }, []);
-
   // Calculate cycle phase
   const getCurrentPhase = () => {
     if (!lastPeriodStart || !cycleLength || !periodLength) return 'unknown';
@@ -192,18 +183,16 @@ const MenstrualPredictorPage = () => {
     const daysDiff = Math.floor((today - lastPeriod) / (1000 * 60 * 60 * 24));
     const cycleDay = (daysDiff % cycleLength) + 1;
 
-    // Ước tính ngày rụng trứng bằng cách lấy độ dài chu kỳ trừ đi 14 ngày
     const estimatedOvulationDay = cycleLength - 14;
 
-    if (cycleDay <= periodLength) return 'menstrual'; // Giai đoạn hành kinh
-    // Ngày rụng trứng thực tế là một khoảng ngắn xung quanh ngày dự kiến
+    if (cycleDay <= periodLength) return 'menstrual';
     if (
       cycleDay >= estimatedOvulationDay - 2 &&
       cycleDay <= estimatedOvulationDay + 1
     )
-      return 'ovulation'; // Cửa sổ rụng trứng
-    if (cycleDay < estimatedOvulationDay) return 'follicular'; // Trước khi rụng trứng là giai đoạn nang noãn
-    if (cycleDay > estimatedOvulationDay) return 'luteal'; // Sau khi rụng trứng là giai đoạn hoàng thể
+      return 'ovulation';
+    if (cycleDay < estimatedOvulationDay) return 'follicular';
+    if (cycleDay > estimatedOvulationDay) return 'luteal';
     return 'luteal';
   };
 
@@ -279,12 +268,10 @@ const MenstrualPredictorPage = () => {
     }
 
     try {
-      // Calculate end date from start date and period length
       const startDate = new Date(lastPeriodStart);
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
 
-      // Update menstrual cycle information using update API
       const response = await axios.post(
         'http://localhost:3000/customer/update-menstrual-cycle',
         {
@@ -300,9 +287,9 @@ const MenstrualPredictorPage = () => {
         }
       );
 
-      // Refresh data after successful update
       await getPredictionData();
       message.success('Cập nhật thành công!');
+      setShowUpdateModal(false);
     } catch (err) {
       console.error('Lỗi khi cập nhật chu kỳ:', err);
       if (err.response?.status === 401) {
@@ -321,8 +308,51 @@ const MenstrualPredictorPage = () => {
   const handleSetupComplete = () => {
     setShowSetupForm(false);
     setIsTrackingSetup(true);
-    // Fetch the updated data
     getPredictionData();
+  };
+
+  // Handle day click
+  const handleDayClick = (day) => {
+    if (day) {
+      setSelectedDay(day);
+      setShowDayInfoModal(true);
+    }
+  };
+
+  // Get day information for modal
+  const getDayInfo = (day) => {
+    if (!day) return null;
+
+    const selectedDate = new Date(year, month, day);
+    const isPeriod = periodDays[`${year}-${month}`]?.includes(day);
+    const isOvulation = ovulationDays[`${year}-${month}`]?.includes(day);
+    const isToday =
+      day === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear();
+
+    // Calculate cycle day
+    let cycleDay = null;
+    let phase = null;
+    if (lastPeriodStart && cycleLength) {
+      const lastPeriod = new Date(lastPeriodStart);
+      const daysDiff = Math.floor(
+        (selectedDate - lastPeriod) / (1000 * 60 * 60 * 24)
+      );
+      cycleDay = (daysDiff % cycleLength) + 1;
+      phase = getCurrentPhase();
+    }
+
+    return {
+      date: selectedDate,
+      day: day,
+      isPeriod,
+      isOvulation,
+      isToday,
+      cycleDay,
+      phase,
+      phaseInfo: getPhaseInfo(phase),
+    };
   };
 
   const currentPhase = getCurrentPhase();
@@ -382,13 +412,28 @@ const MenstrualPredictorPage = () => {
     return <SetupMenstrualForm onSetupComplete={handleSetupComplete} />;
   }
 
+  const getAccountIdFromToken = () => {
+    const token =
+      sessionStorage.getItem('accessToken') ||
+      localStorage.getItem('accessToken');
+    if (!token) return null;
+
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.account_id;
+    } catch (err) {
+      console.error('Không thể giải mã token:', err);
+      return null;
+    }
+  };
+
   // Show main tracking interface
   console.log('Showing main interface...');
   return (
     <div className="menstrual-tracker-container">
-      <Row gutter={[24, 24]} style={{ minHeight: '100vh', padding: '20px' }}>
-        {/* Left Side - Calendar */}
-        <Col xs={24} lg={12}>
+      {/* Main Content - Centered Calendar */}
+      <div className="tracker-main-content">
+        <div className="calendar-wrapper">
           <CalendarView
             month={month}
             year={year}
@@ -396,38 +441,33 @@ const MenstrualPredictorPage = () => {
             setYear={setYear}
             periodDays={periodDays[`${year}-${month}`] || []}
             ovulationDays={ovulationDays[`${year}-${month}`] || []}
+            onDayClick={handleDayClick}
+            onUpdateClick={() => setShowUpdateModal(true)}
           />
-        </Col>
+        </div>
+      </div>
 
-        {/* Right Side - Information Panels */}
-        <Col xs={24} lg={12}>
-          <div className="info-panels">
-            <CurrentPhaseCard
-              phaseInfo={phaseInfo}
-              daysUntilNextPeriod={daysUntilNextPeriod()}
-            />
+      {/* Update Cycle Modal */}
+      <CycleUpdateModal
+        visible={showUpdateModal}
+        onCancel={() => setShowUpdateModal(false)}
+        lastPeriodStart={lastPeriodStart}
+        setLastPeriodStart={setLastPeriodStart}
+        cycleLength={cycleLength}
+        setCycleLength={setCycleLength}
+        periodLength={periodLength}
+        setPeriodLength={setPeriodLength}
+        onUpdate={handleUpdate}
+      />
 
-            <CycleSettingsCard
-              lastPeriodStart={lastPeriodStart}
-              setLastPeriodStart={setLastPeriodStart}
-              cycleLength={cycleLength}
-              setCycleLength={setCycleLength}
-              periodLength={periodLength}
-              setPeriodLength={setPeriodLength}
-              handleUpdate={handleUpdate}
-            />
+      {/* Day Info Modal */}
+      <DayInfoModal
+        visible={showDayInfoModal}
+        onCancel={() => setShowDayInfoModal(false)}
+        dayInfo={getDayInfo(selectedDay)}
+      />
 
-            <PredictionsCard
-              nextStartDate={nextStartDate}
-              ovulationDate={ovulationDate}
-              fertileRange={fertileRange}
-            />
-
-            <HealthTipsCard phaseInfo={phaseInfo} />
-          </div>
-        </Col>
-      </Row>
-
+      {/* Not Female Modal */}
       <Modal
         title={
           <div style={{ textAlign: 'center', color: '#faad14' }}>
