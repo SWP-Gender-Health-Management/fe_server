@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './Question.css';
-import axios from 'axios';
 import { Modal, message } from 'antd';
 import { useAuth } from '@context/AuthContext';
 import Cookies from 'js-cookie';
-import HospitalInfo from '@components/Info/HospitalInfo';
+import HospitalInfo from './components/Info/HospitalInfo';
 
 // Import components
 import QuestionHeader from './components/MyQuestionTab/QuestionHeader';
 import TabNavigation from './components/TabNavigation/TabNavigation';
 import MyQuestionsTab from './components/MyQuestionTab/MyQuestionsTab';
 import AskQuestionForm from './components/AskQuestionForm/AskQuestionForm';
+import api from '@/api/api';
 
 const Question = () => {
   const [activeTab, setActiveTab] = useState('my-questions');
@@ -18,7 +18,6 @@ const Question = () => {
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const accessToken = Cookies.get('accessToken');
   const customerId = Cookies.get('accountId');
 
   // Form states
@@ -51,13 +50,9 @@ const Question = () => {
       console.log('Search term:', search);
       console.log('Status filter:', status);
 
-      const res = await axios.get(
-        `http://localhost:3000/question/get-question-by-id/customer/${customerId}`,
+      const res = await api.get(
+        `/question/get-question-by-id/customer/${customerId}`,
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
           params: {
             page: page, // Nếu backend cần page bắt đầu từ 0, thay bằng: page - 1
             limit: pageSize,
@@ -118,15 +113,9 @@ const Question = () => {
     };
 
     try {
-      const res = await api.post(
+      await api.post(
         '/question/create-question',
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
+        payload
       );
 
       // Reset về trang 1 sau khi tạo câu hỏi mới

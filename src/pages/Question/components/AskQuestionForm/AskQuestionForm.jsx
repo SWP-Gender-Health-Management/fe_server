@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import { SendOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
-import HospitalInfo from '@components/Info/HospitalInfo';
+import HospitalInfo from '../Info/HospitalInfo';
 import './AskQuestionForm.css';
 
 const { TextArea } = Input;
