@@ -56,7 +56,7 @@ const StaffDashboard = () => {
         avatar: 'https://via.placeholder.com/80x80',
         averageFeedBackRating: 4.9,
         totalFeedBack: 15,
-        totalAppointments: 1247, 
+        totalAppointments: 1247,
         created_at: '2023-03-15',
       });
       await fetchStaffData()
@@ -100,8 +100,8 @@ const StaffDashboard = () => {
       // );
       setStaffData((prev) => {
         if (viewResponse.data.result) {
-          prev = { 
-            ...prev, 
+          prev = {
+            ...prev,
             ...viewResponse.data.result,
             department: getDepartment(viewResponse.data.result.role),
             position: getPosition(viewResponse.data.result.role)
@@ -192,7 +192,9 @@ const StaffDashboard = () => {
 
   const handleLogout = () => {
     // Handle logout logic
-    navigate('/login');
+    Cookies.remove("accessToken");
+    Cookies.remove("accountId");
+    navigate('/');
   };
 
   const toggleSidebar = () => {
@@ -221,7 +223,7 @@ const StaffDashboard = () => {
 
   const getPosition = (role) => {
     switch (role) {
-      case  0:
+      case 0:
         return "Quản trị viên";
       case 1:
         return "Tư vấn viên";
@@ -239,7 +241,7 @@ const StaffDashboard = () => {
   const getDepartment = (role) => {
     console.log("role: ", role)
     switch (role) {
-      case  0:
+      case 0:
         return "Quản trị viên";
       case 1:
         return "Bộ phận tư vấn";
@@ -259,7 +261,7 @@ const StaffDashboard = () => {
       case 'overview':
         return <StaffOverview staffData={staffData} />;
       case 'today-appointments':
-        return <TodayAppointments />;
+        return <TodayAppointments havePattern={true} />;
       case 'search-appointments':
         return <SearchAppointments />;
       case 'blog-management':

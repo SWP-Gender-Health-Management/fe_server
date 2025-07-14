@@ -214,24 +214,6 @@ const ConsultantProfile = ({ consultantData }) => {
               <div className="info-section">
                 <h4>🏥 Thông tin chuyên môn</h4>
                 <div className="info-grid">
-                  {/* <div className="info-row">
-                    <label>Chuyên khoa:</label>
-                    <span>{consultantData.specialization}</span>
-                  </div> */}
-                  {/* <div className="info-row">
-                    <label>Lĩnh vực tư vấn:</label>
-                    <div className="specializations">
-                      {consultantData.specializations.map((spec, index) => (
-                        <span key={index} className="spec-tag">
-                          {spec}
-                        </span>
-                      ))}
-                    </div>
-                  </div> */}
-                  {/* <div className="info-row">
-                    <label>Giờ làm việc:</label>
-                    <span>{consultantData.workingHours}</span>
-                  </div> */}
                   <div className="info-row">
                     <label>Hình thức tư vấn:</label>
                     <div className="consultation-types">
@@ -249,17 +231,6 @@ const ConsultantProfile = ({ consultantData }) => {
                 </div>
               </div>
 
-              {/* <div className="info-section">
-                <h4>🎓 Bằng cấp & Chứng chỉ</h4>
-                <div className="certifications">
-                  {consultantData.certifications.map((cert, index) => (
-                    <div key={index} className="certification-item">
-                      <span className="cert-icon">🏆</span>
-                      <span className="cert-name">{cert}</span>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
             </div>
           </div>
         )}

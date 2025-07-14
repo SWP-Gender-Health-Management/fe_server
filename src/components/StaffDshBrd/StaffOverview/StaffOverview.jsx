@@ -115,7 +115,7 @@ const StaffOverview = ({ staffData }) => {
       <div className="welcome-section">
         <div className="welcome-content">
           <div className="welcome-text">
-            <h1>Chào mừng trở lại, {staffData?.name}!</h1>
+            <h1>Chào mừng trở lại, {staffData?.full_name}!</h1>
             <p>
               Hôm nay là {formatDate(currentTime)} - {formatTime(currentTime)}
             </p>

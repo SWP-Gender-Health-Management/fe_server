@@ -3,12 +3,12 @@ import './ConsultantAppointment.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
+const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantData, fetchConsultAppointmentStat }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
-  const [filteredAppointments, setFilteredAppointments] = useState([]);
+  // const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [reportText, setReportText] = useState('');
 
 
@@ -23,8 +23,6 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
       } catch (error) {
         console.error("Error fetching Slot:", error);
         return;
-      } finally {
-        console.log("Time slot: ", timeSlots)
       }
     }
     fetchTimeSlots();
@@ -32,73 +30,43 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
   }, []);
 
   useEffect(() => {
-    fetchWeekAppointment(selectedDate);
+    fetchWeekAppointment(selectedDate, false);
   }, [selectedDate]);
 
   const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
   // const fetchWeekAppointment = async (selectedDate) => {
   //   try {
-  //     const accountId = Cookies.get("accountId");
-  //     const accessToken = Cookies.get("accessToken");
   //     const startWeekDay = getWeekStartDay(selectedDate || new Date());
-  //     const startWeekDayString = startWeekDay.toISOString().split("T")[0];
-  //     console.log("Check selected date: ", startWeekDayString);
-  //     const response = await axios.get(
-  //       `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
-  //       {
-  //         params: {
-  //           weekStartDate: startWeekDayString
-  //         },
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //           'Content-Type': 'application/json',
-  //         }
-  //       }
-  //     );
-  //     console.log('Consult Appointment Response:', response.data.result);
-  //     setFilteredAppointments(response.data.result || []);
+  //     const endWeekDay = new Date(startWeekDay);
+  //     endWeekDay.setDate(startWeekDay.getDate() + 6);
+
+  //     // Chuẩn hóa ngày để chỉ so sánh ngày, tháng, năm
+  //     const startWeekDayNormalized = new Date(startWeekDay.getFullYear(), startWeekDay.getMonth(), startWeekDay.getDate());
+  //     const endWeekDayNormalized = new Date(endWeekDay.getFullYear(), endWeekDay.getMonth(), endWeekDay.getDate());
+
+  //     console.log("Week Start:", startWeekDayNormalized, "Week End:", endWeekDayNormalized);
+  //     console.log("Appointments:", appointments);
+
+  //     const filtered = appointments.filter((app) => {
+  //       const appDate = new Date(app?.consultant_pattern?.date);
+  //       const isValidDate = !isNaN(appDate);
+  //       if (!isValidDate) return false;
+
+  //       // Chuẩn hóa ngày của appDate
+  //       const appDateNormalized = new Date(appDate.getFullYear(), appDate.getMonth(), appDate.getDate());
+  //       console.log("Checking app:", app, "Date:", appDateNormalized);
+
+  //       return startWeekDayNormalized <= appDateNormalized && appDateNormalized <= endWeekDayNormalized;
+  //     });
+
+  //     console.log("Filtered Appointments:", filtered);
+  //     setFilteredAppointments(filtered);
   //   } catch (error) {
-  //     console.error("Error fetching Consult Appointment:", error);
+  //     console.error("Error in fetchWeekAppointment:", error);
   //     setFilteredAppointments([]);
-  //     return;
-  //   } finally {
-  //     console.log("Consult Appointment: ", appointments);
   //   }
-  // }
-
-  const fetchWeekAppointment = async (selectedDate) => {
-    try {
-      const startWeekDay = getWeekStartDay(selectedDate || new Date());
-      const endWeekDay = new Date(startWeekDay);
-      endWeekDay.setDate(startWeekDay.getDate() + 6);
-
-      // Chuẩn hóa ngày để chỉ so sánh ngày, tháng, năm
-      const startWeekDayNormalized = new Date(startWeekDay.getFullYear(), startWeekDay.getMonth(), startWeekDay.getDate());
-      const endWeekDayNormalized = new Date(endWeekDay.getFullYear(), endWeekDay.getMonth(), endWeekDay.getDate());
-
-      console.log("Week Start:", startWeekDayNormalized, "Week End:", endWeekDayNormalized);
-      console.log("Appointments:", appointments);
-
-      const filtered = appointments.filter((app) => {
-        const appDate = new Date(app?.consultant_pattern?.date);
-        const isValidDate = !isNaN(appDate);
-        if (!isValidDate) return false;
-
-        // Chuẩn hóa ngày của appDate
-        const appDateNormalized = new Date(appDate.getFullYear(), appDate.getMonth(), appDate.getDate());
-        console.log("Checking app:", app, "Date:", appDateNormalized);
-
-        return startWeekDayNormalized <= appDateNormalized && appDateNormalized <= endWeekDayNormalized;
-      });
-
-      console.log("Filtered Appointments:", filtered);
-      setFilteredAppointments(filtered);
-    } catch (error) {
-      console.error("Error in fetchWeekAppointment:", error);
-      setFilteredAppointments([]);
-    }
-  };
+  // };
 
   const getWeekDates = (date) => {
     const week = [];
@@ -113,15 +81,10 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
     return week;
   };
 
-  const getWeekStartDay = (date) => {
-    const startOfWeek = new Date(date);
-    const day = startOfWeek.getDay();
-    startOfWeek.setDate(startOfWeek.getDate() - day);
-    return startOfWeek;
-  };
+  
 
   const getAppointmentsForDate = (date) => {
-    return filteredAppointments.filter(
+    return appointments.filter(
       (apt) => new Date(apt.consultant_pattern.date).toDateString() === date.toDateString()
     );
   };
@@ -139,7 +102,6 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
   const updateAppointmentStatus = async (appointment, status, reportText) => {
     const accountId = Cookies.get("accountId");
     const accessToken = Cookies.get("accessToken");
-
     if (status == 'completed') {
       if (!reportText.trim()) {
         alert('Vui lòng nhập báo cáo');
@@ -189,7 +151,8 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
       console.error("Error update appointment status:", error);
       return;
     } finally {
-      fetchAppointments();
+      fetchWeekAppointment(selectedDate, false);
+      fetchConsultAppointmentStat();
       setSelectedAppointment(null);
     }
   };
@@ -326,7 +289,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
         <div className="stat-card">
           <span className="stat-icon">📊</span>
           <div className="stat-content">
-            <h3>{filteredAppointments.length}</h3>
+            <h3>{consultantData.totalAppointments || 0}</h3>
             <p>Tổng cuộc hẹn</p>
           </div>
         </div>
@@ -335,7 +298,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
           <span className="stat-icon">✅</span>
           <div className="stat-content">
             <h3>
-              {appointments.filter((apt) => apt.status === 'confirmed').length}
+              {consultantData.confirmedAppointments || 0}
             </h3>
             <p>Đã xác nhận</p>
           </div>
@@ -345,7 +308,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
             <h3>
-              {appointments.filter((apt) => apt.status === 'pending').length}
+              {consultantData.pendingAppointments || 0}
             </h3>
             <p>Chờ xác nhận</p>
           </div>
@@ -355,7 +318,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
           <span className="stat-icon">🔄</span>
           <div className="stat-content">
             <h3>
-              {appointments.filter((apt) => apt.status === 'completed').length}
+              {consultantData.completedAppointments || 0}
             </h3>
             <p>Đã hoàn thành</p>
           </div>
@@ -452,7 +415,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
                       className="action-btn confirm"
                       onClick={() => {
                         updateAppointmentStatus(
-                          selectedAppointment.app_id,
+                          selectedAppointment,
                           'confirmed'
                         );
                         setShowModal(false);
@@ -464,7 +427,7 @@ const ConsultantAppointment = ({ appointments, fetchAppointments }) => {
                       className="action-btn cancel"
                       onClick={() => {
                         updateAppointmentStatus(
-                          selectedAppointment.app_id,
+                          selectedAppointment,
                           'cancelled'
                         );
                         setShowModal(false);

@@ -32,9 +32,12 @@ import {
   ExperimentOutlined,
   UploadOutlined,
   DownOutlined,
+  SyncOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import './SearchAppointments.css';
+import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -51,8 +54,6 @@ const SearchAppointments = () => {
   const [searchText, setSearchText] = useState('');
   const [dateRange, setDateRange] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [shiftFilter, setShiftFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,140 +65,94 @@ const SearchAppointments = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState('');
-  const [internalNotes, setInternalNotes] = useState('');
+  const [internalDescription, setInternalDescription] = useState('');
   const [testResults, setTestResults] = useState({});
+  const [resultValue, setResultValue] = useState(0);
 
   // Mock historical data với nhiều xét nghiệm
   const mockHistoricalAppointments = [
     {
-      id: 'XN001',
-      customerName: 'Nguyễn Văn An',
-      customerPhone: '0901234567',
+      app_id: 'a',
+      queue_index: 'XN001',
+      customer: {
+        full_name: 'Nguyễn Văn An',
+        phone: "0901234567",
+        email: "a@1",
+      },
       tests: [
         {
-          id: 'T001',
           name: 'Xét nghiệm máu tổng quát',
-          status: 'completed',
-          priority: 'normal',
-          results: { file: 'ket-qua-t001.pdf', notes: 'Bình thường' },
+          estimatedTime: 30,
+          result: null,
+          status: "pending",
+          normal_range: "1-2",
+          specimen: "",
+          unit: "m",
+          conclusion: null
         },
         {
-          id: 'T002',
           name: 'Xét nghiệm đường huyết',
-          status: 'completed',
-          priority: 'normal',
-          results: { file: 'ket-qua-t002.pdf', notes: 'Hơi cao' },
+          estimatedTime: 20,
+          result: null,
+          status: "pending",
+          normal_range: "1-2",
+          specimen: "",
+          unit: "m",
+          conclusion: null
         },
       ],
-      appointmentDate: '2024-01-10',
-      appointmentTime: '08:30',
-      shift: 'morning',
-      overallStatus: 'completed',
-      notes: 'Khách hàng hài lòng với kết quả',
-      staffId: 'ST001',
-      staffName: 'Nguyễn Thị Mai',
+      working_slot: {
+        slot_id: "",
+        start_at: "08:30",
+        end_at: "",
+        name: "Slot 2a"
+      },
+      date: '2024-01-10',
+      status: 'pending',
+      description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
+      created_at: '2024-01-15T07:30:00',
     },
     {
-      id: 'XN002',
-      customerName: 'Trần Thị Bình',
-      customerPhone: '0907654321',
+      app_id: 'b',
+      queue_index: 'XN001',
+      customer: {
+        full_name: 'Nguyễn Văn An',
+        phone: "0901234567",
+        email: "a@1",
+      },
       tests: [
         {
-          id: 'T003',
-          name: 'Xét nghiệm nước tiểu',
-          status: 'has-result',
-          priority: 'high',
-          results: { file: 'ket-qua-t003.pdf', notes: 'Có protein nhẹ' },
-        },
-      ],
-      appointmentDate: '2024-01-12',
-      appointmentTime: '14:00',
-      shift: 'afternoon',
-      overallStatus: 'has-result',
-      notes: 'Cần tư vấn thêm',
-      staffId: 'ST002',
-      staffName: 'Lê Văn Cường',
-    },
-    {
-      id: 'XN003',
-      customerName: 'Phạm Thị Dung',
-      customerPhone: '0912345678',
-      tests: [
-        {
-          id: 'T004',
-          name: 'Xét nghiệm HIV',
-          status: 'completed',
-          priority: 'urgent',
-          results: { file: 'ket-qua-t004.pdf', notes: 'Âm tính' },
+          name: 'Xét nghiệm máu tổng quát',
+          estimatedTime: 30,
+          result: null,
+          status: "pending",
+          normal_range: "1-2",
+          specimen: "",
+          unit: "m",
+          conclusion: null
         },
         {
-          id: 'T005',
-          name: 'Xét nghiệm Syphilis',
-          status: 'completed',
-          priority: 'urgent',
-          results: { file: 'ket-qua-t005.pdf', notes: 'Âm tính' },
+          name: 'Xét nghiệm đường huyết',
+          estimatedTime: 20,
+          result: null,
+          status: "pending",
+          normal_range: "1-2",
+          specimen: "",
+          unit: "m",
+          conclusion: null
         },
       ],
-      appointmentDate: '2024-01-15',
-      appointmentTime: '10:00',
-      shift: 'morning',
-      overallStatus: 'completed',
-      notes: 'Xử lý khẩn cấp thành công',
-      staffId: 'ST001',
-      staffName: 'Nguyễn Thị Mai',
-    },
-    {
-      id: 'XN004',
-      customerName: 'Lê Hoàng Minh',
-      customerPhone: '0909876543',
-      tests: [
-        {
-          id: 'T006',
-          name: 'Xét nghiệm gan',
-          status: 'in-progress',
-          priority: 'normal',
-          results: null,
-        },
-      ],
-      appointmentDate: '2024-01-16',
-      appointmentTime: '09:30',
-      shift: 'morning',
-      overallStatus: 'in-progress',
-      notes: 'Đang xử lý',
-      staffId: 'ST003',
-      staffName: 'Hoàng Thị Lan',
-    },
-    // Thêm nhiều dữ liệu để test pagination
-    ...Array.from({ length: 25 }, (_, index) => ({
-      id: `XN${(index + 5).toString().padStart(3, '0')}`,
-      customerName: `Khách hàng ${index + 5}`,
-      customerPhone: `090${(1234567 + index).toString()}`,
-      tests: [
-        {
-          id: `T${(index + 7).toString().padStart(3, '0')}`,
-          name: 'Xét nghiệm tổng quát',
-          status: ['pending', 'in-progress', 'has-result', 'completed'][
-            index % 4
-          ],
-          priority: ['normal', 'high', 'urgent'][index % 3],
-          results:
-            index % 2 === 0
-              ? { file: `ket-qua-t${index + 7}.pdf`, notes: 'Bình thường' }
-              : null,
-        },
-      ],
-      appointmentDate: dayjs()
-        .subtract(Math.floor(index / 5), 'day')
-        .format('YYYY-MM-DD'),
-      appointmentTime: `${8 + (index % 8)}:${['00', '15', '30', '45'][index % 4]}`,
-      shift: index % 2 === 0 ? 'morning' : 'afternoon',
-      overallStatus: ['pending', 'in-progress', 'has-result', 'completed'][
-        index % 4
-      ],
-      notes: `Ghi chú ${index + 5}`,
-      staffId: `ST${((index % 3) + 1).toString().padStart(3, '0')}`,
-      staffName: ['Nguyễn Thị Mai', 'Lê Văn Cường', 'Hoàng Thị Lan'][index % 3],
-    })),
+      working_slot: {
+        slot_id: "",
+        start_at: "08:30",
+        end_at: "",
+        name: "Slot 2a"
+      },
+      date: '2024-01-10',
+      status: 'pending',
+      description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
+      created_at: '2024-01-15T07:30:00',
+    }
   ];
 
   useEffect(() => {
@@ -215,9 +170,8 @@ const SearchAppointments = () => {
       if (searchText) {
         filtered = filtered.filter(
           (apt) =>
-            apt.customerName.toLowerCase().includes(searchText.toLowerCase()) ||
-            apt.customerPhone.includes(searchText) ||
-            apt.id.toLowerCase().includes(searchText.toLowerCase()) ||
+            apt.customer.full_name.toLowerCase().includes(searchText.toLowerCase()) ||
+            apt.customer.phone.includes(searchText) ||
             apt.tests.some((test) =>
               test.name.toLowerCase().includes(searchText.toLowerCase())
             )
@@ -228,7 +182,7 @@ const SearchAppointments = () => {
       if (dateRange && dateRange.length === 2) {
         const [startDate, endDate] = dateRange;
         filtered = filtered.filter((apt) => {
-          const aptDate = dayjs(apt.appointmentDate);
+          const aptDate = dayjs(new Date(apt.date));
           return (
             aptDate.isAfter(startDate.subtract(1, 'day')) &&
             aptDate.isBefore(endDate.add(1, 'day'))
@@ -238,20 +192,9 @@ const SearchAppointments = () => {
 
       // Filter by status
       if (statusFilter !== 'all') {
-        filtered = filtered.filter((apt) => apt.overallStatus === statusFilter);
+        filtered = filtered.filter((apt) => apt.status === statusFilter);
       }
 
-      // Filter by shift
-      if (shiftFilter !== 'all') {
-        filtered = filtered.filter((apt) => apt.shift === shiftFilter);
-      }
-
-      // Filter by priority
-      if (priorityFilter !== 'all') {
-        filtered = filtered.filter((apt) =>
-          apt.tests.some((test) => test.priority === priorityFilter)
-        );
-      }
 
       // Pagination
       const startIndex = (currentPage - 1) * pageSize;
@@ -273,9 +216,7 @@ const SearchAppointments = () => {
   const handleClearFilters = () => {
     setSearchText('');
     setDateRange([]);
-    setStatusFilter('all');
-    setShiftFilter('all');
-    setPriorityFilter('all');
+    setStatusFilter('all')
     setCurrentPage(1);
     setTimeout(() => {
       searchAppointments();
@@ -284,38 +225,31 @@ const SearchAppointments = () => {
 
   const getStatusConfig = (status) => {
     const configs = {
-      pending: {
+      'pending': {
         color: 'orange',
         text: 'Chờ xử lý',
         icon: <ClockCircleOutlined />,
       },
-      'in-progress': {
+      'in_progress': {
         color: 'blue',
-        text: 'Đang xử lý',
-        icon: <ClockCircleOutlined />,
+        text: 'Đang xét nghiệm',
+        icon: <SyncOutlined spin />,
       },
-      'has-result': {
+      'completed': {
         color: 'green',
-        text: 'Đã có kết quả',
-        icon: <DownloadOutlined />,
-      },
-      completed: {
-        color: 'default',
         text: 'Đã hoàn thành',
-        icon: <DownloadOutlined />,
+        icon: <CheckCircleOutlined />,
+      },
+      'confirmed': {
+        color: 'blue',
+        text: 'Đã xác nhận',
+        icon: <CheckCircleOutlined />,
       },
     };
     return configs[status] || configs.pending;
   };
 
-  const getPriorityConfig = (priority) => {
-    const configs = {
-      normal: { color: 'default', text: 'Thường' },
-      high: { color: 'orange', text: 'Cao' },
-      urgent: { color: 'red', text: 'Khẩn cấp' },
-    };
-    return configs[priority] || configs.normal;
-  };
+
 
   const getShiftConfig = (shift) => {
     const configs = {
@@ -328,20 +262,18 @@ const SearchAppointments = () => {
 
   const handleUpdateAppointment = (appointment) => {
     setSelectedAppointment(appointment);
-    setNewStatus(appointment.overallStatus);
-    setInternalNotes(appointment.notes || '');
+    setNewStatus(appointment.status);
+    setInternalDescription(appointment.description || '');
+    setResultValue(0);
 
-    // Initialize test results state
+    // Initialize test result state
     const initialTestResults = {};
     appointment.tests.forEach((test) => {
-      initialTestResults[test.id] = {
-        status: test.status,
-        notes: test.results?.notes || '',
-        file: null,
+      initialTestResults[test.name] = {
+        value: null,
       };
     });
     setTestResults(initialTestResults);
-
     setUpdateModalVisible(true);
   };
 
@@ -355,7 +287,7 @@ const SearchAppointments = () => {
     }));
   };
 
-  const handleTestNotesChange = (testId, notes) => {
+  const handleTestDescriptionChange = (testId, notes) => {
     setTestResults((prev) => ({
       ...prev,
       [testId]: {
@@ -375,6 +307,18 @@ const SearchAppointments = () => {
     }));
   };
 
+  const handleInputResult = (testId, value) => {
+    setTestResults((prev) => ({
+      ...prev,
+      [testId]: {
+        ...prev[testId],
+        value,
+      },
+    }));
+  };
+
+
+
   const handleSaveUpdate = async () => {
     if (!selectedAppointment) return;
 
@@ -382,37 +326,35 @@ const SearchAppointments = () => {
 
     // Simulate API call
     setTimeout(() => {
-      // Update in local data
       const updatedAppointments = appointments.map((apt) =>
-        apt.id === selectedAppointment.id
+        apt.app_id === selectedAppointment.app_id
           ? {
-              ...apt,
-              notes: internalNotes,
-              overallStatus: newStatus,
-              tests: apt.tests.map((test) => ({
-                ...test,
-                status: testResults[test.id]?.status || test.status,
-                results:
-                  testResults[test.id]?.notes || testResults[test.id]?.file
-                    ? {
-                        notes: testResults[test.id]?.notes || '',
-                        file:
-                          testResults[test.id]?.file?.name ||
-                          test.results?.file ||
-                          null,
-                      }
-                    : test.results,
-              })),
-            }
+            ...apt,
+            description: internalDescription,
+            status: newStatus,
+            tests: apt.tests.map((test) => ({
+              ...test,
+              status: newStatus === 'pending'
+                ? 'pending'
+                : testResults[test.name]?.value !== undefined
+                  ? 'completed'
+                  : 'in_progress',
+              result:
+                testResults[test.name]?.value
+                  ? (
+                    testResults[test.name]?.value ||
+                    test.result ||
+                    null
+                  )
+                  : test.result,
+            })),
+          }
           : apt
       );
 
       setAppointments(updatedAppointments);
       setUpdateModalVisible(false);
       setUpdating(false);
-
-      // Refresh the filtered data
-      searchAppointments();
 
       message.success('Cập nhật thành công! Đã gửi thông báo cho khách hàng.');
     }, 1500);
@@ -423,18 +365,16 @@ const SearchAppointments = () => {
       <Space direction="vertical" size="small" style={{ width: '100%' }}>
         {tests.map((test) => {
           const statusConfig = getStatusConfig(test.status);
-          const priorityConfig = getPriorityConfig(test.priority);
 
           return (
-            <div key={test.id} className="test-item">
+            <div key={test.name} className="test-item">
               <Space>
                 <ExperimentOutlined style={{ color: statusConfig.color }} />
                 <span className="test-name">{test.name}</span>
                 <Tag color={statusConfig.color} icon={statusConfig.icon}>
                   {statusConfig.text}
                 </Tag>
-                <Tag color={priorityConfig.color}>{priorityConfig.text}</Tag>
-                {test.results && (
+                {test.result && (
                   <Tooltip title="Đã có kết quả">
                     <DownloadOutlined style={{ color: '#52c41a' }} />
                   </Tooltip>
@@ -450,54 +390,59 @@ const SearchAppointments = () => {
   const columns = [
     {
       title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'app_id',
+      key: 'app_id',
       width: 80,
-      render: (id) => <code>{id}</code>,
+      render: (_, record) => (
+        <>
+          <code>{record.queue_index}</code><br />
+          <code>{record.working_slot.name}</code>
+        </>
+      ),
     },
     {
       title: 'Khách hàng',
       key: 'customer',
-      width: 160,
+      width: 200,
       render: (_, record) => (
         <Space direction="vertical" size="small">
-          <strong>{record.customerName}</strong>
-          <span className="phone-number">{record.customerPhone}</span>
+          <strong>{record.customer.full_name}</strong>
+          <span className="phone-number">{record.customer.phone}</span>
+          <span className="phone-number">{record.customer.email}</span>
         </Space>
       ),
     },
     {
       title: 'Các xét nghiệm',
       key: 'tests',
-      width: 280,
+      width: 300,
       render: (_, record) => renderTestsList(record.tests),
     },
     {
-      title: 'Ngày & Ca',
-      key: 'dateTime',
-      width: 140,
-      render: (_, record) => {
-        const shiftConfig = getShiftConfig(record.shift);
-        return (
-          <Space direction="vertical" size="small">
-            <span>
-              <CalendarOutlined />{' '}
-              {dayjs(record.appointmentDate).format('DD/MM/YYYY')}
-            </span>
-            <span>
-              <ClockCircleOutlined /> {record.appointmentTime}
-            </span>
-            <Tag color={shiftConfig.color}>{shiftConfig.text}</Tag>
-          </Space>
-        );
-      },
+      title: 'Thời gian',
+      dataIndex: 'appointmentTime',
+      key: 'appointmentTime',
+      width: 100,
+      render: (_, record) => (
+        <Space direction="vertical" size="small">
+          <span>
+            <CalendarOutlined />{' '}
+            {dayjs(record.date).format('DD/MM/YYYY')}
+          </span>
+          <span>
+            <ClockCircleOutlined />
+            <strong>{record.working_slot.start_at}</strong>
+          </span>
+          
+        </Space>
+      ),
     },
     {
-      title: 'Trạng thái',
-      key: 'overallStatus',
-      width: 120,
+      title: 'Trạng thái tổng',
+      key: 'status',
+      width: 150,
       render: (_, record) => {
-        const config = getStatusConfig(record.overallStatus);
+        const config = getStatusConfig(record.status);
         return (
           <Tag color={config.color} icon={config.icon}>
             {config.text}
@@ -506,18 +451,12 @@ const SearchAppointments = () => {
       },
     },
     {
-      title: 'Nhân viên',
-      key: 'staff',
-      width: 120,
-      render: (_, record) => <span>{record.staffName}</span>,
-    },
-    {
       title: 'Thao tác',
       key: 'actions',
-      width: 100,
+      width: 120,
       render: (_, record) => (
         <Space>
-          <Tooltip title="Cập nhật">
+          <Tooltip title="Cập nhật kết quả">
             <Button
               type="primary"
               icon={<EditOutlined />}
@@ -525,291 +464,267 @@ const SearchAppointments = () => {
               onClick={() => handleUpdateAppointment(record)}
             />
           </Tooltip>
-          <Tooltip title="Xem chi tiết">
-            <Button icon={<EyeOutlined />} size="small" />
-          </Tooltip>
+          {/* <Tooltip title="Xem chi tiết">
+             <Button
+               icon={<EyeOutlined />}
+               size="small"
+             />
+           </Tooltip> */}
         </Space>
       ),
     },
   ];
 
   return (
-    <div className="search-appointments">
-      {/* Header */}
-      <div className="page-header">
-        <div className="header-content">
-          <h2>Tìm kiếm Lịch hẹn</h2>
-          <p>Tra cứu và cập nhật lịch sử các lịch hẹn xét nghiệm</p>
-        </div>
-      </div>
-
-      {/* Search Filters */}
-      <Card className="search-filters" style={{ marginBottom: '16px' }}>
-        <Space direction="vertical" style={{ width: '100%' }} size="middle">
-          {/* Text Search */}
-          <Row gutter={[16, 16]} align="middle">
-            <Col xs={24} sm={12} md={8}>
-              <Input
-                placeholder="Tìm theo tên, SĐT, ID lịch hẹn, loại xét nghiệm..."
-                prefix={<SearchOutlined />}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onPressEnter={handleSearch}
-                allowClear
-              />
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <RangePicker
-                placeholder={['Từ ngày', 'Đến ngày']}
-                format="DD/MM/YYYY"
-                value={dateRange}
-                onChange={setDateRange}
-                style={{ width: '100%' }}
-              />
-            </Col>
-            <Col xs={12} sm={6} md={3}>
-              <Select
-                placeholder="Ca làm việc"
-                value={shiftFilter}
-                onChange={setShiftFilter}
-                style={{ width: '100%' }}
-              >
-                <Option value="all">Tất cả ca</Option>
-                <Option value="morning">Ca sáng</Option>
-                <Option value="afternoon">Ca chiều</Option>
-                <Option value="evening">Ca tối</Option>
-              </Select>
-            </Col>
-            <Col xs={12} sm={6} md={3}>
-              <Select
-                placeholder="Trạng thái"
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: '100%' }}
-              >
-                <Option value="all">Tất cả</Option>
-                <Option value="pending">Chờ xử lý</Option>
-                <Option value="in-progress">Đang xử lý</Option>
-                <Option value="has-result">Đã có kết quả</Option>
-                <Option value="completed">Đã hoàn thành</Option>
-              </Select>
-            </Col>
-            <Col xs={12} sm={6} md={4}>
-              <Select
-                placeholder="Độ ưu tiên"
-                value={priorityFilter}
-                onChange={setPriorityFilter}
-                style={{ width: '100%' }}
-              >
-                <Option value="all">Tất cả</Option>
-                <Option value="normal">Thường</Option>
-                <Option value="high">Cao</Option>
-                <Option value="urgent">Khẩn cấp</Option>
-              </Select>
-            </Col>
-          </Row>
-
-          {/* Action Buttons */}
-          <Row justify="space-between">
-            <Col>
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<SearchOutlined />}
-                  onClick={handleSearch}
-                  loading={searchLoading}
-                >
-                  Tìm kiếm
-                </Button>
-                <Button icon={<ClearOutlined />} onClick={handleClearFilters}>
-                  Xóa bộ lọc
-                </Button>
-                <Button
-                  icon={<ReloadOutlined />}
-                  onClick={() => {
-                    setCurrentPage(1);
-                    searchAppointments();
-                  }}
-                >
-                  Làm mới
-                </Button>
-              </Space>
-            </Col>
-            <Col>
-              <Badge count={total} showZero overflowCount={999}>
-                <span>Tổng kết quả</span>
-              </Badge>
-            </Col>
-          </Row>
-        </Space>
-      </Card>
-
-      {/* Results Table */}
-      <Card>
-        <Table
-          columns={columns}
-          dataSource={filteredAppointments}
-          rowKey="id"
-          loading={searchLoading}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: total,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} trong ${total} lịch hẹn`,
-            onChange: (page, size) => {
-              setCurrentPage(page);
-              setPageSize(size);
-            },
-            onShowSizeChange: (current, size) => {
-              setCurrentPage(1);
-              setPageSize(size);
-            },
-            pageSizeOptions: ['10', '20', '50', '100'],
-          }}
-          scroll={{ x: 1200 }}
-        />
-      </Card>
-
-      {/* Update Modal */}
-      <Modal
-        title={
-          <Space>
-            <EditOutlined />
-            Cập nhật lịch hẹn - {selectedAppointment?.id}
-          </Space>
-        }
-        open={updateModalVisible}
-        onCancel={() => setUpdateModalVisible(false)}
-        onOk={handleSaveUpdate}
-        confirmLoading={updating}
-        width={800}
-        okText="Lưu và gửi thông báo"
-        cancelText="Hủy"
-      >
-        {selectedAppointment && (
-          <div className="update-modal-content">
-            {/* Customer Info */}
-            <Card size="small" style={{ marginBottom: '16px' }}>
-              <Row gutter={16}>
-                <Col span={8}>
-                  <strong>Khách hàng:</strong>{' '}
-                  {selectedAppointment.customerName}
-                </Col>
-                <Col span={8}>
-                  <strong>SĐT:</strong> {selectedAppointment.customerPhone}
-                </Col>
-                <Col span={8}>
-                  <strong>Ngày hẹn:</strong>{' '}
-                  {dayjs(selectedAppointment.appointmentDate).format(
-                    'DD/MM/YYYY'
-                  )}
-                </Col>
-              </Row>
-            </Card>
-
-            {/* Overall Status */}
-            <Form.Item label="Trạng thái tổng quát">
-              <Select
-                value={newStatus}
-                onChange={setNewStatus}
-                style={{ width: '100%' }}
-              >
-                <Option value="pending">Chờ xử lý</Option>
-                <Option value="in-progress">Đang xử lý</Option>
-                <Option value="has-result">Đã có kết quả</Option>
-                <Option value="completed">Đã hoàn thành</Option>
-              </Select>
-            </Form.Item>
-
-            {/* Tests Management */}
-            <Form.Item label="Cập nhật từng xét nghiệm">
-              <Collapse
-                defaultActiveKey={selectedAppointment.tests.map(
-                  (test) => test.id
-                )}
-                expandIcon={({ isActive }) => (
-                  <DownOutlined rotate={isActive ? 180 : 0} />
-                )}
-              >
-                {selectedAppointment.tests.map((test) => (
-                  <Panel
-                    header={
-                      <Space>
-                        <ExperimentOutlined />
-                        <span>{test.name}</span>
-                        <Tag color={getStatusConfig(test.status).color}>
-                          {getStatusConfig(test.status).text}
-                        </Tag>
-                        <Tag color={getPriorityConfig(test.priority).color}>
-                          {getPriorityConfig(test.priority).text}
-                        </Tag>
-                      </Space>
-                    }
-                    key={test.id}
-                  >
-                    <Space direction="vertical" style={{ width: '100%' }}>
-                      <Form.Item label="Trạng thái">
-                        <Select
-                          value={testResults[test.id]?.status || test.status}
-                          onChange={(value) =>
-                            handleTestStatusChange(test.id, value)
-                          }
-                          style={{ width: '100%' }}
-                        >
-                          <Option value="pending">Chờ xử lý</Option>
-                          <Option value="in-progress">Đang xử lý</Option>
-                          <Option value="has-result">Đã có kết quả</Option>
-                          <Option value="completed">Đã hoàn thành</Option>
-                        </Select>
-                      </Form.Item>
-
-                      <Form.Item label="Ghi chú kết quả">
-                        <TextArea
-                          value={testResults[test.id]?.notes || ''}
-                          onChange={(e) =>
-                            handleTestNotesChange(test.id, e.target.value)
-                          }
-                          placeholder="Nhập ghi chú về kết quả xét nghiệm..."
-                          rows={3}
-                        />
-                      </Form.Item>
-
-                      <Form.Item label="Upload kết quả (PDF)">
-                        <Upload
-                          beforeUpload={() => false}
-                          accept=".pdf"
-                          maxCount={1}
-                          onChange={({ fileList }) =>
-                            handleFileUpload(test.id, fileList)
-                          }
-                        >
-                          <Button icon={<UploadOutlined />}>
-                            Chọn file PDF
-                          </Button>
-                        </Upload>
-                      </Form.Item>
-                    </Space>
-                  </Panel>
-                ))}
-              </Collapse>
-            </Form.Item>
-
-            {/* Internal Notes */}
-            <Form.Item label="Ghi chú nội bộ">
-              <TextArea
-                value={internalNotes}
-                onChange={(e) => setInternalNotes(e.target.value)}
-                placeholder="Nhập ghi chú nội bộ cho đồng nghiệp..."
-                rows={4}
-              />
-            </Form.Item>
+    <ErrorBoundary>
+      <div className="search-appointments">
+        {/* Header */}
+        <div className="page-header">
+          <div className="header-content">
+            <h2>Tìm kiếm Lịch hẹn</h2>
+            <p>Tra cứu và cập nhật lịch sử các lịch hẹn xét nghiệm</p>
           </div>
-        )}
-      </Modal>
-    </div>
+        </div>
+
+        {/* Search Filters */}
+        <Card className="search-filters" style={{ marginBottom: '16px' }}>
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            {/* Text Search */}
+            <Row gutter={[16, 16]} align="middle">
+              <Col xs={24} sm={12} md={8}>
+                <Input
+                  placeholder="Tìm theo tên, SĐT, ID lịch hẹn, loại xét nghiệm..."
+                  prefix={<SearchOutlined />}
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onPressEnter={handleSearch}
+                  allowClear
+                />
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <RangePicker
+                  placeholder={['Từ ngày', 'Đến ngày']}
+                  format="DD/MM/YYYY"
+                  value={dateRange}
+                  onChange={setDateRange}
+                  style={{ width: '100%' }}
+                />
+              </Col>
+              <Col xs={12} sm={6} md={3}>
+                <Select
+                  placeholder="Trạng thái"
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  style={{ width: '100%' }}
+                >
+                  <Option value="all">Tất cả</Option>
+                  <Option value="pending">Chờ xử lý</Option>
+                  <Option value="in_progress">Đang xét nghiệm</Option>
+                  <Option value="confirmed">Đã xác nhận</Option>
+                  <Option value="completed">Đã hoàn thành</Option>
+                </Select>
+              </Col>
+            </Row>
+
+            {/* Action Buttons */}
+            <Row justify="space-between">
+              <Col>
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<SearchOutlined />}
+                    onClick={handleSearch}
+                    loading={searchLoading}
+                  >
+                    Tìm kiếm
+                  </Button>
+                  <Button icon={<ClearOutlined />} onClick={handleClearFilters}>
+                    Xóa bộ lọc
+                  </Button>
+                  <Button
+                    icon={<ReloadOutlined />}
+                    onClick={() => {
+                      setCurrentPage(1);
+                      searchAppointments();
+                    }}
+                  >
+                    Làm mới
+                  </Button>
+                </Space>
+              </Col>
+              <Col>
+                <Card>
+                  <span>Tổng kết quả: {total}</span>
+                </Card>
+              </Col>
+            </Row>
+          </Space>
+        </Card>
+
+        {/* Results Table */}
+        <Card>
+          <Table
+            columns={columns}
+            dataSource={filteredAppointments}
+            rowKey="app_id"
+            loading={searchLoading}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: total,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} trong ${total} lịch hẹn`,
+              onChange: (page, size) => {
+                setCurrentPage(page);
+                setPageSize(size);
+              },
+              onShowSizeChange: (current, size) => {
+                setCurrentPage(1);
+                setPageSize(size);
+              },
+              pageSizeOptions: ['10', '20', '50', '100'],
+            }}
+            scroll={{ x: 1200 }}
+          />
+        </Card>
+        {/* Update Modal */}
+        <Modal
+          title={
+            <Space>
+              <EditOutlined />
+              Cập nhật kết quả xét nghiệm - {selectedAppointment?.working_slot.name + " - " + selectedAppointment?.queue_index}
+            </Space>
+          }
+          open={updateModalVisible}
+          onCancel={() => setUpdateModalVisible(false)}
+          onOk={handleSaveUpdate}
+          confirmLoading={updating}
+          width={800}
+          okText="Lưu và gửi thông báo"
+          cancelText="Hủy"
+        >
+          {selectedAppointment && (
+            <div className="update-modal-content">
+              {/* Customer Info */}
+              <Card size="small" style={{ marginBottom: '16px' }}>
+                <Row>
+                  <Col span={12}>
+                    <strong>Khách hàng:</strong>{' '}
+                    {selectedAppointment.customer.full_name}
+                  </Col>
+                  <Col span={12}>
+                    <strong>SĐT:</strong> {selectedAppointment.customer.phone}
+                  </Col>
+                  <Col span={12}>
+                    <strong>Email:</strong> {selectedAppointment.customer.email}
+                  </Col>
+                </Row>
+              </Card>
+
+              {/* Overall Status */}
+              <Form.Item label="Trạng thái tổng quát">
+                <Select
+                  value={newStatus}
+                  onChange={setNewStatus}
+                  style={{ width: '100%' }}
+                >
+                  <Option value="pending">Chờ xử lý</Option>
+                  <Option value="confirmed">Đã xác nhận</Option>
+                  <Option value="in_progress">Đang xử lý</Option>
+                  <Option value="completed">Đã hoàn thành</Option>
+                </Select>
+              </Form.Item>
+
+              {/* Tests Management */}
+              <Form.Item label="Cập nhật từng xét nghiệm">
+                <Collapse
+                  defaultActiveKey={selectedAppointment.tests.map(
+                    (test) => test.name
+                  )}
+                  expandIcon={({ isActive }) => (
+                    <DownOutlined rotate={isActive ? 180 : 0} />
+                  )}
+                >
+                  {selectedAppointment.tests.map((test) => (
+                    <Panel
+                      header={
+                        <Space>
+                          <ExperimentOutlined />
+                          <span>{test.name}</span>
+                        </Space>
+                      }
+                      key={test.name}
+                    >
+                      <Space direction="vertical" style={{ width: '100%' }}>
+                        <Form.Item label="Trạng thái">
+                          {getStatusConfig(test.status).text}
+                        </Form.Item>
+
+                        {/* <Form.Item label="Ghi chú kết quả">
+                            <TextArea
+                              value={testResults[test.name]?.description || ''}
+                              onChange={(e) =>
+                                handleTestDescriptionChange(test.name, e.target.value)
+                              }
+                              placeholder="Nhập ghi chú về kết quả xét nghiệm..."
+                              rows={3}
+                            />
+                          </Form.Item> */}
+                        {test.status !== "pending" &&
+                          <Form.Item label="Nhập kết quả xé nghiệm">
+                            {
+                              test.result ?
+                                (<p>{test.result}</p>)
+                                : (<InputNumber
+                                  value={null}
+                                  // onChange={(e) =>
+                                  //   handleInputResult(test.name, e.target.value)
+                                  // }
+                                  onChange={(value) => handleInputResult(test.name, value)}
+                                  placeholder="Nhập kết quả xét nghiệm..."
+
+                                />)
+                            }
+                          </Form.Item>
+                        }
+                        <Form.Item label="Đơn vị">
+                          <p>{test.unit}</p>
+                        </Form.Item>
+
+                        <Form.Item label="Normal Range">
+                          <p>{test.normal_range}</p>
+                        </Form.Item>
+
+                        <Form.Item label="Specimen">
+                          <p>{test.specimen}</p>
+                        </Form.Item>
+                        {test.status !== "pending" && test.conclusion &&
+                          <Form.Item label="Conclusion">
+                            <p>{test.conclusion}</p>
+                          </Form.Item>
+                        }
+                      </Space>
+                    </Panel>
+                  ))}
+                </Collapse>
+              </Form.Item>
+
+              {/* Internal Description */}
+              <Form.Item label="Ghi chú nội bộ">
+                <TextArea
+                  value={internalDescription}
+                  onChange={(e) => setInternalDescription(e.target.value)}
+                  placeholder="Nhập ghi chú nội bộ cho đồng nghiệp..."
+                  rows={4}
+                />
+              </Form.Item>
+            </div>
+          )}
+        </Modal>
+      </div>
+    </ErrorBoundary>
   );
 };
 

@@ -17,6 +17,7 @@ import ForgotPassword from '@pages/ForgotPassword/ForgotPassword.jsx';
 import './login.css';
 import { GoogleLogin } from '@react-oauth/google';
 import Cookies from 'js-cookie'; // Thêm import Cookies
+import { useNavigate } from 'react-router-dom';
 
 const { TabPane } = Tabs;
 
@@ -28,6 +29,7 @@ const Login = ({ visible, onCancel }) => {
   const [registerLoading, setRegisterLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const navigate = useNavigate();
 
   /* -------------------------------------------------- */
   /* XỬ LÝ ĐĂNG NHẬP                                    */
@@ -86,6 +88,12 @@ const Login = ({ visible, onCancel }) => {
       });
     } finally {
       setLoginLoading(false);
+      const role = Cookies.get("role");
+      console.log(role)
+      if(role === 1)
+        navigate('/consultant');
+      if(role === 2)
+        navigate('/staff')
     }
   };
 

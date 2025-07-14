@@ -47,7 +47,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
     },
     {
       title: 'Đánh giá trung bình',
-      value: consultantData.averageFeedBackRating,
+      value: kpiData.averageFeedBackRating,
       icon: '⭐',
       color: 'green',
       description: 'Từ khách hàng',
@@ -190,7 +190,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
         {/* Upcoming Appointments */}
         <div className="content-card appointments-card compact">
           <div className="card-header">
-            <h3>🗓️ Lịch hẹn sắp tới</h3>
+            <h3>🗓️ Lịch hẹn tuần này</h3>
             <button
               className="view-all-btn"
               onClick={() => onSectionChange('appointments')}
@@ -225,7 +225,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
             ) : (
               <div className="empty-state">
                 <span>📅</span>
-                <p>Không có lịch hẹn nào trong hôm nay</p>
+                <p>Không có lịch hẹn nào trong tuần này</p>
               </div>
             )}
           </div>
@@ -246,7 +246,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
           <div className="questions-list compact-list list-style">
             {recentQuestions.length > 0 ? (
               recentQuestions.map((question, index) => (
-                <div key={question.id} className="question-item list-item">
+                <div key={question.ques_id} className="question-item list-item">
                   <div className="question-number">{index + 1}</div>
 
                   <div className="question-content-full">
