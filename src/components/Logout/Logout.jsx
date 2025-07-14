@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button, message } from 'antd';
-import axios from 'axios';
+import api from '@/api/api';
 
 const Logout = ({ open, onCancel, onLogout }) => {
   const handleLogout = async () => {
@@ -8,8 +8,8 @@ const Logout = ({ open, onCancel, onLogout }) => {
     try {
       // Gọi API logout để xóa refreshToken trên server (giả định endpoint)
       if (accessToken) {
-        await axios.post(
-          'http://localhost:3000/account/logout',
+        await api.post(
+          '/account/logout',
           {},
           {
             headers: {

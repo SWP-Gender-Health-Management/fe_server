@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import QuestionModal from '../QuestionModal/QuestionModal';
 import './ConsultantQuestion.css';
-import axios from 'axios';
+import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 
 const ConsultantQuestion = () => {
@@ -21,8 +21,8 @@ const ConsultantQuestion = () => {
       // console.log('useEffect has been called!:', accountId);
       console.log('useEffect has been called!:', accessToken);
 
-      const responseUnreply = await axios.get(
-        `http://localhost:3000/question/get-unreplied-questions`,
+      const responseUnreply = await api.get(
+        `/question/get-unreplied-questions`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -32,8 +32,8 @@ const ConsultantQuestion = () => {
       );
       console.log('Response:', responseUnreply.data);
       setQuestionsUnreplied(responseUnreply.data.result || []);
-      const responseReplied = await axios.get(
-        `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+      const responseReplied = await api.get(
+        `/question/get-question-by-id/consultant/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -177,15 +177,14 @@ const ConsultantQuestion = () => {
             </div>
           ))
         )}
+        {showModal && (
+          <QuestionModal
+            question={selectedQuestion}
+            onClose={() => setShowModal(false)}
+            onReply={handleReplySubmit}
+          />
+        )}
       </div>
-
-      {showModal && (
-        <QuestionModal
-          question={selectedQuestion}
-          onClose={() => setShowModal(false)}
-          onReply={handleReplySubmit}
-        />
-      )}
     </div>
   );
 };

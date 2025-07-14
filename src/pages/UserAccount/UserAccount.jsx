@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '@/api/api';
 import {
   Card,
   Typography,
@@ -127,8 +127,8 @@ const UserAccount = () => {
 
       try {
         // Lấy thông tin tài khoản
-        const accountRes = await axios.post(
-          `${API_URL}/account/view-account`,
+        const accountRes = await api.post(
+          '/account/view-account',
           {
             /*account_id: accountId 
             account_id: sẽ được lấy từ access token khi decode chứ ko phải là truyền vô
@@ -161,7 +161,7 @@ const UserAccount = () => {
 
         // Lấy lịch hẹn tư vấn
         try {
-          const appointmentRes = await axios.get(
+          const appointmentRes = await api.get(
             `${API_URL}/consult-appointment/customer/get-con-apps-by-id`,
             {
               headers: {
@@ -188,7 +188,7 @@ const UserAccount = () => {
         }
 
         // Lấy lịch hẹn xét nghiệm
-        const labAppRes = await axios.get(
+        const labAppRes = await api.get(
           `${API_URL}/customer/get-laborarity-appointments`,
           {
             headers: {
@@ -247,8 +247,8 @@ const UserAccount = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://localhost:3000/account/update-profile',
+      const response = await api.post(
+        '/account/update-profile',
         { ...values },
         {
           headers: {
@@ -285,8 +285,8 @@ const UserAccount = () => {
     formData.append('avatar', file);
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/account/update-avatar', // Giả định endpoint
+      const response = await api.post(
+        '/account/update-avatar', // Giả định endpoint
         formData,
         {
           headers: {
@@ -352,8 +352,8 @@ const UserAccount = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://localhost:3000/account/change-password',
+      const response = await api.post(
+        '/account/change-password',
         {
           current_password: values.currentPassword,
           new_password: values.newPassword,
@@ -393,8 +393,8 @@ const UserAccount = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://localhost:3000/account/send-verification',
+      const response = await api.post(
+        '/account/send-verification',
         {},
         {
           headers: {
@@ -428,8 +428,8 @@ const UserAccount = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://localhost:3000/account/verify-email',
+      const response = await api.post(
+        '/account/verify-email',
         {
           verification_code: values.verificationCode,
         },
@@ -466,8 +466,8 @@ const UserAccount = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        'http://localhost:3000/account/delete-account',
+      const response = await api.post(
+        '/account/delete-account',
         { account_id: accountId },
         {
           headers: {

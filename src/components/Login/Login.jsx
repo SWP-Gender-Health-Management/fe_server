@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Modal, Tabs, Form, Input, Button, Checkbox, message } from 'antd';
+import doctor from '@/assets/doctor.jpg';
 import {
-  UserOutlined,
-  LockOutlined,
-  MailOutlined,
-  FontColorsOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
-  GoogleOutlined,
-  ExclamationCircleOutlined,
+  FontColorsOutlined,
+  LockOutlined,
+  MailOutlined
 } from '@ant-design/icons';
-import doctor from '@/assets/doctor.jpg';
 import Logo from '@assets/Blue-full.svg?react';
 import { useAuth } from '@context/AuthContext';
 import ForgotPassword from '@pages/ForgotPassword/ForgotPassword';
-import './login.css';
 import { GoogleLogin } from '@react-oauth/google';
+import { Button, Checkbox, Form, Input, message, Modal, Tabs } from 'antd';
+import api from '@/api/api';
 import Cookies from 'js-cookie';
+import { useState } from 'react';
+import './login.css';
+import LoginForm from './components/LoginForm/LoginForm';
+import RegisterForm from './components/RegisterForm/RegisterForm';
+import GoogleLoginButton from './components/GoogleLoginButton/GoogleLoginButton';
+import AuthImageSection from './components/AuthImageSection/AuthImageSection';
+import DividerSection from './components/DividerSection/DividerSection';
 
 const { TabPane } = Tabs;
 const { confirm } = Modal;
@@ -114,7 +116,7 @@ const Login = ({ visible, onCancel }) => {
   const handleLogin = async (values) => {
     setLoginLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/account/login', {
+      const response = await api.post('/account/login', {
         email: values.email,
         password: values.password,
       });
@@ -130,8 +132,8 @@ const Login = ({ visible, onCancel }) => {
       Cookies.set('accessToken', accessToken, { expires: 1 });
 
       // Gọi API view-account để lấy thông tin người dùng
-      const viewResponse = await axios.post(
-        'http://localhost:3000/account/view-account',
+      const viewResponse = await api.post(
+        '/account/view-account',
         {},
         {
           headers: {
@@ -177,27 +179,19 @@ const Login = ({ visible, onCancel }) => {
 
     } catch (error) {
       console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-      
       // Xử lý lỗi chi tiết
       const errorMessage = formatErrorMessage(error.response?.data);
-      
-      // Hiển thị message lỗi ngắn NGAY LẬP TỨC
-      message.error({
-        content: errorMessage,
-        duration: 6,
-        style: {
-          marginTop: '20px',
-          fontSize: '14px',
+      // Hiển thị lỗi ngay dưới input email
+      loginForm.setFields([
+        {
+          name: 'email',
+          errors: [errorMessage],
         },
-      });
-
-      // Hiển thị modal lỗi chi tiết
-      setTimeout(() => {
-        showErrorModal(
-          'Đăng nhập thất bại ❌',
-          errorMessage
-        );
-      }, 300);
+        {
+          name: 'password',
+          errors: [],
+        },
+      ]);
     } finally {
       setLoginLoading(false);
     }
@@ -210,7 +204,7 @@ const Login = ({ visible, onCancel }) => {
     setLoginLoading(true);
     try {
       const idToken = credentialResponse.credential;
-      const res = await axios.post('http://localhost:3000/account/google-verify', {
+      const res = await api.post('/account/google-verify', {
         idToken,
       });
       
@@ -225,8 +219,8 @@ const Login = ({ visible, onCancel }) => {
       Cookies.set('accessToken', accessToken, { expires: 1 });
 
       // Gọi API view-account để lấy thông tin người dùng
-      const viewResponse = await axios.post(
-        'http://localhost:3000/account/view-account',
+      const viewResponse = await api.post(
+        '/account/view-account',
         {},
         {
           headers: {
@@ -326,7 +320,7 @@ const Login = ({ visible, onCancel }) => {
   const handleRegister = async (values) => {
     setRegisterLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/account/register', {
+      const response = await api.post('/account/register', {
         fullname: values.fullname,
         email: values.email,
         password: values.password,
@@ -415,269 +409,29 @@ const Login = ({ visible, onCancel }) => {
             >
               {/* Login Tab */}
               <TabPane tab="Đăng nhập" key="1">
-                <Form
+                <LoginForm
                   form={loginForm}
-                  layout="vertical"
                   onFinish={handleLogin}
-                  className="auth-form"
-                  size="large"
-                >
-                  <Form.Item
-                    name="email"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập email!' },
-                      { type: 'email', message: 'Email không hợp lệ!' },
-                    ]}
-                  >
-                    <Input
-                      prefix={<MailOutlined className="input-prefix-icon" />}
-                      placeholder="Địa chỉ email"
-                      className="modern-input"
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="password"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập mật khẩu!' },
-                    ]}
-                  >
-                    <Input.Password
-                      prefix={<LockOutlined className="input-prefix-icon" />}
-                      placeholder="Mật khẩu"
-                      className="modern-input"
-                      iconRender={(visible) =>
-                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                  </Form.Item>
-
-                  <div className="form-extras">
-                    <Form.Item
-                      name="remember"
-                      valuePropName="checked"
-                      className="remember-me"
-                    >
-                      <Checkbox>Ghi nhớ đăng nhập</Checkbox>
-                    </Form.Item>
-                    <Button
-                      type="link"
-                      className="forgot-link"
-                      onClick={() => setShowForgotPassword(true)}
-                    >
-                      Quên mật khẩu?
-                    </Button>
-                  </div>
-
-                  <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      block
-                      loading={loginLoading}
-                      className="submit-btn primary-btn"
-                      size="large"
-                    >
-                      Đăng nhập
-                    </Button>
-                  </Form.Item>
-
-                  <div className="divider-section">
-                    <div className="divider-line"></div>
-                    <span className="divider-text">Hoặc</span>
-                    <div className="divider-line"></div>
-                  </div>
-
-                  <div className="google-login-container">
-                    <GoogleLogin
-                      onSuccess={handleGoogleLogin}
-                      onError={handleLoginError}
-                      theme="outline"
-                      size="large"
-                      text="signin_with"
-                      shape="rectangular"
-                      width="100%"
-                    />
-                  </div>
-                </Form>
+                  loading={loginLoading}
+                  onForgotPassword={() => setShowForgotPassword(true)}
+                  GoogleLoginButton={<GoogleLoginButton onSuccess={handleGoogleLogin} onError={handleLoginError} />}
+                />
               </TabPane>
 
               {/* Register Tab */}
               <TabPane tab="Đăng ký" key="2">
-                <Form
+                <RegisterForm
                   form={registerForm}
-                  layout="vertical"
                   onFinish={handleRegister}
-                  className="auth-form"
-                  size="large"
-                >
-                  <Form.Item
-                    name="fullname"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập họ tên!' },
-                      { min: 2, message: 'Họ tên phải có ít nhất 2 ký tự!' },
-                    ]}
-                  >
-                    <Input
-                      prefix={
-                        <FontColorsOutlined className="input-prefix-icon" />
-                      }
-                      placeholder="Họ và tên"
-                      className="modern-input"
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="email"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập email!' },
-                      { type: 'email', message: 'Email không hợp lệ!' },
-                    ]}
-                  >
-                    <Input
-                      prefix={<MailOutlined className="input-prefix-icon" />}
-                      placeholder="Địa chỉ email"
-                      className="modern-input"
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="password"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập mật khẩu!' },
-                      { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
-                    ]}
-                  >
-                    <Input.Password
-                      prefix={<LockOutlined className="input-prefix-icon" />}
-                      placeholder="Mật khẩu"
-                      className="modern-input"
-                      iconRender={(visible) =>
-                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="confirmPassword"
-                    dependencies={['password']}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng xác nhận mật khẩu!',
-                      },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (!value || getFieldValue('password') === value) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(
-                            new Error('Mật khẩu xác nhận không khớp!')
-                          );
-                        },
-                      }),
-                    ]}
-                  >
-                    <Input.Password
-                      prefix={<LockOutlined className="input-prefix-icon" />}
-                      placeholder="Xác nhận mật khẩu"
-                      className="modern-input"
-                      iconRender={(visible) =>
-                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="agreement"
-                    valuePropName="checked"
-                    rules={[
-                      {
-                        validator: (_, value) =>
-                          value
-                            ? Promise.resolve()
-                            : Promise.reject(
-                                new Error('Vui lòng đồng ý với điều khoản!')
-                              ),
-                      },
-                    ]}
-                  >
-                    <Checkbox className="agreement-checkbox">
-                      Tôi đồng ý với{' '}
-                      <Button type="link" className="terms-link">
-                        Điều khoản sử dụng
-                      </Button>{' '}
-                      và{' '}
-                      <Button type="link" className="terms-link">
-                        Chính sách bảo mật
-                      </Button>
-                    </Checkbox>
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      block
-                      loading={registerLoading}
-                      className="submit-btn primary-btn"
-                      size="large"
-                    >
-                      Tạo tài khoản
-                    </Button>
-                  </Form.Item>
-
-                  <div className="divider-section">
-                    <div className="divider-line"></div>
-                    <span className="divider-text">Hoặc</span>
-                    <div className="divider-line"></div>
-                  </div>
-
-                  <div className="google-login-container">
-                    <GoogleLogin
-                      onSuccess={handleGoogleLogin}
-                      onError={handleLoginError}
-                      theme="outline"
-                      size="large"
-                      text="signin_with"
-                      shape="rectangular"
-                      width="100%"
-                    />
-                  </div>
-                </Form>
+                  loading={registerLoading}
+                  GoogleLoginButton={<GoogleLoginButton onSuccess={handleGoogleLogin} onError={handleLoginError} />}
+                />
               </TabPane>
             </Tabs>
           </div>
 
           {/* Image Section */}
-          <div className="auth-image-section">
-            <div className="image-overlay">
-              <div className="floating-element element-1"></div>
-              <div className="floating-element element-2"></div>
-              <div className="floating-element element-3"></div>
-            </div>
-            <img
-              src={doctor}
-              alt="Healthcare Professional"
-              className="auth-image"
-            />
-            <div className="image-content">
-              <h3 className="image-title">Chăm sóc sức khỏe toàn diện</h3>
-              <p className="image-description">
-                Dịch vụ y tế chuyên nghiệp, tin cậy cho sức khỏe của bạn.
-              </p>
-              <div className="stats-container">
-                <div className="stat-item">
-                  <span className="stat-number">24/7</span>
-                  <span className="stat-label">Hỗ trợ</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-number">500+</span>
-                  <span className="stat-label">Bác sĩ</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AuthImageSection doctor={doctor} />
         </div>
       </Modal>
 
