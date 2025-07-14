@@ -23,10 +23,10 @@ import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import ManagerDashboard from '@pages/ManagerDashboard/ManagerDashboard';
 import BookingPage from '@pages/Booking/BookingPage';
-import LabSchedule from '@pages/LabSchedule/LabSchedule';
-import LabTests from '@pages/LabTests/LabTests';
-import LabConfirmation from '@pages/LabConfirmation/LabConfirmation';
-import LabSuccess from '@pages/LabConfirmation/LabSuccess';
+import LabSchedule from '@pages/Lab/components/LabSchedule/LabSchedule';
+import LabTests from '@pages/Lab/components/LabTests/LabTests';
+import LabConfirmation from '@pages/Lab/components/LabConfirmation/LabConfirmation';
+import LabSuccess from '@pages/Lab/components/LabConfirmation/LabSuccess';
 import Payment from '@pages/PaymentPage/PaymentPage';
 import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import StaffDashboard from '@pages/StaffDashboard/StaffDashboard';
@@ -57,10 +57,6 @@ const AppLayout = () => {
     location.pathname.startsWith(prefix)
   );
 
-  const notFoundPaths = [
-    // Các path không khớp route nào sẽ match *
-    // Có thể kiểm tra bằng cách so sánh với các path đã định nghĩa
-  ];
   const isNotFoundPage =
     location.pathname !== '/' &&
     ![
