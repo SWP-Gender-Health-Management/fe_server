@@ -3,7 +3,7 @@ import QuestionList from './components/QuestionList/QuestionList';
 import QuestionForm from './components/QuestionForm/QuestionForm';
 import HospitalInfo from './components/Info/HospitalInfo';
 import './Question.css';
-import axios from 'axios';
+import api from '@/api/api';
 import { Divider, Modal, message } from 'antd';
 import { CommentOutlined } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext';
@@ -16,7 +16,7 @@ const Question = () => {
   const fetchQuestions = async () => {
     try {
       const accessToken = Cookies.get('accessToken');
-      const res = await axios.get('http://localhost:3000/question/get-all-question', {
+      const res = await api.get('/question/get-all-question', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
@@ -57,8 +57,8 @@ const Question = () => {
     };
 
     try {
-      const res = await axios.post(
-        'http://localhost:3000/question/create-question',
+      const res = await api.post(
+        '/question/create-question',
         payload,
         {
           headers: {

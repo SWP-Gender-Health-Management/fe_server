@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import api from '@/api/api';
 import {
   Card,
   Row,
@@ -125,10 +125,6 @@ const MenstrualPredictorPage = () => {
   const getFirstDayOfMonth = (m, y) => new Date(y, m, 1).getDay();
 
   const fetchLastPeriodData = useCallback(async () => {
-    const api = axios.create({
-      baseURL: 'http://localhost:3000',
-      headers: { 'Content-Type': 'application/json' },
-    });
     if (!accountId || !token) return;
 
     try {
@@ -248,8 +244,8 @@ const MenstrualPredictorPage = () => {
       sessionStorage.getItem('accessToken') ||
       localStorage.getItem('accessToken');
 
-    const api = axios.create({
-      baseURL: 'http://localhost:3000',
+    // Đã có instance api, chỉ cần truyền headers khi gọi
+    const apiInstance = api.create({
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -271,7 +267,7 @@ const MenstrualPredictorPage = () => {
 
     try {
       // Gửi thông tin chu kỳ
-      await api.post('/customer/track-period', {
+      await apiInstance.post('/customer/track-period', {
         account_id: accountId,
         period: Number(periodLength),
         cycle_length: Number(cycleLength),
@@ -281,7 +277,7 @@ const MenstrualPredictorPage = () => {
       });
 
       // Gọi API dự đoán
-      const res = await api.get('/customer/predict-period', {
+      const res = await apiInstance.get('/customer/predict-period', {
         params: { account_id: accountId },
       });
 

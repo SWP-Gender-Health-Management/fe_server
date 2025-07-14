@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Button, message } from 'antd';
-import axios from 'axios';
+import api from '@/api/api';
 import { useAuth } from '@context/AuthContext.jsx'; // Điều chỉnh đường dẫn nếu cần
 import './QuestionForm.css';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
@@ -40,7 +40,7 @@ const QuestionForm = ({ onSubmitSuccess }) => {
 
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:3000/question/create-question', payload, {
+      const res = await api.post('/question/create-question', payload, {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',

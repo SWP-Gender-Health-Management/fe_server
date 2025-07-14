@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import BlogModal from '../BlogModal/BlogModal';
 import BlogFormModal from '../BlogModal/BlogModal';
 import './ConsultantBlog.css';
-import axios, { AxiosHeaders } from 'axios';
+import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 
 const ConsultantBlog = () => {
@@ -21,8 +21,8 @@ const ConsultantBlog = () => {
       const accessToken = await Cookies.get('accessToken');
       // console.log('useEffect has been called!:', accountId);
       console.log('useEffect has been called!:', accessToken);
-      const response = await axios.get(
-        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+      const response = await api.get(
+        `/blog/get-blog-by-account/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

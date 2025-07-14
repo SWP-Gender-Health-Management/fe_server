@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import api from '@/api/api';
 import { Modal, Button } from 'antd';
 import { useAuth } from '@context/AuthContext';
 
@@ -37,7 +37,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const res = await axios.post('http://localhost:3000/account/create-access-token', {
+      const res = await api.post('/account/create-access-token', {
         refreshToken,
       });
 
