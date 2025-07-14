@@ -6,17 +6,17 @@ import {
   useNavigate,
   useLocation,
 } from 'react-router-dom';
-import ConsultantProfile from '@components/ConsultDshBrd/ConsultProfile/ConsultantProfile';
-import ConsultantAppointment from '@components/ConsultDshBrd/ConsultAppoint/ConsultantAppointment';
-import ConsultantQuestion from '@components/ConsultDshBrd/ConsultQuest/ConsultantQuestion';
-import ConsultantBlog from '@components/ConsultDshBrd/ConsultBlog/ConsultantBlog';
+import ConsultantProfile from '@pages/ConsultantDashboard/components/ConsultProfile/ConsultantProfile';
+import ConsultantAppointment from '@pages/ConsultantDashboard/components/ConsultAppoint/ConsultantAppointment';
+import ConsultantQuestion from '@pages/ConsultantDashboard/components/ConsultQuest/ConsultantQuestion';
+import ConsultantBlog from '@pages/ConsultantDashboard/components/ConsultBlog/ConsultantBlog';
 import './ConsultantDashboard.css';
-
+import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 const ConsultantDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const consultantName = sessionStorage.getItem('full_name') || 'Tư vấn viên';
+  const consultantName = Cookies.get('fullname') || 'Tư vấn viên';
 
   const menuItems = [
     {

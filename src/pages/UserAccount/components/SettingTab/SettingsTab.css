@@ -1,0 +1,29 @@
+/* Settings Tab Styles */
+.settings-card {
+  margin-bottom: 24px;
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.settings-card .ant-card-head {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.settings-card .ant-card-head-title {
+  color: #374151;
+  font-weight: 600;
+}
+
+.settings-card .ant-btn {
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 500;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.settings-card .ant-btn:last-child {
+  margin-bottom: 0;
+}

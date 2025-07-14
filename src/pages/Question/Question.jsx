@@ -118,8 +118,8 @@ const Question = () => {
     };
 
     try {
-      const res = await axios.post(
-        'http://localhost:3000/question/create-question',
+      const res = await api.post(
+        '/question/create-question',
         payload,
         {
           headers: {
