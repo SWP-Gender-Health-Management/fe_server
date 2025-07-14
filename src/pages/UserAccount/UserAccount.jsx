@@ -1,70 +1,29 @@
-import React, { useEffect, useState } from 'react';
 import api from '@/api/api';
 import {
-  Card,
-  Typography,
-  Button,
-  Input,
-  message,
-  Avatar,
-  Row,
-  Col,
-  Tabs,
-  Form,
-  Select,
-  DatePicker,
-  Upload,
-  Progress,
-  Statistic,
-  Badge,
-  List,
-  Tag,
-  Switch,
-  Divider,
-  Space,
-  Modal,
-  Popconfirm,
-  Result,
-  Pagination,
-  Table,
-  Tooltip,
-  Empty,
-  Descriptions,
-  Timeline,
-  Dropdown,
-  Menu,
-  Spin,
-  Alert,
-} from 'antd';
-import {
-  UserOutlined,
-  EditOutlined,
-  SaveOutlined,
-  CameraOutlined,
-  PhoneOutlined,
-  MailOutlined,
   CalendarOutlined,
-  EnvironmentOutlined,
   HeartOutlined,
   SettingOutlined,
-  BellOutlined,
-  SecurityScanOutlined,
-  FileTextOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-  PrinterOutlined,
-  DownloadOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext.jsx';
+import {
+  Card,
+  Form,
+  Input,
+  message,
+  Select,
+  Tabs,
+  Typography
+} from 'antd';
 import dayjs from 'dayjs';
-import Cookies from 'js-cookie'; 
+import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
 import './UserAccount.css';
-import PersonalInfoTab from './components/PersonalInfoTab/PersonalInfoTab';
 import ConsultAppointmentsTab from './components/ConsultantAppointmentTab/ConsultAppointmentsTab';
 import LabAppointmentsTab from './components/LabAppointmentTab/LabAppointmentsTab';
-import SettingsTab from './components/SettingTab/SettingsTab';
+import PersonalInfoTab from './components/PersonalInfoTab/PersonalInfoTab';
 import ProfileHeader from './components/ProfileHeader/ProfileHeader';
+import SettingsTab from './components/SettingTab/SettingsTab';
 // Đã xoá các import modal riêng biệt
 // import './components/styles.css';
 
