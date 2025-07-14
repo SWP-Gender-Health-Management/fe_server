@@ -1,59 +1,120 @@
 import React, { useEffect, useState } from 'react';
-import QuestionList from './components/QuestionList/QuestionList';
-import QuestionForm from './components/QuestionForm/QuestionForm';
-import HospitalInfo from './components/Info/HospitalInfo';
 import './Question.css';
-import api from '@/api/api';
-import { Divider, Modal, message } from 'antd';
-import { CommentOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import { Modal, message } from 'antd';
 import { useAuth } from '@context/AuthContext';
 import Cookies from 'js-cookie';
+import HospitalInfo from '@components/Info/HospitalInfo';
+
+// Import components
+import QuestionHeader from './components/MyQuestionTab/QuestionHeader';
+import TabNavigation from './components/TabNavigation/TabNavigation';
+import MyQuestionsTab from './components/MyQuestionTab/MyQuestionsTab';
+import AskQuestionForm from './components/AskQuestionForm/AskQuestionForm';
+
 const Question = () => {
-  const [questions, setQuestions] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('my-questions');
+  const [myQuestions, setMyQuestions] = useState([]);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const accessToken = Cookies.get('accessToken');
+  const customerId = Cookies.get('accountId');
+
+  // Form states
+  const [newQuestion, setNewQuestion] = useState({
+    content: '',
+    customer_id: customerId,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { isLoggedIn, userInfo } = useAuth();
 
-  const fetchQuestions = async () => {
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
+
+  const fetchMyQuestions = async (
+    page = 1,
+    search = searchText,
+    status = statusFilter
+  ) => {
+    if (!isLoggedIn) return;
+
+    setLoading(true);
     try {
-      const accessToken = Cookies.get('accessToken');
-      const res = await api.get('/question/get-all-question', {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      setQuestions(res.data.questions || res.data || []);
+      console.log('=== API CALL START ===');
+      console.log('Requesting page:', page);
+      console.log('Search term:', search);
+      console.log('Status filter:', status);
+
+      const res = await axios.get(
+        `http://localhost:3000/question/get-question-by-id/customer/${customerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            page: page, // Nếu backend cần page bắt đầu từ 0, thay bằng: page - 1
+            limit: pageSize,
+            search: search || undefined,
+            status: status === 'all' ? undefined : status,
+          },
+        }
+      );
+
+      console.log('API Response:', res.data.result);
+      console.log(
+        'Received questions count:',
+        res.data.result.questions?.length || 0
+      );
+      console.log('Total from API:', res.data.result.total);
+      console.log('=== API CALL END ===');
+
+      setMyQuestions(res.data.result.questions || []);
+      setTotalQuestions(res.data.result.total || 0);
+      setTotalPages(res.data.result.total_pages || 0);
+
+      // Chỉ cập nhật currentPage nếu page khác với currentPage hiện tại
+      if (page !== currentPage) {
+        setCurrentPage(page);
+      }
     } catch (error) {
-      console.error('Failed to fetch questions:', error);
-      message.error('Không thể tải danh sách câu hỏi. Vui lòng thử lại.');
+      console.error('Failed to fetch my questions:', error);
+      message.error('Không thể tải danh sách câu hỏi của bạn.');
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     if (isLoggedIn) {
-      fetchQuestions();
+      setCurrentPage(1);
+      fetchMyQuestions(1, '', 'all');
     } else {
-      setIsModalVisible(true);
+      setIsLoginModalVisible(true);
     }
   }, [isLoggedIn]);
 
-  const handleAskQuestion = async (questionData) => {
+  const handleSubmitQuestion = async () => {
     if (!isLoggedIn) {
-      setIsModalVisible(true);
+      setIsLoginModalVisible(true);
       return;
     }
 
-    const accessToken = Cookies.get('accessToken');
-    if (!accessToken) {
-      setIsModalVisible(true);
+    if (!newQuestion.content.trim()) {
+      message.warning('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
-    const customerId = userInfo.accountId || 'default_customer_id'; // Sử dụng accountId hoặc giá trị mặc định
+    setIsSubmitting(true);
+
     const payload = {
       customer_id: customerId,
-      content: questionData.content || '',
-      status: true,
+      content: newQuestion.content,
     };
 
     try {
@@ -62,58 +123,145 @@ const Question = () => {
         payload,
         {
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         }
       );
-      setQuestions([res.data, ...questions]); // Giả định API trả về câu hỏi mới
-      message.success('Câu hỏi đã được gửi thành công!');
+
+      // Reset về trang 1 sau khi tạo câu hỏi mới
+      setCurrentPage(1);
+      setSearchText('');
+      setStatusFilter('all');
+      await fetchMyQuestions(1, '', 'all');
+
+      setNewQuestion({ content: '' });
+      setActiveTab('my-questions');
+      message.success(
+        'Câu hỏi đã được gửi thành công! Chúng tôi sẽ phản hồi sớm nhất có thể.'
+      );
     } catch (error) {
-      console.error('Failed to ask question:', error);
+      console.error('Failed to submit question:', error);
       message.error('Không thể gửi câu hỏi. Vui lòng thử lại.');
     }
+    setIsSubmitting(false);
   };
 
-  const handleModalOk = () => {
-    setIsModalVisible(false);
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
-  const handleModalCancel = () => {
-    setIsModalVisible(false);
+  // Handler functions for components
+  const handleRefresh = () => {
+    fetchMyQuestions(currentPage, searchText, statusFilter);
   };
+
+  const handleSearch = (value) => {
+    setCurrentPage(1);
+    fetchMyQuestions(1, value, statusFilter);
+  };
+
+  const handleStatusChange = (val) => {
+    setStatusFilter(val);
+    setCurrentPage(1);
+    fetchMyQuestions(1, searchText, val);
+  };
+
+  const handlePageChange = async (page) => {
+    console.log('=== PAGINATION CLICK ===');
+    console.log('User clicked page:', page);
+    console.log('Current page before change:', currentPage);
+    console.log('Will call API with page:', page);
+
+    // Cập nhật state trước
+    setCurrentPage(page);
+
+    // Gọi API với page mới
+    await fetchMyQuestions(page, searchText, statusFilter);
+
+    console.log('=== PAGINATION COMPLETE ===');
+  };
+
+  const handleClearForm = () => {
+    setNewQuestion({ content: '' });
+  };
+
+  // Không cần filter ở frontend nữa vì đã filter ở backend
+  const displayQuestions = myQuestions;
+
+  if (!isLoggedIn) {
+    return (
+      <div className="question-page">
+        <Modal
+          title="Yêu cầu đăng nhập"
+          open={isLoginModalVisible}
+          onOk={() => setIsLoginModalVisible(false)}
+          onCancel={() => setIsLoginModalVisible(false)}
+          okText="Đồng ý"
+          cancelText="Hủy"
+        >
+          <p>Bạn cần đăng nhập để sử dụng tính năng hỏi đáp!</p>
+        </Modal>
+        <div className="question-right">
+          <HospitalInfo />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="question-page">
-      <Modal
-        title="Thông báo"
-        visible={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-        okText="Đồng ý"
-        cancelText="Hủy"
-      >
-        <p>Hãy đăng nhập để xem trang này!</p>
-      </Modal>
+      <div className="question-container">
+        <QuestionHeader
+          totalQuestions={totalQuestions}
+          answeredCount={displayQuestions.filter((q) => q.reply).length}
+        />
 
-      {isLoggedIn ? (
-        <div className="question-left">
-          <h2>
-            <CommentOutlined style={{ marginRight: 8 }} />
-            Câu hỏi thường gặp
-          </h2>
+        <TabNavigation
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          totalQuestions={totalQuestions}
+        />
 
-          <QuestionList questions={questions} />
+        <div className="tab-content">
+          {activeTab === 'my-questions' && (
+            <MyQuestionsTab
+              loading={loading}
+              questions={displayQuestions}
+              searchText={searchText}
+              setSearchText={setSearchText}
+              statusFilter={statusFilter}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              totalQuestions={totalQuestions}
+              onRefresh={handleRefresh}
+              onSearch={handleSearch}
+              onStatusChange={handleStatusChange}
+              onPageChange={handlePageChange}
+              formatDate={formatDate}
+              setActiveTab={setActiveTab}
+              userInfo={userInfo}
+            />
+          )}
 
-          <Divider />
-
-          <h3>Đặt câu hỏi</h3>
-          <QuestionForm onSubmitSuccess={handleAskQuestion} />
+          {activeTab === 'ask-question' && (
+            <AskQuestionForm
+              newQuestion={newQuestion}
+              setNewQuestion={setNewQuestion}
+              isSubmitting={isSubmitting}
+              onSubmit={handleSubmitQuestion}
+              onClear={handleClearForm}
+            />
+          )}
         </div>
-      ) : null}
 
-      <div className="question-right">
-        <HospitalInfo />
+        {/* Removed QuestionDetailModal */}
       </div>
     </div>
   );
