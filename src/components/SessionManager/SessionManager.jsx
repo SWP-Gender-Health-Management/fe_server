@@ -10,7 +10,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const [hasRejectedSessionLogin, setHasRejectedSessionLogin] = useState(false);
 
-  const SESSION_TIMEOUT = 1000* 60 * 60; // 1 giờ = 3600000ms
+  const SESSION_TIMEOUT = 1000 * 60 * 60; // 1 giờ = 3600000ms
 
   const resetTimer = () => {
     clearTimeout(timeoutRef.current);
@@ -37,7 +37,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const res = await api.post('/account/create-access-token', {
+      const res = await api.post('refresh-token/create-access-token', {
         refreshToken,
       });
 
@@ -60,7 +60,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
   const expireSession = () => {
     if (!hasRejectedSessionLogin) {
-        setIsSessionExpired(true);
+      setIsSessionExpired(true);
       console.log('⚠ Phiên làm việc hết hạn, mở modal đăng nhập');
     }
   };
