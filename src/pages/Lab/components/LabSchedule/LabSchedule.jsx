@@ -42,13 +42,13 @@ const LabSchedule = () => {
         const result = res.data.data || {};
         setSlots({
           morning: result.morning || { isFull: true, slot: null },
-          afternoon: result.afternoon || { isFull: true, slot: null }
+          afternoon: result.afternoon || { isFull: true, slot: null },
         });
       } catch {
-        setSlots({
-          morning: { isFull: false, slot: { slot_id: 'mock-morning', start_at: '07:00:00', end_at: '12:00:00' } },
-          afternoon: { isFull: false, slot: { slot_id: 'mock-afternoon', start_at: '13:00:00', end_at: '18:00:00' } }
-        });
+        // setSlots({
+        //   morning: { isFull: false, slot: { slot_id: 'mock-morning', start_at: '07:00:00', end_at: '12:00:00' } },
+        //   afternoon: { isFull: false, slot: { slot_id: 'mock-afternoon', start_at: '13:00:00', end_at: '18:00:00' } }
+        // });
       }
     };
     fetchSlots();
@@ -94,8 +94,10 @@ const LabSchedule = () => {
   // Helper: lấy slot info cho từng ca
   const getSlotInfo = (session) => {
     if (!slots) return { isFull: true, slot: null };
-    if (session === 'morning') return slots.morning || { isFull: true, slot: null };
-    if (session === 'afternoon') return slots.afternoon || { isFull: true, slot: null };
+    if (session === 'morning')
+      return slots.morning || { isFull: true, slot: null };
+    if (session === 'afternoon')
+      return slots.afternoon || { isFull: true, slot: null };
     return { isFull: true, slot: null };
   };
 
@@ -108,13 +110,17 @@ const LabSchedule = () => {
         <h1>Đặt lịch xét nghiệm</h1>
         <p>Chọn ngày và ca làm việc trong tháng</p>
         <div className="month-switcher">
-          <button onClick={() => setMonth((prev) => (prev === 0 ? 11 : prev - 1))}>
+          <button
+            onClick={() => setMonth((prev) => (prev === 0 ? 11 : prev - 1))}
+          >
             ◀ Tháng trước
           </button>
           <span style={{ margin: '0 12px', fontWeight: 600 }}>
             {`Tháng ${month + 1} / ${year}`}
           </span>
-          <button onClick={() => setMonth((prev) => (prev === 11 ? 0 : prev + 1))}>
+          <button
+            onClick={() => setMonth((prev) => (prev === 11 ? 0 : prev + 1))}
+          >
             Tháng sau ▶
           </button>
         </div>
@@ -127,22 +133,29 @@ const LabSchedule = () => {
           <div className="month-grid">
             {/* Hiển thị các thứ trong tuần */}
             <div className="weekdays-row">
-              {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((d) => (
-                <div key={d} className="weekday-cell">{d}</div>
+              {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map((d) => (
+                <div key={d} className="weekday-cell">
+                  {d}
+                </div>
               ))}
             </div>
             {/* Hiển thị các ngày trong tháng */}
             {(() => {
               const days = generateMonthDates();
               const firstDay = firstDayOfMonth(month, year);
-              const blanks = (firstDay === 0 ? 6 : firstDay - 1); // Đưa CN về cuối tuần
+              const blanks = firstDay === 0 ? 6 : firstDay - 1; // Đưa CN về cuối tuần
               const cells = [];
               for (let i = 0; i < blanks; i++) {
-                cells.push(<div key={`blank-${i}`} className="date-cell blank"></div>);
+                cells.push(
+                  <div key={`blank-${i}`} className="date-cell blank"></div>
+                );
               }
               days.forEach((date) => {
-                const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-                const isToday = date.toDateString() === new Date().toDateString();
+                const isSelected =
+                  selectedDate &&
+                  date.toDateString() === selectedDate.toDateString();
+                const isToday =
+                  date.toDateString() === new Date().toDateString();
                 cells.push(
                   <div
                     key={date.toISOString()}
@@ -173,7 +186,9 @@ const LabSchedule = () => {
                     className={`session-card ${isAvailable ? 'available' : 'unavailable'} ${selectedSession === session ? 'selected' : ''}`}
                     onClick={() => isAvailable && handleSessionSelect(session)}
                   >
-                    <div className="session-icon">{session === 'morning' ? '🌅' : '🌇'}</div>
+                    <div className="session-icon">
+                      {session === 'morning' ? '🌅' : '🌇'}
+                    </div>
                     <div className="session-info">
                       <h4>{session === 'morning' ? 'Ca sáng' : 'Ca chiều'}</h4>
                       <p className="session-time">
@@ -183,7 +198,9 @@ const LabSchedule = () => {
                             ? '07:00 - 11:00'
                             : '13:00 - 17:00'}
                       </p>
-                      {!isAvailable && <p className="unavailable-text">Đã đầy</p>}
+                      {!isAvailable && (
+                        <p className="unavailable-text">Đã đầy</p>
+                      )}
                     </div>
                   </div>
                 );

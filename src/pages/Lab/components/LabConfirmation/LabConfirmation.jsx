@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LabConfirmation.css';
 import Cookies from 'js-cookie';
-import { createLabAppointment, createLabTransaction, createPaymentUrl } from '@/api/labApi';
+import axios from 'axios';
+import {
+  createLabAppointment,
+  createLabTransaction,
+  createPaymentUrl,
+} from '@/api/labApi';
 import { viewAccount } from '@/api/accountApi';
 
 const LabConfirmation = () => {
@@ -42,20 +47,23 @@ const LabConfirmation = () => {
     // Prefill user info from backend if logged in
     const token = Cookies.get('accessToken');
     if (token) {
-      viewAccount(token).then(res => {
-        const user = res.data.result;
-        setFormData(prev => ({
-          ...prev,
-          fullName: prev.fullName || user.full_name || '',
-          phone: prev.phone || user.phone || '',
-          email: prev.email || user.email || '',
-          address: prev.address || user.address || '',
-          dateOfBirth: prev.dateOfBirth || (user.dob ? user.dob.split('T')[0] : ''),
-          gender: prev.gender || user.gender || '',
-        }));
-      }).catch(() => {
-        // Không cần xử lý lỗi ở đây, chỉ là prefill
-      });
+      viewAccount(token)
+        .then((res) => {
+          const user = res.data.result;
+          setFormData((prev) => ({
+            ...prev,
+            fullName: prev.fullName || user.full_name || '',
+            phone: prev.phone || user.phone || '',
+            email: prev.email || user.email || '',
+            address: prev.address || user.address || '',
+            dateOfBirth:
+              prev.dateOfBirth || (user.dob ? user.dob.split('T')[0] : ''),
+            gender: prev.gender || user.gender || '',
+          }));
+        })
+        .catch(() => {
+          // Không cần xử lý lỗi ở đây, chỉ là prefill
+        });
     }
   }, [navigate]);
 
@@ -157,20 +165,17 @@ const LabConfirmation = () => {
 
     try {
       const token = Cookies.get('accessToken');
-      // Ensure laborarityIds is a flat array of string IDs
-      const laborarityIds = Array.isArray(selectedTests)
-        ? selectedTests.map(test => String(test.laborarity_id || test.lab_id || test.id)).filter(Boolean)
+      // Ensure lab_id is a flat array of string IDs
+      const lab_id = Array.isArray(selectedTests)
+        ? selectedTests
+            .map((test) => String(test.lab_id || test.id))
+            .filter(Boolean)
         : [];
-      console.log('laborarityIds:', laborarityIds);
+      console.log('lab_id:', lab_id);
       // Validate required fields before API call
-      const accountId = Cookies.get('accountId');
-      const slotId = labSchedule.slot_id || labSchedule.slotId || labSchedule.slot || '';
+      const slotId =
+        labSchedule.slot_id || labSchedule.slotId || labSchedule.slot || '';
       const date = labSchedule.date;
-      if (!accountId || typeof accountId !== 'string') {
-        alert('Thiếu hoặc sai account_id! Vui lòng đăng nhập lại.');
-        setIsSubmitting(false);
-        return;
-      }
       if (!slotId || typeof slotId !== 'string') {
         alert('Thiếu hoặc sai slot_id!');
         setIsSubmitting(false);
@@ -181,34 +186,53 @@ const LabConfirmation = () => {
         setIsSubmitting(false);
         return;
       }
-      if (!Array.isArray(laborarityIds) || laborarityIds.length === 0 || laborarityIds.some(id => typeof id !== 'string' || !id)) {
+      if (
+        !Array.isArray(lab_id) ||
+        lab_id.length === 0 ||
+        lab_id.some((id) => typeof id !== 'string' || !id)
+      ) {
         alert('Danh sách xét nghiệm không hợp lệ!');
         setIsSubmitting(false);
         return;
       }
       // Log full request body
       const requestBody = {
-        account_id: accountId,
         slot_id: slotId,
-        date,
-        laborarity_id: laborarityIds,
+        date: date,
+        laborarity_id: lab_id,
       };
       console.log('DATA gửi backend:', requestBody);
       const appointmentRes = await createLabAppointment(requestBody, token);
-      console.log('[LabConfirmation] createLabAppointment response:', appointmentRes.data);
-      const app_id = appointmentRes.data.result?.app_id;
+      console.log(
+        // '[LabConfirmation] createLabAppointment response:',
+        appointmentRes.data.result.appointment
+      );
+      const app = appointmentRes.data.result.appointment.app_id;
+      console.log('app:', app);
       // 2. Tạo giao dịch
-      const transactionRes = await createLabTransaction({
-        app_id,
-        amount: calculateTotal(),
-        description: 'thử nghiệm',
-      }, token);
-      console.log('[LabConfirmation] createLabTransaction response:', transactionRes.data);
-      const orderCode = transactionRes.data.result?.orderCode;
+      const transactionRes = await createLabTransaction(
+        {
+          app_id: app,
+          amount: calculateTotal().toString(),
+          description: 'thử nghiệm',
+          date: new Date().toISOString().split('T')[0],
+        },
+        token
+      );
+      console.log(
+        '[LabConfirmation] createLabTransaction response:',
+        transactionRes.data.data
+      );
+      const orderCode = transactionRes.data.data.order_code;
+      console.log('orderCode:', orderCode);
       // 3. Tạo payment url
       const paymentRes = await createPaymentUrl({ orderCode }, token);
-      console.log('[LabConfirmation] createPaymentUrl response:', paymentRes.data);
-      const paymentUrl = paymentRes.data.result?.paymentUrl;
+      console.log(
+        '[LabConfirmation] createPaymentUrl response:',
+        paymentRes.data
+      );
+      const paymentUrl = paymentRes.data.data.checkoutUrl;
+      console.log('paymentUrl:', paymentUrl);
       // 4. Điều hướng sang trang thanh toán
       window.location.href = paymentUrl;
     } catch (error) {

@@ -21,10 +21,9 @@ const LabTests = () => {
     }
     // Lấy danh sách xét nghiệm thực tế
     const token = Cookies.get('accessToken');
-    getAllLaboratories(token)
-      .then(res => {
-        setLabTests(res.data.result || []);
-      });
+    getAllLaboratories(token).then((res) => {
+      setLabTests(res.data.result || []);
+    });
   }, [navigate]);
 
   const handleTestToggle = (lab_id) => {
@@ -38,8 +37,11 @@ const LabTests = () => {
   };
 
   // Update selectedCombos to use selectedLabIds
-  const selectedCombos = labTests.filter((combo) => selectedLabIds.includes(combo.lab_id));
-  const calculateTotal = () => selectedCombos.reduce((total, combo) => total + combo.price, 0);
+  const selectedCombos = labTests.filter((combo) =>
+    selectedLabIds.includes(combo.lab_id)
+  );
+  const calculateTotal = () =>
+    selectedCombos.reduce((total, combo) => total + combo.price, 0);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -50,8 +52,11 @@ const LabTests = () => {
 
   const handleContinue = () => {
     if (selectedLabIds.length > 0) {
-      // Save selected lab_id strings to sessionStorage
-      sessionStorage.setItem('selectedLabIds', JSON.stringify(selectedLabIds));
+      // Save selected test objects to sessionStorage
+      sessionStorage.setItem(
+        'selectedLabTests',
+        JSON.stringify(selectedCombos)
+      );
       navigate('/thong-tin-xet-nghiem');
     }
   };
@@ -137,7 +142,9 @@ const LabTests = () => {
                 );
               })
             ) : (
-              <div className="no-categories">Không tìm thấy danh mục xét nghiệm hoặc có lỗi khi tải dữ liệu.</div>
+              <div className="no-categories">
+                Không tìm thấy danh mục xét nghiệm hoặc có lỗi khi tải dữ liệu.
+              </div>
             )}
           </div>
         </div>
@@ -174,10 +181,7 @@ const LabTests = () => {
                   </div>
                 </div>
 
-                <button className="continue-button" onClick={() => {
-                  sessionStorage.setItem('selectedLabIds', JSON.stringify(selectedLabIds));
-                  handleContinue();
-                }}>
+                <button className="continue-button" onClick={handleContinue}>
                   Tiếp tục đặt lịch →
                 </button>
               </>

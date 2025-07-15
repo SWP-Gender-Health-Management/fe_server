@@ -31,6 +31,8 @@ import Payment from '@pages/PaymentPage/PaymentPage';
 import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import StaffDashboard from '@pages/StaffDashboard/StaffDashboard';
 import NotFound from '@pages/NotFound/NotFound.jsx';
+import PaymentSuccess from '@pages/PaymentPage/components/PaymentSuccess/PaymentSuccess';
+import PaymentFail from '@pages/PaymentPage/components/PaymentFailed/PaymentFailed';
 import '@styles/reset.css';
 import Cookies from 'js-cookie';
 
@@ -117,10 +119,10 @@ const AppLayout = () => {
         />
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-fail" element={<PaymentFail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-
-
 
       {/* ✅ Chỉ hiện Footer & Login nếu không ở trang dashboard */}
       {!shouldHideNavbar && !isNotFoundPage && (
