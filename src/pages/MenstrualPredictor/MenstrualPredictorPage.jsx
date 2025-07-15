@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
-import axios from 'axios';
 import { Row, Col, message, Spin, Modal, Button } from 'antd';
+import { jwtDecode } from 'jwt-decode';
+import api from '@/api/api';
 import {
   HomeOutlined,
   ExclamationCircleOutlined,
@@ -257,6 +258,12 @@ const MenstrualPredictorPage = () => {
   const handleUpdate = useCallback(async () => {
     const token = Cookies.get('accessToken');
 
+  const daysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
+  const getFirstDayOfMonth = (m, y) => new Date(y, m, 1).getDay();
+
+  const fetchLastPeriodData = useCallback(async () => {
+    if (!accountId || !token) return;
+
     if (!token) {
       message.error('Vui lòng đăng nhập để cập nhật thông tin!');
       return;
@@ -322,7 +329,7 @@ const MenstrualPredictorPage = () => {
   // Get day information for modal
   const getDayInfo = (day) => {
     if (!day) return null;
-
+    
     const selectedDate = new Date(year, month, day);
     const isPeriod = periodDays[`${year}-${month}`]?.includes(day);
     const isOvulation = ovulationDays[`${year}-${month}`]?.includes(day);
@@ -330,6 +337,56 @@ const MenstrualPredictorPage = () => {
       day === today.getDate() &&
       month === today.getMonth() &&
       year === today.getFullYear();
+    // Đã có instance api, chỉ cần truyền headers khi gọi
+    const apiInstance = api.create({
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Kiểm tra hợp lệ trước khi gọi API
+    if (
+      !accountId ||
+      !lastPeriodStart ||
+      !cycleLength ||
+      !periodLength ||
+      isNaN(+cycleLength) ||
+      isNaN(+periodLength) ||
+      isNaN(new Date(lastPeriodStart).getTime())
+    ) {
+      return alert('Vui lòng nhập đầy đủ và hợp lệ!');
+    }
+
+    try {
+      // Gửi thông tin chu kỳ
+      await apiInstance.post('/customer/track-period', {
+        account_id: accountId,
+        period: Number(periodLength),
+        cycle_length: Number(cycleLength),
+        start_date: new Date(lastPeriodStart).toISOString(),
+        end_date: new Date(lastPeriodStart).toISOString(),
+        note: 'Nhập kỳ kinh lần đầu',
+      });
+
+      // Gọi API dự đoán
+      const res = await apiInstance.get('/customer/predict-period', {
+        params: { account_id: accountId },
+      });
+
+      const { next_start_date } = res.data.data;
+
+      const nextDate = new Date(next_start_date);
+      const ovulation = new Date(nextDate);
+      ovulation.setDate(ovulation.getDate() - 14);
+      const fertileStart = new Date(ovulation);
+      fertileStart.setDate(fertileStart.getDate() - 2);
+      const fertileEnd = new Date(ovulation);
+      fertileEnd.setDate(fertileEnd.getDate() + 2);
+
+      setNextStartDate(nextDate);
+      setOvulationDate(ovulation);
+      setFertileRange({ start: fertileStart, end: fertileEnd });
 
     // Calculate cycle day
     let cycleDay = null;
