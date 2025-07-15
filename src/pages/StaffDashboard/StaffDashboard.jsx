@@ -32,6 +32,9 @@ const StaffDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [todayAppointments, setTodayAppointments] = useState([]);
+
 
   const accessToken = Cookies.get("accessToken");
   const accountId = Cookies.get("accountId");
@@ -43,28 +46,13 @@ const StaffDashboard = () => {
   useEffect(() => {
     const loadStaffData = async () => {
       setIsLoading(true);
-      // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setStaffData({
-        account_id: 'SF001',
-        full_name: 'Duy Đẹp Trai',
-        email: 'mai.nguyen@healthcare.com',
-        phone: '0901234567',
-        position: "Kỹ thuật viên Xét nghiệm",
-        department: 'Phòng Xét nghiệm',// Get from Role
-        avatar: 'https://via.placeholder.com/80x80',
-        averageFeedBackRating: 4.9,
-        totalFeedBack: 15,
-        totalAppointments: 1247,
-        created_at: '2023-03-15',
-      });
-      await fetchStaffData()
+      await fetchStaffData();
       await fetchBlogs();
-
+      await fetchAppointmentsOfStaff();
+      await fetchTodayAppointmentsOfStaff();
       setIsLoading(false);
     };
-
     loadStaffData();
   }, []);
 
@@ -76,9 +64,151 @@ const StaffDashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const fetchAppointmentsOfStaff = async () => {
+    try {
+      const appointmentResponse = await axios.get(
+        'http://localhost:3000/staff/get-laborarity-appointment-of-staff',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const appointments = appointmentResponse.data.result;
+      if (appointments) {
+        // console.log("appointments: ", appointments)
+        const generated = await generateAppointment(appointments);
+        // console.log("generated: ", generated)
+        setAppointments(generated);
+        setStaffData((prev) => {
+          const totalAppointments = appointments.length;
+          const confirmedAppointments = appointments.filter((appointment) => {
+            return appointment.status == 'true'
+          }).length;
+          prev = {
+            ...prev,
+            totalAppointments: appointments.length,
+            pendingAppointments: appointments.filter((appointment) => {
+              return appointment.status == 'pending'
+            }).length,
+            confirmedAppointments: appointments.filter((appointment) => {
+              return appointment.status == 'confirmed'
+            }).length,
+            inProgressAppointments: appointments.filter((appointment) => {
+              return appointment.status == 'in_progress'
+            }).length,
+            completedAppointments: appointments.filter((appointment) => {
+              return appointment.status == 'completed'
+            }).length,
+          }
+          return prev;
+        });
+        return generated;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching appointment data:', error);
+      return [];
+    }
+  }
+
+  const fetchTodayAppointmentsOfStaff = async () => {
+    try {
+      const patternResponse = await axios.get(
+        'http://localhost:3000/staff-pattern/get-pattern-by-date',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            date: new Date(),
+          },
+        }
+      );
+      const patterns = patternResponse.data.result;
+      console.log('patterns: ', patterns);
+
+      if (!patterns || patterns.length === 0) {
+        setTodayAppointments([]); // Clear state if no patterns
+        return;
+      }
+
+      // Fetch appointments for all patterns concurrently
+      const allAppointments = await Promise.all(
+        patterns.map(async (pattern, index) => {
+          const appointmentResponse = await axios.get(
+            'http://localhost:3000/staff/get-laborarity-appointment-by-pattern',
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              params: {
+                date: pattern.date,
+                slot_is: pattern.working_slot.slot_id,
+              },
+            }
+          );
+          const appointments = appointmentResponse.data.result;
+          if (appointments) {
+            console.log(`Today appointments ${index}: `, appointments);
+            return await generateAppointment(appointments); // Return generated appointments
+          }
+        })
+      );
+
+      // Flatten and deduplicate appointments by app_id
+      const flattenedAppointments = allAppointments.flat();
+      const uniqueAppointments = Array.from(
+        new Map(
+          flattenedAppointments.map((app) => [app.app_id, app])
+        ).values()
+      );
+
+      setTodayAppointments(uniqueAppointments); // Set deduplicated appointments
+      return uniqueAppointments;
+    } catch (error) {
+      console.error('Error fetching today appointment data:', error);
+      setTodayAppointments([]); // Clear state on error
+      return [];
+    }
+  };
+
+  const generateAppointment = async (appointments) => {
+    if (!appointments || appointments.length === 0) {
+      return [];
+    }
+    // Chờ tất cả các Promise trong map và trả về mảng kết quả
+    const processedAppointments = await Promise.all(
+      appointments.map(async (app) => {
+        const tests = await Promise.all(
+          app.laborarity.map(async (lab) => {
+            const result = app.result.find((res) => res.name === lab.name);
+            return {
+              ...lab,
+              result: result ? result.result : null,
+              conclusion: result ? result.conclusion : null,
+              status: app.status === 'pending'
+                ? 'pending'
+                : result
+                  ? 'completed'
+                  : 'in_progress',
+            };
+          })
+        );
+        return {
+          ...app,
+          tests,
+        };
+      })
+    );
+    return processedAppointments;
+  };
+
   const fetchStaffData = async () => {
     try {
-      const accessToken = Cookies.get("accessToken")
       const viewResponse = await axios.post(
         'http://localhost:3000/account/view-account',
         {},
@@ -89,15 +219,15 @@ const StaffDashboard = () => {
           },
         }
       );
-      // const ratingResponse = await axios.get(
-      //   'http://localhost:3000/feedback/get-staff-rating-feedback',
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //       'Content-Type': 'application/json',
-      //     },
-      //   }
-      // );
+      const ratingResponse = await axios.get(
+        'http://localhost:3000/feedback/get-staff-rating-feedback',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       setStaffData((prev) => {
         if (viewResponse.data.result) {
           prev = {
@@ -107,9 +237,10 @@ const StaffDashboard = () => {
             position: getPosition(viewResponse.data.result.role)
           }
         }
-        // if (ratingResponse.data.result) {
-        //   prev = { ...prev, ...ratingResponse.data.result }
-        // }
+        if (ratingResponse.data.result) {
+          console.log("ratingResponse: ", ratingResponse.data.result)
+          prev = { ...prev, ...ratingResponse.data.result }
+        }
         return prev;
       });
 
@@ -120,8 +251,6 @@ const StaffDashboard = () => {
 
   const fetchBlogs = async function () {
     try {
-      // console.log('useEffect has been called!:', accountId);
-      // console.log('useEffect has been called!:', accessToken);
       const response = await axios.get(
         `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
         {
@@ -239,7 +368,6 @@ const StaffDashboard = () => {
   }
 
   const getDepartment = (role) => {
-    console.log("role: ", role)
     switch (role) {
       case 0:
         return "Quản trị viên";
@@ -261,9 +389,9 @@ const StaffDashboard = () => {
       case 'overview':
         return <StaffOverview staffData={staffData} />;
       case 'today-appointments':
-        return <TodayAppointments havePattern={true} />;
+        return <TodayAppointments todayAppointments={todayAppointments} fetchTodayAppointmentsOfStaff={fetchTodayAppointmentsOfStaff} />;
       case 'search-appointments':
-        return <SearchAppointments />;
+        return <SearchAppointments inputAppointments={appointments} fetchInputAppointments={fetchAppointmentsOfStaff} />;
       case 'blog-management':
         return <StaffBlog blogs={blogs} fetchBlogs={fetchBlogs} />;
       case 'profile':

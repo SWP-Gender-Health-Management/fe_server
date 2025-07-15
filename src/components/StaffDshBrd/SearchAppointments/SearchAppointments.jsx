@@ -18,6 +18,7 @@ import {
   Badge,
   Divider,
   Collapse,
+  InputNumber,
 } from 'antd';
 import {
   SearchOutlined,
@@ -38,14 +39,18 @@ import {
 import dayjs from 'dayjs';
 import './SearchAppointments.css';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
+import axios from 'axios';
+import Cookies from 'js-cookie'; // Thêm import Cookies
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { TextArea } = Input;
 const { Panel } = Collapse;
 
-const SearchAppointments = () => {
-  const [appointments, setAppointments] = useState([]);
+
+
+const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
+  const [appointments, setAppointments] = useState(inputAppointments);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -69,102 +74,106 @@ const SearchAppointments = () => {
   const [testResults, setTestResults] = useState({});
   const [resultValue, setResultValue] = useState(0);
 
+  const accessToken = Cookies.get("accessToken");
+  const accountId = Cookies.get("accountId");
   // Mock historical data với nhiều xét nghiệm
-  const mockHistoricalAppointments = [
-    {
-      app_id: 'a',
-      queue_index: 'XN001',
-      customer: {
-        full_name: 'Nguyễn Văn An',
-        phone: "0901234567",
-        email: "a@1",
-      },
-      tests: [
-        {
-          name: 'Xét nghiệm máu tổng quát',
-          estimatedTime: 30,
-          result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
-        },
-        {
-          name: 'Xét nghiệm đường huyết',
-          estimatedTime: 20,
-          result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
-        },
-      ],
-      working_slot: {
-        slot_id: "",
-        start_at: "08:30",
-        end_at: "",
-        name: "Slot 2a"
-      },
-      date: '2024-01-10',
-      status: 'pending',
-      description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
-      created_at: '2024-01-15T07:30:00',
-    },
-    {
-      app_id: 'b',
-      queue_index: 'XN001',
-      customer: {
-        full_name: 'Nguyễn Văn An',
-        phone: "0901234567",
-        email: "a@1",
-      },
-      tests: [
-        {
-          name: 'Xét nghiệm máu tổng quát',
-          estimatedTime: 30,
-          result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
-        },
-        {
-          name: 'Xét nghiệm đường huyết',
-          estimatedTime: 20,
-          result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
-        },
-      ],
-      working_slot: {
-        slot_id: "",
-        start_at: "08:30",
-        end_at: "",
-        name: "Slot 2a"
-      },
-      date: '2024-01-10',
-      status: 'pending',
-      description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
-      created_at: '2024-01-15T07:30:00',
-    }
-  ];
+  // const mockHistoricalAppointments = [
+  //   {
+  //     app_id: 'a',
+  //     queue_index: 'XN001',
+  //     customer: {
+  //       full_name: 'Nguyễn Văn An',
+  //       phone: "0901234567",
+  //       email: "a@1",
+  //     },
+  //     tests: [
+  //       {
+  //         name: 'Xét nghiệm máu tổng quát',
+  //         estimatedTime: 30,
+  //         result: null,
+  //         status: "pending",
+  //         normal_range: "1-2",
+  //         specimen: "",
+  //         unit: "m",
+  //         conclusion: null
+  //       },
+  //       {
+  //         name: 'Xét nghiệm đường huyết',
+  //         estimatedTime: 20,
+  //         result: null,
+  //         status: "pending",
+  //         normal_range: "1-2",
+  //         specimen: "",
+  //         unit: "m",
+  //         conclusion: null
+  //       },
+  //     ],
+  //     working_slot: {
+  //       slot_id: "",
+  //       start_at: "08:30",
+  //       end_at: "",
+  //       name: "Slot 2a"
+  //     },
+  //     date: '2024-01-10',
+  //     status: 'pending',
+  //     description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
+  //     created_at: '2024-01-15T07:30:00',
+  //   },
+  //   {
+  //     app_id: 'b',
+  //     queue_index: 'XN001',
+  //     customer: {
+  //       full_name: 'Nguyễn Văn An',
+  //       phone: "0901234567",
+  //       email: "a@1",
+  //     },
+  //     tests: [
+  //       {
+  //         name: 'Xét nghiệm máu tổng quát',
+  //         estimatedTime: 30,
+  //         result: null,
+  //         status: "pending",
+  //         normal_range: "1-2",
+  //         specimen: "",
+  //         unit: "m",
+  //         conclusion: null
+  //       },
+  //       {
+  //         name: 'Xét nghiệm đường huyết',
+  //         estimatedTime: 20,
+  //         result: null,
+  //         status: "pending",
+  //         normal_range: "1-2",
+  //         specimen: "",
+  //         unit: "m",
+  //         conclusion: null
+  //       },
+  //     ],
+  //     working_slot: {
+  //       slot_id: "",
+  //       start_at: "08:30",
+  //       end_at: "",
+  //       name: "Slot 2a"
+  //     },
+  //     date: '2024-01-10',
+  //     status: 'pending',
+  //     description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
+  //     created_at: '2024-01-15T07:30:00',
+  //   }
+  // ];
+
+
 
   useEffect(() => {
     searchAppointments();
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, appointments]);
 
   const searchAppointments = async () => {
     setSearchLoading(true);
-
+    // console.log("Start to search: ", inputAppointments)
     // Simulate API call với filters
     setTimeout(() => {
-      let filtered = [...mockHistoricalAppointments];
+      let filtered = appointments;
 
       // Filter by search text
       if (searchText) {
@@ -201,7 +210,7 @@ const SearchAppointments = () => {
       const endIndex = startIndex + pageSize;
       const paginatedData = filtered.slice(startIndex, endIndex);
 
-      setAppointments(filtered);
+      // setAppointments(filtered);
       setFilteredAppointments(paginatedData);
       setTotal(filtered.length);
       setSearchLoading(false);
@@ -270,7 +279,7 @@ const SearchAppointments = () => {
     const initialTestResults = {};
     appointment.tests.forEach((test) => {
       initialTestResults[test.name] = {
-        value: null,
+        value: test.result ? test.result : null,
       };
     });
     setTestResults(initialTestResults);
@@ -321,43 +330,67 @@ const SearchAppointments = () => {
 
   const handleSaveUpdate = async () => {
     if (!selectedAppointment) return;
-
     setUpdating(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      const updatedAppointments = appointments.map((apt) =>
-        apt.app_id === selectedAppointment.app_id
-          ? {
-            ...apt,
-            description: internalDescription,
-            status: newStatus,
-            tests: apt.tests.map((test) => ({
-              ...test,
-              status: newStatus === 'pending'
-                ? 'pending'
-                : testResults[test.name]?.value !== undefined
-                  ? 'completed'
-                  : 'in_progress',
-              result:
-                testResults[test.name]?.value
-                  ? (
-                    testResults[test.name]?.value ||
-                    test.result ||
-                    null
-                  )
-                  : test.result,
-            })),
-          }
-          : apt
+    try {
+      let result = await Promise.all(
+        selectedAppointment.tests
+          .filter(test => testResults[test.name]?.value) // Only include tests with valid results
+          .map(test => ({
+            name: test.name,
+            result: testResults[test.name].value
+          }))
       );
+      console.log("result entities: ", result);
+      if (result.length > 0) {
+        const responseUpdateResult = await axios.post(
+          'http://localhost:3000/staff/update-result',
+          {
+            result,
+            app_id: selectedAppointment.app_id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
 
-      setAppointments(updatedAppointments);
+
+      if (newStatus === "completed" && selectedAppointment.tests.filter(test => test.status === "completed").length === 0) {
+        alert("The tests of appointment haven't been completed!!!");
+        return;
+      }
+
+      if (newStatus !== selectedAppointment.status) {
+        const responseUpdateStatus = await axios.post(
+          'http://localhost:3000/staff/update-appointment-status',
+          {
+            status: newStatus,
+            app_id: selectedAppointment.app_id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
+
+      const updatedData = await fetchInputAppointments(); // Get the updated appointments
+      setAppointments(updatedData); // Update child component's appointments state
+      await searchAppointments(); // Refresh filteredAppointments to update UI
+
+    } catch (error) {
+      console.error("Error when save update: ", error)
+    } finally {
+
       setUpdateModalVisible(false);
       setUpdating(false);
+    }
 
-      message.success('Cập nhật thành công! Đã gửi thông báo cho khách hàng.');
-    }, 1500);
   };
 
   const renderTestsList = (tests) => {
@@ -433,7 +466,6 @@ const SearchAppointments = () => {
             <ClockCircleOutlined />
             <strong>{record.working_slot.start_at}</strong>
           </span>
-          
         </Space>
       ),
     },
@@ -553,7 +585,7 @@ const SearchAppointments = () => {
                 </Space>
               </Col>
               <Col>
-                <Card>
+                <Card count={total} showZero overflowCount={999}>
                   <span>Tổng kết quả: {total}</span>
                 </Card>
               </Col>

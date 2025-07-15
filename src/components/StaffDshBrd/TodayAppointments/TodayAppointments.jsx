@@ -37,12 +37,14 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 import './TodayAppointments.css';
+import axios from 'axios';
+import Cookies from 'js-cookie'; // Thêm import Cookies
 
 const { Option } = Select;
 const { TextArea } = Input;
 const { Panel } = Collapse;
 
-const TodayAppointments = ({ havePattern }) => {
+const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff }) => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -56,6 +58,9 @@ const TodayAppointments = ({ havePattern }) => {
   const [resultValue, setResultValue] = useState(0);
   const [internalDescription, setInternalDescription] = useState('');
   const [testResults, setTestResults] = useState({});
+
+  const accessToken = Cookies.get("accessToken");
+  const accountId = Cookies.get("accountId");
 
   // Mock data với nhiều xét nghiệm
   const mockAppointments = [
@@ -143,21 +148,12 @@ const TodayAppointments = ({ havePattern }) => {
   ];
 
   useEffect(() => {
-    fetchTodayAppointments();
+    setAppointments(todayAppointments);
   }, []);
 
   useEffect(() => {
     filterAppointments();
   }, [appointments, statusFilter]);
-
-  const fetchTodayAppointments = async () => {
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setAppointments(mockAppointments);
-      setLoading(false);
-    }, 1000);
-  };
 
   const filterAppointments = () => {
     let filtered = appointments;
@@ -258,39 +254,67 @@ const TodayAppointments = ({ havePattern }) => {
 
   const handleSaveUpdate = async () => {
     if (!selectedAppointment) return;
-
     setUpdating(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      const updatedAppointments = appointments.map((apt) =>
-        apt.app_id === selectedAppointment.app_id
-          ? {
-            ...apt,
-            description: internalDescription,
-            status: newStatus,
-            tests: apt.tests.map((test) => ({
-              ...test,
-              status: newStatus === "pending" ? "pending" : (testResults[test.name]?.value || test.result) ? "completed" : "in_progress",
-              result:
-                testResults[test.name]?.value
-                  ? (
-                    testResults[test.name]?.value ||
-                    test.result ||
-                    null
-                  )
-                  : test.result,
-            })),
-          }
-          : apt
+    try {
+      let result = await Promise.all(
+        selectedAppointment.tests
+          .filter(test => testResults[test.name]?.value) // Only include tests with valid results
+          .map(test => ({
+            name: test.name,
+            result: testResults[test.name].value
+          }))
       );
+      console.log("result entities: ", result);
+      if (result.length > 0) {
+        const responseUpdateResult = await axios.post(
+          'http://localhost:3000/staff/update-result',
+          {
+            result,
+            app_id: selectedAppointment.app_id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
 
-      setAppointments(updatedAppointments);
+
+      if (newStatus === "completed" && selectedAppointment.tests.filter(test => test.status === "completed").length < selectedAppointment.tests.length) {
+        alert("The tests of appointment haven't been completed!!!");
+        return;
+      }
+
+      if (newStatus !== selectedAppointment.status) {
+        const responseUpdateStatus = await axios.post(
+          'http://localhost:3000/staff/update-appointment-status',
+          {
+            status: newStatus,
+            app_id: selectedAppointment.app_id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
+
+      const updatedData = await fetchTodayAppointmentsOfStaff(); // Get the updated appointments
+      setAppointments(updatedData); // Update child component's appointments state
+      await filterAppointments(); // Refresh filteredAppointments to update UI
+
+    } catch (error) {
+      console.error("Error when save update: ", error)
+    } finally {
+
       setUpdateModalVisible(false);
       setUpdating(false);
+    }
 
-      message.success('Cập nhật thành công! Đã gửi thông báo cho khách hàng.');
-    }, 1500);
   };
 
   const renderTestsList = (tests) => {
@@ -441,10 +465,10 @@ const TodayAppointments = ({ havePattern }) => {
           <h2>Lịch hẹn Hôm nay</h2>
           <p>Quản lý các lịch hẹn xét nghiệm trong ngày</p>
         </div>
-        {havePattern &&
+        {true &&
           <Button
             icon={<ReloadOutlined />}
-            onClick={fetchTodayAppointments}
+            onClick={fetchTodayAppointmentsOfStaff}
             loading={loading}
           >
             Làm mới
@@ -453,147 +477,148 @@ const TodayAppointments = ({ havePattern }) => {
       </div>
 
       {/* Stats Cards */}
-      {havePattern ? (
-        <>
-          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-            {statsCards.map((card, index) => (
-              <Col xs={24} sm={12} lg={6} key={index}>
-                <Card
-                  className="stats-card"
-                  style={{ borderLeft: `4px solid ${card.color}` }}
-                >
-                  <Row align="middle">
-                    <Col span={18}>
-                      <div className="stats-content">
-                        <div className="stats-title">{card.title}</div>
-                        <div className="stats-value">{card.value}</div>
-                      </div>
-                    </Col>
-                    <Col span={6}>
-                      <div className="stats-icon" style={{ color: card.color }}>
-                        {card.icon}
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            ))}
-          </Row>
 
-          {/* Filters */}
-          <Card style={{ marginBottom: '16px' }}>
-            <Row align="middle" justify="space-between">
-              <Col>
-                <Space>
-                  <span>Lọc theo trạng thái:</span>
-                  <Select
-                    value={statusFilter}
-                    onChange={setStatusFilter}
-                    style={{ width: 200 }}
-                  >
-                    <Option value="all">Tất cả</Option>
-                    <Option value="pending">Chờ xử lý</Option>
-                    <Option value="in_progress">Đang xét nghiệm</Option>
-                    <Option value="confirmed">Đã xác nhận</Option>
-                    <Option value="completed">Đã hoàn thành</Option>
-                  </Select>
-                </Space>
-              </Col>
-            </Row>
-          </Card>
+      (
+      <>
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+          {statsCards.map((card, index) => (
+            <Col xs={24} sm={12} lg={6} key={index}>
+              <Card
+                className="stats-card"
+                style={{ borderLeft: `4px solid ${card.color}` }}
+              >
+                <Row align="middle">
+                  <Col span={18}>
+                    <div className="stats-content">
+                      <div className="stats-title">{card.title}</div>
+                      <div className="stats-value">{card.value}</div>
+                    </div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="stats-icon" style={{ color: card.color }}>
+                      {card.icon}
+                    </div>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+          ))}
+        </Row>
 
-          {/* Appointments Table */}
-          <Card>
-            <Table
-              columns={columns}
-              dataSource={filteredAppointments}
-              rowKey="app_id"
-              loading={loading}
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) =>
-                  `${range[0]}-${range[1]} trong ${total} lịch hẹn`,
-              }}
-              scroll={{ x: 1200 }}
-            />
-          </Card>
-
-          {/* Update Modal */}
-          <Modal
-            title={
+        {/* Filters */}
+        <Card style={{ marginBottom: '16px' }}>
+          <Row align="middle" justify="space-between">
+            <Col>
               <Space>
-                <EditOutlined />
-                Cập nhật kết quả xét nghiệm - {selectedAppointment?.working_slot.name + " - " + selectedAppointment?.queue_index}
+                <span>Lọc theo trạng thái:</span>
+                <Select
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  style={{ width: 200 }}
+                >
+                  <Option value="all">Tất cả</Option>
+                  <Option value="pending">Chờ xử lý</Option>
+                  <Option value="in_progress">Đang xét nghiệm</Option>
+                  <Option value="confirmed">Đã xác nhận</Option>
+                  <Option value="completed">Đã hoàn thành</Option>
+                </Select>
               </Space>
-            }
-            open={updateModalVisible}
-            onCancel={() => setUpdateModalVisible(false)}
-            onOk={handleSaveUpdate}
-            confirmLoading={updating}
-            width={800}
-            okText="Lưu và gửi thông báo"
-            cancelText="Hủy"
-          >
-            {selectedAppointment && (
-              <div className="update-modal-content">
-                {/* Customer Info */}
-                <Card size="small" style={{ marginBottom: '16px' }}>
-                  <Row>
-                    <Col span={12}>
-                      <strong>Khách hàng:</strong>{' '}
-                      {selectedAppointment.customer.full_name}
-                    </Col>
-                    <Col span={12}>
-                      <strong>SĐT:</strong> {selectedAppointment.customer.phone}
-                    </Col>
-                    <Col span={12}>
-                      <strong>Email:</strong> {selectedAppointment.customer.email}
-                    </Col>
-                  </Row>
-                </Card>
+            </Col>
+          </Row>
+        </Card>
 
-                {/* Overall Status */}
-                <Form.Item label="Trạng thái tổng quát">
-                  <Select
-                    value={newStatus}
-                    onChange={setNewStatus}
-                    style={{ width: '100%' }}
-                  >
-                    <Option value="pending">Chờ xử lý</Option>
-                    <Option value="confirmed">Đã xác nhận</Option>
-                    <Option value="in_progress">Đang xử lý</Option>
-                    <Option value="completed">Đã hoàn thành</Option>
-                  </Select>
-                </Form.Item>
+        {/* Appointments Table */}
+        <Card>
+          <Table
+            columns={columns}
+            dataSource={filteredAppointments}
+            rowKey="app_id"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} trong ${total} lịch hẹn`,
+            }}
+            scroll={{ x: 1200 }}
+          />
+        </Card>
 
-                {/* Tests Management */}
-                <Form.Item label="Cập nhật từng xét nghiệm">
-                  <Collapse
-                    defaultActiveKey={selectedAppointment.tests.map(
-                      (test) => test.name
-                    )}
-                    expandIcon={({ isActive }) => (
-                      <DownOutlined rotate={isActive ? 180 : 0} />
-                    )}
-                  >
-                    {selectedAppointment.tests.map((test) => (
-                      <Panel
-                        header={
-                          <Space>
-                            <ExperimentOutlined />
-                            <span>{test.name}</span>
-                          </Space>
-                        }
-                        key={test.name}
-                      >
-                        <Space direction="vertical" style={{ width: '100%' }}>
-                          <Form.Item label="Trạng thái">
-                            {getStatusConfig(test.status).text}
-                          </Form.Item>
+        {/* Update Modal */}
+        <Modal
+          title={
+            <Space>
+              <EditOutlined />
+              Cập nhật kết quả xét nghiệm - {selectedAppointment?.working_slot.name + " - " + selectedAppointment?.queue_index}
+            </Space>
+          }
+          open={updateModalVisible}
+          onCancel={() => setUpdateModalVisible(false)}
+          onOk={handleSaveUpdate}
+          confirmLoading={updating}
+          width={800}
+          okText="Lưu và gửi thông báo"
+          cancelText="Hủy"
+        >
+          {selectedAppointment && (
+            <div className="update-modal-content">
+              {/* Customer Info */}
+              <Card size="small" style={{ marginBottom: '16px' }}>
+                <Row>
+                  <Col span={12}>
+                    <strong>Khách hàng:</strong>{' '}
+                    {selectedAppointment.customer.full_name}
+                  </Col>
+                  <Col span={12}>
+                    <strong>SĐT:</strong> {selectedAppointment.customer.phone}
+                  </Col>
+                  <Col span={12}>
+                    <strong>Email:</strong> {selectedAppointment.customer.email}
+                  </Col>
+                </Row>
+              </Card>
 
-                          {/* <Form.Item label="Ghi chú kết quả">
+              {/* Overall Status */}
+              <Form.Item label="Trạng thái tổng quát">
+                <Select
+                  value={newStatus}
+                  onChange={setNewStatus}
+                  style={{ width: '100%' }}
+                >
+                  <Option value="pending">Chờ xử lý</Option>
+                  <Option value="confirmed">Đã xác nhận</Option>
+                  <Option value="in_progress">Đang xử lý</Option>
+                  <Option value="completed">Đã hoàn thành</Option>
+                </Select>
+              </Form.Item>
+
+              {/* Tests Management */}
+              <Form.Item label="Cập nhật từng xét nghiệm">
+                <Collapse
+                  defaultActiveKey={selectedAppointment.tests.map(
+                    (test) => test.name
+                  )}
+                  expandIcon={({ isActive }) => (
+                    <DownOutlined rotate={isActive ? 180 : 0} />
+                  )}
+                >
+                  {selectedAppointment.tests.map((test) => (
+                    <Panel
+                      header={
+                        <Space>
+                          <ExperimentOutlined />
+                          <span>{test.name}</span>
+                        </Space>
+                      }
+                      key={test.name}
+                    >
+                      <Space direction="vertical" style={{ width: '100%' }}>
+                        <Form.Item label="Trạng thái">
+                          {getStatusConfig(test.status).text}
+                        </Form.Item>
+
+                        {/* <Form.Item label="Ghi chú kết quả">
                             <TextArea
                               value={testResults[test.name]?.description || ''}
                               onChange={(e) =>
@@ -603,63 +628,59 @@ const TodayAppointments = ({ havePattern }) => {
                               rows={3}
                             />
                           </Form.Item> */}
-                          {test.status !== "pending" &&
-                            <Form.Item label="Nhập kết quả xé nghiệm">
-                              {
-                                test.result ?
-                                  (<p>{test.result}</p>)
-                                  : (<InputNumber
-                                    value={null}
-                                    // onChange={(e) =>
-                                    //   handleInputResult(test.name, e.target.value)
-                                    // }
-                                    onChange={(value) => handleInputResult(test.name, value)}
-                                    placeholder="Nhập kết quả xét nghiệm..."
-                                  />)
-                              }
-                            </Form.Item>
-                          }
-                          <Form.Item label="Đơn vị">
-                            <p>{test.unit}</p>
+                        {test.status !== "pending" &&
+                          <Form.Item label="Nhập kết quả xé nghiệm">
+                            {
+                              test.result ?
+                                (<p>{test.result}</p>)
+                                : (<InputNumber
+                                  value={null}
+                                  // onChange={(e) =>
+                                  //   handleInputResult(test.name, e.target.value)
+                                  // }
+                                  onChange={(value) => handleInputResult(test.name, value)}
+                                  placeholder="Nhập kết quả xét nghiệm..."
+                                />)
+                            }
                           </Form.Item>
+                        }
+                        <Form.Item label="Đơn vị">
+                          <p>{test.unit}</p>
+                        </Form.Item>
 
-                          <Form.Item label="Normal Range">
-                            <p>{test.normal_range}</p>
+                        <Form.Item label="Normal Range">
+                          <p>{test.normal_range}</p>
+                        </Form.Item>
+
+                        <Form.Item label="Specimen">
+                          <p>{test.specimen}</p>
+                        </Form.Item>
+                        {test.status !== "pending" && test.conclusion &&
+                          <Form.Item label="Conclusion">
+                            <p>{test.conclusion}</p>
                           </Form.Item>
+                        }
+                      </Space>
+                    </Panel>
+                  ))}
+                </Collapse>
+              </Form.Item>
 
-                          <Form.Item label="Specimen">
-                            <p>{test.specimen}</p>
-                          </Form.Item>
-                          { test.status !== "pending" && test.conclusion &&
-                            <Form.Item label="Conclusion">
-                              <p>{test.conclusion}</p>
-                            </Form.Item>
-                          }
-                        </Space>
-                      </Panel>
-                    ))}
-                  </Collapse>
-                </Form.Item>
+              {/* Internal Description */}
+              <Form.Item label="Ghi chú nội bộ">
+                <TextArea
+                  value={internalDescription}
+                  onChange={(e) => setInternalDescription(e.target.value)}
+                  placeholder="Nhập ghi chú nội bộ cho đồng nghiệp..."
+                  rows={4}
+                />
+              </Form.Item>
+            </div>
+          )}
+        </Modal>
+      </>
+      )
 
-                {/* Internal Description */}
-                <Form.Item label="Ghi chú nội bộ">
-                  <TextArea
-                    value={internalDescription}
-                    onChange={(e) => setInternalDescription(e.target.value)}
-                    placeholder="Nhập ghi chú nội bộ cho đồng nghiệp..."
-                    rows={4}
-                  />
-                </Form.Item>
-              </div>
-            )}
-          </Modal>
-        </>
-      ) : (
-        <div className="header-content">
-          <h2>Hôm nay bạn không có ca làm</h2>
-          <h2>{new Date().toISOString().split('T')[0]}</h2>
-        </div>)
-      }
     </div>
 
   );

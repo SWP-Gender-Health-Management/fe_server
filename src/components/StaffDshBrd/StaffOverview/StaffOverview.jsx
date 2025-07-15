@@ -137,7 +137,7 @@ const StaffOverview = ({ staffData }) => {
           <Card className="summary-card completed">
             <Statistic
               title="Đã hoàn thành"
-              value={todayStats.completed}
+              value={staffData.completedAppointments}
               prefix={<CheckCircleOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
@@ -147,7 +147,7 @@ const StaffOverview = ({ staffData }) => {
           <Card className="summary-card pending">
             <Statistic
               title="Chờ xử lý"
-              value={todayStats.pending}
+              value={staffData.pendingAppointments}
               prefix={<ClockCircleOutlined />}
               valueStyle={{ color: '#faad14' }}
             />
@@ -157,7 +157,7 @@ const StaffOverview = ({ staffData }) => {
           <Card className="summary-card in-progress">
             <Statistic
               title="Đang xử lý"
-              value={todayStats.inProgress}
+              value={staffData.inProgressAppointments}
               prefix={<ExperimentOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -166,8 +166,8 @@ const StaffOverview = ({ staffData }) => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="summary-card has-result">
             <Statistic
-              title="Có kết quả"
-              value={todayStats.hasResult}
+              title="Đã xác nhận"
+              value={staffData.confirmedAppointments}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: '#722ed1' }}
             />
@@ -183,21 +183,21 @@ const StaffOverview = ({ staffData }) => {
               <div className="metric-item">
                 <div className="metric-label">Tỷ lệ hoàn thành</div>
                 <Progress
-                  percent={performanceStats.completionRate}
+                  percent={(staffData.completedAppointments/staffData.totalAppointments)*100}
                   strokeColor="#52c41a"
                   size="small"
                 />
                 <div className="metric-value">
-                  {performanceStats.completionRate}%
+                  {(staffData.completedAppointments/staffData.totalAppointments)*100}%
                 </div>
               </div>
 
 
               <div className="stat-box">
                 <div className="stat-number">
-                  {performanceStats.weeklyTests}
+                  {staffData.totalAppointments}
                 </div>
-                <div className="stat-label">XN tuần này</div>
+                <div className="stat-label">Tổng số xét nghiệm</div>
               </div>
             </div>
           </Card>
