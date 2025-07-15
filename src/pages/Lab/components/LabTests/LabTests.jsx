@@ -1,131 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LabTests.css';
+import { getAllLaboratories } from '@/api/labApi';
+import Cookies from 'js-cookie';
 
 const LabTests = () => {
   const navigate = useNavigate();
-  const [selectedTests, setSelectedTests] = useState([]);
+  const [selectedLabIds, setSelectedLabIds] = useState([]); // array of selected lab_id strings
   const [labSchedule, setLabSchedule] = useState(null);
-
-  // Lab test data organized by categories
-  const labTestCategories = [
-    {
-      id: 1,
-      name: 'Xét nghiệm máu cơ bản',
-      icon: '🩸',
-      description: 'Các xét nghiệm máu thường quy, cơ bản',
-      tests: [
-        {
-          id: 'blood_basic',
-          name: 'Công thức máu toàn phần',
-          description: 'Đếm tế bào máu trắng, đỏ, tiểu cầu',
-          price: 120000,
-          duration: '30 phút',
-        },
-        {
-          id: 'blood_sugar',
-          name: 'Đường huyết lúc đói',
-          description: 'Kiểm tra mức đường trong máu',
-          price: 80000,
-          duration: '15 phút',
-        },
-        {
-          id: 'blood_lipid',
-          name: 'Mỡ máu (Lipid)',
-          description: 'Cholesterol, triglyceride, HDL, LDL',
-          price: 200000,
-          duration: '45 phút',
-        },
-        {
-          id: 'hba1c',
-          name: 'HbA1c',
-          description: 'Đường huyết trung bình 3 tháng',
-          price: 250000,
-          duration: '30 phút',
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Xét nghiệm chức năng gan',
-      icon: '🫀',
-      description: 'Đánh giá tình trạng và chức năng gan',
-      tests: [
-        {
-          id: 'liver_alt',
-          name: 'ALT (SGPT)',
-          description: 'Enzyme gan, đánh giá chức năng gan',
-          price: 60000,
-          duration: '20 phút',
-        },
-        {
-          id: 'liver_ast',
-          name: 'AST (SGOT)',
-          description: 'Enzyme gan và tim',
-          price: 60000,
-          duration: '20 phút',
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Xét nghiệm chức năng thận',
-      icon: '🫘',
-      description: 'Đánh giá tình trạng và chức năng thận',
-      tests: [
-        {
-          id: 'kidney_creatinine',
-          name: 'Creatinine máu',
-          description: 'Đánh giá chức năng thận',
-          price: 80000,
-          duration: '20 phút',
-        },
-        {
-          id: 'kidney_urea',
-          name: 'Urea máu',
-          description: 'Sản phẩm chuyển hóa protein',
-          price: 70000,
-          duration: '20 phút',
-        },
-        {
-          id: 'urine_basic',
-          name: 'Tổng phân tích nước tiểu',
-          description: 'Protein, glucose, bạch cầu trong nước tiểu',
-          price: 100000,
-          duration: '25 phút',
-        },
-      ],
-    },
-    {
-      id: 4,
-      name: 'Xét nghiệm chuyên sâu',
-      icon: '🔬',
-      description: 'Các xét nghiệm hormone và vitamin',
-      tests: [
-        {
-          id: 'thyroid_tsh',
-          name: 'TSH (Hormone tuyến giáp)',
-          description: 'Đánh giá chức năng tuyến giáp',
-          price: 300000,
-          duration: '60 phút',
-        },
-        {
-          id: 'vitamin_d',
-          name: 'Vitamin D',
-          description: 'Mức độ Vitamin D trong cơ thể',
-          price: 500000,
-          duration: '90 phút',
-        },
-        {
-          id: 'hepatitis_b',
-          name: 'Xét nghiệm Hepatitis B',
-          description: 'HBsAg, Anti-HBs, Anti-HBc',
-          price: 180000,
-          duration: '40 phút',
-        },
-      ],
-    },
-  ];
+  const [labTests, setLabTests] = useState([]);
 
   useEffect(() => {
     // Get schedule from sessionStorage
@@ -136,22 +19,27 @@ const LabTests = () => {
       // If no schedule, redirect back
       navigate('/dat-lich-xet-nghiem');
     }
+    // Lấy danh sách xét nghiệm thực tế
+    const token = Cookies.get('accessToken');
+    getAllLaboratories(token)
+      .then(res => {
+        setLabTests(res.data.result || []);
+      });
   }, [navigate]);
 
-  const handleTestToggle = (test) => {
-    setSelectedTests((prev) => {
-      const isSelected = prev.find((t) => t.id === test.id);
-      if (isSelected) {
-        return prev.filter((t) => t.id !== test.id);
+  const handleTestToggle = (lab_id) => {
+    setSelectedLabIds((prev) => {
+      if (prev.includes(lab_id)) {
+        return prev.filter((selectedId) => selectedId !== lab_id);
       } else {
-        return [...prev, test];
+        return [...prev, lab_id];
       }
     });
   };
 
-  const calculateTotal = () => {
-    return selectedTests.reduce((total, test) => total + test.price, 0);
-  };
+  // Update selectedCombos to use selectedLabIds
+  const selectedCombos = labTests.filter((combo) => selectedLabIds.includes(combo.lab_id));
+  const calculateTotal = () => selectedCombos.reduce((total, combo) => total + combo.price, 0);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -161,19 +49,19 @@ const LabTests = () => {
   };
 
   const handleContinue = () => {
-    if (selectedTests.length > 0) {
-      // Save selected tests to sessionStorage
-      sessionStorage.setItem('selectedLabTests', JSON.stringify(selectedTests));
+    if (selectedLabIds.length > 0) {
+      // Save selected lab_id strings to sessionStorage
+      sessionStorage.setItem('selectedLabIds', JSON.stringify(selectedLabIds));
       navigate('/thong-tin-xet-nghiem');
     }
   };
 
   const getTotalDuration = () => {
-    const totalMinutes = selectedTests.reduce((total, test) => {
-      const minutes = parseInt(test.duration.split(' ')[0]);
+    const totalMinutes = selectedCombos.reduce((total, combo) => {
+      if (!combo.duration) return total;
+      const minutes = parseInt(combo.duration.split(' ')[0]);
       return total + minutes;
     }, 0);
-
     if (totalMinutes >= 60) {
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
@@ -215,61 +103,42 @@ const LabTests = () => {
 
           {/* Test Categories */}
           <div className="test-categories">
-            {labTestCategories.map((category) => (
-              <div key={category.id} className="test-category">
-                <div className="category-header">
-                  <div className="category-title">
-                    <span className="category-icon">{category.icon}</span>
-                    <div className="category-text">
-                      <h3>{category.name}</h3>
-                      <p className="category-description">
-                        {category.description}
-                      </p>
+            {Array.isArray(labTests) && labTests.length > 0 ? (
+              labTests.map((category, catIdx) => {
+                const isSelected = selectedLabIds.includes(category.lab_id);
+                return (
+                  <div
+                    key={category.lab_id || `cat-${catIdx}`}
+                    className={`test-item combo ${isSelected ? 'selected' : ''}`}
+                  >
+                    <div className="test-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleTestToggle(category.lab_id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                    <div className="test-details">
+                      <div className="test-main-info">
+                        <h4 className="test-name">{category.name}</h4>
+                      </div>
+                      <p className="test-description">{category.description}</p>
+                      <div className="test-meta">
+                        <span className="test-duration">
+                          ⏱️ {category.duration}
+                        </span>
+                        <span className="test-price">
+                          {formatPrice(category.price)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="category-tests">
-                  {category.tests.map((test) => {
-                    const isSelected = selectedTests.find(
-                      (t) => t.id === test.id
-                    );
-
-                    return (
-                      <div
-                        key={test.id}
-                        className={`test-item ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleTestToggle(test)}
-                      >
-                        <div className="test-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handleTestToggle(test)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </div>
-
-                        <div className="test-details">
-                          <div className="test-main-info">
-                            <h4 className="test-name">{test.name}</h4>
-                          </div>
-                          <p className="test-description">{test.description}</p>
-                          <div className="test-meta">
-                            <span className="test-duration">
-                              ⏱️ {test.duration}
-                            </span>
-                            <span className="test-price">
-                              {formatPrice(test.price)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+                );
+              })
+            ) : (
+              <div className="no-categories">Không tìm thấy danh mục xét nghiệm hoặc có lỗi khi tải dữ liệu.</div>
+            )}
           </div>
         </div>
 
@@ -278,17 +147,17 @@ const LabTests = () => {
           <div className="summary-card">
             <h3>📋 Tóm tắt đơn hàng</h3>
 
-            {selectedTests.length === 0 ? (
+            {selectedCombos.length === 0 ? (
               <p className="empty-selection">Chưa chọn xét nghiệm nào</p>
             ) : (
               <>
                 <div className="selected-tests">
-                  <h4>Xét nghiệm đã chọn ({selectedTests.length})</h4>
-                  {selectedTests.map((test) => (
-                    <div key={test.id} className="selected-test-item">
-                      <span className="selected-test-name">{test.name}</span>
+                  <h4>Xét nghiệm đã chọn ({selectedCombos.length})</h4>
+                  {selectedCombos.map((combo) => (
+                    <div key={combo.lab_id} className="selected-test-item">
+                      <span className="selected-test-name">{combo.name}</span>
                       <span className="selected-test-price">
-                        {formatPrice(test.price)}
+                        {formatPrice(combo.price)}
                       </span>
                     </div>
                   ))}
@@ -305,7 +174,10 @@ const LabTests = () => {
                   </div>
                 </div>
 
-                <button className="continue-button" onClick={handleContinue}>
+                <button className="continue-button" onClick={() => {
+                  sessionStorage.setItem('selectedLabIds', JSON.stringify(selectedLabIds));
+                  handleContinue();
+                }}>
                   Tiếp tục đặt lịch →
                 </button>
               </>

@@ -20,4 +20,23 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Interceptor xử lý lỗi jwt expired toàn cục
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.errors &&
+      error.response.data.errors.authorization === 'jwt expired'
+    ) {
+      Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
+      // Có thể gọi hàm logout toàn cục hoặc chuyển hướng về login
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api; 

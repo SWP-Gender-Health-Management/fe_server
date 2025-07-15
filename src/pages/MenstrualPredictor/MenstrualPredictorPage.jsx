@@ -1,7 +1,10 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Row, Col, message, Spin, Modal, Button } from 'antd';
-import { jwtDecode } from 'jwt-decode';
-import api from '@/api/api';
+import {
+  getMenstrualCycleData,
+  updateMenstrualCycle,
+  predictPeriod,
+} from '@/api/customerApi';
 import {
   HomeOutlined,
   ExclamationCircleOutlined,
@@ -14,7 +17,7 @@ import CycleUpdateModal from './components/CycleUpdateModal';
 import DayInfoModal from './components/DayInfoModal';
 import './MenstrualPredictorPage.css';
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import SetupMenstrualForm from './components/SetupMenstrualForm';
 
 const MenstrualPredictorPage = () => {
   console.log('MenstrualPredictorPage component is rendering...');
@@ -29,15 +32,11 @@ const MenstrualPredictorPage = () => {
   const [lastPeriodStart, setLastPeriodStart] = useState('');
 
   // Prediction data states
-  const [nextStartDate, setNextStartDate] = useState(null);
-  const [ovulationDate, setOvulationDate] = useState(null);
-  const [fertileRange, setFertileRange] = useState({ start: null, end: null });
-  const [nextEndDate, setNextEndDate] = useState(null);
+  // const [nextStartDate, setNextStartDate] = useState(null); // Xóa nếu không dùng
   const [periodDays, setPeriodDays] = useState({});
   const [ovulationDays, setOvulationDays] = useState({});
 
   // UI states for tracking setup flow
-  const [isTrackingSetup, setIsTrackingSetup] = useState(false);
   const [showSetupForm, setShowSetupForm] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [showNotFemaleModal, setShowNotFemaleModal] = useState(false);
@@ -46,16 +45,36 @@ const MenstrualPredictorPage = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDayInfoModal, setShowDayInfoModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
-  const [accountId, setAccountId] = useState(null);
 
   const token = Cookies.get('accessToken');
   const navigate = useNavigate();
   console.log('Token:', token);
 
+  // Lấy accountId từ token
+  let accountId = null;
+  try {
+    if (token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join('')
+      );
+      accountId = JSON.parse(jsonPayload).account_id;
+    }
+  } catch {
+    accountId = null;
+  }
+
   useEffect(() => {
     const checkTrackingStatus = async () => {
       try {
-        const hasTrackingData = await getMenstrualCycleData();
+        const { data } = await getMenstrualCycleData(token);
+        const hasTrackingData = data?.result;
         console.log('hasTrackingData:', hasTrackingData);
         if (hasTrackingData === '11') {
           await getPredictionData();
@@ -65,7 +84,6 @@ const MenstrualPredictorPage = () => {
             'No tracking data found (result: false), showing setup form'
           );
           setShowSetupForm(true);
-          setIsTrackingSetup(false);
           setInitialLoading(false);
           return;
         } else {
@@ -77,97 +95,72 @@ const MenstrualPredictorPage = () => {
       } catch (error) {
         console.error('Lỗi khi kiểm tra trạng thái theo dõi:', error);
         setShowSetupForm(true);
-        setIsTrackingSetup(false);
+        setInitialLoading(false);
       }
     };
     checkTrackingStatus();
   }, []);
 
-  const getMenstrualCycleData = async () => {
-    const response = await axios.get(
-      `http://localhost:3000/customer/get-menstrual-cycle`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log('getMenstrualCycleData response:', response.data);
-    const result = response.data?.result;
-    return result;
-  };
-
   const getPredictionData = async () => {
-    const response = await axios.get(
-      `http://localhost:3000/customer/predict-period`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log('getPredictionData response:', response.data);
-    const data = response.data?.result;
+    try {
+      const { data: responseData } = await predictPeriod(accountId, token);
+      const data = responseData?.result;
 
-    if (!data) {
-      console.log('No prediction data available, showing setup form');
+      if (!data) {
+        console.log('No prediction data available, showing setup form');
+        setShowSetupForm(true);
+      } else {
+        console.log('Complete tracking data found, showing main interface');
+        setInitialLoading(false);
+
+        if (data.current_start_date) {
+          setLastPeriodStart(data.current_start_date);
+        }
+        if (data.current_period) {
+          setPeriodLength(data.current_period);
+        }
+        if (data.current_end_date && data.current_start_date) {
+          const cycleLength =
+            Math.ceil(
+              (new Date(data.current_end_date) -
+                new Date(data.current_start_date)) /
+                (1000 * 60 * 60 * 24)
+            ) + 1;
+          setCycleLength(cycleLength);
+        }
+
+        setPeriodDays(data.periodDaysMap || {});
+        setOvulationDays(data.ovulationDaysMap || {});
+
+        if (
+          data.current_start_date &&
+          data.current_end_date &&
+          data.current_period
+        ) {
+          const currentStart = new Date(data.current_start_date);
+          const averageCycleLength = data.current_period;
+
+          const nextPeriodStart = new Date(currentStart);
+          nextPeriodStart.setDate(currentStart.getDate() + averageCycleLength);
+          // setNextStartDate(nextPeriodStart); // Xóa nếu không dùng
+
+          const ovulationDate = new Date(nextPeriodStart);
+          ovulationDate.setDate(nextPeriodStart.getDate() - 14);
+
+          const fertileStart = new Date(ovulationDate);
+          fertileStart.setDate(ovulationDate.getDate() - 2);
+          const fertileEnd = new Date(ovulationDate);
+          fertileEnd.setDate(ovulationDate.getDate() + 2);
+
+          const nextPeriodEnd = new Date(nextPeriodStart);
+          nextPeriodEnd.setDate(
+            nextPeriodStart.getDate() + (data.current_period - 1)
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu dự đoán:', error);
       setShowSetupForm(true);
-      setIsTrackingSetup(false);
-    } else {
-      console.log('Complete tracking data found, showing main interface');
-      setIsTrackingSetup(true);
-      setShowSetupForm(false);
-      setInitialLoading(false);
-
-      if (data.current_start_date) {
-        setLastPeriodStart(data.current_start_date);
-      }
-      if (data.current_period) {
-        setPeriodLength(data.current_period);
-      }
-      if (data.current_end_date && data.current_start_date) {
-        const cycleLength =
-          Math.ceil(
-            (new Date(data.current_end_date) -
-              new Date(data.current_start_date)) /
-              (1000 * 60 * 60 * 24)
-          ) + 1;
-        setCycleLength(cycleLength);
-      }
-
-      setPeriodDays(data.periodDaysMap || {});
-      setOvulationDays(data.ovulationDaysMap || {});
-
-      if (
-        data.current_start_date &&
-        data.current_end_date &&
-        data.current_period
-      ) {
-        const currentStart = new Date(data.current_start_date);
-        const averageCycleLength = data.current_period;
-
-        const nextPeriodStart = new Date(currentStart);
-        nextPeriodStart.setDate(currentStart.getDate() + averageCycleLength);
-        setNextStartDate(nextPeriodStart);
-
-        const ovulationDate = new Date(nextPeriodStart);
-        ovulationDate.setDate(nextPeriodStart.getDate() - 14);
-        setOvulationDate(ovulationDate);
-
-        const fertileStart = new Date(ovulationDate);
-        fertileStart.setDate(ovulationDate.getDate() - 2);
-        const fertileEnd = new Date(ovulationDate);
-        fertileEnd.setDate(ovulationDate.getDate() + 2);
-        setFertileRange({ start: fertileStart, end: fertileEnd });
-
-        const nextPeriodEnd = new Date(nextPeriodStart);
-        nextPeriodEnd.setDate(
-          nextPeriodStart.getDate() + (data.current_period - 1)
-        );
-        setNextEndDate(nextPeriodEnd);
-      }
     }
   };
 
@@ -256,44 +249,19 @@ const MenstrualPredictorPage = () => {
   };
 
   const handleUpdate = useCallback(async () => {
-    const token = Cookies.get('accessToken');
-
-  const daysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
-  const getFirstDayOfMonth = (m, y) => new Date(y, m, 1).getDay();
-
-  const fetchLastPeriodData = useCallback(async () => {
-    if (!accountId || !token) return;
-
-    if (!token) {
-      message.error('Vui lòng đăng nhập để cập nhật thông tin!');
-      return;
-    }
-
     if (!lastPeriodStart || !periodLength) {
       message.error('Vui lòng nhập đầy đủ thông tin chu kỳ!');
       return;
     }
-
     try {
       const startDate = new Date(lastPeriodStart);
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
-
-      const response = await axios.post(
-        'http://localhost:3000/customer/update-menstrual-cycle',
-        {
-          start_date: startDate.toISOString(),
-          end_date: endDate.toISOString(),
-          note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
+      await updateMenstrualCycle({
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
+      }, token);
       await getPredictionData();
       message.success('Cập nhật thành công!');
       setShowUpdateModal(false);
@@ -302,19 +270,16 @@ const MenstrualPredictorPage = () => {
       if (err.response?.status === 401) {
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
       } else if (err.response?.status === 400) {
-        message.error(
-          'Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!'
-        );
+        message.error('Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!');
       } else {
         message.error('Không thể cập nhật chu kỳ. Vui lòng thử lại!');
       }
     }
-  }, [lastPeriodStart, periodLength, getPredictionData]);
+  }, [lastPeriodStart, periodLength, getPredictionData, token]);
 
   // Handle setup completion
   const handleSetupComplete = () => {
     setShowSetupForm(false);
-    setIsTrackingSetup(true);
     getPredictionData();
   };
 
@@ -337,56 +302,6 @@ const MenstrualPredictorPage = () => {
       day === today.getDate() &&
       month === today.getMonth() &&
       year === today.getFullYear();
-    // Đã có instance api, chỉ cần truyền headers khi gọi
-    const apiInstance = api.create({
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // Kiểm tra hợp lệ trước khi gọi API
-    if (
-      !accountId ||
-      !lastPeriodStart ||
-      !cycleLength ||
-      !periodLength ||
-      isNaN(+cycleLength) ||
-      isNaN(+periodLength) ||
-      isNaN(new Date(lastPeriodStart).getTime())
-    ) {
-      return alert('Vui lòng nhập đầy đủ và hợp lệ!');
-    }
-
-    try {
-      // Gửi thông tin chu kỳ
-      await apiInstance.post('/customer/track-period', {
-        account_id: accountId,
-        period: Number(periodLength),
-        cycle_length: Number(cycleLength),
-        start_date: new Date(lastPeriodStart).toISOString(),
-        end_date: new Date(lastPeriodStart).toISOString(),
-        note: 'Nhập kỳ kinh lần đầu',
-      });
-
-      // Gọi API dự đoán
-      const res = await apiInstance.get('/customer/predict-period', {
-        params: { account_id: accountId },
-      });
-
-      const { next_start_date } = res.data.data;
-
-      const nextDate = new Date(next_start_date);
-      const ovulation = new Date(nextDate);
-      ovulation.setDate(ovulation.getDate() - 14);
-      const fertileStart = new Date(ovulation);
-      fertileStart.setDate(fertileStart.getDate() - 2);
-      const fertileEnd = new Date(ovulation);
-      fertileEnd.setDate(fertileEnd.getDate() + 2);
-
-      setNextStartDate(nextDate);
-      setOvulationDate(ovulation);
-      setFertileRange({ start: fertileStart, end: fertileEnd });
 
     // Calculate cycle day
     let cycleDay = null;
@@ -411,17 +326,7 @@ const MenstrualPredictorPage = () => {
       phaseInfo: getPhaseInfo(phase),
     };
   };
-
-  const currentPhase = getCurrentPhase();
-  const phaseInfo = getPhaseInfo(currentPhase);
-
-  // Calculate days until next period
-  const daysUntilNextPeriod = () => {
-    if (!nextStartDate) return null;
-    const diffTime = nextStartDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : null;
-  };
+  
 
   // Show loading spinner during initial check
   if (initialLoading) {
@@ -468,21 +373,6 @@ const MenstrualPredictorPage = () => {
     console.log('Showing setup form...');
     return <SetupMenstrualForm onSetupComplete={handleSetupComplete} />;
   }
-
-  const getAccountIdFromToken = () => {
-    const token =
-      sessionStorage.getItem('accessToken') ||
-      localStorage.getItem('accessToken');
-    if (!token) return null;
-
-    try {
-      const decoded = jwtDecode(token);
-      return decoded.account_id;
-    } catch (err) {
-      console.error('Không thể giải mã token:', err);
-      return null;
-    }
-  };
 
   // Show main tracking interface
   console.log('Showing main interface...');

@@ -13,4 +13,12 @@ export const predictPeriod = (accountId, token) => api.get('/customer/predict-pe
 });
 export const getLabAppointments = (token) => api.get('/customer/get-laborarity-appointments', {
   headers: { Authorization: `Bearer ${token}` },
+});
+
+export const getMenstrualCycleData = (token) => api.get('/customer/get-menstrual-cycle', {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+export const updateMenstrualCycle = (data, token) => api.post('/customer/update-menstrual-cycle', data, {
+  headers: { Authorization: `Bearer ${token}` },
 }); 

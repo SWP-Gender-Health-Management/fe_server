@@ -70,9 +70,9 @@ const Question = () => {
       console.log('Total from API:', res.data.result.total);
       console.log('=== API CALL END ===');
 
-      setMyQuestions(res.data.result.questions || []);
-      setTotalQuestions(res.data.result.total || 0);
-      setTotalPages(res.data.result.total_pages || 0);
+      setMyQuestions(res.data.result || []);
+      setTotalQuestions((res.data.result && res.data.result.length) || 0);
+      setTotalPages(Math.ceil(res.data.result.length / pageSize));
 
       // Chỉ cập nhật currentPage nếu page khác với currentPage hiện tại
       if (page !== currentPage) {

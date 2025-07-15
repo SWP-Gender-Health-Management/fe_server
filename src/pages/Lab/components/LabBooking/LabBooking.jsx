@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LabBooking.css';
+import Cookies from 'js-cookie';
+import { viewAccount } from '@/api/accountApi';
 
 const LabBooking = () => {
   const navigate = useNavigate();
@@ -42,16 +44,24 @@ const LabBooking = () => {
     setSelectedTests(JSON.parse(storedTests));
     setTotalPrice(parseInt(storedPrice) || 0);
 
-    // Pre-fill với thông tin user nếu đã đăng nhập
-    const userInfo = sessionStorage.getItem('user_info');
-    if (userInfo) {
-      const user = JSON.parse(userInfo);
-      setFormData((prev) => ({
-        ...prev,
-        fullName: user.full_name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-      }));
+    // Lấy accountId từ Cookies
+    const accountId = Cookies.get('accountId');
+    const token = Cookies.get('accessToken');
+    if (accountId && token) {
+      viewAccount(token).then(res => {
+        console.log('[LabBooking] viewAccount response:', res.data);
+        const user = res.data.result;
+        setFormData((prev) => ({
+          ...prev,
+          fullName: user.full_name || '',
+          email: user.email || '',
+          phone: user.phone || '',
+          birthDate: user.dob ? user.dob.split('T')[0] : '',
+          gender: user.gender || '',
+          address: user.address || '',
+          identityCard: user.identity_card || '',
+        }));
+      });
     }
   }, [navigate]);
 

@@ -39,7 +39,7 @@ export const deleteAccount = (accountId, token) => api.post('/account/delete-acc
   },
 });
 export const googleVerify = (idToken) => api.post('/account/google-verify', { idToken });
-export const createAccessToken = (refreshToken) => api.post('/account/create-access-token', { refreshToken });
+export const createAccessToken = (refreshToken) => api.post('/refresh-token/create-access-token', { refreshToken });
 export const sendResetPassword = (email) => api.post('/account/send-reset-password', { email });
 export const verifyResetPassword = (email, passcode) => api.post('/account/verify-reset-password', { email, passcode });
 export const resetPassword = (email, newPassword) => api.post('/account/reset-password', { email, newPassword }); 

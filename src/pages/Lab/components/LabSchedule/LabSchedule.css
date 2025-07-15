@@ -335,4 +335,80 @@
     .day-date {
       font-size: 0.8rem;
     }
+  }.month-switcher {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 24px 0;
+  }
+  
+  .month-grid {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .weekdays-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 8px;
+  }
+  
+  .weekday-cell {
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    padding: 6px 0;
+    font-size: 1rem;
+  }
+  
+  .month-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  
+  .date-cell {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    min-height: 48px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .date-cell.blank {
+    background: transparent;
+    border: none;
+    cursor: default;
+  }
+  
+  .date-cell.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+  }
+  
+  .date-cell.today {
+    border-color: #f59e0b;
+    background: #fef3c7;
+  }
+  
+  .date-cell.today.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+  }
+  
+  .day-number {
+    font-size: 1.1rem;
+    font-weight: 600;
   }
