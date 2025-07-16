@@ -10,9 +10,10 @@ import Logo from '@assets/Blue-full.svg?react';
 import { useAuth } from '@context/AuthContext';
 import ForgotPassword from '@pages/ForgotPassword/ForgotPassword';
 import { GoogleLogin } from '@react-oauth/google';
+import Cookies from 'js-cookie'; // Thêm import Cookies
+import { useNavigate } from 'react-router-dom';
 import { Button, Checkbox, Form, Input, message, Modal, Tabs } from 'antd';
 import api from '@/api/api';
-import Cookies from 'js-cookie';
 import { useState } from 'react';
 import './login.css';
 import LoginForm from './components/LoginForm/LoginForm';
@@ -32,6 +33,7 @@ const Login = ({ visible, onCancel }) => {
   const [registerLoading, setRegisterLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const navigate = useNavigate();
 
   /* -------------------------------------------------- */
   /* HELPER FUNCTIONS                                   */
@@ -194,6 +196,12 @@ const Login = ({ visible, onCancel }) => {
       ]);
     } finally {
       setLoginLoading(false);
+      const role = Cookies.get("role");
+      console.log(role)
+      if(role === 1)
+        navigate('/consultant');
+      if(role === 2)
+        navigate('/staff')
     }
   };
 

@@ -141,7 +141,7 @@ const Navbar = ({ onLoginClick }) => {
           trigger={['hover']}
           overlayClassName="services-dropdown"
         >
-          <span className="nav-link dropdown-trigger">Dịch vụ</span>
+          <span className="nav-link-1 dropdown-trigger">Dịch vụ</span>
         </Dropdown>
       ),
       key: 'services',
@@ -298,7 +298,7 @@ const Navbar = ({ onLoginClick }) => {
               mode="horizontal"
               items={menuItems}
               selectedKeys={[location.pathname.split('/')[1] || 'home']}
-              className="nav-menu"
+              className="nav-menu-1"
             />
           </div>
 
@@ -370,7 +370,7 @@ const Navbar = ({ onLoginClick }) => {
                 trigger={['click']}
                 overlayClassName="services-dropdown mobile-services-dropdown"
               >
-                <span className="nav-link dropdown-trigger">Dịch vụ</span>
+                <span className="nav-link-1 dropdown-trigger">Dịch vụ</span>
               </Dropdown>
             </div>
             <div className="mobile-menu-item">

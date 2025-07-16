@@ -16,7 +16,6 @@ import BlogPage from '@pages/Blog/BlogPage';
 import Question from '@pages/Question/Question';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
-
 import Login from '@components/Login/Login';
 import SessionManager from '@components/SessionManager/SessionManager';
 import UserAccount from '@pages/UserAccount/UserAccount';
@@ -93,7 +92,6 @@ const AppLayout = () => {
           onLogout={handleLogout}
         />
       )}
-
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route

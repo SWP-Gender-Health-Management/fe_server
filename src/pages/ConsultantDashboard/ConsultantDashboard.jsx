@@ -1,4 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import ConsultantSidebar from './components/ConsultantSidebar';
+import DashboardOverview from './components/DashboardOverview';
+import ConsultantAppointment from '@components/ConsultDshBrd/ConsultAppoint/ConsultantAppointment';
+import ConsultantBlog from '@components/ConsultDshBrd/ConsultBlog/ConsultantBlog';
+import ConsultantQuestion from '@components/ConsultDshBrd/ConsultQuest/ConsultantQuestion';
+import ConsultantProfile from '@components/ConsultDshBrd/ConsultProfile/ConsultantProfile';
+import './ConsultantDashboard.css';
+import Cookies from 'js-cookie'; // Thêm import Cookies
+import axios from 'axios';
 import {
   Routes,
   Route,
@@ -6,89 +15,347 @@ import {
   useNavigate,
   useLocation,
 } from 'react-router-dom';
-import ConsultantProfile from '@pages/ConsultantDashboard/components/ConsultProfile/ConsultantProfile';
-import ConsultantAppointment from '@pages/ConsultantDashboard/components/ConsultAppoint/ConsultantAppointment';
-import ConsultantQuestion from '@pages/ConsultantDashboard/components/ConsultQuest/ConsultantQuestion';
-import ConsultantBlog from '@pages/ConsultantDashboard/components/ConsultBlog/ConsultantBlog';
-import './ConsultantDashboard.css';
-import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
+
 const ConsultantDashboard = () => {
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [consultantData, setConsultantData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const location = useLocation();
+  const [questions, setQuestions] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
-  const consultantName = Cookies.get('fullname') || 'Tư vấn viên';
+  const accessToken = Cookies.get("accessToken");
+  const accountId = Cookies.get("accountId");
 
-  const menuItems = [
-    {
-      path: '/consultant/appointments',
-      label: 'Consultant Appointment',
-      icon: '📅',
-    },
-    { path: '/consultant/questions', label: 'Question Blog', icon: '❓' },
-    { path: '/consultant/blogs', label: 'Blog', icon: '📝' },
-    { path: '/consultant/profile', label: 'Profile', icon: '👤' },
-  ];
+  // Mock consultant data - would come from API
+  useEffect(() => {
+    const loadConsultantData = async () => {
+      setIsLoading(true);
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetchConsultantData();
+      await fetchConsultAppointmentStat();
+      await fetchBlogs();
+      await fetchQuestions();
+      await fetchWeekAppointment((new Date()), true);
+      setIsLoading(false);
+    };
 
-  const handleMenuClick = (path) => {
-    navigate(path);
+    loadConsultantData();
+  }, []);
+
+  const fetchConsultantData = async () => {
+    try {
+      const accessToken = Cookies.get("accessToken")
+      const viewResponse = await axios.post(
+        'http://localhost:3000/account/view-account',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const ratingResponse = await axios.get(
+        'http://localhost:3000/feedback/get-consultant-rating-feedback',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      setConsultantData((prev) => ({
+        ...prev,
+        ...(viewResponse.data.result || {}), // Fallback to empty object if undefined
+        ...(ratingResponse.data.result || {}), // Fallback to empty object if undefined
+      }));
+
+    } catch (error) {
+      console.error('Error fetching consultant data:', error);
+    }
+  }
+
+  const fetchConsultAppointmentStat = async () => {
+    try {
+      const appointmentStatResponse = await axios.get(
+        'http://localhost:3000/consult-appointment/get-consult-appointment-stats',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      setConsultantData((prev) => {
+        if (appointmentStatResponse.data.result) {
+          prev = { ...prev, ...appointmentStatResponse.data.result }
+        }
+        return prev;
+      });
+
+    } catch (error) {
+      console.error('Error fetching Consult Appointment Stat: ', error);
+    }
+  }
+
+  const fetchQuestions = async () => {
+    // Simulate fetching questions from an API
+    try {
+      const responseUnreplied = await axios.get(
+        'http://localhost:3000/question/get-unreplied-questions',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      const responseReplied = await axios.get(
+        `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      const unrepliedQuestions = responseUnreplied.data.result || [];
+      const repliedQuestions = responseReplied.data.result || [];
+      setQuestions([...unrepliedQuestions, ...repliedQuestions]);
+      setConsultantData((prev) => {
+        if (responseReplied.data.result) {
+          const questionsAnswered = responseReplied.data.result.length;
+          prev = { ...prev, questionsAnswered }
+        }
+        if (responseUnreplied.data.result) {
+          const unansweredQuestions = responseUnreplied.data.result.length;
+          prev = { ...prev, unansweredQuestions }
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+    }
+  }
+
+  const fetchBlogs = async function () {
+    try {
+      // console.log('useEffect has been called!:', accountId);
+      // console.log('useEffect has been called!:', accessToken);
+      const response = await axios.get(
+        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      // console.log('Blog Response:', response.data.result);
+      setBlogs(response.data.result || []);
+      setConsultantData((prev) => {
+        if (response.data.result) {
+          const totalBlogs = response.data.result.length;
+          const publishedBlogs = response.data.result.filter((blog) => {
+            return blog.status == 'true' || blog.status == true
+          }).length;
+          prev = { ...prev, totalBlogs, publishedBlogs, pendingBlogs: totalBlogs - publishedBlogs }
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      return;
+    }
   };
 
-  const handleProfileClick = () => {
-    navigate('/consultant/profile');
+  // const fetchAppointments = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/consultant/${accountId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //           'Content-Type': 'application/json',
+  //         }
+  //       }
+  //     );
+  //     console.log('Consult Appointment Response:', response.data.result);
+  //     setAppointments(response.data.result || []);
+  //     setConsultantData((prev) => {
+  //       if (response.data.result) {
+  //         const totalAppointments = response.data.result.length;
+  //         const completedAppointments = response.data.result.filter((app) => {
+  //           return (app.status == 'completed');
+  //         }).length
+  //         prev = {
+  //           ...prev,
+  //           totalAppointments,
+  //           completedAppointments
+  //         }
+  //       }
+  //       return prev
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching Consult Appointment:", error);
+  //     setAppointments([]);
+  //   }
+  // }
+
+  const fetchWeekAppointment = async (selectedDate, isInit) => {
+    try {
+      const accountId = Cookies.get("accountId");
+      const accessToken = Cookies.get("accessToken");
+      const startWeekDay = getWeekStartDay(selectedDate || new Date());
+      const startWeekDayString = startWeekDay.toISOString().split("T")[0];
+      console.log("Check selected date: ", startWeekDayString);
+      const response = await axios.get(
+        `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
+        {
+          params: {
+            weekStartDate: startWeekDayString
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      console.log('Consult Appointment Response:', response.data.result);
+      setAppointments(response.data.result || []);
+      if (isInit) {
+        setUpcomingAppointments(response.data.result || []);
+      }
+    } catch (error) {
+      console.error("Error fetching Consult Appointment:", error);
+      setAppointments([]);
+      return;
+    }
+  }
+
+  const getWeekStartDay = (date) => {
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    startOfWeek.setDate(startOfWeek.getDate() - day);
+    return startOfWeek;
   };
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+      // Clear authentication data
+      Cookies.remove('accessToken');
+      Cookies.remove('accountId');
+      navigate('/');
+    }
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return (
+          <DashboardOverview
+            consultantData={consultantData || {}}
+            onSectionChange={handleSectionChange}
+            upcomingAppointments={upcomingAppointments || []}
+            recentQuestions={
+              Array.isArray(questions)
+                ? questions
+                  .filter((ques) => !ques.status)
+                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                  .slice(0, 5)
+                : []
+            }
+          />
+        );
+      case 'appointments':
+        return (
+          <ConsultantAppointment
+            appointments={appointments || []}
+            fetchWeekAppointment={fetchWeekAppointment}
+            consultantData={consultantData || {}}
+            fetchConsultAppointmentStat = {fetchConsultAppointmentStat}
+          />
+        );
+      case 'blogs':
+        return <ConsultantBlog blogs={blogs || []} fetchBlogs={fetchBlogs} />;
+      case 'questions':
+        return (
+          <ConsultantQuestion
+            questions={questions || []}
+            fetchQuestions={fetchQuestions}
+          />
+        );
+      case 'profile':
+        return <ConsultantProfile consultantData={consultantData || {}} />;
+      default:
+        return (
+          <DashboardOverview
+            consultantData={consultantData || {}}
+            onSectionChange={handleSectionChange}
+            upcomingAppointments={upcomingAppointments || []}
+            recentQuestions={
+              Array.isArray(questions)
+                ? questions
+                  .filter((ques) => !ques.status)
+                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                  .slice(0, 5)
+                : []
+            }
+          />
+        );
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="consultant-workspace">
+        <div className="workspace-loading">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <h3>Đang tải workspace...</h3>
+            <p>Chuẩn bị không gian làm việc của bạn</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="consultant-dashboard">
-      <div className="consultant-sidebar">
-        {/* Header với logo và tên trung tâm */}
-        <div className="sidebar-header">
-          <div className="center-logo">
-            <img src="/src/assets/blue-logo.svg" alt="Logo" className="logo" />
-          </div>
-          <h2 className="center-name">Trung Tâm Sức Khỏe Giới Tính</h2>
-        </div>
+    <div className="consultant-workspace">
+      {/* Sidebar Navigation */}
+      <ConsultantSidebar
+        activeSection={activeSection}
+        onSectionChange={handleSectionChange}
+        onLogout={handleLogout}
+        consultantData={consultantData}
+        collapsed={sidebarCollapsed}
+        onToggle={toggleSidebar}
+      />
 
-        {/* Menu items */}
-        <nav className="sidebar-nav">
-          {menuItems.map((item) => (
-            <button
-              key={item.path}
-              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={() => handleMenuClick(item.path)}
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* Account info ở dưới cùng */}
-        <div className="sidebar-footer">
-          <button className="account-info" onClick={handleProfileClick}>
-            <div className="account-avatar">
-              <span>👤</span>
-            </div>
-            <div className="account-details">
-              <span className="account-name">{consultantName}</span>
-              <span className="account-role">Tư vấn viên</span>
-            </div>
-          </button>
-        </div>
+      {/* Main Content Area */}
+      <div
+        className={`workspace-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+      >
+        {/* Content Container */}
+        <div className="content-container">{renderContent()}</div>
       </div>
 
-      {/* Main content area */}
-      <div className="consultant-main">
-        <Routes>
-          <Route
-            path="/"
-            element={<Navigate to="/consultant/profile" replace />}
-          />
-          <Route path="/profile" element={<ConsultantProfile />} />
-          <Route path="/appointments" element={<ConsultantAppointment />} />
-          <Route path="/questions" element={<ConsultantQuestion />} />
-          <Route path="/blogs" element={<ConsultantBlog />} />
-        </Routes>
-      </div>
+      {/* Mobile Overlay */}
+      {!sidebarCollapsed && (
+        <div
+          className="mobile-overlay"
+          onClick={() => setSidebarCollapsed(true)}
+        />
+      )}
     </div>
   );
 };
