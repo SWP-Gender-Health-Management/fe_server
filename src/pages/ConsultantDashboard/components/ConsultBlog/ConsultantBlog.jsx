@@ -18,6 +18,7 @@ const ConsultantBlog = () => {
   useEffect(() => {
     async function fetchBlogs() {
       const accountId = await Cookies.get('accountId');
+      <div className="3"></div>;
       const accessToken = await Cookies.get('accessToken');
       // console.log('useEffect has been called!:', accountId);
       console.log('useEffect has been called!:', accessToken);
