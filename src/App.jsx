@@ -7,8 +7,8 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
-import Navbar from '@pages/LandingPage/components/Navbar/Navbar';
-import Footer from '@pages/LandingPage/components/Footer/Footer';
+import Navbar from '@components/Navbar/Navbar';
+import Footer from '@components/Footer/Footer';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
