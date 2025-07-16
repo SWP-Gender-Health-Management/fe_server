@@ -186,7 +186,8 @@
 .benefit-item {
   display: flex;
   align-items: center;
-  color: white;
+  color: #2c3e50 !important;
+  font-weight: 500;
   margin-bottom: 1rem;
   font-size: 1rem;
 }
@@ -258,12 +259,14 @@
 .section-header {
   text-align: center;
   margin-bottom: 4rem;
+  color: #2c3e50;
 }
 
-.section-title {
+.news-section .section-title,
+.about-section .section-title {
   color: #2c3e50 !important;
   font-size: 2.5rem !important;
-  margin-bottom: 1rem !important;
+  margin-bottom: 0.5rem !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -541,8 +544,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: linear-gradient(135deg, #2c3e50 0%, #3a506b 100%);
+  color: #667eea;
   padding: 10px 16px;
   border-radius: 25px;
   font-size: 0.85rem;
@@ -551,13 +554,18 @@
   transition: all 0.3s ease;
 }
 
+.cert-badge span {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
 .cert-badge:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .cert-badge .anticon {
-  color: white;
+  color: #2c3e50;
 }
 
 /* Contact Section */

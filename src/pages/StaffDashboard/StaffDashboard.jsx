@@ -1,11 +1,9 @@
 import React from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './StaffDashboard.css';
-
-// Import components
-import StaffLaboratory from '@components/StaffDshBrd/StaffLab/StaffLaboratory';
-import StaffBlog from '@components/StaffDshBrd/StaffBlog/StaffBlog';
-import StaffProfile from '@components/StaffDshBrd/StaffProfile/StaffProfile';
+import StaffLaboratory from './components/StaffLab/StaffLaboratory';
+import StaffBlog from './components/StaffBlog/StaffBlog';
+import StaffProfile from './components/StaffProfile/StaffProfile';
 
 const StaffDashboard = () => {
   const navigate = useNavigate();

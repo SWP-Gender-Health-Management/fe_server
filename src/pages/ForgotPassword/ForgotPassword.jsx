@@ -8,7 +8,7 @@ import {
   EyeTwoTone,
   ArrowLeftOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
+import api from '@/api/api';
 import './ForgotPassword.css';
 
 const { Step } = Steps;
@@ -25,7 +25,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const handleSendPasscode = async (values) => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/account/send-reset-password', {
+      await api.post('/account/send-reset-password', {
         email: values.email,
       });
 
@@ -47,7 +47,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const handleVerifyPasscode = async (values) => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/account/verify-reset-password', {
+      await api.post('/account/verify-reset-password', {
         email: userEmail,
         passcode: values.passcode,
       });
@@ -71,7 +71,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const handleResetPassword = async (values) => {
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/account/reset-password', {
+      await api.post('http://localhost:3000/account/reset-password', {
         email: userEmail,
         newPassword: values.newPassword,
         confirmPassword: values.confirmPassword,

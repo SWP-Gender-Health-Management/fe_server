@@ -1,0 +1,61 @@
+/* Consult Appointments Tab Styles */
+.appointments-table-container {
+  margin-top: 16px;
+}
+
+.appointment-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.appointment-date .date-icon {
+  font-size: 24px;
+  color: #667eea;
+}
+
+.appointment-date .date {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.appointment-date .time {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.appointment-consultant {
+  display: flex;
+  align-items: center;
+}
+
+.consultant-name {
+  margin-left: 8px;
+}
+
+.appointment-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+}
+
+.appointment-location .anticon {
+  color: #1890ff;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .appointment-date {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .ant-table {
+    font-size: 13px;
+  }
+  .date-icon {
+    font-size: 16px;
+  }
+}
