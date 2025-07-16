@@ -1,47 +1,178 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import './DoctorSchedule.css';
 
+const API_BASE = 'http://localhost:3000';
 const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [schedule, setSchedule] = useState({});
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [filtersPatterns, setFiltersPatterns] = useState([]);
+
+  const accountId = Cookies.get('accountId');
+  const token = Cookies.get('accessToken');
 
   // Chỉ lấy tuần hiện tại
-  const currentWeek = new Date();
+  // const currentWeek = new Date();
 
   // Mock data cho lịch khám (true = available, false = booked)
-  const generateMockSchedule = () => {
-    const schedule = {};
-    const timeSlots = [
-      '08:00',
-      '09:00',
-      '10:00',
-      '11:00',
-      '14:00',
-      '15:00',
-      '16:00',
-      '17:00',
-    ];
+  // const generateMockSchedule = () => {
+  //   const schedule = {};
+  //   const timeSlots = [
+  //     '08:00',
+  //     '09:00',
+  //     '10:00',
+  //     '11:00',
+  //     '14:00',
+  //     '15:00',
+  //     '16:00',
+  //     '17:00',
+  //   ];
 
-    // Chỉ tạo lịch cho tuần hiện tại
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      const date = new Date(currentWeek);
-      date.setDate(date.getDate() - date.getDay() + dayOffset);
-      const dateKey = date.toISOString().split('T')[0];
+  //   // Chỉ tạo lịch cho tuần hiện tại
+  //   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+  //     const date = new Date(currentWeek);
+  //     date.setDate(date.getDate() - date.getDay() + dayOffset);
+  //     const dateKey = date.toISOString().split('T')[0];
 
-      schedule[dateKey] = {};
+  //     schedule[dateKey] = {};
 
-      timeSlots.forEach((time) => {
-        // Random availability (70% available)
-        schedule[dateKey][time] = Math.random() > 0.3;
-      });
+  //     timeSlots.forEach((time) => {
+  //       // Random availability (70% available)
+  //       schedule[dateKey][time] = Math.random() > 0.3;
+  //     });
+  //   }
+
+  //   return schedule;
+  // };
+
+  // 1. State tuần
+
+  const [weekStart, setWeekStart] = useState(() => {
+    const now = new Date();
+    const start = new Date();
+    start.setDate(now.getDate() - now.getDay()); // CN là 0
+    // start.setHours(0, 0, 0, 0); // Giờ local
+    return start;
+  });
+
+  // 2. Hàm chuyển tuần
+  const changeWeek = (offset) => {
+    setWeekStart((prev) => {
+      const newStart = new Date(prev);
+      newStart.setDate(newStart.getDate() + offset * 7);
+      return newStart;
+    });
+  };
+
+  // 3. Lấy ngày trong tuần
+  const getWeekDates = () => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(weekStart);
+      date.setDate(weekStart.getDate() + i);
+      dates.push(date);
     }
+    console.log('dates: ', dates);
 
-    return schedule;
+    return dates;
+  };
+
+  const formatTime = (rawStart) => {
+    if (!rawStart) {
+      console.log('Raw start is null/undefined:', rawStart);
+      return '';
+    }
+    const timeStr = rawStart.length === 5 ? rawStart + ':00' : rawStart;
+    return timeStr.slice(0, 5);
   };
 
   useEffect(() => {
-    setSchedule(generateMockSchedule());
-  }, []);
+    const fetchSchedule = async () => {
+      // const token = Cookies.get('accessToken');
+      try {
+        console.log(doctor);
+        console.log('weekStart: ', weekStart.toLocaleDateString('vi-VN'));
+
+        const response = await axios.get(
+          `${API_BASE}/consultant-pattern/get-all-consultant-patterns-by-week`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            params: {
+              consultant_id: doctor.account_id,
+              weekStartDate: weekStart.toISOString().split('T')[0],
+            },
+          }
+        );
+
+        let data = response.data.result;
+        if (!data) {
+          setSchedule({});
+          return;
+        }
+
+        if (!Array.isArray(data)) {
+          data = [data];
+        }
+
+        // Lọc slot theo tuần đang chọn
+        const weekDates = getWeekDates().map(
+          (d) => d.toISOString().split('T')[0]
+        );
+        const filteredData = data.filter((pattern) =>
+          weekDates.includes(pattern.date.split('T')[0])
+        );
+
+        const newSchedule = {};
+
+        for (const pattern of filteredData) {
+          const dateKey = pattern.date.split('T')[0];
+
+          const start = pattern.working_slot.start_at;
+          // console.log('rawStart: ', rawStart);
+          // const start = formatTime(pattern.working_slot.start_at);
+
+          console.log('Pattern:', pattern);
+          const isBooked = pattern.is_booked;
+          if (dateKey && start) {
+            if (!newSchedule[dateKey]) {
+              newSchedule[dateKey] = {};
+            }
+            if (isBooked === true) {
+              newSchedule[dateKey][start] = false;
+            } else {
+              if (newSchedule[dateKey][start] !== false) {
+                newSchedule[dateKey][start] = true;
+              }
+              // newSchedule[dateKey][start] = true;
+            }
+          }
+        }
+        setFiltersPatterns(filteredData);
+        setSchedule(newSchedule);
+        console.log('Processed schedule:', newSchedule);
+
+        // Sau khi có filteredData
+        const slotTimes = Array.from(
+          new Set(
+            filteredData.map((pattern) => {
+              const rawStart = pattern.working_slot.start_at;
+              // return formatTime(rawStart);
+              return rawStart;
+            })
+          )
+        ).sort();
+
+        setTimeSlots(slotTimes);
+        console.log('Final timeSlots:', slotTimes);
+      } catch (err) {
+        console.error('Lỗi khi lấy lịch bác sĩ:', err);
+      }
+    };
+
+    fetchSchedule();
+  }, [doctor.account_id, weekStart]);
 
   const formatDate = (date) => {
     return date.toLocaleDateString('vi-VN', {
@@ -55,35 +186,34 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
     return days[date.getDay()];
   };
 
-  const getWeekDates = () => {
-    const dates = [];
-    const startOfWeek = new Date(currentWeek);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
-      dates.push(date);
-    }
-
-    return dates;
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
   };
-
   // Đã xóa navigation giữa các tuần - chỉ hiển thị tuần hiện tại
 
   const handleSlotClick = (date, time) => {
     const dateKey = date.toISOString().split('T')[0];
-
+    const selectedPattern = filtersPatterns.find(
+      (pattern) =>
+        new Date(pattern.date).toLocaleDateString('en-CA') === dateKey &&
+        pattern.working_slot.start_at === time
+    );
     if (schedule[dateKey] && schedule[dateKey][time]) {
       const slot = {
         date: date,
-        time: time,
+        start_at: selectedPattern.working_slot.start_at,
+        end_at: selectedPattern.working_slot.end_at,
         dateString: date.toLocaleDateString('vi-VN', {
           weekday: 'long',
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
         }),
+        customer_id: accountId,
+        pattern_id: selectedPattern.pattern_id,
       };
       setSelectedSlot(slot);
     }
@@ -95,24 +225,6 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
     }
   };
 
-  const getWeekRange = () => {
-    const dates = getWeekDates();
-    const start = formatDate(dates[0]);
-    const end = formatDate(dates[6]);
-    return `${start} - ${end}`;
-  };
-
-  const timeSlots = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-  ];
-
   return (
     <div className="doctor-schedule">
       <div className="schedule-header">
@@ -122,11 +234,11 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
         <div className="doctor-info-header">
           <div className="doctor-avatar-header">
-            <img src={doctor.avatar} alt={doctor.name} />
+            <img src={doctor.avatar} alt={doctor.full_name} />
             <div className="online-indicator"></div>
           </div>
           <div className="doctor-details">
-            <h2>{doctor.name}</h2>
+            <h2>{doctor.full_name}</h2>
             <p className="specialty">🩺 {doctor.specialty}</p>
             <div className="rating-price">
               <span className="rating">⭐ {doctor.rating}/5</span>
@@ -144,8 +256,16 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
       <div className="schedule-content">
         <div className="week-navigation">
-          <h3 className="week-title">Lịch tuần này ({getWeekRange()})</h3>
-          <p className="week-note">Chỉ hiển thị lịch trong tuần hiện tại</p>
+          <button className="nav-button" onClick={() => changeWeek(-1)}>
+            ← Tuần trước
+          </button>
+          <h3 className="week-title">
+            Lịch tuần này ({formatDate(getWeekDates()[0])} -{' '}
+            {formatDate(getWeekDates()[6])})
+          </h3>
+          <button className="nav-button" onClick={() => changeWeek(1)}>
+            Tuần sau →
+          </button>
         </div>
 
         <div className="schedule-grid">
@@ -161,8 +281,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
           {getWeekDates().map((date, dayIndex) => {
             const dateKey = date.toISOString().split('T')[0];
             const isToday = date.toDateString() === new Date().toDateString();
-            const isPast = date < new Date().setHours(0, 0, 0, 0);
-
+            const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
             return (
               <div
                 key={dayIndex}
@@ -175,28 +294,50 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
                 {timeSlots.map((time) => {
                   const isAvailable =
-                    schedule[dateKey] && schedule[dateKey][time];
+                    schedule[dateKey] && schedule[dateKey][time] === true;
+                  const isBooked =
+                    schedule[dateKey] && schedule[dateKey][time] === false;
                   const isSelected =
                     selectedSlot &&
                     selectedSlot.date.toDateString() === date.toDateString() &&
-                    selectedSlot.time === time;
+                    selectedSlot.start_at === time;
+
+                  console.log(
+                    `Date: ${dateKey}, Time: ${time}, Available: ${isAvailable}, Booked: ${isBooked}`
+                  );
 
                   return (
                     <div
                       key={time}
                       className={`schedule-slot ${
-                        isPast ? 'past' : isAvailable ? 'available' : 'booked'
+                        isPast
+                          ? 'past'
+                          : isAvailable
+                            ? 'available'
+                            : isBooked
+                              ? 'booked'
+                              : ''
                       } ${isSelected ? 'selected' : ''}`}
-                      onClick={() => !isPast && handleSlotClick(date, time)}
+                      onClick={() =>
+                        !isPast && isAvailable && handleSlotClick(date, time)
+                      }
                       title={
                         isPast
                           ? 'Đã qua'
                           : isAvailable
                             ? 'Còn trống - Click để chọn'
-                            : 'Đã được đặt'
+                            : isBooked
+                              ? 'Đã được đặt'
+                              : ''
                       }
                     >
-                      {isPast ? '⏰' : isAvailable ? '✅' : '❌'}
+                      {isPast
+                        ? '⏰'
+                        : isAvailable
+                          ? '✅'
+                          : isBooked
+                            ? '❌'
+                            : ''}
                     </div>
                   );
                 })}
@@ -225,25 +366,23 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
             <div className="slot-details">
               <h4>Lịch đã chọn:</h4>
               <p>
-                <strong>Bác sĩ:</strong> {doctor.name}
+                <strong>Bác sĩ:</strong> {doctor.full_name}
               </p>
               <p>
                 <strong>Ngày:</strong> {selectedSlot.dateString}
               </p>
               <p>
-                <strong>Giờ:</strong> {selectedSlot.time} -{' '}
-                {String(parseInt(selectedSlot.time.split(':')[0]) + 1).padStart(
-                  2,
-                  '0'
-                )}
-                :00
+                <strong>Giờ:</strong>{' '}
+                {selectedSlot.start_at && selectedSlot.end_at
+                  ? `${formatTime(selectedSlot.start_at)} - ${formatTime(selectedSlot.end_at)}`
+                  : ''}
               </p>
               <p>
-                <strong>Phí tư vấn:</strong>{' '}
-                {new Intl.NumberFormat('vi-VN', {
+                <strong>Phí tư vấn: {formatPrice(doctor.price)}</strong>{' '}
+                {/* {new Intl.NumberFormat('vi-VN', {
                   style: 'currency',
                   currency: 'VND',
-                }).format(doctor.price)}
+                }).format(doctor.price)} */}
               </p>
             </div>
 

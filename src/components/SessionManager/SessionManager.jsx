@@ -10,7 +10,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const [hasRejectedSessionLogin, setHasRejectedSessionLogin] = useState(false);
 
-  const SESSION_TIMEOUT = 5000; // 1 giờ = 3600000ms
+  const SESSION_TIMEOUT = 1000 * 60 * 60; // 1 giờ = 3600000ms
 
   const resetTimer = () => {
     clearTimeout(timeoutRef.current);
@@ -37,11 +37,15 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const res = await axios.post('http://localhost:3000/account/refresh-token', {
-        refreshToken,
-      });
+      const res = await axios.post(
+        'http://localhost:3000/account/refresh-token',
+        {
+          refreshToken,
+        }
+      );
 
-      const { accessToken, account_id, full_name, role } = res.data.result || {};
+      const { accessToken, account_id, full_name, role } =
+        res.data.result || {};
       if (!accessToken) throw new Error('Không có accessToken mới');
 
       Cookies.set('accessToken', accessToken, { expires: 1 });
@@ -60,7 +64,7 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
   const expireSession = () => {
     if (!hasRejectedSessionLogin) {
-        setIsSessionExpired(true);
+      setIsSessionExpired(true);
       console.log('⚠ Phiên làm việc hết hạn, mở modal đăng nhập');
     }
   };

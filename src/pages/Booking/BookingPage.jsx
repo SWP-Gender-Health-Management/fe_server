@@ -4,6 +4,10 @@ import DoctorSchedule from './components/DoctorScheDule/DoctorSchedule';
 import BookingForm from './components/BookingForm/BookingForm';
 import BookingSuccess from './components/BookingSuccess/BookingSuccess';
 import './BookingPage.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const accessToken = await Cookies.get('accessToken');
 
 const BookingPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -21,8 +25,28 @@ const BookingPage = () => {
     setCurrentStep(3);
   };
 
-  const handleBookingSubmit = (data) => {
+  const handleBookingSubmit = async (data) => {
     setBookingData(data);
+
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/consult-appointment/create-consult-appointment',
+        {
+          pattern_id: data.pattern_id,
+          customer_id: data.customer_id,
+          description: data.description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.data && response.data.result) alert('Booking success');
+    } catch (error) {
+      console.log('booking error: ', error);
+    }
+
     setCurrentStep(4);
   };
 
