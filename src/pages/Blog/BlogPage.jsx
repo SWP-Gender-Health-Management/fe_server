@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '@/api/api';
 import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
 import './BlogPage.css';
@@ -14,7 +14,7 @@ export default function BlogPage() {
 
   const fetchAllBlogs = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/blog/get-all-blogs`);
+      const res = await api.get('/blog/get-all-blogs');
       setBlogs(res.data.result || []);
     } catch (err) {
       console.error(err);
@@ -210,7 +210,7 @@ export default function BlogPage() {
           )}
 
           {totalPages > 1 && (
-            <div className="pagination-but">
+            <div className="pagination">
               <Button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}

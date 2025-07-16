@@ -1,17 +1,111 @@
+/* ===== QUESTION PAGE SHARED STYLES ===== */
+
 .question-page {
   display: flex;
-  gap: 32px;
-  padding: 24px;
+  gap: 2rem;
+  padding: 2rem;
+  min-height: calc(100vh - 100px);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
 }
 
-.question-left {
+.question-container {
   flex: 2;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
 }
 
 .question-right {
   flex: 1;
-  background-color: #fafafa;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height: fit-content;
+}
+
+/* ===== TAB CONTENT ===== */
+
+.tab-content {
+  min-height: 400px;
+}
+
+/* ===== SHARED ANIMATIONS ===== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ===== RESPONSIVE LAYOUT ===== */
+
+@media (max-width: 1024px) {
+  .question-page {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .question-container {
+    order: 1;
+  }
+
+  .question-right {
+    order: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .question-page {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .question-container,
+  .question-right {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .question-page {
+    padding: 1rem;
+  }
+
+  .question-container,
+  .question-right {
+    padding: 1rem;
+  }
 }

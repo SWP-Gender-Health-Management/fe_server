@@ -7,8 +7,8 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
-import Navbar from '@pages/LandingPage/components/Navbar/Navbar';
-import Footer from '@pages/LandingPage/components/Footer/Footer';
+import Navbar from '@components/Navbar/Navbar';
+import Footer from '@components/Footer/Footer';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
@@ -16,21 +16,22 @@ import BlogPage from '@pages/Blog/BlogPage';
 import Question from '@pages/Question/Question';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
-
 import Login from '@components/Login/Login';
 import SessionManager from '@components/SessionManager/SessionManager';
 import UserAccount from '@pages/UserAccount/UserAccount';
 import AdminDashboard from '@pages/AdminDashboard/AdminDashboard';
 import ManagerDashboard from '@pages/ManagerDashboard/ManagerDashboard';
 import BookingPage from '@pages/Booking/BookingPage';
-import LabSchedule from '@pages/LabSchedule/LabSchedule';
-import LabTests from '@pages/LabTests/LabTests';
-import LabConfirmation from '@pages/LabConfirmation/LabConfirmation';
-import LabSuccess from '@pages/LabConfirmation/LabSuccess';
+import LabSchedule from '@pages/Lab/components/LabSchedule/LabSchedule';
+import LabTests from '@pages/Lab/components/LabTests/LabTests';
+import LabConfirmation from '@pages/Lab/components/LabConfirmation/LabConfirmation';
+import LabSuccess from '@pages/Lab/components/LabConfirmation/LabSuccess';
 import Payment from '@pages/PaymentPage/PaymentPage';
 import ConsultantDashboard from '@pages/ConsultantDashboard/ConsultantDashboard';
 import StaffDashboard from '@pages/StaffDashboard/StaffDashboard';
 import NotFound from '@pages/NotFound/NotFound.jsx';
+import PaymentSuccess from '@pages/PaymentPage/components/PaymentSuccess/PaymentSuccess';
+import PaymentFail from '@pages/PaymentPage/components/PaymentFailed/PaymentFailed';
 import '@styles/reset.css';
 import Cookies from 'js-cookie';
 
@@ -57,10 +58,6 @@ const AppLayout = () => {
     location.pathname.startsWith(prefix)
   );
 
-  const notFoundPaths = [
-    // Các path không khớp route nào sẽ match *
-    // Có thể kiểm tra bằng cách so sánh với các path đã định nghĩa
-  ];
   const isNotFoundPage =
     location.pathname !== '/' &&
     ![
@@ -95,7 +92,6 @@ const AppLayout = () => {
           onLogout={handleLogout}
         />
       )}
-
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
@@ -121,10 +117,10 @@ const AppLayout = () => {
         />
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-fail" element={<PaymentFail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-
-
 
       {/* ✅ Chỉ hiện Footer & Login nếu không ở trang dashboard */}
       {!shouldHideNavbar && !isNotFoundPage && (

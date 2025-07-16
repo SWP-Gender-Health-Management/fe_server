@@ -1,19 +1,22 @@
 import React from 'react';
 import { Modal, Button, message } from 'antd';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '@/api/api';
+
 
 const Logout = ({ open, onCancel, onLogout }) => {
+  const navigate = useNavigate();
   const handleLogout = async () => {
     const accessToken = sessionStorage.getItem('accessToken');
     try {
       // Gọi API logout để xóa refreshToken trên server (giả định endpoint)
       if (accessToken) {
-        await axios.post(
-          'http://localhost:3000/account/logout',
+        await api.post(
+          '/account/logout',
           {},
           {
             headers: {
-              'Authorization': `Bearer ${accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
             },
           }
@@ -22,6 +25,7 @@ const Logout = ({ open, onCancel, onLogout }) => {
       // Xóa toàn bộ sessionStorage, bao gồm refreshToken và accessToken
       sessionStorage.clear();
       onLogout(); // Thông báo cho parent component
+      navigate('/');
       message.success('Đăng xuất thành công!');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -47,7 +51,10 @@ const Logout = ({ open, onCancel, onLogout }) => {
           key="yes"
           type="primary"
           onClick={handleLogout}
-          style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)', border: 'none' }}
+          style={{
+            background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)',
+            border: 'none',
+          }}
         >
           Yes
         </Button>,

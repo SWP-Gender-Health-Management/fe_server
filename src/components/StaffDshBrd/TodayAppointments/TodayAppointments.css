@@ -1,0 +1,588 @@
+/* TodayAppointments Component Styles */
+.today-appointments {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 20px 0;
+}
+
+.header-content h2 {
+  margin: 0;
+  color: #1a202c;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.header-content p {
+  margin: 4px 0 0 0;
+  color: #718096;
+  font-size: 16px;
+}
+
+.stats-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stats-content {
+  padding: 4px 0;
+}
+
+.stats-title {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.stats-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1a202c;
+  line-height: 1;
+}
+
+.stats-icon {
+  text-align: center;
+  font-size: 32px;
+  opacity: 0.8;
+}
+
+.test-item {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  margin-bottom: 4px;
+}
+
+.test-name {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.phone-number {
+  font-size: 12px;
+  color: #718096;
+}
+
+.update-modal-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.update-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.update-modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.update-modal-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.update-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .today-appointments {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header-content h2 {
+    font-size: 24px;
+  }
+
+  .stats-value {
+    font-size: 24px;
+  }
+
+  .stats-icon {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 576px) {
+  .test-item {
+    padding: 6px 8px;
+  }
+
+  .test-name {
+    font-size: 13px;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Stats Cards */
+.stats-cards {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 24px;
+  color: white;
+}
+
+.stat-icon.pending {
+  background: linear-gradient(135deg, #ff6b6b, #ffa726);
+}
+
+.stat-icon.in-progress {
+  background: linear-gradient(135deg, #42a5f5, #478ed1);
+}
+
+.stat-icon.has-result {
+  background: linear-gradient(135deg, #66bb6a, #43a047);
+}
+
+.stat-icon.completed {
+  background: linear-gradient(135deg, #78909c, #546e7a);
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a202c;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Filters Card */
+.filters-card {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filters-header h3 {
+  margin: 0;
+  color: #1a202c;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Appointments Table */
+.appointments-table-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.appointments-table .ant-table {
+  background: transparent;
+}
+
+.appointments-table .ant-table-thead > tr > th {
+  background: rgba(102, 126, 234, 0.1);
+  border-bottom: 2px solid #667eea;
+  color: #1a202c;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.appointments-table .ant-table-tbody > tr {
+  transition: all 0.3s ease;
+}
+
+.appointments-table .ant-table-tbody > tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+  transform: translateY(-1px);
+}
+
+.appointment-id {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-weight: 600;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: #1a202c;
+  font-size: 14px;
+}
+
+.customer-phone {
+  font-size: 12px;
+  color: #718096;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.test-type {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.appointment-time {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #4a5568;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Update Modal */
+.update-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+}
+
+.update-modal .ant-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
+  padding: 20px 24px;
+}
+
+.update-modal .ant-modal-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.update-content {
+  padding: 24px;
+}
+
+.info-card,
+.update-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #4a5568;
+  margin-right: 16px;
+  min-width: 120px;
+}
+
+.info-item span {
+  color: #1a202c;
+  font-weight: 500;
+  flex: 1;
+  text-align: right;
+}
+
+.form-item {
+  margin-bottom: 20px;
+}
+
+.form-item label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.upload-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #718096;
+  font-style: italic;
+}
+
+.updating-progress {
+  text-align: center;
+  padding: 24px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+.updating-progress p {
+  margin-top: 12px;
+  color: #667eea;
+  font-weight: 500;
+}
+
+/* Badge Styling */
+.ant-badge {
+  margin-right: 8px;
+}
+
+.ant-badge-count {
+  background: #667eea;
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Button Enhancements */
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.ant-btn-default {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.ant-btn-default:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Tag Enhancements */
+.ant-tag {
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-weight: 500;
+  font-size: 12px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Select Dropdown */
+.ant-select-dropdown {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: none;
+}
+
+.ant-select-item {
+  border-radius: 8px;
+  margin: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.ant-select-item-option-selected {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+/* Upload Component */
+.ant-upload-drag {
+  border-radius: 12px;
+  border: 2px dashed #cbd5e0;
+  background: rgba(247, 250, 252, 0.5);
+  transition: all 0.3s ease;
+}
+
+.ant-upload-drag:hover {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Pagination */
+.ant-pagination {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.ant-pagination-item {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.ant-pagination-item:hover {
+  border-color: #667eea;
+}
+
+.ant-pagination-item-active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-color: transparent;
+}
+
+.ant-pagination-item-active a {
+  color: white;
+}
+
+/* Loading States */
+.ant-table-placeholder .ant-empty {
+  margin: 60px 0;
+}
+
+.ant-spin-container {
+  border-radius: 12px;
+}
+
+/* Smooth Animations */
+.ant-table-tbody > tr,
+.ant-card,
+.ant-btn,
+.ant-tag {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass Morphism Effect */
+.stat-card,
+.filters-card,
+.appointments-table-card {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Progress Bar Styling */
+.ant-progress-line {
+  margin-bottom: 0;
+}
+
+.ant-progress-bg {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* Tooltip Styling */
+.ant-tooltip {
+  border-radius: 8px;
+}
+
+.ant-tooltip-inner {
+  background: rgba(26, 32, 44, 0.95);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
