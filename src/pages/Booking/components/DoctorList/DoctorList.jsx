@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import './DoctorList.css';
 
+const API_BASE = 'http://localhost:3000';
 const DoctorList = ({ onDoctorSelect }) => {
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -9,87 +12,117 @@ const DoctorList = ({ onDoctorSelect }) => {
   const [selectedRating, setSelectedRating] = useState('all');
 
   // Mock data cho danh sách bác sĩ
-  const mockDoctors = [
-    {
-      id: 1,
-      name: 'BS. Nguyễn Văn An',
-      specialty: 'Tim mạch',
-      avatar: '/src/assets/doctor.jpg',
-      rating: 4.8,
-      reviewCount: 124,
-      price: 500000,
-      experience: '15 năm kinh nghiệm',
-      location: 'Bệnh viện Chợ Rẫy',
-    },
-    {
-      id: 2,
-      name: 'BS. Trần Thị Bình',
-      specialty: 'Da liễu',
-      avatar: '/src/assets/doctor.jpg',
-      rating: 4.5,
-      reviewCount: 89,
-      price: 400000,
-      experience: '12 năm kinh nghiệm',
-      location: 'Bệnh viện Đại học Y Dược',
-    },
-    {
-      id: 3,
-      name: 'BS. Lê Văn Cường',
-      specialty: 'Nhi khoa',
-      avatar: '/src/assets/doctor.jpg',
-      rating: 4.9,
-      reviewCount: 156,
-      price: 450000,
-      experience: '18 năm kinh nghiệm',
-      location: 'Bệnh viện Nhi Đồng 1',
-    },
-    {
-      id: 4,
-      name: 'BS. Phạm Thị Dung',
-      specialty: 'Sản phụ khoa',
-      avatar: '/src/assets/doctor.jpg',
-      rating: 4.7,
-      reviewCount: 98,
-      price: 600000,
-      experience: '20 năm kinh nghiệm',
-      location: 'Bệnh viện Từ Dũ',
-    },
-    {
-      id: 5,
-      name: 'BS. Hoàng Minh Đức',
-      specialty: 'Thần kinh',
-      avatar: '/src/assets/doctor.jpg',
-      rating: 4.6,
-      reviewCount: 76,
-      price: 550000,
-      experience: '14 năm kinh nghiệm',
-      location: 'Bệnh viện 115',
-    },
-    {
-      id: 6,
-      name: 'BS. Ngô Thị Hoa',
-      specialty: 'Tim mạch',
-      avatar: '/src/assets/doctor.jpg',
-      rating: 4.8,
-      reviewCount: 142,
-      price: 520000,
-      experience: '16 năm kinh nghiệm',
-      location: 'Bệnh viện Thống Nhất',
-    },
-  ];
-
-  const specialties = [
-    'all',
-    'Tim mạch',
-    'Da liễu',
-    'Nhi khoa',
-    'Sản phụ khoa',
-    'Thần kinh',
-  ];
+  // const mockDoctors = [
+  //   {
+  //     id: 1,
+  //     name: 'BS. Nguyễn Văn An',
+  //     specialty: 'Tim mạch',
+  //     avatar: '/src/assets/doctor.jpg',
+  //     rating: 4.8,
+  //     reviewCount: 124,
+  //     price: 500000,
+  //     experience: '15 năm kinh nghiệm',
+  //     location: 'Bệnh viện Chợ Rẫy',
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'BS. Trần Thị Bình',
+  //     specialty: 'Da liễu',
+  //     avatar: '/src/assets/doctor.jpg',
+  //     rating: 4.5,
+  //     reviewCount: 89,
+  //     price: 400000,
+  //     experience: '12 năm kinh nghiệm',
+  //     location: 'Bệnh viện Đại học Y Dược',
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'BS. Lê Văn Cường',
+  //     specialty: 'Nhi khoa',
+  //     avatar: '/src/assets/doctor.jpg',
+  //     rating: 4.9,
+  //     reviewCount: 156,
+  //     price: 450000,
+  //     experience: '18 năm kinh nghiệm',
+  //     location: 'Bệnh viện Nhi Đồng 1',
+  //   },
+  //   {
+  //     id: 4,
+  //     name: 'BS. Phạm Thị Dung',
+  //     specialty: 'Sản phụ khoa',
+  //     avatar: '/src/assets/doctor.jpg',
+  //     rating: 4.7,
+  //     reviewCount: 98,
+  //     price: 600000,
+  //     experience: '20 năm kinh nghiệm',
+  //     location: 'Bệnh viện Từ Dũ',
+  //   },
+  //   {
+  //     id: 5,
+  //     name: 'BS. Hoàng Minh Đức',
+  //     specialty: 'Thần kinh',
+  //     avatar: '/src/assets/doctor.jpg',
+  //     rating: 4.6,
+  //     reviewCount: 76,
+  //     price: 550000,
+  //     experience: '14 năm kinh nghiệm',
+  //     location: 'Bệnh viện 115',
+  //   },
+  //   {
+  //     id: 6,
+  //     name: 'BS. Ngô Thị Hoa',
+  //     specialty: 'Tim mạch',
+  //     avatar: '/src/assets/doctor.jpg',
+  //     rating: 4.8,
+  //     reviewCount: 142,
+  //     price: 520000,
+  //     experience: '16 năm kinh nghiệm',
+  //     location: 'Bệnh viện Thống Nhất',
+  //   },
+  // ];
 
   useEffect(() => {
-    setDoctors(mockDoctors);
-    setFilteredDoctors(mockDoctors);
+    const fetchDoctors = async () => {
+      const token = Cookies.get('accessToken');
+      if (!token) {
+        setDoctors([]);
+        setFilteredDoctors([]);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `${API_BASE}/consult-appointment/get-consultants`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: {
+              page: 1,
+              limit: 9,
+            },
+          }
+        );
+        const fetchedDoctors = (response.data?.result?.consultants || []).map(
+          (doctor) => ({
+            ...doctor,
+            consultant_id: doctor.account_id,
+            price: 400000,
+          })
+        );
+        console.log('Dữ liệu bác sĩ:', response.data?.result);
+        console.log(
+          'Consultant IDs:',
+          fetchedDoctors.map((d) => d.consultant_id)
+        );
+        setDoctors(fetchedDoctors);
+        setFilteredDoctors(fetchedDoctors);
+      } catch (error) {
+        console.error('Lỗi khi gọi API bác sĩ:', error);
+        setDoctors([]);
+        setFilteredDoctors([]);
+      }
+    };
+    fetchDoctors();
   }, []);
 
   useEffect(() => {
@@ -99,8 +132,8 @@ const DoctorList = ({ onDoctorSelect }) => {
     if (searchTerm) {
       filtered = filtered.filter(
         (doctor) =>
-          doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+          doctor.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doctor.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -160,6 +193,15 @@ const DoctorList = ({ onDoctorSelect }) => {
     return stars;
   };
 
+  const specialties = [
+    'all',
+    'Tim mạch',
+    'Da liễu',
+    'Nhi khoa',
+    'Sản phụ khoa',
+    'Thần kinh',
+  ];
+
   return (
     <div className="doctor-list">
       <div className="doctor-list-header">
@@ -218,48 +260,55 @@ const DoctorList = ({ onDoctorSelect }) => {
       {/* Doctor Cards */}
       <div className="doctors-grid">
         {filteredDoctors.length > 0 ? (
-          filteredDoctors.map((doctor) => (
-            <div key={doctor.id} className="doctor-card">
-              <div className="doctor-avatar">
-                <img src={doctor.avatar} alt={doctor.name} />
-                <div className="online-status"></div>
-              </div>
+          filteredDoctors
+            .filter((doctor) => doctor.full_name && doctor.rating !== undefined)
+            .map((doctor) => (
+              <div key={doctor.id || doctor.account_id} className="doctor-card">
+                <div className="doctor-avatar">
+                  <img
+                    src={doctor.avatar || '/src/assets/doctor.jpg'}
+                    alt={doctor.full_name}
+                  />
+                  <div className="online-status"></div>
+                </div>
 
-              <div className="doctor-info">
-                <div className="doctor-basic">
-                  <h3 className="doctor-name">{doctor.name}</h3>
-                  <div className="doctor-details">
-                    <div className="doctor-specialty">{doctor.specialty}</div>
-                    <p className="doctor-experience">📚 {doctor.experience}</p>
-                    <p className="doctor-location">🏥 {doctor.location}</p>
+                <div className="doctor-info">
+                  <h3 className="doctor-name">{doctor.full_name}</h3>
+                  <div className="doctor-rating">
+                    <div className="stars">
+                      {renderStars(doctor.rating ?? 0)}
+                    </div>
+                    <span className="rating-text">
+                      {doctor.rating ?? 'N/A'}/5
+                    </span>
                   </div>
-                </div>
-
-                <div className="doctor-rating">
-                  <div className="stars">{renderStars(doctor.rating)}</div>
-                  <span className="rating-text">
-                    {doctor.rating}/5 ({doctor.reviewCount} đánh giá)
-                  </span>
-                </div>
-
-                <div className="doctor-bottom">
+                  <div className="doctor-specialty">
+                    <span className="specialty-label">Chuyên khoa:</span>
+                    <span className="specialty-value">
+                      {doctor.specialty ?? 'Chưa có chuyên khoa'}
+                    </span>
+                  </div>
                   <div className="doctor-price">
                     <span className="price-label">Phí tư vấn:</span>
                     <span className="price-value">
                       {formatPrice(doctor.price)}
                     </span>
                   </div>
-
+                  <div className="doctor-description">
+                    <span>{doctor.description ?? 'Chưa có mô tả'}</span>
+                  </div>
                   <button
                     className="book-button"
-                    onClick={() => onDoctorSelect(doctor)}
+                    onClick={() => {
+                      console.log(doctor);
+                      onDoctorSelect(doctor);
+                    }}
                   >
                     📅 Xem lịch & Đặt lịch
                   </button>
                 </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <div className="no-results">
             <div className="no-results-icon">😔</div>

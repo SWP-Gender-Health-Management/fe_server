@@ -239,7 +239,7 @@ const UserAccount = () => {
   // Xử lý upload ảnh đại diện
   const handleAvatarUpload = async (options) => {
     const { file, onSuccess, onError } = options;
-    const accessToken = Cookies.getm('accessToken');
+    const accessToken = Cookies.get('accessToken');
     const formData = new FormData();
     formData.append('avatar', file);
 

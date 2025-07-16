@@ -81,15 +81,18 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
     setIsLoading(true);
 
     // Simulate API call
-    setTimeout(() => {
-      onSubmit({
-        ...formData,
-        bookingId: `BK${Date.now()}`,
-        totalAmount: calculateTotal(),
-        paymentStatus: 'completed',
-      });
-      setIsLoading(false);
-    }, 2000);
+    console.log('slot.pattern_id: ', slot.pattern_id);
+    console.log('slot.customer_id: ', slot.customer_id);
+
+    onSubmit({
+      ...formData,
+      bookingId: `BK${Date.now()}`,
+      totalAmount: calculateTotal(),
+      paymentStatus: 'completed',
+      pattern_id: slot.pattern_id,
+      customer_id: slot.customer_id,
+    });
+    setIsLoading(false);
   };
 
   const calculateTotal = () => {
@@ -104,10 +107,18 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
     }).format(price);
   };
 
+  const formatTime = (rawStart) => {
+    if (!rawStart) {
+      console.log('Raw start is null/undefined:', rawStart);
+      return '';
+    }
+    const timeStr = rawStart.length === 5 ? rawStart + ':00' : rawStart;
+    return timeStr.slice(0, 5);
+  };
+
   const formatSlotTime = () => {
-    const startTime = slot.time;
-    const endTime =
-      String(parseInt(startTime.split(':')[0]) + 1).padStart(2, '0') + ':00';
+    const startTime = formatTime(slot.start_at);
+    const endTime = formatTime(slot.end_at);
     return `${startTime} - ${endTime}`;
   };
 

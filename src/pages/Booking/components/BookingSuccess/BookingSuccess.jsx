@@ -9,13 +9,20 @@ const BookingSuccess = ({ doctor, slot, bookingData, onBackToHome }) => {
     }).format(price);
   };
 
-  const formatSlotTime = () => {
-    const startTime = slot.time;
-    const endTime =
-      String(parseInt(startTime.split(':')[0]) + 1).padStart(2, '0') + ':00';
-    return `${startTime} - ${endTime}`;
+  const formatTime = (rawStart) => {
+    if (!rawStart) {
+      console.log('Raw start is null/undefined:', rawStart);
+      return '';
+    }
+    const timeStr = rawStart.length === 5 ? rawStart + ':00' : rawStart;
+    return timeStr.slice(0, 5);
   };
 
+  const formatSlotTime = () => {
+    const startTime = formatTime(slot.start_at);
+    const endTime = formatTime(slot.end_at);
+    return `${startTime} - ${endTime}`;
+  };
   const getVideoCallLink = () => {
     // Mock video call link
     return `https://medicare-video.com/room/${bookingData.bookingId}`;

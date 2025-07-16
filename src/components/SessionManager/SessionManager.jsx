@@ -34,16 +34,16 @@ const SessionManager = ({ onCancel, onLoginClick }) => {
 
     console.log('⏱ Reset session timer:', SESSION_TIMEOUT);
   };
-
   const refreshAccessToken = async (refreshToken) => {
     try {
+
       const res = await api.post('refresh-token/create-access-token', {
         refreshToken,
       });
 
       const { accessToken, account_id, full_name, role } = res.data.result || {};
-      if (!accessToken) throw new Error('Không có accessToken mới');
 
+      if (!accessToken) throw new Error('Không có accessToken mới');
       Cookies.set('accessToken', accessToken, { expires: 1 });
       Cookies.set('accountId', account_id);
       Cookies.set('fullname', full_name);
