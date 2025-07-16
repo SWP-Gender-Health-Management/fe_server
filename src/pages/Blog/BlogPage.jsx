@@ -210,7 +210,7 @@ export default function BlogPage() {
           )}
 
           {totalPages > 1 && (
-            <div className="pagination-but">
+            <div className="pagination">
               <Button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
