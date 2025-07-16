@@ -1,40 +1,35 @@
-import React, { useState } from 'react';
 import {
-  Carousel,
-  Button,
-  Input,
-  Select,
-  Form,
-  Card,
-  Row,
-  Col,
-  message,
-  Typography,
-  Divider,
-} from 'antd';
-import {
-  LeftCircleOutlined,
-  RightCircleOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  EnvironmentOutlined,
-  ClockCircleOutlined,
-  HeartOutlined,
-  SafetyOutlined,
-  SafetyCertificateOutlined,
-  UserOutlined,
-  TeamOutlined,
-  StarOutlined,
-  CalendarOutlined,
-  MedicineBoxOutlined,
-  EyeOutlined,
-  LikeOutlined,
-  MessageOutlined,
-  CheckCircleOutlined,
   ArrowRightOutlined,
+  CalendarOutlined,
+  CheckCircleOutlined,
+  EyeOutlined,
+  HeartOutlined,
+  LeftCircleOutlined,
+  LikeOutlined,
+  MedicineBoxOutlined,
+  MessageOutlined,
+  RightCircleOutlined,
+  SafetyCertificateOutlined,
+  SafetyOutlined,
+  StarOutlined,
+  TeamOutlined,
+  UserOutlined
 } from '@ant-design/icons';
-import './LandingPage.css';
 import '@styles/reset.css'; // Reset CSS for consistent styling
+import {
+  Button,
+  Card,
+  Carousel,
+  Col,
+  Form,
+  Input,
+  message,
+  Row,
+  Select,
+  Typography
+} from 'antd';
+import React, { useState } from 'react';
+import './LandingPage.css';
 
 const { Option } = Select;
 const { Title, Paragraph, Text } = Typography;

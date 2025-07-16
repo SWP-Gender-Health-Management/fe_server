@@ -1,0 +1,298 @@
+/* Setup Form Container */
+.setup-form-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.setup-form-card {
+  max-width: 700px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.setup-form-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: white;
+}
+
+.setup-form-title {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Steps Styling */
+.setup-steps {
+  margin: 24px 0;
+}
+
+.setup-steps .ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #ff69b4;
+  border-color: #ff69b4;
+}
+
+.setup-steps .ant-steps-item-process .ant-steps-item-icon {
+  background-color: #ff69b4;
+  border-color: #ff69b4;
+}
+
+/* Method Selection */
+.setup-method-selection {
+  padding: 16px 0;
+}
+
+.setup-option {
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.setup-option:hover {
+  border-color: #ff69b4;
+  background-color: #faf5ff;
+}
+
+.setup-option .ant-radio-wrapper {
+  width: 100%;
+}
+
+.setup-option-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.setup-option-content p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Form Styling */
+.setup-form {
+  padding: 16px 0;
+}
+
+.setup-form .ant-form-item-label > label {
+  color: #262626;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.setup-form .ant-input,
+.setup-form .ant-picker,
+.setup-form .ant-input-number {
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.setup-form .ant-input:focus,
+.setup-form .ant-picker:focus,
+.setup-form .ant-input-number:focus,
+.setup-form .ant-input:hover,
+.setup-form .ant-picker:hover,
+.setup-form .ant-input-number:hover {
+  border-color: #ff69b4;
+  box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+}
+
+/* Radio Groups */
+.setup-form .ant-radio-group {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.setup-form .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+  min-width: 80px;
+}
+
+.setup-form .ant-radio-button-wrapper:first-child {
+  border-radius: 8px;
+}
+
+.setup-form .ant-radio-button-wrapper:last-child {
+  border-radius: 8px;
+}
+
+.setup-form .ant-radio-button-wrapper-checked {
+  background-color: #ff69b4;
+  border-color: #ff69b4;
+  color: white;
+}
+
+.setup-form .ant-radio-button-wrapper:hover {
+  border-color: #ff69b4;
+  color: #ff69b4;
+}
+
+/* Buttons */
+.setup-form .ant-btn-primary {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+  min-width: 120px;
+}
+
+.setup-form .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #ff1493, #dc143c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+.setup-form .ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+  min-width: 100px;
+}
+
+/* Complete Section */
+.setup-complete {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.setup-complete h3 {
+  color: #262626;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.setup-complete p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+/* Alert Styling */
+.setup-form .ant-alert {
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #e6f7ff, #f0f9ff);
+}
+
+.setup-form .ant-alert-info {
+  background: linear-gradient(135deg, #fff2e8, #fff7ed);
+  border: 1px solid #ffd591;
+}
+
+/* Notes Section */
+.setup-form-note {
+  background: linear-gradient(135deg, #f6f8fb, #f0f2f7);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 24px;
+  border: 1px solid #e8ecf0;
+}
+
+.setup-form-note p {
+  margin: 0 0 12px 0;
+  color: #262626;
+  font-weight: 500;
+}
+
+.setup-form-note ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.setup-form-note li {
+  color: #666;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.setup-form-note li:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .setup-form-container {
+    padding: 10px;
+  }
+
+  .setup-form-card {
+    margin: 10px;
+    border-radius: 12px;
+  }
+
+  .setup-form .ant-radio-group {
+    flex-direction: column;
+  }
+
+  .setup-form .ant-radio-button-wrapper {
+    min-width: 100%;
+  }
+
+  .setup-option-content h4 {
+    font-size: 15px;
+  }
+
+  .setup-option-content p {
+    font-size: 13px;
+  }
+}
+
+/* Loading State */
+.setup-form .ant-btn-loading {
+  opacity: 0.8;
+}
+
+/* Form Validation */
+.setup-form .ant-form-item-has-error .ant-input,
+.setup-form .ant-form-item-has-error .ant-picker,
+.setup-form .ant-form-item-has-error .ant-input-number {
+  border-color: #ff4d4f;
+}
+
+.setup-form .ant-form-item-explain-error {
+  color: #ff4d4f;
+  font-size: 13px;
+}
+
+/* Success Animation */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.setup-complete .anticon-check-circle {
+  animation: checkmark 0.6s ease-out;
+}

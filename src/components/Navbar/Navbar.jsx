@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Menu, Button, Breadcrumb, Dropdown, Tooltip } from 'antd';
+import { Menu, Button, Breadcrumb, Dropdown, Tooltip, Result } from 'antd';
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -23,12 +23,13 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
 import Logo from '@assets/Blue-full.svg?react';
 import '@styles/reset.css';
 import './Navbar.css';
-import Logout from '@pages/Logout/Logout';
-import NotificationDropdown from '@components/Notification/NotificationDropdown';
-import Cookies from 'js-cookie'; // Thêm thư viện js-cookie
+import Logout from '@components/Logout/Logout';
+import NotificationDropdown from '../Notification/NotificationDropdown';
 import { useAuth } from '@context/AuthContext';
 
 const Navbar = ({ onLoginClick }) => {
@@ -167,7 +168,6 @@ const Navbar = ({ onLoginClick }) => {
       icon: <WechatWorkOutlined />,
     },
   ];
-  // console.log('Role:', role, typeof role); // Role: 0 "number"
   const roleRoutes = {
     ADMIN: { path: '/admin', label: 'Admin' },
     STAFF: { path: '/staff', label: 'Nhân viên' },

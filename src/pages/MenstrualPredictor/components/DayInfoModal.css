@@ -1,0 +1,346 @@
+/* Day Info Modal Styles */
+.day-info-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.day-info-modal .ant-modal-header {
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+  border-bottom: none;
+  padding: 20px 24px;
+}
+
+.day-info-modal .ant-modal-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.day-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.day-modal-icon {
+  font-size: 20px;
+  color: white;
+}
+
+.day-info-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.day-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Day Type Card */
+.day-type-card {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.day-type-card .ant-card-body {
+  padding: 20px;
+}
+
+.day-type-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.day-type-icon {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.day-type-info {
+  flex: 1;
+}
+
+.day-type-title {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.day-type-date {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Cycle Info Card */
+.cycle-info-card {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cycle-info-card .ant-card-body {
+  padding: 20px;
+}
+
+.cycle-info-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cycle-info-icon {
+  font-size: 18px;
+  color: #1890ff;
+}
+
+.cycle-info-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cycle-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cycle-day-info,
+.phase-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cycle-day-label,
+.phase-label {
+  font-weight: 500;
+  color: #666;
+  min-width: 80px;
+}
+
+.cycle-day-tag,
+.phase-tag {
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+/* Phase Card */
+.phase-card {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.phase-card .ant-card-body {
+  padding: 20px;
+}
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.phase-icon {
+  font-size: 18px;
+  color: #52c41a;
+}
+
+.phase-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.phase-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.phase-card .ant-divider {
+  margin: 16px 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.health-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.health-tip-item:last-child {
+  border-bottom: none;
+}
+
+.tip-number {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #ff6b9d, #ff8fab);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Special Day Card */
+.special-day-card {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.special-day-card .ant-card-body {
+  padding: 20px;
+}
+
+.special-day-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.special-day-icon {
+  font-size: 18px;
+}
+
+.special-day-icon.period {
+  color: #ff6b9d;
+}
+
+.special-day-icon.ovulation {
+  color: #ffa726;
+}
+
+.special-day-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.special-day-content p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.special-day-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .day-info-modal {
+    width: 90% !important;
+    max-width: 500px;
+  }
+
+  .day-info-modal .ant-modal-body {
+    padding: 20px;
+  }
+
+  .day-type-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .day-type-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  .day-type-title {
+    font-size: 18px;
+  }
+
+  .cycle-day-info,
+  .phase-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cycle-day-label,
+  .phase-label {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .day-info-modal .ant-modal-header {
+    padding: 16px 20px;
+  }
+
+  .day-info-modal .ant-modal-title {
+    font-size: 16px;
+  }
+
+  .day-modal-icon {
+    font-size: 18px;
+  }
+
+  .day-info-modal .ant-modal-body {
+    padding: 16px;
+  }
+
+  .day-modal-content {
+    gap: 16px;
+  }
+
+  .day-type-card .ant-card-body,
+  .cycle-info-card .ant-card-body,
+  .phase-card .ant-card-body,
+  .special-day-card .ant-card-body {
+    padding: 16px;
+  }
+
+  .day-type-title {
+    font-size: 16px;
+  }
+
+  .health-tip-item {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tip-number {
+    align-self: flex-start;
+  }
+}

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import QuestionModal from '../QuestionModal/QuestionModal';
 import './ConsultantQuestion.css';
-import axios from 'axios';
-import Cookies from 'js-cookie'; // Thêm import Cookies
+import api from '@/api/api';
+import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 
 const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   // const [questions, setQuestions] = useState([]);

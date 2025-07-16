@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import BlogModal from '../BlogModal/BlogModal';
+import BlogFormModal from '../BlogModal/BlogModal';
 import './ConsultantBlog.css';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+import api from '@/api/api';
+import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
+
 
 const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
   // const [blogs, setBlogs] = useState([]);

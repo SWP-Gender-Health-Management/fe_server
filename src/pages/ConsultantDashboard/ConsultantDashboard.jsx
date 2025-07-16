@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ConsultantSidebar from './components/ConsultantSidebar';
 import DashboardOverview from './components/DashboardOverview';
 import ConsultantAppointment from '@components/ConsultDshBrd/ConsultAppoint/ConsultantAppointment';
@@ -9,6 +8,13 @@ import ConsultantProfile from '@components/ConsultDshBrd/ConsultProfile/Consulta
 import './ConsultantDashboard.css';
 import Cookies from 'js-cookie'; // Thêm import Cookies
 import axios from 'axios';
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
 
 const ConsultantDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');

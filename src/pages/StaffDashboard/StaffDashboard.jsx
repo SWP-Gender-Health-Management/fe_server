@@ -11,6 +11,9 @@ import SearchAppointments from '@components/StaffDshBrd/SearchAppointments/Searc
 import StaffBlog from '@components/StaffDshBrd/StaffBlog/StaffBlog';
 import StaffProfile from '@components/StaffDshBrd/StaffProfile/StaffProfile';
 
+import StaffLaboratory from './components/StaffLab/StaffLaboratory';
+
+
 // Import icons
 import {
   HomeOutlined,
