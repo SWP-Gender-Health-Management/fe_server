@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import BlogDetailModal from '../BlogDetail/BlogDetailModal';
-import BlogFormModal from '../BlogForm/BlogFormModal';
 import './StaffBlog.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';

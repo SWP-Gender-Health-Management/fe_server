@@ -1,5 +1,4 @@
 import React, { useState} from 'react';
-import AppointmentModal from '../Appointment/AppointmentModal' ;
 import './ConsultantAppointment.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';

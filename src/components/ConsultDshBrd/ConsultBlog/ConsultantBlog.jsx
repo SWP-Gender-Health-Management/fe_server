@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import BlogModal from '../BlogModal/BlogModal';
-import BlogFormModal from '../BlogModal/BlogModal';
 import './ConsultantBlog.css';
-import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
+import axios from 'axios';
+
 
 
 const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
