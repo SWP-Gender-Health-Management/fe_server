@@ -114,6 +114,7 @@
   justify-content: flex-start;
   text-align: left;
   padding-left: 0;
+  color: white;
 }
 
 .contact-info.row-direction .top-contact-item:nth-child(2),
@@ -280,6 +281,9 @@
   height: 16px;
   background: transparent;
 }
+.contact-info span{
+  color: white !important; 
+}
 
 .mobile-contact {
   text-align: center;
@@ -419,7 +423,7 @@
 }
 
 .user-button {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important;
   color: white;
   border: none;
   border-radius: 20px;

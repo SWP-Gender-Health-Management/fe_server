@@ -58,7 +58,7 @@ const Navbar = ({ onLoginClick }) => {
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
-    admin: 'Quản trị viên',
+    'admin': 'Quản trị viên',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);

@@ -117,7 +117,7 @@ const Footer = () => {
               <div className="footer-section">
                 <Title level={4} className="section-title">
                   <CustomerServiceOutlined className="section-icon" />
-                  Hỗ trợ & Thông tin
+                  <span className="section-title-text">Hỗ trợ & Thông tin</span>
                 </Title>
                 <Row gutter={[16, 16]}>
                   <Col span={12}>
