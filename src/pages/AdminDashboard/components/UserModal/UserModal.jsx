@@ -325,11 +325,6 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
                   </div>
 
                   <div className="info-item">
-                    <label>Lần đăng nhập cuối:</label>
-                    <span>{user.lastLogin}</span>
-                  </div>
-
-                  <div className="info-item">
                     <label>Trạng thái tài khoản:</label>
                     <span className={`status-indicator ${user.status}`}>
                       {user.status === 'active' ? 'Hoạt động' : 'Bị khóa'}

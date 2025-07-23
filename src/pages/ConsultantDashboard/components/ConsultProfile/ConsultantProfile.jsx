@@ -204,10 +204,7 @@ const ConsultantProfile = ({ consultantData }) => {
                     <label>Ngày tham gia:</label>
                     <span>{formatDate(consultantData.created_at)}</span>
                   </div>
-                  {/* <div className="info-row">
-                    <label>Lần đăng nhập cuối:</label>
-                    <span>{formatDateTime(consultantData.lastLogin)}</span>
-                  </div> */}
+
                 </div>
               </div>
 
@@ -374,10 +371,6 @@ const ConsultantProfile = ({ consultantData }) => {
                     </span>
                     <span className="status-active">✅ Đang hoạt động</span>
                   </div>
-                  {/* <div className="security-item">
-                    <span className="security-label">Lần đăng nhập cuối:</span>
-                    <span>{formatDateTime(consultantData.lastLogin)}</span>
-                  </div> */}
                   <div className="security-item">
                     <span className="security-label">Phiên đăng nhập:</span>
                     <span className="session-info">

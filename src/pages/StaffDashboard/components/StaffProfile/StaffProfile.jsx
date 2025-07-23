@@ -149,10 +149,6 @@ const StaffProfile = ({ staffData }) => {
                     <label>Ngày tham gia:</label>
                     <span>{formatDate(staffData.created_at)}</span>
                   </div>
-                  {/* <div className="info-row">
-                    <label>Lần đăng nhập cuối:</label>
-                    <span>{formatDateTime(staffData.lastLogin)}</span>
-                  </div> */}
                 </div>
               </div>
 
@@ -333,10 +329,6 @@ const StaffProfile = ({ staffData }) => {
                     </span>
                     <span className="status-active">✅ Đang hoạt động</span>
                   </div>
-                  {/* <div className="security-item">
-                    <span className="security-label">Lần đăng nhập cuối:</span>
-                    <span>{formatDateTime(staffData.lastLogin)}</span>
-                  </div> */}
                   <div className="security-item">
                     <span className="security-label">Phiên đăng nhập:</span>
                     <span className="session-info">
