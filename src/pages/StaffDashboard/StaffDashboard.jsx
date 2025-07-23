@@ -5,11 +5,11 @@ import Cookies from 'js-cookie'; // Thêm import Cookies
 import axios from 'axios';
 
 // Import components
-import StaffOverview from '@components/StaffDshBrd/StaffOverview/StaffOverview';
-import TodayAppointments from '@components/StaffDshBrd/TodayAppointments/TodayAppointments';
-import SearchAppointments from '@components/StaffDshBrd/SearchAppointments/SearchAppointments';
-import StaffBlog from '@components/StaffDshBrd/StaffBlog/StaffBlog';
-import StaffProfile from '@components/StaffDshBrd/StaffProfile/StaffProfile';
+import StaffOverview from '@pages/StaffDashboard/components/StaffOverview/StaffOverview';
+import TodayAppointments from '@pages/StaffDashboard/components/TodayAppointments/TodayAppointments';
+import SearchAppointments from '@pages/StaffDashboard/components/SearchAppointments/SearchAppointments';
+import StaffBlog from '@pages/StaffDashboard/components/StaffBlog/StaffBlog';
+import StaffProfile from '@pages/StaffDashboard/components/StaffProfile/StaffProfile';
 
 import StaffLaboratory from './components/StaffLab/StaffLaboratory';
 

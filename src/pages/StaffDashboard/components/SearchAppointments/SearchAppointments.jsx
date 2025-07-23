@@ -38,7 +38,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import './SearchAppointments.css';
-import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
+import ErrorBoundary from '../../../../components/ErrorBoundary/ErrorBoundary';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Thêm import Cookies
 

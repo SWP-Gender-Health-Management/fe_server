@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import ConsultantAppointment from '@/pages/ConsultantDashboard/components/ConsultAppoint/ConsultantAppointment';
+import ConsultantBlog from '@/pages/ConsultantDashboard/components/ConsultBlog/ConsultantBlog';
+import ConsultantQuestion from '@/pages/ConsultantDashboard/components/ConsultQuest/ConsultantQuestion';
+import ConsultantProfile from '@pages/ConsultantDashboard/components/ConsultProfile/ConsultantProfile';
+import axios from 'axios';
+import Cookies from 'js-cookie'; // Thêm import Cookies
+import React, { useEffect, useState } from 'react';
+import {
+  useNavigate
+} from 'react-router-dom';
 import ConsultantSidebar from './components/ConsultantSidebar';
 import DashboardOverview from './components/DashboardOverview';
-import ConsultantAppointment from '@components/ConsultDshBrd/ConsultAppoint/ConsultantAppointment';
-import ConsultantBlog from '@components/ConsultDshBrd/ConsultBlog/ConsultantBlog';
-import ConsultantQuestion from '@components/ConsultDshBrd/ConsultQuest/ConsultantQuestion';
-import ConsultantProfile from '@components/ConsultDshBrd/ConsultProfile/ConsultantProfile';
 import './ConsultantDashboard.css';
-import Cookies from 'js-cookie'; // Thêm import Cookies
-import axios from 'axios';
-import {
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-  useLocation,
-} from 'react-router-dom';
 
 const ConsultantDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');

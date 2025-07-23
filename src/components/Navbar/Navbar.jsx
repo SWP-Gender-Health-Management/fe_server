@@ -1,36 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Menu, Button, Breadcrumb, Dropdown, Tooltip, Result } from 'antd';
 import {
-  HomeOutlined,
   AppstoreOutlined,
-  ReadOutlined,
-  TeamOutlined,
-  PhoneOutlined,
-  SearchOutlined,
-  ClockCircleOutlined,
-  EnvironmentOutlined,
-  UserOutlined,
-  MailOutlined,
-  FacebookOutlined,
-  TwitterOutlined,
-  InstagramOutlined,
-  MenuOutlined,
-  CloseOutlined,
-  WechatWorkOutlined,
-  HeartOutlined,
-  ExperimentOutlined,
   CalendarOutlined,
+  ClockCircleOutlined,
+  CloseOutlined,
+  ExperimentOutlined,
+  HeartOutlined,
+  HomeOutlined,
+  MailOutlined,
+  MenuOutlined,
+  PhoneOutlined,
+  ReadOutlined,
+  SearchOutlined,
+  TeamOutlined,
+  UserOutlined,
+  WechatWorkOutlined
 } from '@ant-design/icons';
-import { useLocation, Link } from 'react-router-dom';
+import { Breadcrumb, Button, Dropdown, Menu, Tooltip } from 'antd';
+import axios from 'axios';
 import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import Logo from '@assets/Blue-full.svg?react';
-import '@styles/reset.css';
-import './Navbar.css';
 import Logout from '@components/Logout/Logout';
-import NotificationDropdown from '../Notification/NotificationDropdown';
 import { useAuth } from '@context/AuthContext';
+import '@styles/reset.css';
+import NotificationDropdown from '../Notification/NotificationDropdown';
+import './Navbar.css';
 
 const Navbar = ({ onLoginClick }) => {
   const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context

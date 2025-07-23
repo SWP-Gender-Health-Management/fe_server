@@ -1,25 +1,16 @@
+import api from '@/api/api';
 import doctor from '@/assets/doctor.jpg';
-import {
-  EyeInvisibleOutlined,
-  EyeTwoTone,
-  FontColorsOutlined,
-  LockOutlined,
-  MailOutlined
-} from '@ant-design/icons';
 import Logo from '@assets/Blue-full.svg?react';
 import { useAuth } from '@context/AuthContext';
 import ForgotPassword from '@pages/ForgotPassword/ForgotPassword';
-import { GoogleLogin } from '@react-oauth/google';
-import { Button, Checkbox, Form, Input, message, Modal, Tabs } from 'antd';
-import api from '@/api/api';
+import { Form, message, Modal, Tabs } from 'antd';
 import Cookies from 'js-cookie';
 import { useState } from 'react';
-import './login.css';
+import AuthImageSection from './components/AuthImageSection/AuthImageSection';
+import GoogleLoginButton from './components/GoogleLoginButton/GoogleLoginButton';
 import LoginForm from './components/LoginForm/LoginForm';
 import RegisterForm from './components/RegisterForm/RegisterForm';
-import GoogleLoginButton from './components/GoogleLoginButton/GoogleLoginButton';
-import AuthImageSection from './components/AuthImageSection/AuthImageSection';
-import DividerSection from './components/DividerSection/DividerSection';
+import './login.css';
 
 const { TabPane } = Tabs;
 const { confirm } = Modal;

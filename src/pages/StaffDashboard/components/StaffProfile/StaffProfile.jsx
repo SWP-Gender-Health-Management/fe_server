@@ -1,242 +1,370 @@
 import React, { useState } from 'react';
 import './StaffProfile.css';
+import { Statistic } from 'antd';
+import { BookOutlined, CheckCircleOutlined, ExperimentOutlined, TrophyOutlined } from '@ant-design/icons';
 
 const StaffProfile = ({ staffData }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: staffData?.name || '',
-    email: staffData?.email || '',
-    phone: staffData?.phone || '',
-    position: staffData?.position || '',
-    dateOfBirth: '1990-01-01',
-    gender: 'Nam',
-    address: '123 Đường ABC, Quận 1, TP.HCM',
-    qualification: 'Cử nhân Y khoa',
-    experience: '5 năm',
-    specialization: 'Xét nghiệm máu',
-    licenseNumber: 'LIC123456789',
-  });
+  const [activeTab, setActiveTab] = useState('info');
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  if (!staffData) {
+    return (
+      <div className="staff-profile">
+        <div className="loading-state">
+          <span>⏳</span>
+          <p>Đang tải thông tin hồ sơ...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mock additional profile data
+  const defaultStats = {
+    consultationTypes: ['Online', 'Offline'],
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log('Updated profile:', formData);
-    setIsEditing(false);
-  };
 
-  const handleCancel = () => {
-    // Reset form data to original values
-    setFormData({
-      name: staffData?.name || '',
-      email: staffData?.email || '',
-      phone: staffData?.phone || '',
-      position: staffData?.position || '',
-      dateOfBirth: '1990-01-01',
-      gender: 'Nam',
-      address: '123 Đường ABC, Quận 1, TP.HCM',
-      qualification: 'Cử nhân Y khoa',
-      experience: '5 năm',
-      specialization: 'Xét nghiệm máu',
-      licenseNumber: 'LIC123456789',
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
-    setIsEditing(false);
   };
+
+  const formatDateTime = (date) => {
+    return new Date(date).toLocaleString('vi-VN');
+  };
+
+  const getTimeAgo = (date) => {
+    const now = new Date();
+    const diffInMs = now - new Date(date);
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays > 0) {
+      return `${diffInDays} ngày trước`;
+    } else if (diffInHours > 0) {
+      return `${diffInHours} giờ trước`;
+    } else {
+      return 'Vừa xong';
+    }
+  };
+
 
   return (
     <div className="staff-profile">
-      <div className="staff-page-header">
-        <h1 className="staff-page-title">Profile</h1>
-        <p className="staff-page-subtitle">Quản lý thông tin cá nhân của bạn</p>
+      {/* Header */}
+      <div className="profile-header">
+        <div className="header-content">
+          <p>Thông tin chi tiết về tài khoản và hoạt động của bạn</p>
+        </div>
       </div>
 
-      <div className="staff-profile-container">
-        <div className="staff-profile-card staff-card">
-          {/* Profile Header */}
-          <div className="staff-profile-header">
-            <div className="staff-profile-avatar">
-              <img
-                src={staffData?.avatar || 'https://via.placeholder.com/150x150'}
-                alt="Staff Avatar"
-              />
-              <button className="staff-avatar-edit-btn">📷</button>
-            </div>
-            <div className="staff-profile-info">
-              <h2>{formData.name}</h2>
-              <p>{formData.position}</p>
-              <p>ID: {staffData?.id}</p>
-            </div>
-            <div className="staff-profile-actions">
-              {!isEditing ? (
-                <button
-                  className="staff-btn staff-btn-primary"
-                  onClick={() => setIsEditing(true)}
-                >
-                  ✏️ Chỉnh sửa
-                </button>
-              ) : (
-                <div className="staff-profile-action-buttons">
-                  <button
-                    className="staff-btn staff-btn-success"
-                    onClick={handleSubmit}
-                  >
-                    💾 Lưu
-                  </button>
-                  <button
-                    className="staff-btn staff-btn-secondary"
-                    onClick={handleCancel}
-                  >
-                    ❌ Hủy
-                  </button>
-                </div>
-              )}
-            </div>
+      {/* Profile Card */}
+      <div className="profile-card">
+        <div className="profile-main">
+          <div className="profile-avatar">
+            <img src={staffData.avatar} alt={staffData.full_name} />
+            <div className="status-indicator active"></div>
           </div>
 
-          {/* Profile Content */}
-          <div className="staff-profile-content">
-            <form onSubmit={handleSubmit}>
-              <div className="staff-profile-sections">
-                {/* Personal Information */}
-                <div className="staff-profile-section">
-                  <h3>Thông tin cá nhân</h3>
-                  <div className="staff-form-grid">
-                    <div className="staff-form-group">
-                      <label>Họ và tên</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        required
-                      />
+          <div className="profile-info">
+            <h3>{staffData.full_name}</h3>
+            {/* <p className="specialization">{staffData.specialization}</p> */}
+            <div className="rating">
+              <span className="rating-value">
+                {staffData.averageFeedBackRating} ⭐ ({staffData.totalFeedBack} đánh giá)
+              </span>
+            </div>
+            <div className="contact-info">
+              <span>📧 {staffData.email}</span>
+              <span>📞 {staffData.phone}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-stats">
+          <div className="stat-item">
+            <span className="stat-number">
+              {staffData.totalAppointments}
+            </span>
+            <span className="stat-label">Xét nghiệm</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">
+              {staffData.publishedBlogs}
+            </span>
+            <span className="stat-label">Bài viết</span>
+          </div>
+          {/* <div className="stat-item">
+            <span className="stat-number">{staffData.averageFeedBackRating}</span>
+            <span className="stat-label">Đánh giá</span>
+          </div> */}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="profile-tabs">
+        <button
+          className={`tab ${activeTab === 'info' ? 'active' : ''}`}
+          onClick={() => setActiveTab('info')}
+        >
+          📋 Thông tin chi tiết
+        </button>
+        <button
+          className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
+          onClick={() => setActiveTab('activity')}
+        >
+          📊 Thống kê công việc
+        </button>
+        <button
+          className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          ⚙️ Cài đặt
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        {activeTab === 'info' && (
+          <div className="info-tab">
+            <div className="info-sections">
+              <div className="info-section">
+                <h4>📋 Thông tin cơ bản</h4>
+                <div className="info-grid">
+                  <div className="info-row">
+                    <label>Họ và tên:</label>
+                    <span>{staffData.full_name}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Email:</label>
+                    <span>{staffData.email}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Số điện thoại:</label>
+                    <span>{staffData.phone}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Ngày tham gia:</label>
+                    <span>{formatDate(staffData.created_at)}</span>
+                  </div>
+                  {/* <div className="info-row">
+                    <label>Lần đăng nhập cuối:</label>
+                    <span>{formatDateTime(staffData.lastLogin)}</span>
+                  </div> */}
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h4>🏥 Thông tin chuyên môn</h4>
+                <div className="info-grid">
+                  {/* <div className="info-row">
+                    <label>Chuyên khoa:</label>
+                    <span>{staffData.specialization}</span>
+                  </div> */}
+                  {/* <div className="info-row">
+                    <label>Lĩnh vực tư vấn:</label>
+                    <div className="specializations">
+                      {staffData.specializations.map((spec, index) => (
+                        <span key={index} className="spec-tag">
+                          {spec}
+                        </span>
+                      ))}
                     </div>
-                    <div className="staff-form-group">
-                      <label>Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        required
-                      />
-                    </div>
-                    <div className="staff-form-group">
-                      <label>Số điện thoại</label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        required
-                      />
-                    </div>
-                    <div className="staff-form-group">
-                      <label>Ngày sinh</label>
-                      <input
-                        type="date"
-                        name="dateOfBirth"
-                        value={formData.dateOfBirth}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="staff-form-group">
-                      <label>Giới tính</label>
-                      <select
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      >
-                        <option value="Nam">Nam</option>
-                        <option value="Nữ">Nữ</option>
-                        <option value="Khác">Khác</option>
-                      </select>
-                    </div>
-                    <div className="staff-form-group staff-form-group-full">
-                      <label>Địa chỉ</label>
-                      <input
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
+                  </div> */}
+
+                  <div className="info-row">
+                    <label>Hình thức tư vấn:</label>
+                    <div className="consultation-types">
+                      {defaultStats.consultationTypes.map((type, index) => (
+                        <span key={index} className="type-tag">
+                          {type}
+                        </span>
+                      ))}
                     </div>
                   </div>
+                  <div className="info-row">
+                    <label>Phòng Ban: </label>
+                    <span> {staffData.department} </span>
+                  </div>
                 </div>
+              </div>
 
-                {/* Professional Information */}
-                <div className="staff-profile-section">
-                  <h3>Thông tin nghề nghiệp</h3>
-                  <div className="staff-form-grid">
-                    <div className="staff-form-group">
-                      <label>Chức vụ</label>
-                      <input
-                        type="text"
-                        name="position"
-                        value={formData.position}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
+              {/* <div className="info-section">
+                <h4>🎓 Bằng cấp & Chứng chỉ</h4>
+                <div className="certifications">
+                  {staffData.certifications.map((cert, index) => (
+                    <div key={index} className="certification-item">
+                      <span className="cert-icon">🏆</span>
+                      <span className="cert-name">{cert}</span>
                     </div>
-                    <div className="staff-form-group">
-                      <label>Bằng cấp</label>
-                      <input
-                        type="text"
-                        name="qualification"
-                        value={formData.qualification}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
+                  ))}
+                </div>
+              </div> */}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'activity' && (
+          <div className="activity-tab">
+            <div className="activity-stats">
+              <div className="stat-card">
+                <h4>Hiệu suất tư vấn</h4>
+                <div className="performance-metrics">
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {staffData.completedAppointments}/
+                      {staffData.totalAppointments}
+                    </span>
+                    <span className="metric-label">Cuộc hẹn hoàn thành</span> */}
+                    <Statistic
+                      title="Tổng số xét nghiệm"
+                      value={staffData.totalAppointments}
+                      prefix={<ExperimentOutlined />}
+                      valueStyle={{ color: '#3f8600' }}
+                    />
+                  </div>
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {(
+                        (staffData.completedAppointments /
+                          staffData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span> */}
+                    <Statistic
+                      title="Đã hoàn thành"
+                      value={staffData.completedAppointments}
+                      prefix={<CheckCircleOutlined />}
+                      valueStyle={{ color: '#1890ff' }}
+                    />
+                  </div>
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {(
+                        (staffData.completedAppointments /
+                          staffData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span> */}
+                    <Statistic
+                      title="Tỷ lệ hoàn thành"
+                      value={(
+                        (staffData.completedAppointments /
+                          staffData.totalAppointments) *
+                        100
+                      ).toFixed(1)}
+                      precision={1}
+                      suffix="%"
+                      prefix={<TrophyOutlined />}
+                      valueStyle={{ color: '#52c41a' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <h4>Hoạt động nội dung</h4>
+                <div className="content-metrics">
+                  <div className="metric">
+                    {/* <span className="metric-value">
+                      {staffData.publishedBlogs}/
+                      {staffData.totalBlogs}
+                    </span>
+                    <span className="metric-label">Bài viết đã xuất bản</span> */}
+                    <Statistic
+                      title="Bài Viết Xuất Bản"
+                      value={`${staffData.publishedBlogs}/
+                      ${staffData.totalBlogs}`}
+                      prefix={<BookOutlined />}
+                      valueStyle={{ color: '#722ed1' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="recent-activities">
+              <h4>🕒 Hoạt động gần đây</h4>
+              <div className="activities-list">
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="activity-item">
+                    <div className="activity-icon">{activity.icon}</div>
+                    <div className="activity-content">
+                      <p>{activity.description}</p>
+                      <span className="activity-time">
+                        {getTimeAgo(activity.time)}
+                      </span>
                     </div>
-                    <div className="staff-form-group">
-                      <label>Kinh nghiệm</label>
-                      <input
-                        type="text"
-                        name="experience"
-                        value={formData.experience}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
+                  </div>
+                ))}
+              </div>
+            </div> */}
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="settings-tab">
+            <div className="settings-note">
+              <div className="note-icon">ℹ️</div>
+              <div className="note-content">
+                <h4>Thông báo quan trọng</h4>
+                <p>
+                  Thông tin cá nhân của bạn được quản lý bởi Administrator. Nếu
+                  bạn cần thay đổi thông tin như tên, email, chuyên khoa hoặc
+                  các thông tin khác, vui lòng liên hệ với quản trị viên hệ
+                  thống.
+                </p>
+              </div>
+            </div>
+
+            <div className="settings-sections">
+              <div className="settings-section">
+                <h4>🔐 Bảo mật tài khoản</h4>
+                <div className="security-info">
+                  <div className="security-item">
+                    <span className="security-label">
+                      Trạng thái tài khoản:
+                    </span>
+                    <span className="status-active">✅ Đang hoạt động</span>
+                  </div>
+                  {/* <div className="security-item">
+                    <span className="security-label">Lần đăng nhập cuối:</span>
+                    <span>{formatDateTime(staffData.lastLogin)}</span>
+                  </div> */}
+                  <div className="security-item">
+                    <span className="security-label">Phiên đăng nhập:</span>
+                    <span className="session-info">
+                      Đang hoạt động từ thiết bị này
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h4>📞 Hỗ trợ</h4>
+                <div className="support-info">
+                  <p>Nếu bạn gặp vấn đề kỹ thuật hoặc cần hỗ trợ:</p>
+                  <div className="support-contacts">
+                    <div className="support-item">
+                      <span>📧 Email hỗ trợ:</span>
+                      <a href="mailto:support@clinic.com">support@clinic.com</a>
                     </div>
-                    <div className="staff-form-group">
-                      <label>Chuyên môn</label>
-                      <input
-                        type="text"
-                        name="specialization"
-                        value={formData.specialization}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    <div className="staff-form-group staff-form-group-full">
-                      <label>Số giấy phép hành nghề</label>
-                      <input
-                        type="text"
-                        name="licenseNumber"
-                        value={formData.licenseNumber}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
+                    <div className="support-item">
+                      <span>📞 Hotline:</span>
+                      <a href="tel:1900-1234">1900-1234</a>
                     </div>
                   </div>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ const Question = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalQuestions, setTotalQuestions] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1); // Không dùng
   const pageSize = 10;
 
   const fetchMyQuestions = async (
@@ -70,9 +70,9 @@ const Question = () => {
       console.log('Total from API:', res.data.result.total);
       console.log('=== API CALL END ===');
 
-      setMyQuestions(res.data.result || []);
-      setTotalQuestions((res.data.result && res.data.result.length) || 0);
-      setTotalPages(Math.ceil(res.data.result.length / pageSize));
+      setMyQuestions(Array.isArray(res.data.result.questions) ? res.data.result.questions : []);
+      setTotalQuestions(res.data.result.total || 0);
+      // setTotalPages(Math.ceil((res.data.result.total || 0) / pageSize)); // Không dùng
 
       // Chỉ cập nhật currentPage nếu page khác với currentPage hiện tại
       if (page !== currentPage) {
