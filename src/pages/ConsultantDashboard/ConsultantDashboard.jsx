@@ -1,4 +1,4 @@
-import ConsultantAppointment from '@/pages/ConsultantDashboard/components/ConsultAppoint/ConsultantAppointment';
+import ConsultantAppointment from '@/pages/ConsultantDashboard/components/ConsultAppointment/ConsultantAppointment';
 import ConsultantBlog from '@/pages/ConsultantDashboard/components/ConsultBlog/ConsultantBlog';
 import ConsultantQuestion from '@/pages/ConsultantDashboard/components/ConsultQuest/ConsultantQuestion';
 import ConsultantProfile from '@pages/ConsultantDashboard/components/ConsultProfile/ConsultantProfile';

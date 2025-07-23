@@ -18,6 +18,8 @@ import DayInfoModal from './components/DayInfoModal';
 import './MenstrualPredictorPage.css';
 import Cookies from 'js-cookie';
 import SetupMenstrualForm from './components/SetupMenstrualForm';
+import { useAuth } from '../../context/AuthContext';
+import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 
 const MenstrualPredictorPage = () => {
   console.log('MenstrualPredictorPage component is rendering...');
@@ -68,6 +70,23 @@ const MenstrualPredictorPage = () => {
     }
   } catch {
     accountId = null;
+  }
+
+  const { isLoggedIn } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(!isLoggedIn);
+
+  useEffect(() => {
+    setShowLoginModal(!isLoggedIn);
+  }, [isLoggedIn]);
+
+  if (!isLoggedIn) {
+    return (
+      <LoginRequiredModal
+        visible={showLoginModal}
+        onCancel={() => navigate('/')}
+        message="Bạn cần đăng nhập để sử dụng tính năng theo dõi chu kỳ kinh nguyệt!"
+      />
+    );
   }
 
   useEffect(() => {

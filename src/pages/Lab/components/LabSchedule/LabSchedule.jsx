@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LabSchedule.css';
 import { getLabSlotsByDate } from '@/api/labApi';
+import { useAuth } from '../../../../context/AuthContext';
+import LoginRequiredModal from '../../../../components/LoginRequiredModal/LoginRequiredModal';
 
 const LabSchedule = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(!isLoggedIn);
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -29,6 +33,10 @@ const LabSchedule = () => {
     }
     return days;
   };
+
+  useEffect(() => {
+    setShowLoginModal(!isLoggedIn);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const fetchSlots = async () => {
@@ -100,6 +108,16 @@ const LabSchedule = () => {
       return slots.afternoon || { isFull: true, slot: null };
     return { isFull: true, slot: null };
   };
+
+  if (!isLoggedIn) {
+    return (
+      <LoginRequiredModal
+        visible={showLoginModal}
+        onCancel={() => navigate('/')}
+        message="Bạn cần đăng nhập để đặt lịch xét nghiệm!"
+      />
+    );
+  }
 
   return (
     <div className="lab-schedule">
