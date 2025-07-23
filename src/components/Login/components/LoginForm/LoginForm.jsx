@@ -14,7 +14,10 @@ const LoginForm = ({ form, onFinish, loading, onForgotPassword, GoogleLoginButto
       name="email"
       rules={[
         { required: true, message: 'Vui lòng nhập email!' },
-        { type: 'email', message: 'Email không hợp lệ!' },
+        {
+          pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+          message: 'Email không hợp lệ!',
+        },
       ]}
     >
       <Input

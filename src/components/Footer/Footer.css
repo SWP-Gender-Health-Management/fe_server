@@ -48,6 +48,9 @@
   padding: 40px 0 30px;
   position: relative;
   backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .footer-container {
@@ -58,6 +61,9 @@
 
 .footer-section {
   height: 100%;
+  margin: 1em; /* hoặc 0 1em; */
+  flex: 1 1 220px;
+  min-width: 220px;
 }
 
 /* Logo Section */
@@ -203,6 +209,20 @@
   align-items: center;
   gap: 8px;
   font-size: 16px !important;
+  position: relative;
+  padding-bottom: 1.5em;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #ff8e53;
+  border-radius: 2px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin: 1em;
 }
 
 .section-icon {
@@ -213,8 +233,6 @@
 /* Footer Links */
 .footer-links {
   list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
 .footer-links li {
@@ -330,16 +348,21 @@
   text-align: left;
 }
 
-.cert-title {
+.cert-badges > .cert-badge span {
   color: white !important;
+}
+
+.cert-title {
   margin-bottom: 20px !important;
   font-weight: 600 !important;
+  color: white !important;
 }
 
 .cert-badges {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  color: white;
 }
 
 .cert-badge {
@@ -349,7 +372,6 @@
   background: rgba(255, 255, 255, 0.1);
   padding: 8px 16px;
   border-radius: 25px;
-  color: white;
   font-size: 13px;
   font-weight: 500;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -363,7 +385,7 @@
 }
 
 .cert-badge .anticon {
-  color: #667eea;
+  color: #ffffff;
 }
 
 /* Emergency Contact */
