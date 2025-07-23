@@ -30,7 +30,7 @@ import {
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import LoginRequiredModal from '../../components/LoginRequiredModal';
+import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 import './LandingPage.css';
 
 const { Option } = Select;
