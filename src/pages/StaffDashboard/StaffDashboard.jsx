@@ -408,11 +408,11 @@ const StaffDashboard = () => {
     return (
       <div className="staff-workspace">
         <div className="workspace-loading">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <h3>Đang tải workspace...</h3>
-            <p>Chuẩn bị khu vực làm việc của bạn</p>
-          </div>
+          <div className="loading-spinner"></div>
+          <h3>Đang tải Workspace</h3>
+          <p>Đang chuẩn bị khu vực làm việc của bạn ....
+            Vui lòng đợi trong giây lát
+          </p>
         </div>
       </div>
     );
