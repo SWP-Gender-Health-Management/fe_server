@@ -44,7 +44,7 @@ const LabSchedule = () => {
           morning: result.morning || { isFull: true, slot: null },
           afternoon: result.afternoon || { isFull: true, slot: null },
         });
-      } catch {
+      } catch (error) {
         // setSlots({
         //   morning: { isFull: false, slot: { slot_id: 'mock-morning', start_at: '07:00:00', end_at: '12:00:00' } },
         //   afternoon: { isFull: false, slot: { slot_id: 'mock-afternoon', start_at: '13:00:00', end_at: '18:00:00' } }

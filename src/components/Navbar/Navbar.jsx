@@ -183,7 +183,7 @@ const Navbar = ({ onLoginClick }) => {
           </Link>
         ),
       },
-      ...(role === 'CUSTOMER'
+      ...(role === 'CUSTOMER' || role === 3
         ? []
         : [
             {

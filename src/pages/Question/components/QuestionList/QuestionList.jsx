@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   List,
   Pagination,
@@ -68,7 +68,10 @@ const QuestionDetailModal = ({
   formatDate,
 }) => {
   if (!selectedQuestion) return null;
-
+  useEffect(() => {
+    console.log("selectedQuestion.reply: " , selectedQuestion.reply);
+    
+  }, [])
   return (
     <Modal
       title="Chi tiết câu hỏi"
@@ -111,9 +114,10 @@ const QuestionDetailModal = ({
         <div className="question-content">
           <h4>Câu hỏi:</h4>
           <div className="content-text">
-            {selectedQuestion.content.split('\n').map((line, index) => (
+            {selectedQuestion?.content.split('\n').map((line, index) => (
               <p key={index}>{line}</p>
             ))}
+            {/* {selectedQuestion?.content} */}
           </div>
         </div>
 
@@ -136,11 +140,12 @@ const QuestionDetailModal = ({
                 </div>
               </div>
               <div className="answer-text">
-                {selectedQuestion.reply.content
+                {selectedQuestion?.reply?.content
                   .split('\n')
                   .map((line, index) => (
                     <p key={index}>{line}</p>
                   ))}
+                {/* {selectedQuestion?.reply?.content} */}
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   Empty,
@@ -17,6 +17,13 @@ import {
   EnvironmentOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+
+const API_URL = 'http://localhost:3000';
+const accountId = await Cookies.get('accountId')
+const accessToken = await Cookies.get('accessToken')
 
 const ConsultAppointmentsTab = ({
   conApps,
@@ -29,7 +36,47 @@ const ConsultAppointmentsTab = ({
   setConAppDetailVisible,
   selectedConApp,
   dayjs,
+  fetchConApp
 }) => {
+
+  const [feedbackForm, setFeedbackForm] = useState({
+    content: '',
+    customer_id: accountId,
+    type: 'consult',
+    rating: 0,
+  });
+
+
+
+  const handleSubmitFeedBack = async () => {
+    if (feedbackForm.content.trim().length === 0) {
+      alert("Xin hãy nhập feedback ạ!!!");
+      return;
+    }
+    try {
+      await axios.post(
+        `${API_URL}/feedback/create-feedback`,
+        {
+          ...feedbackForm,
+          app_id: selectedConApp.app_id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((response) => {
+        console.log("create-feedback response: ", response.data);
+      })
+    } catch (error) {
+      console.error("Create feedback error: ", error);
+    } finally {
+      await fetchConApp();
+      setConAppDetailVisible(false);
+    }
+  }
+
   // Columns cho bảng lịch hẹn tư vấn
   const conAppColumns = [
     {
@@ -114,7 +161,25 @@ const ConsultAppointmentsTab = ({
               Hủy
             </Button>
           )}
+          {record.status === 'confirmed' && (
+            <Link to='https://meet.google.com/pfa-oqau-zwn' target="_blank">
+              Meeting
+            </Link>
+          )}
         </Space>
+      ),
+    },
+    {
+      title: 'Feedback',
+      key: 'feedback',
+      render: (_, record) => (
+        <>
+          {record.feed_id ? (
+            <p>Đã feedback</p>
+          ) : (
+            <p>Chưa feedback</p>
+          )}
+        </>
       ),
     },
   ];
@@ -207,6 +272,34 @@ const ConsultAppointmentsTab = ({
                 description="Chưa có kết quả tư vấn"
               />
             )}
+            {selectedConApp.feed_id ?
+              (<>
+                <p>Feedback: {selectedConApp.feedback?.content}</p>
+                <p>Rating: {selectedConApp.feedback?.rating}</p>
+              </>) : (
+                <>
+                  <label>
+                    Feedback:
+                  </label>
+                  <input type='text' name='feedback' value={feedbackForm.content} onChange={(e) => {
+                    setFeedbackForm((prev) => ({
+                      ...prev,
+                      content: e.target.value
+                    }))
+                  }} />
+                  <label>
+                    Rating:
+                  </label>
+                  <input type='number' name='rating' max={5} min={0} value={feedbackForm.rating} onChange={(e) => {
+                    setFeedbackForm((prev) => ({
+                      ...prev,
+                      rating: e.target.value
+                    }))
+                  }} />
+                  <button key="sendFeed" onClick={handleSubmitFeedBack}>Send Feedback</button>
+                </>
+              )
+            }
           </div>
         )}
       </Modal>

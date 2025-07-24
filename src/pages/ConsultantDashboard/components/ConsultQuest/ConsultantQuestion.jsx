@@ -3,6 +3,7 @@ import QuestionModal from '../QuestionModal/QuestionModal';
 import './ConsultantQuestion.css';
 import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
+import axios from 'axios';
 
 const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   // const [questions, setQuestions] = useState([]);
@@ -64,9 +65,8 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
         (filterTab === 'answered' && question.reply);
 
       const matchesSearch =
-        question.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        question.customer.full_name.toLowerCase().includes(searchTerm.toLowerCase());
-
+        question.content?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+        question.customer?.full_name?.toLowerCase().includes(searchTerm?.toLowerCase());
       return matchesTab && matchesSearch;
     })
 
@@ -237,8 +237,8 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
 
                 <div className="user-info">
                   <div className="user-details">
-                    <span>👤 {selectedQuestion.askedBy}</span>
-                    <span>🎂 {calculateAge(selectedQuestion.customer.dob)} tuổi</span>
+                    <span>👤 {selectedQuestion.customer.name || "Customer"}</span>
+                    <span>🎂 {calculateAge(selectedQuestion.customer.dob) || 0} tuổi</span>
                     <span>
                       ⚥{' '}
                       {selectedQuestion.customer.gender === 'female' ? 'Nữ' : 'Nam'}

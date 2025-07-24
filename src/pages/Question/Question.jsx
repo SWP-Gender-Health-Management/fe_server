@@ -62,7 +62,7 @@ const Question = () => {
         }
       );
 
-      console.log('API Response:', res.data.result);
+      console.log('API Question Response:', res.data.result);
       console.log(
         'Received questions count:',
         res.data.result.questions?.length || 0

@@ -42,12 +42,16 @@ const BookingPage = () => {
           },
         }
       );
-      if (response.data && response.data.result) alert('Booking success');
+      if (response.data && response.data.result) {
+        alert('Booking success');
+        setCurrentStep(4);
+      }
     } catch (error) {
+      alert('booking error')
       console.log('booking error: ', error);
     }
 
-    setCurrentStep(4);
+
   };
 
   const handleBackToStep = (step) => {

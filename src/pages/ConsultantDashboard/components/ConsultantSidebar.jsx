@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const ConsultantSidebar = ({
   activeSection,
@@ -65,7 +66,9 @@ const ConsultantSidebar = ({
       {/* Sidebar Header */}
       <div className="sidebar-header">
         <div className="logo-section">
-          <div className="logo-icon">🏥</div>
+          <Link to='/'>
+            <div className="logo-icon">🏥</div>
+          </Link>
           {!collapsed && (
             <div className="logo-text">
               <h3>Consultant</h3>

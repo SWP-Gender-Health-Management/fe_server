@@ -1,8 +1,10 @@
-import React, { useState} from 'react';
-import AppointmentModal from '../Appointment/AppointmentModal' ;
+import React, { useEffect, useState } from 'react';
+import AppointmentModal from '../Appointment/AppointmentModal';
 import './ConsultantAppointment.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Link } from 'react-router-dom';
+import { Button } from 'antd';
 
 const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantData, fetchConsultAppointmentStat }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -82,7 +84,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
     return week;
   };
 
-  
+
 
   const getAppointmentsForDate = (date) => {
     return appointments.filter(
@@ -384,6 +386,17 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                     {selectedAppointment.status === 'cancelled' && 'Đã hủy'}
                   </span>
                 </div>
+
+                {selectedAppointment.status === 'confirmed' &&
+                  <div className="info-row">
+                    <label>Link Meeting:</label>
+                    <Link to='https://meet.google.com/pfa-oqau-zwn' target="_blank">
+                      <Button >
+                        Meeting
+                      </Button>
+                    </Link>
+                  </div>
+                }
 
                 <div className="info-row">
                   <label>Vấn đề:</label>

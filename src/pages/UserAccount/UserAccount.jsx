@@ -24,10 +24,14 @@ import LabAppointmentsTab from './components/LabAppointmentTab/LabAppointmentsTa
 import PersonalInfoTab from './components/PersonalInfoTab/PersonalInfoTab';
 import ProfileHeader from './components/ProfileHeader/ProfileHeader';
 import SettingsTab from './components/SettingTab/SettingsTab';
+import axios from 'axios';
+
 // Đã xoá các import modal riêng biệt
 // import './components/styles.css';
 
 const API_URL = 'http://localhost:3000';
+const accountId = await Cookies.get('accountId')
+const accessToken = await Cookies.get('accessToken')
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -174,6 +178,35 @@ const UserAccount = () => {
 
     fetchAccountData();
   }, [isLoggedIn, form]);
+
+  const fetchConApp = async () => {
+    try {
+      const appointmentRes = await api.get(
+        `${API_URL}/consult-appointment/customer/get-con-apps-by-id`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+        {}
+      );
+      const conAppsData = appointmentRes.data.result.conApp || [];
+      // const totalPages = appointmentRes.data.pages || 1;
+      await setConApps(conAppsData);
+      await setConAppsPagination((prev) => ({
+        ...prev,
+        total: conAppsData.length,
+      }));
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setConApps([]); // Không có lịch hẹn thì đặt mảng rỗng
+      } else {
+        console.error('Lỗi khi tải dữ liệu:', error);
+        message.error('Lỗi khi tải lịch hẹn');
+      }
+    }
+  }
 
   // Tính toán tỷ lệ hoàn thành hồ sơ
   const calculateProfileCompletion = (data) => {
@@ -479,9 +512,40 @@ const UserAccount = () => {
   };
 
   // Hàm hiển thị chi tiết lịch hẹn
-  const showConAppDetail = (record) => {
-    setSelectedConApp(record);
-    setConAppDetailVisible(true);
+  const showConAppDetail = async (record) => {
+    let feedback = null;
+    console.log("record?.feed_id: ", record?.feed_id || "Không có")
+    if (record?.feed_id) {
+      try {
+        await axios.get(
+          `${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+          .then((response) => {
+            feedback = response.data.result || null;
+            setSelectedConApp({
+              ...record,
+              feedback
+            })
+          });
+      } catch (error) {
+        console.error("Get feedback error: ", error);
+        setSelectedConApp(record)
+        feedback = null
+      } finally {
+        setConAppDetailVisible(true)
+      }
+    }
+    else {
+      setSelectedConApp(record);
+      setConAppDetailVisible(true)
+    }
+
   };
 
   // Hàm hiển thị chi tiết lịch hẹn xét nghiệm
@@ -541,6 +605,7 @@ const UserAccount = () => {
               ),
               children: (
                 <ConsultAppointmentsTab
+                  fetchConApp={fetchConApp}
                   conApps={conApps}
                   conAppsPagination={conAppsPagination}
                   handleConAppsPaginationChange={handleConAppsPaginationChange}

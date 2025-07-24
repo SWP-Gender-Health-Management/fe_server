@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './StaffDashboard.css';
 import Cookies from 'js-cookie'; // Thêm import Cookies
 import axios from 'axios';
@@ -427,7 +427,9 @@ const StaffDashboard = () => {
         {/* Header */}
         <div className="sidebar-header">
           <div className="center-logo">
-            <img src="/src/assets/blue-logo.svg" alt="Logo" />
+            <Link to={`/`} >
+              <img src="/src/assets/blue-logo.svg" alt="Logo" />
+            </Link>
           </div>
           {!sidebarCollapsed && (
             <div className="header-text">
