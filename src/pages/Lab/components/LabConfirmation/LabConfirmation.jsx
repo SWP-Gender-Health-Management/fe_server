@@ -142,13 +142,13 @@ const LabConfirmation = () => {
       newErrors.gender = 'Vui lòng chọn giới tính';
     }
 
-    if (!formData.emergencyContact.trim()) {
-      newErrors.emergencyContact = 'Vui lòng nhập người liên hệ khẩn cấp';
-    }
+    // if (!formData.emergencyContact.trim()) {
+    //   newErrors.emergencyContact = 'Vui lòng nhập người liên hệ khẩn cấp';
+    // }
 
-    if (!formData.emergencyPhone.trim()) {
-      newErrors.emergencyPhone = 'Vui lòng nhập SĐT người liên hệ khẩn cấp';
-    }
+    // if (!formData.emergencyPhone.trim()) {
+    //   newErrors.emergencyPhone = 'Vui lòng nhập SĐT người liên hệ khẩn cấp';
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -168,8 +168,8 @@ const LabConfirmation = () => {
       // Ensure lab_id is a flat array of string IDs
       const lab_id = Array.isArray(selectedTests)
         ? selectedTests
-            .map((test) => String(test.lab_id || test.id))
-            .filter(Boolean)
+          .map((test) => String(test.lab_id || test.id))
+          .filter(Boolean)
         : [];
       console.log('lab_id:', lab_id);
       // Validate required fields before API call
@@ -209,6 +209,7 @@ const LabConfirmation = () => {
       );
       const app = appointmentRes.data.result.appointment.app_id;
       console.log('app:', app);
+      
       // 2. Tạo giao dịch
       const transactionRes = await createLabTransaction(
         {
@@ -239,6 +240,7 @@ const LabConfirmation = () => {
       console.error('Booking error:', error);
       if (error.response) {
         console.error('Lỗi chi tiết từ backend:', error.response.data);
+        alert('Lỗi chi tiết từ backend:', error.response.data?.message);
       }
     } finally {
       setIsSubmitting(false);
@@ -413,7 +415,7 @@ const LabConfirmation = () => {
               </div>
             </div>
 
-            <div className="form-section">
+            {/* <div className="form-section">
               <h3>📞 Liên hệ khẩn cấp</h3>
 
               <div className="form-row">
@@ -453,8 +455,8 @@ const LabConfirmation = () => {
                   )}
                 </div>
               </div>
-            </div>
-
+            </div> */}
+{/* 
             <div className="form-section">
               <h3>📝 Ghi chú</h3>
 
@@ -469,7 +471,7 @@ const LabConfirmation = () => {
                   rows="3"
                 />
               </div>
-            </div>
+            </div> */}
 
             <button
               type="submit"

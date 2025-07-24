@@ -106,14 +106,14 @@ const DoctorList = ({ onDoctorSelect }) => {
           (doctor) => ({
             ...doctor,
             consultant_id: doctor.account_id,
-            price: 400000,
+            price: calculatePrice(doctor.rating),
           })
         );
-        console.log('Dữ liệu bác sĩ:', response.data?.result);
-        console.log(
-          'Consultant IDs:',
-          fetchedDoctors.map((d) => d.consultant_id)
-        );
+        // console.log('Dữ liệu bác sĩ:', response.data?.result);
+        // console.log(
+        //   'Consultant IDs:',
+        //   fetchedDoctors.map((d) => d.consultant_id)
+        // );
         setDoctors(fetchedDoctors);
         setFilteredDoctors(fetchedDoctors);
       } catch (error) {
@@ -124,6 +124,18 @@ const DoctorList = ({ onDoctorSelect }) => {
     };
     fetchDoctors();
   }, []);
+
+  const calculatePrice = (rating) => {
+    const basePrice = 10 * 1000;
+    if(rating < 3) {
+      return basePrice;
+    } else if(rating < 4) {
+      
+    } else if(rating <= 5) {
+      return basePrice + 100 * 1000;
+    }
+    return basePrice;
+  }
 
   useEffect(() => {
     let filtered = doctors;

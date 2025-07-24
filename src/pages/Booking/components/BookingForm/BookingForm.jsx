@@ -87,7 +87,7 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
     onSubmit({
       ...formData,
       bookingId: `BK${Date.now()}`,
-      totalAmount: calculateTotal(),
+      totalAmount: doctor.price,
       paymentStatus: 'completed',
       pattern_id: slot.pattern_id,
       customer_id: slot.customer_id,
@@ -95,9 +95,8 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
     setIsLoading(false);
   };
 
-  const calculateTotal = () => {
-    const serviceFee = 25000; // 25k service fee
-    return doctor.price + serviceFee;
+  const calculateTotal = () => { 
+    return doctor.price;
   };
 
   const formatPrice = (price) => {
@@ -241,10 +240,6 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
               <div className="price-item">
                 <span>Phí tư vấn:</span>
                 <span>{formatPrice(doctor.price)}</span>
-              </div>
-              <div className="price-item">
-                <span>Phí dịch vụ:</span>
-                <span>{formatPrice(25000)}</span>
               </div>
               <div className="price-divider"></div>
               <div className="price-item total">

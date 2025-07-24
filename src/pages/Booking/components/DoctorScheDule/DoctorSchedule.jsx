@@ -151,7 +151,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         }
         setFiltersPatterns(filteredData);
         setSchedule(newSchedule);
-        console.log('Processed schedule:', newSchedule);
+        // console.log('Processed schedule:', newSchedule);
 
         // Sau khi có filteredData
         const slotTimes = Array.from(
@@ -165,7 +165,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         ).sort();
 
         setTimeSlots(slotTimes);
-        console.log('Final timeSlots:', slotTimes);
+        // console.log('Final timeSlots:', slotTimes);
       } catch (err) {
         console.error('Lỗi khi lấy lịch bác sĩ:', err);
       }

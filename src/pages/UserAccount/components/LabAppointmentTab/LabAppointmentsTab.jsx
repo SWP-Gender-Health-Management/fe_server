@@ -71,7 +71,11 @@ const LabAppointmentsTab = ({
             color = 'warning';
             text = 'Đang chờ';
             break;
-          case 'processing':
+          case 'confirmed':
+            color = 'processing';
+            text = 'Đã xác nhận';
+            break;
+          case 'in_progress':
             color = 'processing';
             text = 'Đang xử lý';
             break;

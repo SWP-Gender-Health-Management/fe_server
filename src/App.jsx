@@ -34,6 +34,7 @@ import PaymentSuccess from '@pages/PaymentPage/components/PaymentSuccess/Payment
 import PaymentFail from '@pages/PaymentPage/components/PaymentFailed/PaymentFailed';
 import '@styles/reset.css';
 import Cookies from 'js-cookie';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 const AppLayout = () => {
   const { isLoggedIn, logout } = useAuth();
@@ -107,10 +108,33 @@ const AppLayout = () => {
         <Route path="/chon-xet-nghiem" element={<LabTests />} />
         <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-        <Route path="/manager/*" element={<ManagerDashboard />} />
-        <Route path="/consultant/*" element={<ConsultantDashboard />} />
-        <Route path="/staff/*" element={<StaffDashboard />} />
+
+        <Route path="/admin/*" element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path="/manager/*" element={
+          <ProtectedRoute allowedRoles={['MANAGER']}>
+            <ManagerDashboard />
+          </ProtectedRoute>
+        } />
+
+
+        <Route path="/consultant/*" element={
+          <ProtectedRoute allowedRoles={['CONSULTANT']}>
+            <ConsultantDashboard />
+          </ProtectedRoute>} />
+
+
+        <Route path="/staff/*" element={
+          <ProtectedRoute allowedRoles={['STAFF']}>
+            <StaffDashboard />
+          </ProtectedRoute>
+        } />
+
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
           element={<MenstrualPredictorPage />}

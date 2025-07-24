@@ -369,7 +369,12 @@ const ConsultantProfile = ({ consultantData }) => {
                     <span className="security-label">
                       Trạng thái tài khoản:
                     </span>
-                    <span className="status-active">✅ Đang hoạt động</span>
+                    {consultantData.is_banned ? (
+                      <span className="status-active" style={{color: "red"}} >Bị Ban</span>
+                    ) : (
+                      <span className="status-active">✅ Đang hoạt động</span>
+                    )}
+
                   </div>
                   <div className="security-item">
                     <span className="security-label">Phiên đăng nhập:</span>
@@ -400,7 +405,7 @@ const ConsultantProfile = ({ consultantData }) => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

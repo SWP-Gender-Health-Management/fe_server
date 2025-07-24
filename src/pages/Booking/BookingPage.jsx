@@ -9,6 +9,7 @@ import './BookingPage.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
+import { createConAppTransaction, createPaymentUrl } from '../../api/conApi';
 
 const accessToken = await Cookies.get('accessToken');
 
@@ -52,8 +53,8 @@ const BookingPage = () => {
   };
 
   const handleBookingSubmit = async (data) => {
+    console.log("handleBookingSubmit data.totalAmount: ", data.totalAmount, " ", typeof data.totalAmount)
     setBookingData(data);
-
     try {
       const response = await axios.post(
         'http://localhost:3000/consult-appointment/create-consult-appointment',
@@ -70,12 +71,50 @@ const BookingPage = () => {
       );
       if (response.data && response.data.result) {
         alert('Booking success');
-        setCurrentStep(4);
+        console.log("Booking success: ", response.data)
+        const { savedConsultAppointment } = response.data.result;
+        const app = savedConsultAppointment.app_id;
+
+        // setCurrentStep(4);
+
+        // 2. Tạo giao dịch
+        const transactionRes = await createConAppTransaction(
+          {
+            app_id: app,
+            amount: data.totalAmount.toString(),
+            description: 'thử nghiệm',
+            date: new Date().toISOString().split('T')[0],
+          },
+          accessToken
+        );
+
+        console.log(
+          '[ConAppConfirmation] createLabTransaction response: ',
+          transactionRes.data.data
+        );
+
+        const orderCode = transactionRes.data.data.order_code;
+        console.log('orderCode:', orderCode);
+        // 3. Tạo payment url
+        const paymentRes = await createPaymentUrl({ orderCode }, accessToken);
+        console.log(
+          '[ConAppConfirmation] createPaymentUrl response:',
+          paymentRes.data
+        );
+        const paymentUrl = paymentRes.data.data.checkoutUrl;
+        console.log('paymentUrl:', paymentUrl);
+        // 4. Điều hướng sang trang thanh toán
+        window.location.href = paymentUrl;
+
       }
     } catch (error) {
-      alert('booking error')
-      console.log('booking error: ', error);
+      console.error('Booking error:', error);
+      if (error.response) {
+        console.error('Lỗi chi tiết từ backend:', error.response.data);
+        alert('Lỗi chi tiết từ backend:', error.response.data?.message);
+      }
     }
+
 
 
   };
