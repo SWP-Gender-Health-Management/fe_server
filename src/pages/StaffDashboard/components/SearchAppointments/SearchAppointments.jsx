@@ -368,6 +368,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
           'http://localhost:3000/staff/update-appointment-status',
           {
             status: newStatus,
+            description: internalDescription,
             app_id: selectedAppointment.app_id
           },
           {

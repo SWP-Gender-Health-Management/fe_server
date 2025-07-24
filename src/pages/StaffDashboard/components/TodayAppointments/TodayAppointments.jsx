@@ -287,12 +287,13 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
         return;
       }
 
-      if (newStatus !== selectedAppointment.status) {
+      if (newStatus !== selectedAppointment.status || (internalDescription.trim().length > 0 && (!selectedAppointment.description || selectedAppointment.description.trim() !== internalDescription.trim()))) {
         const responseUpdateStatus = await axios.post(
           'http://localhost:3000/staff/update-appointment-status',
           {
             status: newStatus,
-            app_id: selectedAppointment.app_id
+            app_id: selectedAppointment.app_id,
+            description: internalDescription
           },
           {
             headers: {
@@ -301,6 +302,8 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
             },
           }
         );
+        console.log("responseUpdateStatus: ", responseUpdateStatus.data);
+
       }
 
       const updatedData = await fetchTodayAppointmentsOfStaff(); // Get the updated appointments

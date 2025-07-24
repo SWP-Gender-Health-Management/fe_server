@@ -89,6 +89,29 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
   };
 
   useEffect(() => {
+    const fetchTimeSlots = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/working-slot/get-slot-by-type/1`
+        );
+        console.log('Slot Response:', response.data.result);
+        // setTimeSlots(response.data.result || []);
+        const workingSlots = response.data.result
+        const slotTimes = Array.from(
+          new Set(
+            workingSlots.map((workingSlot) => {
+              const rawStart = workingSlot.start_at;
+              // return formatTime(rawStart);
+              return rawStart;
+            })
+          )
+        ).sort();
+        setTimeSlots(slotTimes);
+      } catch (error) {
+        console.error("Error fetching Slot:", error);
+        return;
+      }
+    }
     const fetchSchedule = async () => {
       // const token = Cookies.get('accessToken');
       try {
@@ -154,18 +177,9 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         // console.log('Processed schedule:', newSchedule);
 
         // Sau khi có filteredData
-        const slotTimes = Array.from(
-          new Set(
-            filteredData.map((pattern) => {
-              const rawStart = pattern.working_slot.start_at;
-              // return formatTime(rawStart);
-              return rawStart;
-            })
-          )
-        ).sort();
 
-        setTimeSlots(slotTimes);
         // console.log('Final timeSlots:', slotTimes);
+        fetchTimeSlots();
       } catch (err) {
         console.error('Lỗi khi lấy lịch bác sĩ:', err);
       }
@@ -309,15 +323,14 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
                   return (
                     <div
                       key={time}
-                      className={`schedule-slot ${
-                        isPast
-                          ? 'past'
-                          : isAvailable
-                            ? 'available'
-                            : isBooked
-                              ? 'booked'
-                              : ''
-                      } ${isSelected ? 'selected' : ''}`}
+                      className={`schedule-slot ${isPast
+                        ? 'past'
+                        : isAvailable
+                          ? 'available'
+                          : isBooked
+                            ? 'booked'
+                            : 'no-slot'
+                        } ${isSelected ? 'selected' : ''}`}
                       onClick={() =>
                         !isPast && isAvailable && handleSlotClick(date, time)
                       }

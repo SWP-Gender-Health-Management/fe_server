@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   Empty,
@@ -11,6 +11,10 @@ import {
 } from 'antd';
 import { CalendarOutlined, FileTextOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = 'http://localhost:3000';
 
 const LabAppointmentsTab = ({
   labApps,
@@ -21,8 +25,50 @@ const LabAppointmentsTab = ({
   setLabAppDetailVisible,
   selectedLabApp,
   dayjs,
+  fetchLabApp
 }) => {
   // Columns cho bảng lịch hẹn xét nghiệm
+
+  const accessToken = Cookies.get('accessToken');
+  const accountId = Cookies.get('accountId');
+
+  const [feedbackForm, setFeedbackForm] = useState({
+    content: '',
+    customer_id: accountId,
+    type: 'laboratory',
+    rating: 0,
+  });
+
+  const handleSubmitFeedBack = async () => {
+    if (feedbackForm.content.trim().length === 0) {
+      alert("Xin hãy nhập feedback ạ!!!");
+      return;
+    }
+    console.log("feedbackForm: ", feedbackForm)
+    try {
+      await axios.post(
+        `${API_URL}/feedback/create-feedback`,
+        {
+          ...feedbackForm,
+          app_id: selectedLabApp.app_id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((response) => {
+        console.log("create-feedback response: ", response.data);
+      })
+    } catch (error) {
+      console.error("Create feedback error: ", error);
+    } finally {
+      await fetchLabApp();
+      setLabAppDetailVisible(false);
+    }
+  }
+
   const labAppColumns = [
     {
       title: 'Ngày hẹn',
@@ -107,6 +153,19 @@ const LabAppointmentsTab = ({
         >
           Xem chi tiết
         </Button>
+      ),
+    },
+    {
+      title: 'Feedback',
+      key: 'feedback',
+      render: (_, record) => (
+        <>
+          {record.feed_id ? (
+            <p>Đã feedback</p>
+          ) : (
+            <p>Chưa feedback</p>
+          )}
+        </>
       ),
     },
   ];
@@ -272,6 +331,34 @@ const LabAppointmentsTab = ({
                 style={{ marginTop: 16 }}
               />
             )}
+            {selectedLabApp.feed_id ?
+              (<>
+                <p>Feedback: {selectedLabApp.feedback?.content}</p>
+                <p>Rating: {selectedLabApp.feedback?.rating}</p>
+              </>) : (
+                <>
+                  <label>
+                    Feedback:
+                  </label>
+                  <input type='text' name='feedback' value={feedbackForm.content} onChange={(e) => {
+                    setFeedbackForm((prev) => ({
+                      ...prev,
+                      content: e.target.value
+                    }))
+                  }} />
+                  <label>
+                    Rating:
+                  </label>
+                  <input type='number' name='rating' max={5} min={0} value={feedbackForm.rating} onChange={(e) => {
+                    setFeedbackForm((prev) => ({
+                      ...prev,
+                      rating: e.target.value
+                    }))
+                  }} />
+                  <button key="sendFeed" onClick={handleSubmitFeedBack}>Send Feedback</button>
+                </>
+              )
+            }
           </div>
         )}
       </Modal>

@@ -22,8 +22,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const API_URL = 'http://localhost:3000';
-const accountId = await Cookies.get('accountId')
-const accessToken = await Cookies.get('accessToken')
+
+
 
 const ConsultAppointmentsTab = ({
   conApps,
@@ -39,6 +39,10 @@ const ConsultAppointmentsTab = ({
   fetchConApp
 }) => {
 
+
+  const accessToken = Cookies.get('accessToken');
+  const accountId = Cookies.get('accountId');
+
   const [feedbackForm, setFeedbackForm] = useState({
     content: '',
     customer_id: accountId,
@@ -46,13 +50,12 @@ const ConsultAppointmentsTab = ({
     rating: 0,
   });
 
-
-
   const handleSubmitFeedBack = async () => {
     if (feedbackForm.content.trim().length === 0) {
       alert("Xin hãy nhập feedback ạ!!!");
       return;
     }
+    console.log("feedbackForm: ", feedbackForm)
     try {
       await axios.post(
         `${API_URL}/feedback/create-feedback`,

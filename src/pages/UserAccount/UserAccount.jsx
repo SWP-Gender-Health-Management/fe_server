@@ -150,24 +150,33 @@ const UserAccount = () => {
           }
         }
 
-        // Lấy lịch hẹn xét nghiệm
-        const labAppRes = await api.get(
-          `${API_URL}/customer/get-laborarity-appointments`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
+        try {
+          // Lấy lịch hẹn xét nghiệm
+          const labAppRes = await api.get(
+            `${API_URL}/customer/get-laborarity-appointments`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
             },
-          },
-          {}
-        );
-        const labAppData = labAppRes.data.result.labApp || [];
-        console.log(labAppData);
-        setLabApps(labAppData);
-        setLabAppsPagination((prev) => ({
-          ...prev,
-          total: labAppData.length,
-        }));
+            {}
+          );
+          const labAppData = labAppRes.data.result.labApp || [];
+          console.log(labAppData);
+          setLabApps(labAppData);
+          setLabAppsPagination((prev) => ({
+            ...prev,
+            total: labAppData.length,
+          }));
+        } catch (error) {
+          if (error.response?.status === 404) {
+            setLabApps([]); // Không có lịch hẹn thì đặt mảng rỗng
+          } else {
+            console.error('Lỗi khi tải dữ liệu:', error);
+            message.error('Lỗi khi tải lịch hẹn');
+          }
+        }
       } catch (err) {
         console.error('Lỗi khi tải dữ liệu:', err);
         message.error('Không thể tải thông tin. Vui lòng thử lại.');
@@ -178,6 +187,36 @@ const UserAccount = () => {
 
     fetchAccountData();
   }, [isLoggedIn, form]);
+
+  const fetchLabApp = async () => {
+    try {
+      // Lấy lịch hẹn xét nghiệm
+      const labAppRes = await api.get(
+        `${API_URL}/customer/get-laborarity-appointments`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+        {}
+      );
+      const labAppData = labAppRes.data.result.labApp || [];
+      console.log(labAppData);
+      setLabApps(labAppData);
+      setLabAppsPagination((prev) => ({
+        ...prev,
+        total: labAppData.length,
+      }));
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setLabApps([]); // Không có lịch hẹn thì đặt mảng rỗng
+      } else {
+        console.error('Lỗi khi tải dữ liệu:', error);
+        message.error('Lỗi khi tải lịch hẹn');
+      }
+    }
+  }
 
   const fetchConApp = async () => {
     try {
@@ -525,14 +564,13 @@ const UserAccount = () => {
               'Content-Type': 'application/json',
             },
           }
-        )
-          .then((response) => {
-            feedback = response.data.result || null;
-            setSelectedConApp({
-              ...record,
-              feedback
-            })
-          });
+        ).then((response) => {
+          feedback = response.data.result || null;
+          setSelectedConApp({
+            ...record,
+            feedback
+          })
+        });
       } catch (error) {
         console.error("Get feedback error: ", error);
         setSelectedConApp(record)
@@ -549,9 +587,43 @@ const UserAccount = () => {
   };
 
   // Hàm hiển thị chi tiết lịch hẹn xét nghiệm
-  const showLabAppDetail = (record) => {
-    setSelectedLabApp(record);
-    setLabAppDetailVisible(true);
+  // const showLabAppDetail = (record) => {
+  //   setSelectedLabApp(record);
+  //   setLabAppDetailVisible(true);
+  // };
+  const showLabAppDetail = async (record) => {
+    let feedback = null;
+    console.log("record?.feed_id: ", record?.feed_id || "Không có")
+    if (record?.feed_id) {
+      try {
+        await axios.get(
+          `${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        ).then((response) => {
+          feedback = response.data.result || null;
+          setSelectedLabApp({
+            ...record,
+            feedback
+          })
+        });
+      } catch (error) {
+        console.error("Get feedback error: ", error);
+        setSelectedLabApp(record)
+        feedback = null
+      } finally {
+        setLabAppDetailVisible(true)
+      }
+    }
+    else {
+      setSelectedLabApp(record);
+      setLabAppDetailVisible(true)
+    }
+
   };
 
   // Thay thế phần render:
@@ -629,6 +701,7 @@ const UserAccount = () => {
               ),
               children: (
                 <LabAppointmentsTab
+                  fetchLabApp={fetchLabApp}
                   labApps={labApps}
                   labAppsPagination={labAppsPagination}
                   handleLabAppsPaginationChange={handleLabAppsPaginationChange}
