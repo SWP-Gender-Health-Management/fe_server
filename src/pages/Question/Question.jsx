@@ -11,6 +11,7 @@ import TabNavigation from './components/TabNavigation/TabNavigation';
 import MyQuestionsTab from './components/MyQuestionTab/MyQuestionsTab';
 import AskQuestionForm from './components/AskQuestionForm/AskQuestionForm';
 import api from '@/api/api';
+import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 
 const Question = () => {
   const [activeTab, setActiveTab] = useState('my-questions');
@@ -187,16 +188,12 @@ const Question = () => {
   if (!isLoggedIn) {
     return (
       <div className="question-page">
-        <Modal
-          title="Yêu cầu đăng nhập"
-          open={isLoginModalVisible}
+        <LoginRequiredModal
+          visible={isLoginModalVisible}
           onOk={() => setIsLoginModalVisible(false)}
           onCancel={() => setIsLoginModalVisible(false)}
-          okText="Đồng ý"
-          cancelText="Hủy"
-        >
-          <p>Bạn cần đăng nhập để sử dụng tính năng hỏi đáp!</p>
-        </Modal>
+          message="Bạn cần đăng nhập để sử dụng tính năng hỏi đáp!"
+        />
         <div className="question-right">
           <HospitalInfo />
         </div>

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import DoctorList from './components/DoctorList/DoctorList';
 import DoctorSchedule from './components/DoctorScheDule/DoctorSchedule';
 import BookingForm from './components/BookingForm/BookingForm';
@@ -6,6 +8,7 @@ import BookingSuccess from './components/BookingSuccess/BookingSuccess';
 import './BookingPage.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 
 const accessToken = await Cookies.get('accessToken');
 
@@ -14,6 +17,29 @@ const BookingPage = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingData, setBookingData] = useState(null);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  // Nếu chưa đăng nhập, hiện modal và không cho thao tác
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsLoginModalVisible(true);
+    }
+  }, [isLoggedIn]);
+
+  // Nhận data từ LandingPage và fill vào BookingForm
+  useEffect(() => {
+    if (location.state && location.state.consultationData) {
+      // Lưu vào sessionStorage để BookingForm lấy được
+      const { fullName, phone, email } = location.state.consultationData;
+      sessionStorage.setItem('full_name', fullName || '');
+      sessionStorage.setItem('phone', phone || '');
+      sessionStorage.setItem('email', email || '');
+      // Có thể lưu thêm service nếu BookingForm cần
+    }
+  }, [location.state]);
 
   const handleDoctorSelect = (doctor) => {
     setSelectedDoctor(doctor);
@@ -117,8 +143,20 @@ const BookingPage = () => {
         </div>
 
         {/* Content */}
-        <div className="booking-content">{renderCurrentStep()}</div>
+        <div className="booking-content">{isLoggedIn ? renderCurrentStep() : null}</div>
       </div>
+      <LoginRequiredModal
+        visible={isLoginModalVisible}
+        onOk={() => {
+          setIsLoginModalVisible(false);
+          navigate('/login');
+        }}
+        onCancel={() => {
+          setIsLoginModalVisible(false);
+          navigate('/');
+        }}
+        message="Bạn cần đăng nhập để đặt lịch tư vấn!"
+      />
     </div>
   );
 };

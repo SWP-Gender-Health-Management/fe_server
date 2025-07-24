@@ -133,6 +133,10 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .feature-card:hover {
@@ -141,11 +145,20 @@
 }
 
 .feature-icon {
-  font-size: 3.5rem;
+  font-size: 2.8rem !important;
   color: #ff6b6b;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f0f8ff 100%);
+  border-radius: 50%;
+  width: 72px !important;
+  height: 72px !important;
   margin-bottom: 1.5rem;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.10);
+  border: 2px solid #fff;
 }
+
 
 .feature-card .ant-typography h3 {
   color: #2c3e50;
@@ -478,18 +491,23 @@
 
 .mission-item {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 3em;
   padding: 15px;
   background: linear-gradient(135deg, #f8fbff, #f0f8ff);
   border-radius: 12px;
   border-left: 4px solid #667eea;
 }
 
+.about-section > .about-description-card > .mission-values{
+  font-size: large !important;
+}
+
 .mission-icon {
   color: #667eea;
   font-size: 1.2rem;
   margin-top: 2px;
+  padding-top: 0.5em;
 }
 
 .stats-container {
@@ -504,6 +522,8 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  height: 9em;
+  width: 12em;
 }
 
 .stat-card:hover {
@@ -545,7 +565,6 @@
   align-items: center;
   gap: 8px;
   background: linear-gradient(135deg, #2c3e50 0%, #3a506b 100%);
-  color: #667eea;
   padding: 10px 16px;
   border-radius: 25px;
   font-size: 0.85rem;
@@ -556,7 +575,7 @@
 
 .cert-badge span {
   font-weight: 700;
-  color: white ;
+  color: #ffffff;
 }
 
 .cert-badge:hover {
@@ -565,7 +584,7 @@
 }
 
 .cert-badge .anticon {
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 /* Contact Section */
@@ -740,6 +759,13 @@
     font-size: 0.8rem;
     padding: 8px 12px;
   }
+
+  .feature-icon {
+    font-size: 2rem !important;
+    width: 56px !important;
+    height: 56px !important;
+    margin-bottom: 1rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -783,6 +809,13 @@
     font-size: 1.75rem !important;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .feature-icon {
+    font-size: 1.5rem !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin-bottom: 0.8rem;
   }
 }
 

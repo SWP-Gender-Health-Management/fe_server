@@ -23,12 +23,14 @@ import {
   Col,
   Form,
   Input,
-  message,
   Row,
   Select,
   Typography
 } from 'antd';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 import './LandingPage.css';
 
 const { Option } = Select;
@@ -39,6 +41,9 @@ const LandingPage = () => {
   const newsCarouselRef = React.useRef();
   const [consultationForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   // Health news data
   const healthNews = [
@@ -134,18 +139,28 @@ const LandingPage = () => {
     },
   ];
 
+  // Sửa button ở carousel
+  const handleHeroBookingClick = () => {
+    if (!isLoggedIn) {
+      setIsLoginModalVisible(true);
+      return;
+    }
+    navigate('/booking');
+  };
+
+  // Sửa onFinish form
   const onConsultationSubmit = async (values) => {
-    console.log("Form values:", values); // sử dụng values
+    if (!isLoggedIn) {
+      setIsLoginModalVisible(true);
+      return;
+    }
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      message.success(
-        'Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.'
-      );
+      // Truyền data sang booking qua state
+      navigate('/booking', { state: { consultationData: values } });
       consultationForm.resetFields();
-    } catch (error) {
-      console.error("Lỗi khi gửi form:", error); // sử dụng error
-      message.error('Đã có lỗi xảy ra, vui lòng thử lại!');
+    } catch {
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -172,7 +187,7 @@ const LandingPage = () => {
                       <Paragraph className="slide-subtitle">
                         {image.subtitle}
                       </Paragraph>
-                      <Button type="primary" size="large" className="hero-cta">
+                      <Button type="primary" size="large" className="hero-cta" onClick={handleHeroBookingClick}>
                         Đặt lịch tư vấn <ArrowRightOutlined />
                       </Button>
                     </div>
@@ -557,6 +572,13 @@ const LandingPage = () => {
           </Row>
         </div>
       </div>
+      {/* Cuối cùng, thêm modal đăng nhập */}
+      <LoginRequiredModal
+        visible={isLoginModalVisible}
+        onOk={() => setIsLoginModalVisible(false)}
+        onCancel={() => setIsLoginModalVisible(false)}
+        message="Bạn cần đăng nhập để đặt lịch tư vấn hoặc sử dụng các dịch vụ!"
+      />
     </div>
   );
 };
