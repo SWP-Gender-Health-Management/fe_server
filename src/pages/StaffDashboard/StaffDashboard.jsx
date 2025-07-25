@@ -26,6 +26,7 @@ import {
   BellOutlined,
   ClockCircleOutlined,
   MenuOutlined,
+  SettingOutlined, // Thêm icon bánh răng
 } from '@ant-design/icons';
 
 const API_URL = 'http://localhost:3000';
@@ -422,23 +423,20 @@ const StaffDashboard = () => {
       {/* Sidebar */}
       <div
         className={`staff-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
+        onMouseEnter={() => setSidebarCollapsed(false)}
+        onMouseLeave={() => setSidebarCollapsed(true)}
       >
         {/* Header */}
         <div className="sidebar-header">
           <div className="center-logo">
             <Link to={`/`} >
-              <img src="/src/assets/blue-logo.svg" alt="Logo" />
+              <img
+                src={sidebarCollapsed ? "/src/assets/white-logo.svg" : "/src/assets/Logo-full.svg"}
+                alt="Logo"
+              />
             </Link>
           </div>
-          {!sidebarCollapsed && (
-            <div className="header-text">
-              <h2>Lab Workspace</h2>
-              <p>Khu vực xét nghiệm</p>
-            </div>
-          )}
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            {sidebarCollapsed ? '▶' : '◀'}
-          </button>
+          {/* Bỏ nút mũi tên ở đây */}
         </div>
 
         {/* Staff Info Card */}
@@ -500,7 +498,7 @@ const StaffDashboard = () => {
             title={sidebarCollapsed ? 'Đăng xuất' : ''}
           >
             <LogoutOutlined />
-            {!sidebarCollapsed && <span>Đăng xuất</span>}
+            {sidebarCollapsed ? <SettingOutlined style={{ marginLeft: 8 }} /> : <span>Đăng xuất</span>}
           </button>
         </div>
       </div>
