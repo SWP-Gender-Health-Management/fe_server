@@ -22,37 +22,6 @@ const ConsultantProfile = ({ consultantData }) => {
     consultationTypes: ['Online', 'Offline'],
   };
 
-  // const recentActivities = [
-  //   {
-  //     id: 1,
-  //     type: 'appointment',
-  //     description: 'Hoàn thành tư vấn với khách hàng Nguyễn Thị Lan',
-  //     time: new Date('2024-01-15T14:30:00'),
-  //     icon: '🗓️',
-  //   },
-  //   {
-  //     id: 2,
-  //     type: 'article',
-  //     description: 'Xuất bản bài viết "Kế hoạch hóa gia đình hiện đại"',
-  //     time: new Date('2024-01-15T10:15:00'),
-  //     icon: '📝',
-  //   },
-  //   {
-  //     id: 3,
-  //     type: 'question',
-  //     description: 'Trả lời câu hỏi về chu kỳ kinh nguyệt',
-  //     time: new Date('2024-01-14T16:45:00'),
-  //     icon: '❓',
-  //   },
-  //   {
-  //     id: 4,
-  //     type: 'appointment',
-  //     description: 'Xác nhận lịch hẹn với Trần Minh Hoa',
-  //     time: new Date('2024-01-14T09:20:00'),
-  //     icon: '✅',
-  //   },
-  // ];
-
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('vi-VN', {
       year: 'numeric',
@@ -113,7 +82,6 @@ const ConsultantProfile = ({ consultantData }) => {
         <div className="profile-main">
           <div className="profile-avatar">
             <img src={consultantData.avatar} alt={consultantData.full_name} />
-            <div className="status-indicator active"></div>
           </div>
 
           <div className="profile-info">

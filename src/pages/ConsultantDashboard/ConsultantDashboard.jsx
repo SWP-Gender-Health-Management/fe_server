@@ -11,6 +11,7 @@ import {
 import ConsultantSidebar from './components/ConsultantSidebar';
 import DashboardOverview from './components/DashboardOverview';
 import './ConsultantDashboard.css';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 
 const API_URL = 'http://localhost:3000';
 
@@ -315,15 +316,11 @@ const ConsultantDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="consultant-workspace">
-        <div className="workspace-loading">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <h3>Đang tải workspace...</h3>
-            <p>Chuẩn bị không gian làm việc của bạn</p>
-          </div>
-        </div>
-      </div>
+      <WorkspaceLoading
+        className="consultant-workspace"
+        title="Đang tải workspace..."
+        description="Chuẩn bị không gian làm việc của bạn"
+      />
     );
   }
 

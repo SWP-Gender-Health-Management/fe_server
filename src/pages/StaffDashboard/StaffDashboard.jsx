@@ -12,6 +12,7 @@ import StaffBlog from '@pages/StaffDashboard/components/StaffBlog/StaffBlog';
 import StaffProfile from '@pages/StaffDashboard/components/StaffProfile/StaffProfile';
 
 import StaffLaboratory from './components/StaffLab/StaffLaboratory';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 
 
 // Import icons
@@ -408,15 +409,11 @@ const StaffDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="staff-workspace">
-        <div className="workspace-loading">
-          <div className="loading-spinner"></div>
-          <h3>Đang tải Workspace</h3>
-          <p>Đang chuẩn bị khu vực làm việc của bạn ....
-            Vui lòng đợi trong giây lát
-          </p>
-        </div>
-      </div>
+      <WorkspaceLoading
+        className="staff-workspace"
+        title="Đang tải Workspace"
+        description="Đang chuẩn bị khu vực làm việc của bạn ....Vui lòng đợi trong giây lát"
+      />
     );
   }
 
@@ -453,7 +450,6 @@ const StaffDashboard = () => {
                 alt="Staff Avatar"
                 className="staff-avatar-large"
               />
-              <div className="status-indicator active"></div>
             </div>
             <div className="staff-info-details">
               <h4>{staffData.full_name}</h4>
