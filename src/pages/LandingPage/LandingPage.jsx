@@ -27,7 +27,7 @@ import {
   Select,
   Typography
 } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
@@ -44,6 +44,10 @@ const LandingPage = () => {
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, [])
 
   // Health news data
   const healthNews = [
@@ -145,7 +149,7 @@ const LandingPage = () => {
       setIsLoginModalVisible(true);
       return;
     }
-    navigate('/booking');
+    navigate('/dat-lich-tu-van');
   };
 
   // Sửa onFinish form
@@ -157,7 +161,7 @@ const LandingPage = () => {
     setLoading(true);
     try {
       // Truyền data sang booking qua state
-      navigate('/booking', { state: { consultationData: values } });
+      navigate('/dat-lich-tu-van', { state: { consultationData: values } });
       consultationForm.resetFields();
     } catch {
       setLoading(false);

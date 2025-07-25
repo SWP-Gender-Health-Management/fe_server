@@ -13,6 +13,8 @@ import './ForgotPassword.css';
 
 const { Step } = Steps;
 
+const API_URL = 'http://localhost:3000';
+
 const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [emailForm] = Form.useForm();
@@ -36,7 +38,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
       console.error('Lỗi gửi passcode:', error.response?.data || error.message);
       message.error(
         error.response?.data?.message ||
-          'Không thể gửi passcode. Vui lòng thử lại!'
+        'Không thể gửi passcode. Vui lòng thử lại!'
       );
     } finally {
       setLoading(false);
@@ -71,11 +73,14 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
   const handleResetPassword = async (values) => {
     setLoading(true);
     try {
-      await api.post('http://localhost:3000/account/reset-password', {
-        email: userEmail,
-        newPassword: values.newPassword,
-        confirmPassword: values.confirmPassword,
-      });
+      await api.post(
+        `${API_URL}/account/reset-password`,
+        {
+          email: userEmail,
+          newPassword: values.newPassword,
+          confirmPassword: values.confirmPassword,
+        }
+      );
       message.success(
         'Mật khẩu đã được đặt lại thành công! Bạn có thể đăng nhập với mật khẩu mới.'
       );
@@ -88,7 +93,7 @@ const ForgotPassword = ({ visible, onCancel, onBackToLogin }) => {
       );
       message.error(
         error.response?.data?.message ||
-          'Không thể đặt lại mật khẩu. Vui lòng thử lại!'
+        'Không thể đặt lại mật khẩu. Vui lòng thử lại!'
       );
     } finally {
       setLoading(false);

@@ -10,6 +10,9 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAnswering, setIsAnswering] = useState(false);
 
+
+  const API_URL = 'http://localhost:3000';
+
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -20,14 +23,14 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   //   // Simulate fetching questions from an API
   //   try {
   //     const responseUnreplied = await axios.get(
-  //       'http://localhost:3000/question/get-unreplied-questions',
+  //       '${API_URL}/question/get-unreplied-questions',
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`
   //         }
   //       });
   //     const responseReplied = await axios.get(
-  //       `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+  //       `${API_URL}/question/get-question-by-id/consultant/${accountId}`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`
@@ -92,7 +95,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
 
     try {
       const response = await axios.post(
-        'http://localhost:3000/reply/create-reply',
+        `${API_URL}/reply/create-reply`,
         payload,
         {
           headers: {

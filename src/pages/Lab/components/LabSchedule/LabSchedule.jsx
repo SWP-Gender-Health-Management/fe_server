@@ -48,6 +48,7 @@ const LabSchedule = () => {
         const res = await getLabSlotsByDate(dateStr);
         // Lấy đúng data mới
         const result = res.data.data || {};
+        console.log("getLabSlotsByDate: ", result);
         setSlots({
           morning: result.morning || { isFull: true, slot: null },
           afternoon: result.afternoon || { isFull: true, slot: null },
@@ -174,10 +175,11 @@ const LabSchedule = () => {
                   date.toDateString() === selectedDate.toDateString();
                 const isToday =
                   date.toDateString() === new Date().toDateString();
+                const isPast = date <= new Date();
                 cells.push(
                   <div
                     key={date.toISOString()}
-                    className={`date-cell ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
+                    className={`date-cell ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isPast ? 'no-click' : ''}` }
                     onClick={() => handleDateSelect(date)}
                   >
                     <div className="day-number">{date.getDate()}</div>

@@ -49,6 +49,16 @@ const AppLayout = () => {
     navigate('/');
   };
 
+  function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0); // Cuộn lên đầu mỗi khi pathname thay đổi
+    }, [pathname]);
+
+    return null;
+  }
+
   useEffect(() => {
     setShowLogin(false);
   }, [location]);
@@ -93,6 +103,7 @@ const AppLayout = () => {
           onLogout={handleLogout}
         />
       )}
+      <ScrollToTop/>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
@@ -167,6 +178,7 @@ const AppLayout = () => {
 };
 
 function App() {
+
   return (
     <AuthProvider>
       <AppLayout />

@@ -27,6 +27,8 @@ import {
   MenuOutlined,
 } from '@ant-design/icons';
 
+const API_URL = 'http://localhost:3000';
+
 const StaffDashboard = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('overview');
@@ -70,7 +72,7 @@ const StaffDashboard = () => {
   const fetchAppointmentsOfStaff = async () => {
     try {
       const appointmentResponse = await axios.get(
-        'http://localhost:3000/staff/get-laborarity-appointment-of-staff',
+        `${API_URL}/staff/get-laborarity-appointment-of-staff`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -119,7 +121,7 @@ const StaffDashboard = () => {
   const fetchTodayAppointmentsOfStaff = async () => {
     try {
       const patternResponse = await axios.get(
-        'http://localhost:3000/staff-pattern/get-pattern-by-date',
+        `${API_URL}/staff-pattern/get-pattern-by-date`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -142,7 +144,7 @@ const StaffDashboard = () => {
       const allAppointments = await Promise.all(
         patterns.map(async (pattern, index) => {
           const appointmentResponse = await axios.get(
-            'http://localhost:3000/staff/get-laborarity-appointment-by-pattern',
+            `${API_URL}/staff/get-laborarity-appointment-by-pattern`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -213,7 +215,7 @@ const StaffDashboard = () => {
   const fetchStaffData = async () => {
     try {
       const viewResponse = await axios.post(
-        'http://localhost:3000/account/view-account',
+        `${API_URL}/account/view-account`,
         {},
         {
           headers: {
@@ -223,7 +225,7 @@ const StaffDashboard = () => {
         }
       );
       const ratingResponse = await axios.get(
-        'http://localhost:3000/feedback/get-staff-rating-feedback',
+        `${API_URL}/feedback/get-staff-rating-feedback`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -255,7 +257,7 @@ const StaffDashboard = () => {
   const fetchBlogs = async function () {
     try {
       const response = await axios.get(
-        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+        `${API_URL}/blog/get-blog-by-account/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

@@ -3,6 +3,8 @@ import './StaffBlog.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
+const API_URL = 'http://localhost:3000';
+
 const StaffBlog = ({ blogs = [], fetchBlogs }) => {
   // const [blogs, setBlogs] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -33,7 +35,7 @@ const StaffBlog = ({ blogs = [], fetchBlogs }) => {
   //     // console.log('useEffect has been called!:', accountId);
   //     console.log('useEffect has been called!:', accessToken);
   //     const response = await axios.get(
-  //       `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+  //       `${API_URL}/blog/get-blog-by-account/${accountId}`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`,
@@ -57,7 +59,7 @@ const StaffBlog = ({ blogs = [], fetchBlogs }) => {
       const accessToken = await Cookies.get('accessToken');
 
       const response = await axios.get(
-        'http://localhost:3000/blog/get-major',
+        `${API_URL}/blog/get-major`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -194,7 +196,7 @@ const StaffBlog = ({ blogs = [], fetchBlogs }) => {
     try {
 
       const response = await axios.post(
-        'http://localhost:3000/blog/create-blog',
+        `${API_URL}/blog/create-blog`,
         formDataToSend,
         {
           headers: {
@@ -226,7 +228,7 @@ const StaffBlog = ({ blogs = [], fetchBlogs }) => {
         const accountId = await Cookies.get('accountId');
         const accessToken = await Cookies.get('accessToken');
         await axios.delete(
-          `http://localhost:3000/blog/delete-blog/${blogId}`,
+          `${API_URL}/blog/delete-blog/${blogId}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

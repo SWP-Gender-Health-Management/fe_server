@@ -122,6 +122,8 @@ const DoctorList = ({ onDoctorSelect }) => {
         setFilteredDoctors([]);
       }
     };
+
+    // window.scrollTo(0, 0);
     fetchDoctors();
   }, []);
 

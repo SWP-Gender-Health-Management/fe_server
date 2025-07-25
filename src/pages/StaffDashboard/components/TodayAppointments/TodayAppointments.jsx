@@ -44,6 +44,8 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Panel } = Collapse;
 
+const API_URL = 'http://localhost:3000';
+
 const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff }) => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
@@ -267,7 +269,7 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
       console.log("result entities: ", result);
       if (result.length > 0) {
         const responseUpdateResult = await axios.post(
-          'http://localhost:3000/staff/update-result',
+          `${API_URL}/staff/update-result`,
           {
             result,
             app_id: selectedAppointment.app_id
@@ -289,7 +291,7 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
 
       if (newStatus !== selectedAppointment.status || (internalDescription.trim().length > 0 && (!selectedAppointment.description || selectedAppointment.description.trim() !== internalDescription.trim()))) {
         const responseUpdateStatus = await axios.post(
-          'http://localhost:3000/staff/update-appointment-status',
+          `${API_URL}/staff/update-appointment-status`,
           {
             status: newStatus,
             app_id: selectedAppointment.app_id,

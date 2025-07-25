@@ -92,7 +92,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
     const fetchTimeSlots = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/working-slot/get-slot-by-type/1`
+          `${API_BASE}/working-slot/get-slot-by-type/1`
         );
         console.log('Slot Response:', response.data.result);
         // setTimeSlots(response.data.result || []);

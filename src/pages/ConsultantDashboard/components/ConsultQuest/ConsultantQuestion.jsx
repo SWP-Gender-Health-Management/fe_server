@@ -5,6 +5,8 @@ import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 import axios from 'axios';
 
+const API_URL = 'http://localhost:3000';
+
 const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   // const [questions, setQuestions] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -23,14 +25,14 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   //   // Simulate fetching questions from an API
   //   try {
   //     const responseUnreplied = await axios.get(
-  //       'http://localhost:3000/question/get-unreplied-questions',
+  //       '${API_URL}/question/get-unreplied-questions',
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`
   //         }
   //       });
   //     const responseReplied = await axios.get(
-  //       `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+  //       `${API_URL}/question/get-question-by-id/consultant/${accountId}`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`
@@ -94,7 +96,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
 
     try {
       const response = await axios.post(
-        'http://localhost:3000/reply/create-reply',
+        `${API_URL}/reply/create-reply`,
         payload,
         {
           headers: {

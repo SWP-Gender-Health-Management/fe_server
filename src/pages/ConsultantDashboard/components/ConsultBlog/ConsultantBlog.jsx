@@ -6,6 +6,7 @@ import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 import axios from 'axios';
 
+const API_URL = 'http://localhost:3000';
 
 const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
   // const [blogs, setBlogs] = useState([]);
@@ -37,7 +38,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
   //     // console.log('useEffect has been called!:', accountId);
   //     console.log('useEffect has been called!:', accessToken);
   //     const response = await axios.get(
-  //       `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+  //       `${API_URL}/blog/get-blog-by-account/${accountId}`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`,
@@ -61,7 +62,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       const accessToken = await Cookies.get('accessToken');
 
       const response = await axios.get(
-        'http://localhost:3000/blog/get-major',
+        `${API_URL}/blog/get-major`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -198,7 +199,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
     try {
 
       const response = await axios.post(
-        'http://localhost:3000/blog/create-blog',
+        `${API_URL}/blog/create-blog`,
         formDataToSend,
         {
           headers: {
@@ -230,7 +231,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
         const accountId = await Cookies.get('accountId');
         const accessToken = await Cookies.get('accessToken');
         await axios.delete(
-          `http://localhost:3000/blog/delete-blog/${blogId}`,
+          `${API_URL}/blog/delete-blog/${blogId}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

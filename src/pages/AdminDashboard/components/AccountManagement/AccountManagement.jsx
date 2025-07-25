@@ -23,61 +23,25 @@ const AccountManagement = () => {
   useEffect(() => {
     const mockUsers = [
       {
-        id: 1,
-        name: 'Nguyễn Văn An',
+        account_id: 1,
+        full_name: 'Nguyễn Văn An',
         email: 'nguyen.van.an@email.com',
         avatar: null,
-        role: 'Admin',
-        status: 'active',
-        joinDate: '2024-01-15',
-      },
-      {
-        id: 2,
-        name: 'Trần Thị Bình',
-        email: 'tran.thi.binh@email.com',
-        avatar: null,
-        role: 'Manager',
-        status: 'active',
-        joinDate: '2024-02-10',
-      },
-      {
-        id: 3,
-        name: 'Lê Văn Cường',
-        email: 'le.van.cuong@email.com',
-        avatar: null,
-        role: 'User',
-        status: 'banned',
-        joinDate: '2024-03-05',
-      },
-      {
-        id: 4,
-        name: 'Phạm Thị Dung',
-        email: 'pham.thi.dung@email.com',
-        avatar: null,
-        role: 'User',
-        status: 'active',
-        joinDate: '2024-03-20',
-      },
-      {
-        id: 5,
-        name: 'Hoàng Văn Em',
-        email: 'hoang.van.em@email.com',
-        avatar: null,
-        role: 'Manager',
-        status: 'active',
-        joinDate: '2024-04-12',
-      },
+        role: 'ADMIN',
+        is_banned: true,
+        created_at: '2024-01-15',
+      }
     ];
 
     // Generate more mock users
     const additionalUsers = Array.from({ length: 20 }, (_, index) => ({
-      id: index + 6,
-      name: `Người dùng ${index + 6}`,
+      account_id: index + 6,
+      full_name: `Người dùng ${index + 6}`,
       email: `user${index + 6}@example.com`,
       avatar: null,
-      role: ['User', 'Manager', 'Admin'][Math.floor(Math.random() * 3)],
-      status: ['active', 'banned'][Math.floor(Math.random() * 2)],
-      joinDate: new Date(
+      role: ['ADMIN', 'MANAGER', 'CUSTOMER', 'CONSULTANT', 'STAFF'][Math.floor(Math.random() * 3)],
+      is_banned: [true, false][Math.floor(Math.random() * 2)],
+      created_at: new Date(
         2024,
         Math.floor(Math.random() * 12),
         Math.floor(Math.random() * 28) + 1
@@ -99,7 +63,7 @@ const AccountManagement = () => {
     if (searchTerm) {
       filtered = filtered.filter(
         (user) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           user.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -111,7 +75,7 @@ const AccountManagement = () => {
 
     // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter((user) => user.status === statusFilter);
+      filtered = filtered.filter((user) => `${user.is_banned}` === statusFilter);
     }
 
     setFilteredUsers(filtered);
@@ -150,7 +114,7 @@ const AccountManagement = () => {
 
   const confirmDelete = () => {
     if (userToDelete) {
-      setUsers(users.filter((u) => u.id !== userToDelete.id));
+      setUsers(users.filter((u) => u.account_id !== userToDelete.account_id));
       setShowDeleteConfirm(false);
       setUserToDelete(null);
     }
@@ -158,15 +122,15 @@ const AccountManagement = () => {
 
   const handleToggleStatus = (user) => {
     const updatedUsers = users.map((u) =>
-      u.id === user.id
-        ? { ...u, status: u.status === 'active' ? 'banned' : 'active' }
+      u.account_id === user.account_id
+        ? { ...u, is_banned: u.is_banned === true ? false : true }
         : u
     );
     setUsers(updatedUsers);
   };
 
   const handleResetPassword = (user) => {
-    alert(`Đặt lại mật khẩu cho ${user.name}`);
+    alert(`Đặt lại mật khẩu cho ${user.full_name}`);
   };
 
   const handleSelectUser = (userId) => {
@@ -181,34 +145,36 @@ const AccountManagement = () => {
     if (selectedUsers.length === paginatedUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(paginatedUsers.map((user) => user.id));
+      setSelectedUsers(paginatedUsers.map((user) => user.account_id));
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (is_banned) => {
     return (
-      <span className={`status-badge ${status}`}>
-        {status === 'active' ? 'Hoạt động' : 'Bị khóa'}
+      <span className={`status-badge ${is_banned ? 'banned' : 'active'}`}>
+        {is_banned ? 'Bị khóa' : 'Hoạt động'}
       </span>
     );
   };
 
   const getRoleBadge = (role) => {
     const roleColors = {
-      Admin: 'admin',
-      Manager: 'manager',
-      User: 'user',
+      ADMIN: 'admin',
+      MANGER: 'admin',
+      CONSULTANT: 'manager',
+      STAFF: 'manager',
+      CUSTOMER: 'user',
     };
     return <span className={`role-badge ${roleColors[role]}`}>{role}</span>;
   };
 
   const getAvatar = (user) => {
     if (user.avatar) {
-      return <img src={user.avatar} alt={user.name} className="user-avatar" />;
+      return <img src={user.avatar} alt={user.full_name} className="user-avatar" />;
     }
     return (
       <div className="user-avatar-placeholder">
-        {user.name.charAt(0).toUpperCase()}
+        {user.full_name.charAt(0).toUpperCase()}
       </div>
     );
   };
@@ -248,9 +214,11 @@ const AccountManagement = () => {
               onChange={(e) => setRoleFilter(e.target.value)}
             >
               <option value="all">Tất cả</option>
-              <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
-              <option value="User">User</option>
+              <option value="ADMIN">Admin</option>
+              <option value="MANAGER">Manager</option>
+              <option value="CUSTOMER">Customer</option>
+              <option value="CONSULTANT">Consultant</option>
+              <option value="STAFF">Staff</option>
             </select>
           </div>
 
@@ -261,8 +229,8 @@ const AccountManagement = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="all">Tất cả</option>
-              <option value="active">Hoạt động</option>
-              <option value="banned">Bị khóa</option>
+              <option value={false}>Hoạt động</option>
+              <option value={true}>Bị khóa</option>
             </select>
           </div>
         </div>
@@ -306,29 +274,29 @@ const AccountManagement = () => {
           <tbody>
             {paginatedUsers.map((user) => (
               <tr
-                key={user.id}
-                className={selectedUsers.includes(user.id) ? 'selected' : ''}
+                key={user.account_id}
+                className={selectedUsers.includes(user.account_id) ? 'selected' : ''}
               >
                 {/* <td>
                   <input
                     type="checkbox"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={() => handleSelectUser(user.id)}
+                    checked={selectedUsers.includes(user.account_id)}
+                    onChange={() => handleSelectUser(user.account_id)}
                   />
                 </td> */}
                 <td>
                   <div className="user-info">
                     {getAvatar(user)}
                     <div className="user-details">
-                      <div className="user-name">{user.name}</div>
-                      <div className="user-id">ID: {user.id}</div>
+                      <div className="user-name">{user.full_name}</div>
+                      <div className="user-id">ID: {user.account_id}</div>
                     </div>
                   </div>
                 </td>
                 <td className="email-cell">{user.email}</td>
                 <td>{getRoleBadge(user.role)}</td>
-                <td>{new Date(user.joinDate).toLocaleDateString('vi-VN')}</td>
-                <td>{getStatusBadge(user.status)}</td>
+                <td>{new Date(user.created_at).toLocaleDateString('vi-VN')}</td>
+                <td>{getStatusBadge(user.is_banned)}</td>
                 <td>
                   <div className="actions-dropdown">
                     <button className="actions-btn">⋮</button>
@@ -340,7 +308,7 @@ const AccountManagement = () => {
                         🔑 Đặt lại mật khẩu
                       </button>
                       <button onClick={() => handleToggleStatus(user)}>
-                        {user.status === 'active'
+                        {user.is_banned === false
                           ? '🔒 Khóa tài khoản'
                           : '🔓 Mở khóa tài khoản'}
                       </button>
@@ -417,7 +385,7 @@ const AccountManagement = () => {
           onSave={(updatedUser) => {
             if (modalMode === 'edit') {
               setUsers(
-                users.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+                users.map((u) => (u.account_id === updatedUser.account_id ? updatedUser : u))
               );
             }
             setShowModal(false);
@@ -433,7 +401,7 @@ const AccountManagement = () => {
             <h3>Xác nhận xóa</h3>
             <p>
               Bạn có chắc chắn muốn xóa người dùng{' '}
-              <strong>{userToDelete?.name}</strong>?
+              <strong>{userToDelete?.full_name}</strong>?
             </p>
             <p className="warning">Hành động này không thể hoàn tác!</p>
             <div className="modal-actions">

@@ -12,6 +12,8 @@ import ConsultantSidebar from './components/ConsultantSidebar';
 import DashboardOverview from './components/DashboardOverview';
 import './ConsultantDashboard.css';
 
+const API_URL = 'http://localhost:3000';
+
 const ConsultantDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -47,7 +49,7 @@ const ConsultantDashboard = () => {
     try {
       const accessToken = Cookies.get("accessToken")
       const viewResponse = await axios.post(
-        'http://localhost:3000/account/view-account',
+        `${API_URL}/account/view-account`,
         {},
         {
           headers: {
@@ -57,7 +59,7 @@ const ConsultantDashboard = () => {
         }
       );
       const ratingResponse = await axios.get(
-        'http://localhost:3000/feedback/get-consultant-rating-feedback',
+        `${API_URL}/feedback/get-consultant-rating-feedback`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -79,7 +81,7 @@ const ConsultantDashboard = () => {
   const fetchConsultAppointmentStat = async () => {
     try {
       const appointmentStatResponse = await axios.get(
-        'http://localhost:3000/consult-appointment/get-consult-appointment-stats',
+        `${API_URL}/consult-appointment/get-consult-appointment-stats`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -103,14 +105,14 @@ const ConsultantDashboard = () => {
     // Simulate fetching questions from an API
     try {
       const responseUnreplied = await axios.get(
-        'http://localhost:3000/question/get-unreplied-questions',
+        `${API_URL}/question/get-unreplied-questions`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
         });
       const responseReplied = await axios.get(
-        `http://localhost:3000/question/get-question-by-id/consultant/${accountId}`,
+        `${API_URL}/question/get-question-by-id/consultant/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`
@@ -140,7 +142,7 @@ const ConsultantDashboard = () => {
       // console.log('useEffect has been called!:', accountId);
       // console.log('useEffect has been called!:', accessToken);
       const response = await axios.get(
-        `http://localhost:3000/blog/get-blog-by-account/${accountId}`,
+        `${API_URL}/blog/get-blog-by-account/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -169,7 +171,7 @@ const ConsultantDashboard = () => {
   // const fetchAppointments = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `http://localhost:3000/consult-appointment/get-consult-appointment-by-id/consultant/${accountId}`,
+  //       `${API_URL}/consult-appointment/get-consult-appointment-by-id/consultant/${accountId}`,
   //       {
   //         headers: {
   //           Authorization: `Bearer ${accessToken}`,
@@ -207,7 +209,7 @@ const ConsultantDashboard = () => {
       const startWeekDayString = startWeekDay.toISOString().split("T")[0];
       console.log("Check selected date: ", startWeekDayString);
       const response = await axios.get(
-        `http://localhost:3000/consult-appointment/get-consult-appointment-by-week/${accountId}`,
+        `${API_URL}/consult-appointment/get-consult-appointment-by-week/${accountId}`,
         {
           params: {
             weekStartDate: startWeekDayString

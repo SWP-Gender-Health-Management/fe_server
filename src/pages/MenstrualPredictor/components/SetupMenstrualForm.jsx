@@ -26,6 +26,8 @@ import './SetupMenstrualForm.css';
 const { TextArea } = Input;
 const { Step } = Steps;
 
+const API_URL = 'http://localhost:3000';
+
 const SetupSuccessPage = ({ onSetupComplete, onEditInfo }) => {
   return (
     <div className="setup-complete">
@@ -191,7 +193,7 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
       };
 
       const response = await axios.post(
-        'http://localhost:3000/customer/track-period',
+        `${API_URL}/customer/track-period`,
         payload,
         {
           headers: {
@@ -346,8 +348,8 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
               <InputNumber
                 style={{ width: '100%' }}
                 placeholder="Nhập số ngày (21-35)"
-                // min={21}
-                // max={35}
+              // min={21}
+              // max={35}
               />
             </Form.Item>
 

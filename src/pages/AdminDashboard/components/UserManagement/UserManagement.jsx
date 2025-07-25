@@ -3,13 +3,13 @@ import './UserManagement.css';
 
 const UserManagement = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    full_name: '',
     email: '',
     phone: '',
-    role: 'customer',
+    role: 'CUSTOMER',
     password: '@swp391fpt',
     confirmPassword: '@swp391fpt',
-    status: 'active',
+    is_banned: 'false',
   });
 
   const [loading, setLoading] = useState(false);
@@ -17,27 +17,27 @@ const UserManagement = () => {
 
   const roles = [
     {
-      value: 'admin',
+      value: 'ADMIN',
       label: 'Admin',
       description: 'Quyền quản trị toàn hệ thống',
     },
     {
-      value: 'manager',
+      value: 'MANAGER',
       label: 'Manager',
       description: 'Quản lý dịch vụ và nhân viên',
     },
     {
-      value: 'staff',
+      value: 'STAFF',
       label: 'Staff',
       description: 'Nhân viên hỗ trợ khách hàng',
     },
     {
-      value: 'consultant',
+      value: 'CONSULTANT',
       label: 'Consultant',
       description: 'Chuyên viên tư vấn',
     },
     {
-      value: 'customer',
+      value: 'CUSTOMER',
       label: 'Customer',
       description: 'Khách hàng sử dụng dịch vụ',
     },
@@ -61,7 +61,7 @@ const UserManagement = () => {
   };
 
   const validateForm = () => {
-    if (!formData.fullName.trim()) {
+    if (!formData.full_name.trim()) {
       return 'Vui lòng nhập họ tên';
     }
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
@@ -95,18 +95,18 @@ const UserManagement = () => {
 
       setMessage({
         type: 'success',
-        text: `Đã tạo thành công tài khoản ${formData.role} cho ${formData.fullName}`,
+        text: `Đã tạo thành công tài khoản ${formData.role} cho ${formData.full_name}`,
       });
 
       // Reset form
       setFormData({
-        fullName: '',
+        full_name: '',
         email: '',
         phone: '',
         role: 'customer',
         password: '@swp391fpt',
         confirmPassword: '@swp391fpt',
-        status: 'active',
+        is_banned: 'false',
       });
     } catch (error) {
       setMessage({ type: 'error', text: 'Có lỗi xảy ra khi tạo tài khoản' });
@@ -128,12 +128,12 @@ const UserManagement = () => {
             <h2>Thông tin cá nhân</h2>
 
             <div className="form-group">
-              <label htmlFor="fullName">Họ và tên *</label>
+              <label htmlFor="full_name">Họ và tên *</label>
               <input
                 type="text"
-                id="fullName"
-                name="fullName"
-                value={formData.fullName}
+                id="full_name"
+                name="full_name"
+                value={formData.full_name}
                 onChange={handleInputChange}
                 placeholder="Nhập họ và tên đầy đủ"
                 required
@@ -228,17 +228,16 @@ const UserManagement = () => {
                 />
               </div>
             </div>
-
             <div className="form-group">
-              <label htmlFor="status">Trạng thái tài khoản</label>
+              <label htmlFor="is_banned">Trạng thái tài khoản</label>
               <select
-                id="status"
-                name="status"
-                value={formData.status}
+                id="is_banned"
+                name="is_banned"
+                value={formData.is_banned}
                 onChange={handleInputChange}
               >
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Tạm khóa</option>
+                <option value="false">Hoạt động</option>
+                <option value="true">Tạm khóa</option>
               </select>
             </div>
           </div>
@@ -253,13 +252,13 @@ const UserManagement = () => {
               className="btn-secondary"
               onClick={() => {
                 setFormData({
-                  fullName: '',
+                  full_name: '',
                   email: '',
                   phone: '',
                   role: 'customer',
                   password: '@swp391fpt',
                   confirmPassword: '@swp391fpt',
-                  status: 'active',
+                  is_banned: 'false',
                 });
                 setMessage({ type: '', text: '' });
               }}

@@ -1,414 +1,420 @@
 .lab-schedule {
-    padding: 40px;
-    max-width: 1000px;
-    margin: 0 auto;
-    background: #f8fafc;
-    min-height: 100vh;
-  }
-  
-  .lab-schedule-header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .back-button {
-    background: #f1f5f9;
-    border: 2px solid #e2e8f0;
-    color: #64748b;
-    padding: 12px 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .back-button:hover {
-    background: #e2e8f0;
-    color: #334155;
-    transform: translateX(-2px);
-  }
-  
-  .lab-schedule-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-  }
-  
-  .lab-schedule-header p {
-    font-size: 1.1rem;
-    color: #64748b;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .schedule-container {
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Date Selection - Week View */
-  .date-selection {
-    margin-bottom: 40px;
-  }
-  
-  .date-selection h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .week-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 12px;
-    max-width: 700px;
-    margin: 0 auto;
-  }
-  
-  .date-card {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 15px;
-    padding: 15px 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
-  .date-card:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-    transform: translateY(-2px);
-  }
-  
-  .date-card.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-  }
-  
-  .date-card.today {
-    border-color: #f59e0b;
-    background: #fef3c7;
-  }
-  
-  .date-card.today.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    color: white;
-  }
-  
-  .day-name {
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-  }
-  
-  .day-date {
-    font-size: 1rem;
-    font-weight: 700;
-  }
-  
-  /* Session Selection */
-  .session-selection {
-    margin-bottom: 40px;
-  }
-  
-  .session-selection h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 25px;
-    text-align: center;
-  }
-  
-  .sessions {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  
-  .session-card {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 25px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .session-card.available:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .session-card.selected {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    border-color: #10b981;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-  }
-  
-  .session-card.unavailable {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #991b1b;
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-  
-  .session-icon {
-    font-size: 2.5rem;
-    margin-bottom: 5px;
-  }
-  
-  .session-info h4 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-  }
-  
-  .session-time {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    opacity: 0.9;
-  }
-  
-  .availability {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #10b981;
-    margin: 0;
-  }
-  
-  .session-card.selected .availability {
-    color: #dcfce7;
-  }
-  
-  .unavailable-text {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #dc2626;
-    margin: 0;
-  }
-  
-  /* Selection Summary */
-  .selection-summary {
-    text-align: center;
-    padding: 30px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-radius: 16px;
-    border: 2px solid #e2e8f0;
-  }
-  
-  .summary-card {
-    background: white;
-    border-radius: 12px;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.lab-schedule-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.back-button {
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  color: #64748b;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button:hover {
+  background: #e2e8f0;
+  color: #334155;
+  transform: translateX(-2px);
+}
+
+.lab-schedule-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+
+.lab-schedule-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.schedule-container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Date Selection - Week View */
+.date-selection {
+  margin-bottom: 40px;
+}
+
+.date-selection h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.week-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.date-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 15px;
+  padding: 15px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.date-card:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.date-card.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.date-card.today {
+  border-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.date-card.today.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.day-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.day-date {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Session Selection */
+.session-selection {
+  margin-bottom: 40px;
+}
+
+.session-selection h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.sessions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.session-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 25px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.session-card.available:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.session-card.selected {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+}
+
+.session-card.unavailable {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.session-icon {
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+}
+
+.session-info h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.session-time {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.availability {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #10b981;
+  margin: 0;
+}
+
+.session-card.selected .availability {
+  color: #dcfce7;
+}
+
+.unavailable-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0;
+}
+
+/* Selection Summary */
+.selection-summary {
+  text-align: center;
+  padding: 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.summary-card h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 15px;
+}
+
+.summary-card p {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 8px 0;
+}
+
+.continue-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.continue-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .lab-schedule {
     padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   }
-  
-  .summary-card h4 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 15px;
+
+  .lab-schedule-header h1 {
+    font-size: 2rem;
   }
-  
-  .summary-card p {
-    font-size: 1rem;
-    color: #64748b;
-    margin: 8px 0;
+
+  .schedule-container {
+    padding: 25px;
   }
-  
-  .continue-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .continue-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-  }
-  
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
-    .lab-schedule {
-      padding: 20px;
-    }
-  
-    .lab-schedule-header h1 {
-      font-size: 2rem;
-    }
-  
-    .schedule-container {
-      padding: 25px;
-    }
-  
-    .week-dates {
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-  
-    .date-card {
-      padding: 12px 6px;
-    }
-  
-    .day-name {
-      font-size: 0.75rem;
-    }
-  
-    .day-date {
-      font-size: 0.9rem;
-    }
-  
-    .sessions {
-      grid-template-columns: 1fr;
-      gap: 15px;
-    }
-  
-    .session-card {
-      padding: 20px 15px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .lab-schedule {
-      padding: 15px;
-    }
-  
-    .lab-schedule-header h1 {
-      font-size: 1.8rem;
-    }
-  
-    .schedule-container {
-      padding: 20px;
-    }
-  
-    .week-dates {
-      gap: 6px;
-    }
-  
-    .date-card {
-      padding: 10px 4px;
-    }
-  
-    .day-name {
-      font-size: 0.7rem;
-    }
-  
-    .day-date {
-      font-size: 0.8rem;
-    }
-  }.month-switcher {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin: 16px 0 24px 0;
-  }
-  
-  .month-grid {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-  }
-  
-  .weekdays-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    margin-bottom: 8px;
-  }
-  
-  .weekday-cell {
-    text-align: center;
-    font-weight: 600;
-    color: #64748b;
-    padding: 6px 0;
-    font-size: 1rem;
-  }
-  
-  .month-days-grid {
-    display: grid;
+
+  .week-dates {
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
   }
-  
-  .date-cell {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    min-height: 48px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .date-card {
+    padding: 12px 6px;
   }
-  
-  .date-cell.blank {
-    background: transparent;
-    border: none;
-    cursor: default;
+
+  .day-name {
+    font-size: 0.75rem;
   }
-  
-  .date-cell.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+
+  .day-date {
+    font-size: 0.9rem;
   }
-  
-  .date-cell.today {
-    border-color: #f59e0b;
-    background: #fef3c7;
+
+  .sessions {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
-  
-  .date-cell.today.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    color: white;
+
+  .session-card {
+    padding: 20px 15px;
   }
-  
-  .day-number {
-    font-size: 1.1rem;
-    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .lab-schedule {
+    padding: 15px;
   }
+
+  .lab-schedule-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .schedule-container {
+    padding: 20px;
+  }
+
+  .week-dates {
+    gap: 6px;
+  }
+
+  .date-card {
+    padding: 10px 4px;
+  }
+
+  .day-name {
+    font-size: 0.7rem;
+  }
+
+  .day-date {
+    font-size: 0.8rem;
+  }
+}
+
+.month-switcher {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0 24px 0;
+}
+
+.month-grid {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.weekday-cell {
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+  padding: 6px 0;
+  font-size: 1rem;
+}
+
+.month-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.date-cell {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  min-height: 48px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-cell.blank {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.date-cell.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+}
+
+.date-cell.today {
+  border-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.date-cell.today.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.day-number {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.no-click {
+  pointer-events: none;
+}

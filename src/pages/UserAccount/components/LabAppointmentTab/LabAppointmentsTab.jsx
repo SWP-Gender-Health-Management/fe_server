@@ -88,12 +88,12 @@ const LabAppointmentsTab = ({
     },
     {
       title: 'Loại xét nghiệm',
-      dataIndex: 'description',
-      key: 'description',
+      dataIndex: 'result.name',
+      key: 'result',
       render: (text, record) => (
         <div>
           <FileTextOutlined />
-          <span style={{ marginLeft: 8 }}>{text || 'Xét nghiệm'}</span>
+          <span style={{ marginLeft: 8 }}>{record.result.name || 'Xét nghiệm'}</span>
           {record.result && record.result.length > 0 && (
             <Badge
               count={record.result.length}

@@ -12,6 +12,7 @@ import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequire
 import { createConAppTransaction, createPaymentUrl } from '../../api/conApi';
 
 const accessToken = await Cookies.get('accessToken');
+const API_URL = 'http://localhost:3000';
 
 const BookingPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -57,7 +58,7 @@ const BookingPage = () => {
     setBookingData(data);
     try {
       const response = await axios.post(
-        'http://localhost:3000/consult-appointment/create-consult-appointment',
+        `${API_URL}/consult-appointment/create-consult-appointment`,
         {
           pattern_id: data.pattern_id,
           customer_id: data.customer_id,

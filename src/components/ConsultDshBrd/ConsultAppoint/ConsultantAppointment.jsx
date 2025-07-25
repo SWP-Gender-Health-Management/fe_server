@@ -3,6 +3,8 @@ import './ConsultantAppointment.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+const API_URL = 'http://localhost:3000';
+
 const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantData, fetchConsultAppointmentStat }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -16,7 +18,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
     const fetchTimeSlots = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/working-slot/get-slot-by-type/1`
+          `${API_URL}/working-slot/get-slot-by-type/1`
         );
         console.log('Slot Response:', response.data.result);
         setTimeSlots(response.data.result || []);
@@ -116,7 +118,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
 
       try {
         const response = await axios.post(
-          `http://localhost:3000/consult-report/create-consult-report`,
+          `${API_URL}/consult-report/create-consult-report`,
           reportForm,
           {
             headers: {
@@ -135,7 +137,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
     }
     try {
       const response = await axios.put(
-        `http://localhost:3000/consult-appointment/update-consult-appointment/${appointment.app_id}`,
+        `${API_URL}/consult-appointment/update-consult-appointment/${appointment.app_id}`,
         {
           status
         },

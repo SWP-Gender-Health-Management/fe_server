@@ -28,6 +28,9 @@ import '@styles/reset.css';
 import NotificationDropdown from '../Notification/NotificationDropdown';
 import './Navbar.css';
 
+
+const API_URL = 'http://localhost:3000';
+
 const Navbar = ({ onLoginClick }) => {
   const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context
   const { fullname, role } = userInfo || {};
@@ -186,19 +189,19 @@ const Navbar = ({ onLoginClick }) => {
       ...(role === 'CUSTOMER' || role === 3
         ? []
         : [
-            {
-              key: 'settings',
-              label: (
-                <Link
-                  to={roleRoutes[role]?.path || '/settings'}
-                  className="dropdown-link"
-                >
-                  <AppstoreOutlined style={{ marginRight: '8px' }} />
-                  {roleRoutes[role]?.label || 'Cài đặt'}
-                </Link>
-              ),
-            },
-          ]),
+          {
+            key: 'settings',
+            label: (
+              <Link
+                to={roleRoutes[role]?.path || '/settings'}
+                className="dropdown-link"
+              >
+                <AppstoreOutlined style={{ marginRight: '8px' }} />
+                {roleRoutes[role]?.label || 'Cài đặt'}
+              </Link>
+            ),
+          },
+        ]),
       { type: 'divider' },
       {
         key: 'logout',
@@ -224,7 +227,7 @@ const Navbar = ({ onLoginClick }) => {
     try {
       const userId = Cookies.get('accountId') || 1; // Thay sessionStorage bằng Cookies
       const res = await axios.get(
-        `http://localhost:3000/api/notifications?userId=${userId}`
+        `${API_URL}/api/notifications?userId=${userId}`
       );
       setNotifications(res.data || []);
     } catch (err) {

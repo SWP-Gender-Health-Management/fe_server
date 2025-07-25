@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import LineChart from '../Chart/LineChart';
 import axios from 'axios';
 import './Dashboard.css';
+import Cookies from 'js-cookie';
 
-const API_URL = 'http://localhost:3000/manager';
+const API_URL = 'http://localhost:3000/admin';
+const accessToken = Cookies.get('accessToken');
+const accountId = Cookies.get('accountId');
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,16 +26,17 @@ const Dashboard = () => {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-        body: {
+        params: {
           day: new Date().toISOString().split('T')[0],
         },
       });
       console.log('Response:', response.data);
+      console.log('KPI data fetched successfully');
     } catch (error) {
       console.error('Error fetching KPI data:', error);
       // return null;
     } finally {
-      console.log('KPI data fetched successfully');
+
       setIsLoading(false);
     }
   };

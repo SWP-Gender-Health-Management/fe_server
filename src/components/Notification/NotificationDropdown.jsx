@@ -33,6 +33,8 @@ const { Text } = Typography;
 // Set Vietnamese locale for moment
 moment.locale('vi');
 
+const API_URL = 'http://localhost:3000';
+
 const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -60,7 +62,7 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
       }
 
       const response = await axios.get(
-        'http://localhost:3000/api/notifications',
+        `${API_URL}/api/notifications`,
         {
           params: {
             limit: currentSize,
@@ -88,7 +90,7 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
       setTotal(totalCount);
       setHasMore(
         moreAvailable &&
-          notifications.length + newNotifications.length < totalCount
+        notifications.length + newNotifications.length < totalCount
       );
       setPage(pageNum);
     } catch (error) {
@@ -293,7 +295,7 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
   const markAsRead = async (notificationId) => {
     try {
       await axios.patch(
-        `http://localhost:3000/api/notifications/${notificationId}/read`,
+        `${API_URL}/api/notifications/${notificationId}/read`,
         {},
         {
           headers: {
@@ -322,7 +324,7 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
   const markAllAsRead = async () => {
     try {
       await axios.patch(
-        'http://localhost:3000/api/notifications/mark-all-read',
+        `${API_URL}/api/notifications/mark-all-read`,
         {},
         {
           headers: {
