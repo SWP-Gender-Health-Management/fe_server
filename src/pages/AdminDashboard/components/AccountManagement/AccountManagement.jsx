@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Await, useNavigate } from 'react-router-dom';
 import UserModal from '../UserModal/UserModal';
 import './AccountManagement.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = 'http://localhost:3000';
+const accessToken = Cookies.get('accessToken');
+const accountId = Cookies.get('accountId');
 
 const AccountManagement = () => {
   const navigate = useNavigate();
@@ -18,77 +24,105 @@ const AccountManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   // Mock data - trong thực tế sẽ fetch từ API
+  // useEffect(() => {
+  //   const mockUsers = [
+  //     {
+  //       account_id: 1,
+  //       full_name: 'Nguyễn Văn An',
+  //       email: 'nguyen.van.an@email.com',
+  //       avatar: null,
+  //       role: 'ADMIN',
+  //       is_banned: true,
+  //       created_at: '2024-01-15',
+  //     }
+  //   ];
+
+  //   // Generate more mock users
+  //   const additionalUsers = Array.from({ length: 20 }, (_, index) => ({
+  //     account_id: index + 6,
+  //     full_name: `Người dùng ${index + 6}`,
+  //     email: `user${index + 6}@example.com`,
+  //     avatar: null,
+  //     role: ['ADMIN', 'MANAGER', 'CUSTOMER', 'CONSULTANT', 'STAFF'][Math.floor(Math.random() * 3)],
+  //     is_banned: [true, false][Math.floor(Math.random() * 2)],
+  //     created_at: new Date(
+  //       2024,
+  //       Math.floor(Math.random() * 12),
+  //       Math.floor(Math.random() * 28) + 1
+  //     )
+  //       .toISOString()
+  //       .split('T')[0],
+  //   }));
+
+  //   const allUsers = [...mockUsers, ...additionalUsers];
+  //   setUsers(allUsers);
+  //   setFilteredUsers(allUsers);
+  // }, []);
+
   useEffect(() => {
-    const mockUsers = [
-      {
-        account_id: 1,
-        full_name: 'Nguyễn Văn An',
-        email: 'nguyen.van.an@email.com',
-        avatar: null,
-        role: 'ADMIN',
-        is_banned: true,
-        created_at: '2024-01-15',
-      }
-    ];
+    fetchAccounts();
+  }, [currentPage, roleFilter, statusFilter])
 
-    // Generate more mock users
-    const additionalUsers = Array.from({ length: 20 }, (_, index) => ({
-      account_id: index + 6,
-      full_name: `Người dùng ${index + 6}`,
-      email: `user${index + 6}@example.com`,
-      avatar: null,
-      role: ['ADMIN', 'MANAGER', 'CUSTOMER', 'CONSULTANT', 'STAFF'][Math.floor(Math.random() * 3)],
-      is_banned: [true, false][Math.floor(Math.random() * 2)],
-      created_at: new Date(
-        2024,
-        Math.floor(Math.random() * 12),
-        Math.floor(Math.random() * 28) + 1
-      )
-        .toISOString()
-        .split('T')[0],
-    }));
+  const fetchAccounts = async () => {
+    try {
+      await axios.get(`${API_URL}/admin/get-accounts`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        params: {
+          limit: itemsPerPage,
+          page: currentPage,
+          role: roleFilter,
+          banned: statusFilter
+        },
+      }).then(async (response) => {
+        const { accounts, totalItems, totalPages } = await response.data.data;
+        // console.log("fetchAccounts response: ", { accounts, totalItems, totalPages });
+        setUsers(accounts || []);
+        setTotalItems(totalItems || 0);
+        setTotalPages(totalPages || 0);
+      });
 
-    const allUsers = [...mockUsers, ...additionalUsers];
-    setUsers(allUsers);
-    setFilteredUsers(allUsers);
-  }, []);
+
+    } catch (error) {
+      console.error('fetchAccounts error: ', error);
+      setUsers([]);
+    }
+  }
 
   // Filter and search logic
-  useEffect(() => {
-    let filtered = users;
+  // useEffect(() => {
+  //   let filtered = users;
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (user) =>
-          user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  //   // Search filter
+  //   if (searchTerm) {
+  //     filtered = filtered.filter(
+  //       (user) =>
+  //         user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //   }
 
-    // Role filter
-    if (roleFilter !== 'all') {
-      filtered = filtered.filter((user) => user.role === roleFilter);
-    }
+  //   // Role filter
+  //   if (roleFilter !== 'all') {
+  //     filtered = filtered.filter((user) => user.role === roleFilter);
+  //   }
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((user) => `${user.is_banned}` === statusFilter);
-    }
+  //   // Status filter
+  //   if (statusFilter !== 'all') {
+  //     filtered = filtered.filter((user) => `${user.is_banned}` === statusFilter);
+  //   }
 
-    setFilteredUsers(filtered);
-    setCurrentPage(1);
-  }, [searchTerm, roleFilter, statusFilter, users]);
+  //   setFilteredUsers(filtered);
+  //   setCurrentPage(1);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedUsers = filteredUsers.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  // }, [searchTerm, roleFilter, statusFilter, users]);
+
 
   // Handle user actions
   const handleCreateUser = () => {
@@ -120,13 +154,49 @@ const AccountManagement = () => {
     }
   };
 
-  const handleToggleStatus = (user) => {
-    const updatedUsers = users.map((u) =>
-      u.account_id === user.account_id
-        ? { ...u, is_banned: u.is_banned === true ? false : true }
-        : u
-    );
-    setUsers(updatedUsers);
+  // Khóa / Mở khóa tài khoảng
+  const handleToggleStatus = async (user) => {
+    // const updatedUsers = users.map((u) =>
+    //   u.account_id === user.account_id
+    //     ? { ...u, is_banned: u.is_banned === true ? false : true }
+    //     : u
+    // );
+    // setUsers(updatedUsers);
+    try {
+      if (user.is_banned === false || user.is_banned === 'false') {
+        await axios.post(`${API_URL}/admin/ban-account`,
+          {
+            selected_account_id: user.account_id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        ).then((response) => {
+          // console.log("ban-account response: ", response)
+        })
+      } else if (user.is_banned === true || user.is_banned === 'true') {
+        await axios.post(`${API_URL}/admin/unban-account`,
+          {
+            selected_account_id: user.account_id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        ).then((response) => {
+          // console.log("unban-account response: ", response)
+        })
+      }
+    } catch (error) {
+      console.error("ban error: ", error);
+    } finally {
+      fetchAccounts();
+    }
   };
 
   const handleResetPassword = (user) => {
@@ -142,10 +212,10 @@ const AccountManagement = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === paginatedUsers.length) {
+    if (selectedUsers.length === users.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(paginatedUsers.map((user) => user.account_id));
+      setSelectedUsers(users.map((user) => user.account_id));
     }
   };
 
@@ -160,7 +230,7 @@ const AccountManagement = () => {
   const getRoleBadge = (role) => {
     const roleColors = {
       ADMIN: 'admin',
-      MANGER: 'admin',
+      MANAGER: 'admin',
       CONSULTANT: 'manager',
       STAFF: 'manager',
       CUSTOMER: 'user',
@@ -174,7 +244,7 @@ const AccountManagement = () => {
     }
     return (
       <div className="user-avatar-placeholder">
-        {user.full_name.charAt(0).toUpperCase()}
+        {user.full_name?.charAt(0).toUpperCase()}
       </div>
     );
   };
@@ -238,14 +308,14 @@ const AccountManagement = () => {
 
       {/* Results summary */}
       <div className="results-summary">
-        Hiển thị {startIndex + 1}-
-        {Math.min(startIndex + itemsPerPage, filteredUsers.length)} trong tổng
-        số {filteredUsers.length} người dùng
-        {selectedUsers.length > 0 && (
+        Hiển thị {((currentPage - 1) * itemsPerPage + 1)}-
+        {((currentPage - 1) * itemsPerPage + 1 + itemsPerPage - 1)} trong tổng
+        số {totalItems} người dùng
+        {/* {selectedUsers.length > 0 && (
           <span className="selection-info">
             ({selectedUsers.length} đã chọn)
           </span>
-        )}
+        )} */}
       </div>
 
       {/* Users Table */}
@@ -257,12 +327,13 @@ const AccountManagement = () => {
                 <input
                   type="checkbox"
                   checked={
-                    selectedUsers.length === paginatedUsers.length &&
-                    paginatedUsers.length > 0
+                    selectedUsers.length === users.length &&
+                    users.length > 0
                   }
                   onChange={handleSelectAll}
                 />
               </th> */}
+              <th>STT</th>
               <th>Thông tin người dùng</th>
               <th>Email</th>
               <th>Vai trò</th>
@@ -272,7 +343,7 @@ const AccountManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {paginatedUsers.map((user) => (
+            {users.map((user, index) => (
               <tr
                 key={user.account_id}
                 className={selectedUsers.includes(user.account_id) ? 'selected' : ''}
@@ -284,12 +355,13 @@ const AccountManagement = () => {
                     onChange={() => handleSelectUser(user.account_id)}
                   />
                 </td> */}
+                <td>{(index + 1) + ((currentPage - 1) * itemsPerPage)}</td>
                 <td>
                   <div className="user-info">
                     {getAvatar(user)}
                     <div className="user-details">
                       <div className="user-name">{user.full_name}</div>
-                      <div className="user-id">ID: {user.account_id}</div>
+                      {/* <div className="user-id">ID: {user.account_id}</div> */}
                     </div>
                   </div>
                 </td>
@@ -307,7 +379,7 @@ const AccountManagement = () => {
                       <button onClick={() => handleResetPassword(user)}>
                         🔑 Đặt lại mật khẩu
                       </button>
-                      <button onClick={() => handleToggleStatus(user)}>
+                      <button onClick={() => handleToggleStatus(user)}> {/*Khóa tài khoảng*/}
                         {user.is_banned === false
                           ? '🔒 Khóa tài khoản'
                           : '🔓 Mở khóa tài khoản'}
@@ -335,6 +407,12 @@ const AccountManagement = () => {
           Trang {currentPage} của {totalPages}
         </div>
         <div className="pagination-controls">
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+          >
+            Đầu
+          </button>
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
@@ -372,6 +450,12 @@ const AccountManagement = () => {
             disabled={currentPage === totalPages}
           >
             Sau
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            Cuối
           </button>
         </div>
       </div>

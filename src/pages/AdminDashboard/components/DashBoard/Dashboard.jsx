@@ -13,10 +13,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [kpiDatas, setKpiDatas] = useState({
-    totalUsers: 0,
-    newUsers: 0,
-    revenue: 0,
-    activities: 0,
+    totalCustomers: 0,
+    totalNewCustomers: 0,
+    totalRevenue: 0,
+    importantNews: 0,
   });
 
   const kpiData = async () => {
@@ -31,6 +31,13 @@ const Dashboard = () => {
         },
       });
       console.log('Response:', response.data);
+      const kpiData = response.data?.data
+      if(response.data?.data) {
+        setKpiDatas({
+          ...kpiData,
+          totalRevenue: kpiData.totalRevenue.total_revenue
+        })
+      }
       console.log('KPI data fetched successfully');
     } catch (error) {
       console.error('Error fetching KPI data:', error);
@@ -54,7 +61,7 @@ const Dashboard = () => {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
 
-        const users = Math.floor(Math.random() * 20) + 5; // 5-25 users per day
+        const users = Math.floor(Math.random() * 30) + 5; // 5-25 users per day
         data.push({
           date: date.toISOString().split('T')[0],
           users: users,
@@ -181,8 +188,8 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Tổng số người dùng</div>
-            <div className="kpi-value">{formatNumber(kpiDatas.totalUsers)}</div>
-            <div className="kpi-change positive">+12% từ tháng trước</div>
+            <div className="kpi-value">{formatNumber(kpiDatas.totalCustomers)}</div>
+            {/* <div className="kpi-change positive">+12% từ tháng trước</div> */}
           </div>
         </div>
 
@@ -198,8 +205,8 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Người dùng mới (30 ngày)</div>
-            <div className="kpi-value">{formatNumber(kpiDatas.newUsers)}</div>
-            <div className="kpi-change positive">+8% từ tháng trước</div>
+            <div className="kpi-value">{formatNumber(kpiDatas.totalNewCustomers)}</div>
+            {/* <div className="kpi-change positive">+8% từ tháng trước</div> */}
           </div>
         </div>
 
@@ -215,8 +222,8 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Doanh thu</div>
-            <div className="kpi-value">{formatCurrency(kpiDatas.revenue)}</div>
-            <div className="kpi-change positive">+15% từ tháng trước</div>
+            <div className="kpi-value">{formatCurrency(kpiDatas.totalRevenue)}</div>
+            {/* <div className="kpi-change positive">+15% từ tháng trước</div> */}
           </div>
         </div>
 
@@ -232,7 +239,7 @@ const Dashboard = () => {
           </div>
           <div className="kpi-content">
             <div className="kpi-label">Hoạt động quan trọng</div>
-            <div className="kpi-value">{formatNumber(kpiDatas.activities)}</div>
+            <div className="kpi-value">{formatNumber(kpiDatas.importantNews)}</div>
             <div className="kpi-change neutral">Trong 24h qua</div>
           </div>
         </div>

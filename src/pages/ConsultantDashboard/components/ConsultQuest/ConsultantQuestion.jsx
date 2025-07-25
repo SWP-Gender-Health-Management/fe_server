@@ -4,6 +4,7 @@ import './ConsultantQuestion.css';
 import api from '@/api/api';
 import Cookies from 'js-cookie'; // Sử dụng js-cookie để quản lý cookies
 import axios from 'axios';
+import { Modal } from 'antd';
 
 const API_URL = 'http://localhost:3000';
 
@@ -234,6 +235,10 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
         {/* Right Panel - Question Detail & Answer */}
         <div className="detail-panel">
           {selectedQuestion ? (
+            // <Modal
+            //   open={selectedQuestion}
+            //   onCancel={() => { setSelectedQuestion(null); }}
+            // >
             <div className="question-detail">
               <div className="detail-header">
 
@@ -308,13 +313,16 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
                 </div>
               )}
             </div>
-          ) : (
-            <div className="no-selection">
-              <span>💭</span>
-              <h3>Chọn một câu hỏi để xem chi tiết</h3>
-              <p>Nhấp vào câu hỏi bên trái để xem nội dung và trả lời</p>
-            </div>
-          )}
+            // </Modal>
+          )
+            : (
+              <div className="no-selection">
+                <span>💭</span>
+                <h3>Chọn một câu hỏi để xem chi tiết</h3>
+                <p>Nhấp vào câu hỏi bên trái để xem nội dung và trả lời</p>
+              </div>
+            )
+          }
         </div>
       </div>
     </div>

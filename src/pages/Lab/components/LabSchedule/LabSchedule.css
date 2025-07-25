@@ -417,4 +417,5 @@
 
 .no-click {
   pointer-events: none;
+  background-color: lightgrey;
 }

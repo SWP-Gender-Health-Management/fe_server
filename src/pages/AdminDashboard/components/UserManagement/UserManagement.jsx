@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import './UserManagement.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = 'http://localhost:3000';
+const accessToken = Cookies.get('accessToken');
+const accountId = Cookies.get('accountId');
 
 const UserManagement = () => {
   const [formData, setFormData] = useState({
@@ -67,9 +73,9 @@ const UserManagement = () => {
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
       return 'Vui lòng nhập email hợp lệ';
     }
-    if (!formData.phone.trim() || !/^[0-9]{10,11}$/.test(formData.phone)) {
-      return 'Vui lòng nhập số điện thoại hợp lệ';
-    }
+    // if (!formData.phone.trim() || !/^[0-9]{10,11}$/.test(formData.phone)) {
+    //   return 'Vui lòng nhập số điện thoại hợp lệ';
+    // }
     if (!formData.password.trim() || formData.password.length < 6) {
       return 'Mật khẩu phải có ít nhất 6 ký tự';
     }
@@ -91,7 +97,20 @@ const UserManagement = () => {
     setLoading(true);
     try {
       // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log("REques form of create-account: ", formData)
+      await axios.post(`${API_URL}/admin/create-account`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((response) => {
+        console.log('create-account response: ', response.data);
+      });
+
 
       setMessage({
         type: 'success',
@@ -103,13 +122,15 @@ const UserManagement = () => {
         full_name: '',
         email: '',
         phone: '',
-        role: 'customer',
+        role: 'CUSTOMER',
         password: '@swp391fpt',
         confirmPassword: '@swp391fpt',
         is_banned: 'false',
       });
     } catch (error) {
       setMessage({ type: 'error', text: 'Có lỗi xảy ra khi tạo tài khoản' });
+      console.error('create-account error', error);
+      
     } finally {
       setLoading(false);
     }
@@ -119,7 +140,7 @@ const UserManagement = () => {
     <div className="user-management">
       <div className="page-header">
         <h1>Thêm người dùng mới</h1>
-        <p>Tạo tài khoản cho admin, manager, staff, consultant hoặc customer</p>
+        <p>Tạo tài khoản cho admin, manager, staff, consultant hoặc CUSTOMER</p>
       </div>
 
       <div className="user-form-container">
@@ -154,7 +175,7 @@ const UserManagement = () => {
                 />
               </div>
 
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label htmlFor="phone">Số điện thoại *</label>
                 <input
                   type="tel"
@@ -165,7 +186,7 @@ const UserManagement = () => {
                   placeholder="0123456789"
                   required
                 />
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -228,7 +249,7 @@ const UserManagement = () => {
                 />
               </div>
             </div>
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="is_banned">Trạng thái tài khoản</label>
               <select
                 id="is_banned"
@@ -239,7 +260,7 @@ const UserManagement = () => {
                 <option value="false">Hoạt động</option>
                 <option value="true">Tạm khóa</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           {message.text && (
@@ -255,7 +276,7 @@ const UserManagement = () => {
                   full_name: '',
                   email: '',
                   phone: '',
-                  role: 'customer',
+                  role: 'CUSTOMER',
                   password: '@swp391fpt',
                   confirmPassword: '@swp391fpt',
                   is_banned: 'false',
