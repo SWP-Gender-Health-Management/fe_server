@@ -75,7 +75,7 @@ const Dashboard = () => {
       {
         id: 1,
         type: 'user_register',
-        message: 'Người dùng mới "Nguyễn Văn A" đã đăng ký tài khoản',
+        message: 'New user "Nguyễn Văn A" has registered an account',
         time: '2 phút trước',
         icon: '👤',
         color: '#10b981',
@@ -128,23 +128,23 @@ const Dashboard = () => {
 
   const quickActions = [
     {
-      title: 'Thêm người dùng',
+      title: 'Add User',
       description:
-        'Tạo tài khoản mới cho admin, manager, staff, consultant, customer',
+        'Create new accounts for admin, manager, staff, consultant, customer',
       icon: '👥',
       color: '#10b981',
       action: () => navigate('/admin/users'),
     },
     {
-      title: 'Xem báo cáo',
-      description: 'Xem báo cáo về người dùng, doanh thu, cuộc hẹn, đánh giá',
+      title: 'View Reports',
+      description: 'View reports on users, revenue, appointments, reviews',
       icon: '📊',
       color: '#3b82f6',
       action: () => navigate('/admin/reports'),
     },
     {
-      title: 'Gửi email hàng loạt',
-      description: 'Gửi email hàng loạt cho người dùng',
+      title: 'Bulk Email',
+      description: 'Send bulk emails to users',
       icon: '📧',
       color: '#f59e0b',
       action: () => navigate('/admin/bulk-email'),
@@ -170,8 +170,8 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>Bảng điều khiển</h1>
-        <p>Chào mừng quay trở lại! Đây là tổng quan hệ thống của bạn.</p>
+        <h1>Dashboard</h1>
+        <p>Welcome back! This is your system overview.</p>
       </div>
 
       {/* KPI Cards */}
@@ -187,7 +187,7 @@ const Dashboard = () => {
             👥
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Tổng số người dùng</div>
+            <div className="kpi-label">Total Users</div>
             <div className="kpi-value">{formatNumber(kpiDatas.totalCustomers)}</div>
             {/* <div className="kpi-change positive">+12% từ tháng trước</div> */}
           </div>
@@ -204,7 +204,7 @@ const Dashboard = () => {
             📈
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Người dùng mới (30 ngày)</div>
+            <div className="kpi-label">New Users (30 days)</div>
             <div className="kpi-value">{formatNumber(kpiDatas.totalNewCustomers)}</div>
             {/* <div className="kpi-change positive">+8% từ tháng trước</div> */}
           </div>
@@ -221,7 +221,7 @@ const Dashboard = () => {
             💰
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Doanh thu</div>
+            <div className="kpi-label">Revenue</div>
             <div className="kpi-value">{formatCurrency(kpiDatas.totalRevenue)}</div>
             {/* <div className="kpi-change positive">+15% từ tháng trước</div> */}
           </div>
@@ -238,9 +238,9 @@ const Dashboard = () => {
             ⚡
           </div>
           <div className="kpi-content">
-            <div className="kpi-label">Hoạt động quan trọng</div>
+            <div className="kpi-label">Important Activities</div>
             <div className="kpi-value">{formatNumber(kpiDatas.importantNews)}</div>
-            <div className="kpi-change neutral">Trong 24h qua</div>
+                          <div className="kpi-change neutral">In the last 24h</div>
           </div>
         </div>
       </div>
@@ -250,8 +250,8 @@ const Dashboard = () => {
         {/* User Growth Chart */}
         <div className="chart-section">
           <div className="section-header">
-            <h2>Tăng trưởng người dùng</h2>
-            <p>Số lượng đăng ký mới trong 30 ngày qua</p>
+            <h2>User Growth</h2>
+            <p>Number of new registrations in the last 30 days</p>
           </div>
           <div className="chart-container">
             <LineChart data={chartData} />
@@ -261,8 +261,8 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="quick-actions-section">
           <div className="section-header">
-            <h2>Thao tác nhanh</h2>
-            <p>Các chức năng thường dùng</p>
+                    <h2>Quick Actions</h2>
+        <p>Common functions</p>
           </div>
           <div className="quick-actions-grid">
             {quickActions.map((action, index) => (

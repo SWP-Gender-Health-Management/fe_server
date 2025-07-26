@@ -234,11 +234,13 @@ const StaffDashboard = () => {
       );
       setStaffData((prev) => {
         if (viewResponse.data.result) {
+          console.log("Staff role from API:", viewResponse.data.result.role);
+          console.log("Staff data from API:", viewResponse.data.result);
           prev = {
             ...prev,
             ...viewResponse.data.result,
-            department: getDepartment(viewResponse.data.result.role),
-            position: getPosition(viewResponse.data.result.role)
+            position: "Front Desk Staff",
+            department: "Front Desk"
           }
         }
         if (ratingResponse.data.result) {
@@ -285,33 +287,33 @@ const StaffDashboard = () => {
   const menuItems = [
     {
       id: 'overview',
-      label: 'Tổng quan',
+      label: 'Overview',
       icon: <HomeOutlined />,
-      description: 'Dashboard chính',
+      description: 'Main dashboard',
     },
     {
       id: 'today-appointments',
-      label: 'Lịch hẹn Hôm nay',
+      label: 'Today\'s Appointments',
       icon: <CalendarOutlined />,
-      description: 'Xét nghiệm trong ngày',
+      description: 'Today\'s laboratory tests',
     },
     {
       id: 'search-appointments',
-      label: 'Tìm kiếm Lịch hẹn',
+      label: 'Search Appointments',
       icon: <SearchOutlined />,
-      description: 'Tra cứu lịch sử',
+      description: 'Search appointment history',
     },
     {
       id: 'blog-management',
-      label: 'Quản lý Bài viết',
+      label: 'Blog Management',
       icon: <EditOutlined />,
-      description: 'Viết bài & chia sẻ',
+      description: 'Write & share articles',
     },
     {
       id: 'profile',
-      label: 'Hồ sơ cá nhân',
+      label: 'Personal Profile',
       icon: <UserOutlined />,
-      description: 'Thông tin cá nhân',
+      description: 'Personal information',
     },
   ];
 
@@ -339,40 +341,6 @@ const StaffDashboard = () => {
     });
   };
 
-  const getPosition = (role) => {
-    switch (role) {
-      case 0:
-        return "Quản trị viên";
-      case 1:
-        return "Tư vấn viên";
-      case 2:
-        return "Kỹ thuật viên Xét nghiệm";
-      case 4:
-        return "Quản Lý";
-      case 5:
-        return "Tiếp tân";
-      default:
-        return "Khách hàng";
-    }
-  }
-
-  const getDepartment = (role) => {
-    switch (role) {
-      case 0:
-        return "Quản trị viên";
-      case 1:
-        return "Bộ phận tư vấn";
-      case 2:
-        return "Phòng xét nghiệm";
-      case 4:
-        return "Phòng QUản Lý";
-      case 5:
-        return "Tiếp tân";
-      default:
-        return "Khách hàng";
-    }
-  }
-
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
@@ -394,8 +362,8 @@ const StaffDashboard = () => {
     return (
       <WorkspaceLoading
         className="staff-workspace"
-        title="Đang tải Workspace"
-        description="Đang chuẩn bị khu vực làm việc của bạn ....Vui lòng đợi trong giây lát"
+        title="Loading Workspace"
+        description="Preparing your workspace... Please wait a moment"
       />
     );
   }

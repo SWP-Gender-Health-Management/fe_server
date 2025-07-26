@@ -126,9 +126,9 @@ const Dashboard = () => {
   return (
     <div className="manager-dashboard-page">
       <div className="dashboard-header">
-        <h1>Bảng điều khiển nghiệp vụ</h1>
+        <h1>Business Dashboard</h1>
         <p>
-          Tổng quan hoạt động dịch vụ hôm nay -{' '}
+          Today's service activity overview -{' '}
           {new Date().toLocaleDateString('vi-VN')}
         </p>
       </div>
@@ -211,8 +211,8 @@ const Dashboard = () => {
       {/* Quick Actions */}
       {/* <div className="quick-actions-section">
         <div className="section-header">
-          <h2>Thao tác nhanh</h2>
-          <p>Các chức năng quản lý thường dùng</p>
+          <h2>Quick Actions</h2>
+          <p>Common management functions</p>
         </div>
         <div className="quick-actions-grid">
           <div
@@ -223,10 +223,10 @@ const Dashboard = () => {
               🏥
             </div>
             <div className="action-content">
-              <div className="action-title">Quản lý dịch vụ</div>
-              <div className="action-description">
-                Quản lý tư vấn, xét nghiệm và dịch vụ chu kỳ
-              </div>
+                          <div className="action-title">Service Management</div>
+            <div className="action-description">
+              Manage consultation, testing and cycle services
+            </div>
             </div>
           </div>
           <div
@@ -237,10 +237,10 @@ const Dashboard = () => {
               📝
             </div>
             <div className="action-content">
-              <div className="action-title">Quản lý bài viết</div>
-              <div className="action-description">
-                Xem và quản lý tất cả bài viết các trạng thái
-              </div>
+                          <div className="action-title">Blog Management</div>
+            <div className="action-description">
+              View and manage all articles in all statuses
+            </div>
             </div>
           </div>
         </div>
@@ -297,7 +297,7 @@ const Dashboard = () => {
               <div className="stat-icon">👨‍⚕️</div>
               <div className="stat-content">
                 <div className="stat-value">5</div>
-                <div className="stat-label">Bác sĩ đang hoạt động</div>
+                <div className="stat-label">Active Doctors</div>
               </div>
             </div>
             <div className="stat-item">

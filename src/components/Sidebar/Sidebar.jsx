@@ -96,10 +96,10 @@ const Sidebar = ({
         <button
           className="logout-btn"
           onClick={handleLogout}
-          title={sidebarCollapsed ? 'Đăng xuất' : ''}
+          title={sidebarCollapsed ? 'Logout' : ''}
         >
           <LogoutOutlined />
-          {sidebarCollapsed ? <SettingOutlined style={{ marginLeft: 8 }} /> : <span>Đăng xuất</span>}
+                     {sidebarCollapsed ? <SettingOutlined style={{ marginLeft: 8 }} /> : <span>Logout</span>}
         </button>
       </div>
     </div>

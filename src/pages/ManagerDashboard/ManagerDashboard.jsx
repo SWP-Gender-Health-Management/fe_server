@@ -15,12 +15,12 @@ import QuestionManagement from './components/QuestionManagement/QuestionManageme
 import ManagerProfile from './components/ManagerProfile/ManagerProfile';
 import StaffManagement from './components/StaffManagement/StaffManagement';
 import Sidebar from '../../components/Sidebar';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
   const [activeSection, setActiveSection] = useState('dashboard');
 
   const managerName = sessionStorage.getItem('full_name') || 'Manager';
@@ -48,20 +48,12 @@ const ManagerDashboard = () => {
 
   // Loading effect when component mounts
   useEffect(() => {
-    // Simulate loading progress
-    const progressInterval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          // Hide loading screen after progress completes
-          setTimeout(() => setIsLoading(false), 300);
-          return 100;
-        }
-        return prev + Math.random() * 20;
-      });
-    }, 100);
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
 
-    return () => clearInterval(progressInterval);
+    return () => clearTimeout(timer);
   }, []);
 
   // Menu items for manager
@@ -69,93 +61,49 @@ const ManagerDashboard = () => {
     {
       id: 'dashboard',
       icon: <DashboardOutlined />,
-      label: 'Bảng điều khiển',
-      description: 'Dashboard chính'
+      label: 'Dashboard',
+      description: 'Main dashboard'
     },
     {
       id: 'staff',
       icon: <TeamOutlined />,
-      label: 'Quản lý nhân viên',
-      description: 'Quản lý nhân viên hệ thống'
+      label: 'Staff Management',
+      description: 'Manage system staff'
     },
     {
       id: 'services',
       icon: <MedicineBoxOutlined />,
-      label: 'Quản lý dịch vụ',
-      description: 'Quản lý các dịch vụ y tế'
+      label: 'Service Management',
+      description: 'Manage medical services'
     },
     {
       id: 'blogs',
       icon: <EditOutlined />,
-      label: 'Quản lý bài viết',
-      description: 'Quản lý nội dung blog'
+      label: 'Blog Management',
+      description: 'Manage blog content'
     },
     {
       id: 'questions',
       icon: <QuestionCircleOutlined />,
-      label: 'Quản lý câu hỏi',
-      description: 'Quản lý câu hỏi người dùng'
+      label: 'Question Management',
+      description: 'Manage user questions'
     },
     {
       id: 'profile',
       icon: <UserOutlined />,
-      label: 'Hồ sơ cá nhân',
-      description: 'Thông tin cá nhân'
+      label: 'Personal Profile',
+      description: 'Personal information'
     },
   ];
 
   // Loading Screen Component
   if (isLoading) {
     return (
-      <div className="manager-loading-screen">
-        <div className="loading-container">
-          {/* Logo and Title */}
-          <div className="loading-header">
-            <div className="loading-logo">
-              <span className="loading-icon">🏥</span>
-              <div className="loading-pulse"></div>
-            </div>
-            <h1 className="loading-title">HealthManager</h1>
-            <p className="loading-subtitle">
-              Đang tải bảng điều khiển quản lý...
-            </p>
-          </div>
-
-          {/* Progress Bar */}
-          {/* <div className="loading-progress">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-            </div>
-            <div className="progress-text">{Math.round(loadingProgress)}%</div>
-          </div> */}
-
-          {/* Loading Animation */}
-          {/* <div className="loading-dots">
-            <div className="dot"></div>
-            <div className="dot"></div>
-            <div className="dot"></div>
-          </div> */}
-
-          {/* Feature Loading Text */}
-          {/* <div className="loading-features">
-            <div className="feature-item">
-              <span className="feature-icon">🏥</span>
-              <span>Tải dữ liệu dịch vụ</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">📝</span>
-              <span>Đồng bộ bài viết</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">💬</span>
-              <span>Cập nhật câu hỏi</span>
-            </div>
-          </div> */}
-        </div>
-      </div>
+      <WorkspaceLoading 
+        className="manager-workspace"
+        title="Loading Management Dashboard"
+        description="Preparing business management tools... Please wait"
+      />
     );
   }
 

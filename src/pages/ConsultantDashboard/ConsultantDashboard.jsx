@@ -41,32 +41,32 @@ const ConsultantDashboard = () => {
     {
       id: 'dashboard',
       icon: <HomeOutlined />,
-      label: 'Tổng quan',
-      description: 'Dashboard chính'
+      label: 'Overview',
+      description: 'Main dashboard'
     },
     {
       id: 'appointments',
       icon: <CalendarOutlined />,
-      label: 'Quản lý Lịch hẹn',
-      description: 'Xem và quản lý cuộc hẹn'
+      label: 'Appointment Management',
+      description: 'View and manage appointments'
     },
     {
       id: 'blogs',
       icon: <EditOutlined />,
-      label: 'Quản lý Bài viết',
-      description: 'Viết và quản lý blog'
+      label: 'Blog Management',
+      description: 'Write and manage blogs'
     },
     {
       id: 'questions',
       icon: <QuestionCircleOutlined />,
-      label: 'Hỏi & Đáp',
-      description: 'Trả lời câu hỏi'
+      label: 'Q&A',
+      description: 'Answer questions'
     },
     {
       id: 'profile',
       icon: <UserOutlined />,
-      label: 'Hồ sơ cá nhân',
-      description: 'Thông tin cá nhân'
+      label: 'Personal Profile',
+      description: 'Personal information'
     },
   ];
 
@@ -357,8 +357,8 @@ const ConsultantDashboard = () => {
     return (
       <WorkspaceLoading
         className="consultant-workspace"
-        title="Đang tải workspace..."
-        description="Chuẩn bị không gian làm việc của bạn"
+        title="Loading Consultant Dashboard"
+        description="Preparing consultation tools and patient data... Please wait"
       />
     );
   }

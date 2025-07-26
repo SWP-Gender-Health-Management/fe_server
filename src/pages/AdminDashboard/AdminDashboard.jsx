@@ -17,13 +17,13 @@ import Reports from './components/Report/Reports';
 import BulkEmail from './components/BulkEmail/BulkEmail';
 import RecentActivities from './components/RecentActivities/RecentActivities';
 import Sidebar from '../../components/Sidebar';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 import Logo from '@assets/Logo-full.svg?react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
   const [activeSection, setActiveSection] = useState('dashboard');
 
   const adminName = sessionStorage.getItem('full_name') || 'Admin';
@@ -31,20 +31,12 @@ const AdminDashboard = () => {
 
   // Loading effect when component mounts
   useEffect(() => {
-    // Simulate loading progress
-    const progressInterval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          // Hide loading screen after progress completes
-          setTimeout(() => setIsLoading(false), 300);
-          return 100;
-        }
-        return prev + Math.random() * 20;
-      });
-    }, 100);
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
 
-    return () => clearInterval(progressInterval);
+    return () => clearTimeout(timer);
   }, []);
 
   // Menu items for admin
@@ -52,44 +44,44 @@ const AdminDashboard = () => {
     {
       id: 'dashboard',
       icon: <DashboardOutlined />,
-      label: 'Bảng điều khiển',
-      description: 'Dashboard chính'
+      label: 'Dashboard',
+      description: 'Main dashboard'
     },
     {
       id: 'accounts',
       icon: <TeamOutlined />,
-      label: 'Quản lý tài khoản',
-      description: 'Quản lý tài khoản hệ thống'
+      label: 'Account Management',
+      description: 'Manage system accounts'
     },
     {
       id: 'users',
       icon: <UserAddOutlined />,
-      label: 'Thêm người dùng',
-      description: 'Tạo tài khoản mới'
+      label: 'Add Users',
+      description: 'Create new accounts'
     },
     {
       id: 'reports',
       icon: <BarChartOutlined />,
-      label: 'Báo cáo',
-      description: 'Xem báo cáo thống kê'
+      label: 'Reports',
+      description: 'View statistics reports'
     },
     {
       id: 'bulk-email',
       icon: <MailOutlined />,
-      label: 'Gửi email hàng loạt',
-      description: 'Gửi email cho nhiều người'
+      label: 'Bulk Email',
+      description: 'Send emails to multiple users'
     },
     {
       id: 'activities',
       icon: <ThunderboltOutlined />,
-      label: 'Hoạt động gần đây',
-      description: 'Theo dõi hoạt động'
+      label: 'Recent Activities',
+      description: 'Track activities'
     },
     {
       id: 'profile',
       icon: <UserOutlined />,
-      label: 'Hồ sơ cá nhân',
-      description: 'Thông tin cá nhân'
+      label: 'Personal Profile',
+      description: 'Personal information'
     },
   ];
 
@@ -116,56 +108,11 @@ const AdminDashboard = () => {
   // Loading Screen Component
   if (isLoading) {
     return (
-      <div className="admin-loading-screen">
-        <div className="loading-container">
-          {/* Logo and Title */}
-          <div className="loading-header">
-            <div className="loading-logo">
-              <span className="loading-icon">🏥</span>
-              <div className="loading-pulse"></div>
-            </div>
-            <h1 className="loading-title">GenderCare</h1>
-            {/* <Logo className="loading-logo-img" /> */}
-            <p className="loading-subtitle">
-              Đang tải bảng điều khiển quản trị...
-            </p>
-          </div>
-
-          {/* Progress Bar */}
-          {/* <div className="loading-progress">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-            </div>
-            <div className="progress-text">{Math.round(loadingProgress)}%</div>
-          </div> */}
-
-          {/* Loading Animation */}
-          {/* <div className="loading-dots">
-            <div className="dot"></div>
-            <div className="dot"></div>
-            <div className="dot"></div>
-          </div> */}
-
-          {/* Feature Loading Text */}
-          {/* <div className="loading-features">
-            <div className="feature-item">
-              <span className="feature-icon">🔒</span>
-              <span>Kiểm tra bảo mật</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">📊</span>
-              <span>Tải dữ liệu dashboard</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">👥</span>
-              <span>Đồng bộ tài khoản</span>
-            </div>
-          </div> */}
-        </div>
-      </div>
+      <WorkspaceLoading 
+        className="admin-workspace"
+        title="Loading Admin Dashboard"
+        description="Preparing system administration tools... Please wait"
+      />
     );
   }
 
