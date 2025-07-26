@@ -1,20 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { 
+  DashboardOutlined,
+  TeamOutlined,
+  MedicineBoxOutlined,
+  EditOutlined,
+  QuestionCircleOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 import Dashboard from './components/Dashboard/Dashboard';
 import ServiceManagement from './components/ServiceManagement/ServiceManagement';
 import BlogManagement from './components/BlogManagement/BlogManagement';
 import QuestionManagement from './components/QuestionManagement/QuestionManagement';
 import ManagerProfile from './components/ManagerProfile/ManagerProfile';
 import StaffManagement from './components/StaffManagement/StaffManagement';
+import Sidebar from '../../components/Sidebar';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [activeSection, setActiveSection] = useState('dashboard');
 
   const managerName = sessionStorage.getItem('full_name') || 'Manager';
   const managerEmail = sessionStorage.getItem('email') || 'manager@example.com';
+
+  // Manager data for sidebar
+  const managerData = {
+    full_name: managerName,
+    email: managerEmail,
+    position: 'Manager',
+    department: 'Management',
+    avatar: `https://ui-avatars.com/api/?name=${managerName}&background=52c41a&color=fff&size=60`,
+    averageFeedBackRating: '4.8',
+    totalAppointments: '∞'
+  };
+
+  const handleSectionChange = (sectionId) => {
+    setActiveSection(sectionId);
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    console.log('Logout clicked');
+  };
 
   // Loading effect when component mounts
   useEffect(() => {
@@ -34,36 +64,43 @@ const ManagerDashboard = () => {
     return () => clearInterval(progressInterval);
   }, []);
 
+  // Menu items for manager
   const menuItems = [
     {
-      path: '/manager/dashboard',
-      name: 'Bảng điều khiển',
-      icon: '📊',
+      id: 'dashboard',
+      icon: <DashboardOutlined />,
+      label: 'Bảng điều khiển',
+      description: 'Dashboard chính'
     },
     {
-      path: '/manager/staff',
-      name: 'Quản lý nhân viên',
-      icon: '👥',
+      id: 'staff',
+      icon: <TeamOutlined />,
+      label: 'Quản lý nhân viên',
+      description: 'Quản lý nhân viên hệ thống'
     },
     {
-      path: '/manager/services',
-      name: 'Quản lý dịch vụ',
-      icon: '🏥',
+      id: 'services',
+      icon: <MedicineBoxOutlined />,
+      label: 'Quản lý dịch vụ',
+      description: 'Quản lý các dịch vụ y tế'
     },
     {
-      path: '/manager/blogs',
-      name: 'Quản lý bài viết',
-      icon: '📝',
+      id: 'blogs',
+      icon: <EditOutlined />,
+      label: 'Quản lý bài viết',
+      description: 'Quản lý nội dung blog'
     },
     {
-      path: '/manager/questions',
-      name: 'Quản lý câu hỏi',
-      icon: '💬',
+      id: 'questions',
+      icon: <QuestionCircleOutlined />,
+      label: 'Quản lý câu hỏi',
+      description: 'Quản lý câu hỏi người dùng'
     },
     {
-      path: '/manager/profile',
-      name: 'Hồ sơ cá nhân',
-      icon: '👤',
+      id: 'profile',
+      icon: <UserOutlined />,
+      label: 'Hồ sơ cá nhân',
+      description: 'Thông tin cá nhân'
     },
   ];
 
@@ -125,61 +162,17 @@ const ManagerDashboard = () => {
   return (
     <div className="manager-dashboard">
       {/* Sidebar */}
-      <div className={`manager-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        {/* Logo */}
-        <div className="sidebar-header">
-          <div className="logo">
-            <span className="logo-icon">🏥</span>
-            {!sidebarCollapsed && (
-              <span className="logo-text">HealthManager</span>
-            )}
-          </div>
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            <span className="hamburger-icon">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-          </button>
-        </div>
-
-        {/* Navigation Menu */}
-        <nav className="sidebar-nav">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? 'active' : ''}`
-              }
-            >
-              <span className="nav-icon">{item.icon}</span>
-              {!sidebarCollapsed && (
-                <span className="nav-text">{item.name}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Manager Info */}
-        <div className="sidebar-footer">
-          <div className="manager-info">
-            <div className="manager-avatar">
-              {managerName.charAt(0).toUpperCase()}
-            </div>
-            {!sidebarCollapsed && (
-              <div className="manager-details">
-                <div className="manager-name">{managerName}</div>
-                <div className="manager-email">{managerEmail}</div>
-                <div className="manager-role">Manager</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <Sidebar
+        userData={managerData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={false}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
+        activeSection={activeSection}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+        basePath="/manager"
+      />
 
       {/* Main Content */}
       <div className="manager-content">

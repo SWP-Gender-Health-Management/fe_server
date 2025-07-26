@@ -8,7 +8,14 @@ import React, { useEffect, useState } from 'react';
 import {
   useNavigate
 } from 'react-router-dom';
-import ConsultantSidebar from './components/ConsultantSidebar';
+import { 
+  HomeOutlined,
+  CalendarOutlined,
+  EditOutlined,
+  UserOutlined,
+  QuestionCircleOutlined
+} from '@ant-design/icons';
+import Sidebar from '../../components/Sidebar';
 import DashboardOverview from './components/DashboardOverview';
 import './ConsultantDashboard.css';
 import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
@@ -28,6 +35,40 @@ const ConsultantDashboard = () => {
 
   const accessToken = Cookies.get("accessToken");
   const accountId = Cookies.get("accountId");
+
+  // Menu items for consultant
+  const menuItems = [
+    {
+      id: 'dashboard',
+      icon: <HomeOutlined />,
+      label: 'Tổng quan',
+      description: 'Dashboard chính'
+    },
+    {
+      id: 'appointments',
+      icon: <CalendarOutlined />,
+      label: 'Quản lý Lịch hẹn',
+      description: 'Xem và quản lý cuộc hẹn'
+    },
+    {
+      id: 'blogs',
+      icon: <EditOutlined />,
+      label: 'Quản lý Bài viết',
+      description: 'Viết và quản lý blog'
+    },
+    {
+      id: 'questions',
+      icon: <QuestionCircleOutlined />,
+      label: 'Hỏi & Đáp',
+      description: 'Trả lời câu hỏi'
+    },
+    {
+      id: 'profile',
+      icon: <UserOutlined />,
+      label: 'Hồ sơ cá nhân',
+      description: 'Thông tin cá nhân'
+    },
+  ];
 
   // Mock consultant data - would come from API
   useEffect(() => {
@@ -253,9 +294,7 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
+  // Note: toggleSidebar function removed as it's not used
 
   const renderContent = () => {
     switch (activeSection) {
@@ -327,13 +366,16 @@ const ConsultantDashboard = () => {
   return (
     <div className="consultant-workspace">
       {/* Sidebar Navigation */}
-      <ConsultantSidebar
+      <Sidebar
+        userData={consultantData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={false}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
         activeSection={activeSection}
-        onSectionChange={handleSectionChange}
-        onLogout={handleLogout}
-        consultantData={consultantData}
-        collapsed={sidebarCollapsed}
-        onToggle={toggleSidebar}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+        basePath="/consultant"
       />
 
       {/* Main Content Area */}

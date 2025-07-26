@@ -18,11 +18,6 @@ import Sidebar from '../../components/Sidebar';
 
 // Import icons
 import {
-  HomeOutlined,
-  CalendarOutlined,
-  SearchOutlined,
-  EditOutlined,
-  UserOutlined,
   LogoutOutlined,
   BellOutlined,
   ClockCircleOutlined,
@@ -294,7 +289,6 @@ const StaffDashboard = () => {
       label: 'Lịch hẹn Hôm nay',
       icon: <CalendarOutlined />,
       description: 'Xét nghiệm trong ngày',
-
     },
     {
       id: 'search-appointments',
@@ -307,7 +301,6 @@ const StaffDashboard = () => {
       label: 'Quản lý Bài viết',
       icon: <EditOutlined />,
       description: 'Viết bài & chia sẻ',
-
     },
     {
       id: 'profile',
@@ -414,6 +407,7 @@ const StaffDashboard = () => {
         activeSection={activeSection}
         handleSectionChange={handleSectionChange}
         handleLogout={handleLogout}
+        basePath="/staff"
       />
 
       {/* Main Content */}

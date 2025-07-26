@@ -1,6 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import { 
+  LogoutOutlined, 
+  SettingOutlined
+} from '@ant-design/icons';
 
 const Sidebar = ({
   userData,
@@ -10,12 +13,15 @@ const Sidebar = ({
   menuItems,
   activeSection,
   handleSectionChange,
-  handleLogout
+  handleLogout,
+  basePath = '' // Add basePath prop for navigation
 }) => {
   // formatTime, formatDate có thể truyền vào props hoặc định nghĩa lại nếu cần
   const formatTime = (date) => date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   const formatDate = (date) => date.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' });
   const currentTime = new Date();
+
+
 
   return (
     <div className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
@@ -67,20 +73,21 @@ const Sidebar = ({
       {/* Navigation Menu */}
       <nav className="nav-menu">
         {menuItems.map((item) => (
-          <button
+          <Link
             key={item.id}
+            to={`${basePath}/${item.id}`}
             className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-            onClick={() => handleSectionChange(item.id)}
             title={sidebarCollapsed ? item.label : ''}
+            onClick={() => handleSectionChange(item.id)}
           >
-            <div className="nav-icon">{item.icon}</div>
+                         <div className="nav-icon">{item.icon}</div>
             {!sidebarCollapsed && (
               <div className="nav-content">
                 <div className="nav-label">{item.label}</div>
                 <div className="nav-description">{item.description}</div>
               </div>
             )}
-          </button>
+          </Link>
         ))}
       </nav>
 

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
+import { 
+  DashboardOutlined,
+  TeamOutlined,
+  UserAddOutlined,
+  BarChartOutlined,
+  MailOutlined,
+  ThunderboltOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 import Dashboard from './components/DashBoard/Dashboard';
 import AccountManagement from './components/AccountManagement/AccountManagement';
 import AdminProfile from './components/AdminProfile/AdminProfile';
@@ -7,6 +16,7 @@ import UserManagement from './components/UserManagement/UserManagement';
 import Reports from './components/Report/Reports';
 import BulkEmail from './components/BulkEmail/BulkEmail';
 import RecentActivities from './components/RecentActivities/RecentActivities';
+import Sidebar from '../../components/Sidebar';
 import Logo from '@assets/Logo-full.svg?react';
 import './AdminDashboard.css';
 
@@ -14,6 +24,7 @@ const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [activeSection, setActiveSection] = useState('dashboard');
 
   const adminName = sessionStorage.getItem('full_name') || 'Admin';
   const adminEmail = sessionStorage.getItem('email') || 'admin@example.com';
@@ -36,43 +47,71 @@ const AdminDashboard = () => {
     return () => clearInterval(progressInterval);
   }, []);
 
+  // Menu items for admin
   const menuItems = [
     {
-      path: '/admin/dashboard',
-      name: 'Bảng điều khiển',
-      icon: '📊',
+      id: 'dashboard',
+      icon: <DashboardOutlined />,
+      label: 'Bảng điều khiển',
+      description: 'Dashboard chính'
     },
     {
-      path: '/admin/accounts',
-      name: 'Quản lý tài khoản',
-      icon: '👥',
+      id: 'accounts',
+      icon: <TeamOutlined />,
+      label: 'Quản lý tài khoản',
+      description: 'Quản lý tài khoản hệ thống'
     },
     {
-      path: '/admin/users',
-      name: 'Thêm người dùng',
-      icon: '➕',
+      id: 'users',
+      icon: <UserAddOutlined />,
+      label: 'Thêm người dùng',
+      description: 'Tạo tài khoản mới'
     },
     {
-      path: '/admin/reports',
-      name: 'Báo cáo',
-      icon: '📈',
+      id: 'reports',
+      icon: <BarChartOutlined />,
+      label: 'Báo cáo',
+      description: 'Xem báo cáo thống kê'
     },
     {
-      path: '/admin/bulk-email',
-      name: 'Gửi email hàng loạt',
-      icon: '📧',
+      id: 'bulk-email',
+      icon: <MailOutlined />,
+      label: 'Gửi email hàng loạt',
+      description: 'Gửi email cho nhiều người'
     },
     {
-      path: '/admin/activities',
-      name: 'Hoạt động gần đây',
-      icon: '⚡',
+      id: 'activities',
+      icon: <ThunderboltOutlined />,
+      label: 'Hoạt động gần đây',
+      description: 'Theo dõi hoạt động'
     },
     {
-      path: '/admin/profile',
-      name: 'Hồ sơ cá nhân',
-      icon: '👤',
+      id: 'profile',
+      icon: <UserOutlined />,
+      label: 'Hồ sơ cá nhân',
+      description: 'Thông tin cá nhân'
     },
   ];
+
+  // Admin data for sidebar
+  const adminData = {
+    full_name: adminName,
+    email: adminEmail,
+    position: 'Administrator',
+    department: 'System Management',
+    avatar: `https://ui-avatars.com/api/?name=${adminName}&background=667eea&color=fff&size=60`,
+    averageFeedBackRating: '5.0',
+    totalAppointments: '∞'
+  };
+
+  const handleSectionChange = (sectionId) => {
+    setActiveSection(sectionId);
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    console.log('Logout clicked');
+  };
 
   // Loading Screen Component
   if (isLoading) {
@@ -133,58 +172,17 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       {/* Sidebar */}
-      <div className={`admin-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        {/* Logo */}
-        <div className="sidebar-header">
-          <Link to="/" className="logo-link">
-            {!sidebarCollapsed && <Logo className="sidebar-logo" />}
-          </Link>
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            <span className="hamburger-icon">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-          </button>
-        </div>
-
-        {/* Navigation Menu */}
-        <nav className="sidebar-nav">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? 'active' : ''}`
-              }
-            >
-              <span className="nav-icon">{item.icon}</span>
-              {!sidebarCollapsed && (
-                <span className="nav-text">{item.name}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Admin Info */}
-        <div className="sidebar-footer">
-          <div className="admin-info">
-            <div className="admin-avatar">
-              {adminName.charAt(0).toUpperCase()}
-            </div>
-            {!sidebarCollapsed && (
-              <div className="admin-details">
-                <div className="admin-name">{adminName}</div>
-                <div className="admin-email">{adminEmail}</div>
-                <div className="admin-role">Admin</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <Sidebar
+        userData={adminData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={false}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
+        activeSection={activeSection}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+        basePath="/admin"
+      />
 
       {/* Main Content */}
       <div className="admin-content">
