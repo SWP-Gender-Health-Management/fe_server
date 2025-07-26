@@ -65,16 +65,14 @@ const ConsultantSidebar = ({
     <div className={`consultant-sidebar ${collapsed ? 'collapsed' : ''}`}>
       {/* Sidebar Header */}
       <div className="sidebar-header">
-        <div className="logo-section">
+        <div className="center-logo">
           <Link to='/'>
-            <div className="logo-icon">🏥</div>
+            <img
+              src={collapsed ? "/src/assets/white.svg" : "/src/assets/Logo-full.svg"}
+              alt="Logo"
+              style={{ width: '45px', height: '45px', objectFit: 'contain' }}
+            />
           </Link>
-          {!collapsed && (
-            <div className="logo-text">
-              <h3>Consultant</h3>
-              <span>Workspace</span>
-            </div>
-          )}
         </div>
       </div>
 

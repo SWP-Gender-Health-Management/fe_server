@@ -13,6 +13,7 @@ import StaffProfile from '@pages/StaffDashboard/components/StaffProfile/StaffPro
 
 import StaffLaboratory from './components/StaffLab/StaffLaboratory';
 import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
+import Sidebar from '../../components/Sidebar';
 
 
 // Import icons
@@ -89,10 +90,6 @@ const StaffDashboard = () => {
         // console.log("generated: ", generated)
         setAppointments(generated);
         setStaffData((prev) => {
-          const totalAppointments = appointments.length;
-          const confirmedAppointments = appointments.filter((appointment) => {
-            return appointment.status == 'true'
-          }).length;
           prev = {
             ...prev,
             totalAppointments: appointments.length,
@@ -333,10 +330,6 @@ const StaffDashboard = () => {
     navigate('/');
   };
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -345,15 +338,6 @@ const StaffDashboard = () => {
     return date.toLocaleTimeString('vi-VN', {
       hour: '2-digit',
       minute: '2-digit',
-    });
-  };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
     });
   };
 
@@ -421,87 +405,16 @@ const StaffDashboard = () => {
   return (
     <div className="staff-workspace">
       {/* Sidebar */}
-      <div
-        className={`staff-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
-        onMouseEnter={() => setSidebarCollapsed(false)}
-        onMouseLeave={() => setSidebarCollapsed(true)}
-      >
-        {/* Header */}
-        <div className="sidebar-header">
-          <div className="center-logo">
-            <Link to={`/`} >
-              <img
-                src={sidebarCollapsed ? "/src/assets/white-logo.svg" : "/src/assets/Logo-full.svg"}
-                alt="Logo"
-              />
-            </Link>
-          </div>
-          {/* Bỏ nút mũi tên ở đây */}
-        </div>
-
-        {/* Staff Info Card */}
-        {!sidebarCollapsed && (
-          <div className="staff-info-card">
-            <div className="staff-avatar-section">
-              <img
-                src={staffData.avatar}
-                alt="Staff Avatar"
-                className="staff-avatar-large"
-              />
-            </div>
-            <div className="staff-info-details">
-              <h4>{staffData.full_name}</h4>
-              <p>{staffData.position}</p>
-              <p>{staffData.department}</p>
-              <div className="rating-section">
-                <span>⭐ {staffData.averageFeedBackRating}</span>
-                <span className="rating">{staffData.totalAppointments} tests</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Current Time & Date */}
-        {!sidebarCollapsed && (
-          <div className="time-widget">
-            <div className="current-time">{formatTime(currentTime)}</div>
-            <div className="current-date">{formatDate(currentTime)}</div>
-          </div>
-        )}
-
-        {/* Navigation Menu */}
-        <nav className="nav-menu">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-              onClick={() => handleSectionChange(item.id)}
-              title={sidebarCollapsed ? item.label : ''}
-            >
-              <div className="nav-icon">{item.icon}</div>
-              {!sidebarCollapsed && (
-                <div className="nav-content">
-                  <div className="nav-label">{item.label}</div>
-                  <div className="nav-description">{item.description}</div>
-                </div>
-              )}
-
-            </button>
-          ))}
-        </nav>
-
-        {/* Logout */}
-        <div className="sidebar-footer">
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-            title={sidebarCollapsed ? 'Đăng xuất' : ''}
-          >
-            <LogoutOutlined />
-            {sidebarCollapsed ? <SettingOutlined style={{ marginLeft: 8 }} /> : <span>Đăng xuất</span>}
-          </button>
-        </div>
-      </div>
+      <Sidebar
+        userData={staffData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={mobileMenuOpen}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
+        activeSection={activeSection}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+      />
 
       {/* Main Content */}
       <div className={`main-content ${sidebarCollapsed ? 'expanded' : ''}`}>
