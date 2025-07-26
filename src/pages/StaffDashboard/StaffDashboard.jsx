@@ -23,6 +23,11 @@ import {
   ClockCircleOutlined,
   MenuOutlined,
   SettingOutlined, // Thêm icon bánh răng
+  HomeOutlined,
+  CalendarOutlined,
+  SearchOutlined,
+  EditOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 
 const API_URL = 'http://localhost:3000';
