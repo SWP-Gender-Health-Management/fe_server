@@ -324,13 +324,17 @@ const ConsultationManagement = () => {
                     >
                       ✔️
                     </button> */}
-                    {appointment.isRequestedRefund && (
+                    {appointment.isRequestedRefund ? (
                       <button
                         className="view-btn"
                         onClick={() => handleRefundAppointment(appointment)}
                       >
-                        💸 Refund
+                        💸 Hoàn tiền
                       </button>
+                    ) : (
+                      appointment.isRefunded && (
+                        <span className="refund-completed">Đã hoàn tiền</span>
+                      )
                     )}
                   </div>
                 </td>

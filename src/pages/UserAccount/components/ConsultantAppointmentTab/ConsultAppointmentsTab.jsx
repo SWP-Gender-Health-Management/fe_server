@@ -262,7 +262,7 @@ const ConsultAppointmentsTab = ({
               disabled={record.isRequestedRefund ? true : false}
             >
               {record.isRequestedRefund
-                ? 'Đã gửi yêu cầu hoàn tiền'
+                ? (record.isRefunded ? 'Đã hoàn tiền' : 'Đang xử lý hoàn tiền')
                 : 'Yêu cầu hoàn tiền'}
             </Button>
           )}
@@ -427,7 +427,10 @@ const ConsultAppointmentsTab = ({
         afterClose={() => {
           fetchConApp();
         }}
-      />
+      >
+        <h1>Nếu bạn đã thanh toán, bạn chỉ được hoàn trả 70% sốt tiền!!!</h1>
+        <h1>Bạn có chắc chắn muốn hủy lịch hẹn không</h1>
+      </Modal>
 
       <Modal
         open={refundAppointment !== null}
@@ -435,8 +438,8 @@ const ConsultAppointmentsTab = ({
         onCancel={() => {
           setRefundAppointment(null);
         }}
-        onOk={() => {
-          handleRefundAppointment(refundAppointment.app_id);
+        onOk={ async () => {
+          await handleRefundAppointment(refundAppointment.app_id);
           setRefundAppointment(null);
           fetchConApp();
         }}

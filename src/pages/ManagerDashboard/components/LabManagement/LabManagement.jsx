@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './LabManagement.css';
 import dayjs from 'dayjs';
+import {
+  Button,
+  Descriptions,
+  Empty,
+  Modal,
+  Table,
+  Tag,
+  Typography,
+} from 'antd';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const accountId = Cookies.get('accountId');
+const accessToken = Cookies.get('accessToken');
+
+const API_URL = 'http://localhost:3000';
 
 const LabManagement = () => {
   const [appointments, setAppointments] = useState([]);
@@ -11,115 +27,82 @@ const LabManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [openTestDropdown, setOpenTestDropdown] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [refundInformation, setRefundInformation] = useState(null);
 
   // Mock data for lab appointments (mỗi appointment có thể có nhiều xét nghiệm)
   useEffect(() => {
-    const mockAppointments = [
-      {
-        id: 'LAB001',
-        customerName: 'Lê Văn Minh',
-        customerPhone: '0901234567',
-        tests: ['Xét nghiệm STD Panel', 'Xét nghiệm HIV'],
-        appointmentDate: '2024-12-21',
-        appointmentTime: '10:30',
-        status: 'confirmed',
-        price: 1150000,
-        notes: 'Khách hàng đã thanh toán trước',
-        resultFile: null,
-        createdAt: '2024-12-20 14:30',
-      },
-      {
-        id: 'LAB002',
-        customerName: 'Hoàng Văn Đức',
-        customerPhone: '0912345678',
-        tests: ['Xét nghiệm HIV'],
-        appointmentDate: '2024-12-21',
-        appointmentTime: '15:30',
-        status: 'confirmed',
-        price: 300000,
-        notes: 'Cần nhắc nhở khách hàng nhịn ăn',
-        resultFile: null,
-        createdAt: '2024-12-20 15:45',
-      },
-      {
-        id: 'LAB003',
-        customerName: 'Nguyễn Thị Hạnh',
-        customerPhone: '0923456789',
-        tests: ['Xét nghiệm Syphilis', 'Xét nghiệm tổng quát'],
-        appointmentDate: '2024-12-20',
-        appointmentTime: '09:00',
-        status: 'completed',
-        price: 850000,
-        notes: 'Đã hoàn thành, có kết quả',
-        resultFile: 'result_lab003.pdf',
-        createdAt: '2024-12-19 16:20',
-      },
-      {
-        id: 'LAB004',
-        customerName: 'Trần Thị Mai',
-        customerPhone: '0934567890',
-        tests: ['Xét nghiệm Hepatitis B'],
-        appointmentDate: '2024-12-22',
-        appointmentTime: '08:30',
-        status: 'pending_payment',
-        price: 400000,
-        notes: 'Chờ khách hàng thanh toán',
-        resultFile: null,
-        createdAt: '2024-12-20 17:10',
-      },
-      {
-        id: 'LAB005',
-        customerName: 'Phạm Văn Tú',
-        customerPhone: '0945678901',
-        tests: ['Xét nghiệm tổng quát', 'Xét nghiệm HIV'],
-        appointmentDate: '2024-12-22',
-        appointmentTime: '14:00',
-        status: 'in_progress',
-        price: 900000,
-        notes: 'Đang thực hiện xét nghiệm',
-        resultFile: null,
-        createdAt: '2024-12-21 09:15',
-      },
-    ];
-    setAppointments(mockAppointments);
-    setFilteredAppointments(mockAppointments);
-  }, []);
+    fetchAppointments();
+  }, [currentPage]);
 
   // Filter logic
-  useEffect(() => {
-    let filtered = appointments;
-    // Search by customer name
-    if (searchTerm) {
-      filtered = filtered.filter((appointment) =>
-        appointment.customerName
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      );
+  // useEffect(() => {
+  //   let filtered = appointments;
+  //   // Search by customer name
+  //   if (searchTerm) {
+  //     filtered = filtered.filter((appointment) =>
+  //       appointment.customer.full_name
+  //         .toLowerCase()
+  //         .includes(searchTerm.toLowerCase())
+  //     );
+  //   }
+  //   // Status filter
+  //   if (statusFilter !== 'all') {
+  //     filtered = filtered.filter(
+  //       (appointment) => appointment.status === statusFilter
+  //     );
+  //   }
+  //   // Date filter
+  //   if (dateFilter) {
+  //     filtered = filtered.filter(
+  //       (appointment) => appointment.date === dateFilter
+  //     );
+  //   }
+  //   setFilteredAppointments(filtered);
+  // }, [searchTerm, statusFilter, dateFilter, appointments, currentPage]);
+
+  const fetchAppointments = async () => {
+    try {
+      await axios
+        .get(`${API_URL}/manager/get-lab-app`, {
+          params: {
+            page: currentPage,
+            limit: itemsPerPage,
+            fullname: searchTerm.trim(),
+            status: statusFilter,
+            date: dateFilter,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((response) => {
+          const data = response.data.result;
+          console.log('Fetched manager lab appointments:', data);
+          setAppointments(data.labApp || []);
+          setFilteredAppointments(data.labApp || []);
+          setTotalPages(data.pages || 1);
+        });
+    } catch (error) {
+      console.error('Error fetching manager lab appointments:', error);
+      setAppointments([]);
+      setFilteredAppointments([]);
     }
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(
-        (appointment) => appointment.status === statusFilter
-      );
-    }
-    // Date filter
-    if (dateFilter) {
-      filtered = filtered.filter(
-        (appointment) => appointment.appointmentDate === dateFilter
-      );
-    }
-    setFilteredAppointments(filtered);
-  }, [searchTerm, statusFilter, dateFilter, appointments]);
+  };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending_payment: { text: 'Chờ thanh toán', color: '#f59e0b' },
+      pending: { text: 'Chờ thanh toán', color: '#f59e0b' },
       confirmed: { text: 'Đã xác nhận', color: '#10b981' },
       in_progress: { text: 'Đang thực hiện', color: '#3b82f6' },
       completed: { text: 'Đã có kết quả', color: '#059669' },
-      cancelled: { text: 'Đã huỷ', color: '#ef4444' },
+      confirmed_cancelled: { text: 'Đã huỷ', color: '#ef4444' },
+      pending_cancelled: { text: 'Đã huỷ', color: '#ef4444' },
     };
-    const config = statusConfig[status] || statusConfig.pending_payment;
+    const config = statusConfig[status] || statusConfig.pending;
     return (
       <span
         className="status-badge"
@@ -142,6 +125,50 @@ const LabManagement = () => {
     setShowModal(true);
   };
 
+  const handleRefund = async (appointmentId) => {
+    try {
+      await axios
+        .put(
+          `${API_URL}/manager/refund/${appointmentId}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        )
+        .then((response) => {
+          console.log('Hoàn tiền thành công: ', response.data);
+          setRefundInformation(null);
+          fetchAppointments(); // Refresh appointments after refund
+        });
+    } catch (error) {
+      console.error('Hoàn tiền thất bại: ', error);
+    }
+  };
+
+  const handleRefundAppointment = async (appointment) => {
+    await axios
+      .get(`${API_URL}/manager/get-refund-info/${appointment.app_id}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((response) => {
+        const data = response.data.result;
+        console.log('Fetched refund information:', data);
+        setRefundInformation(
+          {
+            ...data,
+            customer: appointment.customer,
+            lab: appointment.lab,
+            date: appointment.date,
+            app_id: appointment.app_id,
+          } || null
+        );
+      })
+      .catch((error) => {
+        console.error('Error fetching refund information:', error);
+        setRefundInformation(null);
+      });
+  };
+
   return (
     <div className="lab-management">
       <div className="lab-header">
@@ -151,7 +178,9 @@ const LabManagement = () => {
       {/* Filters and Search */}
       <div className="lab-toolbar">
         <div className="filter-group">
+          <label htmlFor="customer-search">Khách hàng:</label>
           <input
+            id="customer-search"
             type="text"
             placeholder="Tìm kiếm theo tên khách hàng..."
             value={searchTerm}
@@ -160,26 +189,45 @@ const LabManagement = () => {
           />
         </div>
         <div className="filter-group">
+          <label htmlFor="status-select">Trạng thái:</label>
           <select
+            id="status-select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="filter-select"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="pending_payment">Chờ thanh toán</option>
+            <option value="pending">Chờ xác nhận</option>
             <option value="confirmed">Đã xác nhận</option>
-            <option value="in_progress">Đang thực hiện</option>
-            <option value="completed">Đã có kết quả</option>
+            <option value="completed">Đã hoàn thành</option>
             <option value="cancelled">Đã huỷ</option>
+            <option value="in_progress">Đang tiến hành</option>
           </select>
         </div>
         <div className="filter-group">
+          <label htmlFor="date-filter">Ngày hẹn:</label>
           <input
+            id="date-filter"
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
             className="filter-date"
           />
+        </div>
+        <div className="filter-group">
+          <Button
+            onClick={() => {
+              if (currentPage !== 1) {
+                setCurrentPage(1);
+              } else {
+                fetchAppointments();
+              }
+            }}
+            type="primary"
+            className="filter-button"
+          >
+            <span className="filter-button">Tìm kiếm</span>
+          </Button>
         </div>
       </div>
       {/* Lab Appointments Table */}
@@ -198,16 +246,18 @@ const LabManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAppointments.map((appointment) => (
-              <tr key={appointment.id}>
-                <td className="appointment-id">{appointment.id}</td>
+            {filteredAppointments.map((appointment, index) => (
+              <tr key={index + (currentPage - 1) * itemsPerPage + 1}>
+                <td className="appointment-id">
+                  {index + (currentPage - 1) * itemsPerPage + 1}
+                </td>
                 <td>
                   <div className="customer-info">
                     <div className="customer-name">
-                      {appointment.customerName}
+                      {appointment.customer.full_name}
                     </div>
                     <div className="customer-phone">
-                      {appointment.customerPhone}
+                      {appointment.customer.phone}
                     </div>
                   </div>
                 </td>
@@ -217,19 +267,19 @@ const LabManagement = () => {
                       className="test-dropdown-btn"
                       onClick={() =>
                         setOpenTestDropdown(
-                          openTestDropdown === appointment.id
+                          openTestDropdown === appointment.app_id
                             ? null
-                            : appointment.id
+                            : appointment.app_id
                         )
                       }
                     >
-                      {appointment.tests.length} xét nghiệm ▼
+                      {appointment.lab.length} xét nghiệm ▼
                     </button>
-                    {openTestDropdown === appointment.id && (
+                    {openTestDropdown === appointment.app_id && (
                       <ul className="test-dropdown-list">
-                        {appointment.tests.map((test, idx) => (
+                        {appointment.lab.map((l, idx) => (
                           <li key={idx} className="test-item">
-                            {test}
+                            {l.name}
                           </li>
                         ))}
                       </ul>
@@ -239,15 +289,15 @@ const LabManagement = () => {
                 <td>
                   <div className="appointment-datetime">
                     <div className="date">
-                      {dayjs(appointment.appointmentDate).format('DD/MM/YYYY')}
+                      {dayjs(appointment.date).format('DD/MM/YYYY')}
                     </div>
-                    <div className="time">{appointment.appointmentTime}</div>
+                    <div className="time">{appointment.time}</div>
                   </div>
                 </td>
-                <td className="price">{formatCurrency(appointment.price)}</td>
+                <td className="price">{formatCurrency(appointment.amount)}</td>
                 <td>{getStatusBadge(appointment.status)}</td>
                 <td>
-                  {appointment.resultFile ? (
+                  {appointment.result && appointment.result.length > 0 ? (
                     <span className="has-result">📄 Có kết quả</span>
                   ) : (
                     <span className="no-result">Chưa có</span>
@@ -261,6 +311,18 @@ const LabManagement = () => {
                     >
                       👁
                     </button>
+                    {appointment.isRequestedRefund ? (
+                      <button
+                        className="view-btn"
+                        onClick={() => handleRefundAppointment(appointment)}
+                      >
+                        💸 Hoàn tiền
+                      </button>
+                    ) : (
+                      appointment.isRefunded && (
+                        <span className="refund-completed">Đã hoàn tiền</span>
+                      )
+                    )}
                   </div>
                 </td>
               </tr>
@@ -268,85 +330,238 @@ const LabManagement = () => {
           </tbody>
         </table>
       </div>
-      {/* Lab Appointment Detail Modal */}
-      {showModal && selectedAppointment && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="lab-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Chi tiết lịch hẹn xét nghiệm</h3>
-              <button className="close-btn" onClick={() => setShowModal(false)}>
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="detail-grid">
-                <div className="detail-item">
-                  <label>ID:</label>
-                  <span>{selectedAppointment.id}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Khách hàng:</label>
-                  <span>{selectedAppointment.customerName}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Số điện thoại:</label>
-                  <span>{selectedAppointment.customerPhone}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Xét nghiệm:</label>
-                  <ul className="test-list">
-                    {selectedAppointment.tests.map((test, idx) => (
-                      <li key={idx} className="test-item">
-                        {test}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="detail-item">
-                  <label>Ngày hẹn:</label>
-                  <span>
-                    {dayjs(selectedAppointment.appointmentDate).format(
-                      'DD/MM/YYYY'
-                    )}
-                  </span>
-                </div>
-                <div className="detail-item">
-                  <label>Giờ hẹn:</label>
-                  <span>{selectedAppointment.appointmentTime}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Giá tiền:</label>
-                  <span>{formatCurrency(selectedAppointment.price)}</span>
-                </div>
-                <div className="detail-item">
-                  <label>Trạng thái:</label>
-                  <span>{getStatusBadge(selectedAppointment.status)}</span>
-                </div>
-                <div className="detail-item full-width">
-                  <label>Ghi chú:</label>
-                  <span>{selectedAppointment.notes}</span>
-                </div>
-                <div className="detail-item">
-                  <label>File kết quả:</label>
-                  <span>
-                    {selectedAppointment.resultFile ? (
-                      <a href="#" className="result-link">
-                        📄 {selectedAppointment.resultFile}
-                      </a>
-                    ) : (
-                      'Chưa có kết quả'
-                    )}
-                  </span>
-                </div>
-                <div className="detail-item">
-                  <label>Tạo lúc:</label>
-                  <span>{selectedAppointment.createdAt}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+
+      {/* Pagination */}
+      <div className="pagination">
+        <div className="pagination-info">
+          Trang {currentPage} của {totalPages}
         </div>
-      )}
+        <div className="pagination-controls">
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+          >
+            Đầu
+          </button>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Trước
+          </button>
+
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={currentPage === pageNum ? 'active' : ''}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Sau
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            Cuối
+          </button>
+        </div>
+      </div>
+
+      {/* Lab Appointment Detail Modal */}
+      <Modal
+        title={
+          <div className="lab-detail-title">
+            <div>Chi tiết lịch hẹn xét nghiệm</div>
+            {selectedAppointment && (
+              <Tag
+                color={
+                  selectedAppointment.status === 'completed'
+                    ? 'blue'
+                    : selectedAppointment.status === 'confirmed'
+                      ? 'green'
+                      : selectedAppointment.status === 'pending'
+                        ? 'orange'
+                        : 'red'
+                }
+              >
+                {selectedAppointment.status === 'completed'
+                  ? 'Đã hoàn thành'
+                  : selectedAppointment.status === 'confirmed'
+                    ? 'Đã xác nhận'
+                    : selectedAppointment.status === 'pending'
+                      ? 'Chờ xác nhận'
+                      : 'Đã hủy'}
+              </Tag>
+            )}
+          </div>
+        }
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        footer={[
+          <Button key="close" onClick={() => setShowModal(false)}>
+            Đóng
+          </Button>,
+        ]}
+        width={800}
+        className="lab-detail-modal"
+      >
+        {selectedAppointment && (
+          <div className="lab-detail-content">
+            {/* Thông tin lịch hẹn */}
+            <Descriptions title="Thông tin lịch hẹn" bordered column={2}>
+              <Descriptions.Item label="Ngày hẹn">
+                {dayjs(selectedAppointment.date).format('DD/MM/YYYY')}
+              </Descriptions.Item>
+              <Descriptions.Item label="Giờ hẹn">
+                {selectedAppointment.time}
+              </Descriptions.Item>
+              <Descriptions.Item label="Mô tả" span={2}>
+                {selectedAppointment.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="Loại xét nghiệm" span={2}>
+                {selectedAppointment.lab.map((l, index) => (
+                  <span key={index} style={{ marginLeft: index > 0 ? 8 : 0 }}>
+                    {l.name || 'Xét nghiệm'}
+                    {index < selectedAppointment.lab.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+              </Descriptions.Item>
+            </Descriptions>
+
+            {/* Kết quả xét nghiệm */}
+            <Typography.Title level={5} style={{ marginTop: 24 }}>
+              Kết quả xét nghiệm
+            </Typography.Title>
+            {selectedAppointment.result &&
+            selectedAppointment.result.length > 0 ? (
+              <Table
+                dataSource={selectedAppointment.result}
+                rowKey="result_id"
+                pagination={false}
+                size="small"
+                columns={[
+                  {
+                    title: 'Tên xét nghiệm',
+                    dataIndex: 'name',
+                    key: 'name',
+                  },
+                  {
+                    title: 'Kết quả',
+                    dataIndex: 'result',
+                    key: 'result',
+                  },
+                  {
+                    title: 'Đơn vị',
+                    dataIndex: 'unit',
+                    key: 'unit',
+                  },
+                  {
+                    title: 'Giá trị bình thường',
+                    dataIndex: 'normal_range',
+                    key: 'normal_range',
+                  },
+                  {
+                    title: 'Kết luận',
+                    dataIndex: 'conclusion',
+                    key: 'conclusion',
+                    ellipsis: true,
+                  },
+                ]}
+              />
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Chưa có kết quả xét nghiệm"
+                style={{ marginTop: 16 }}
+              />
+            )}
+          </div>
+        )}
+      </Modal>
+
+      {/* Refund Appointment Modal */}
+      <Modal
+        open={refundInformation !== null}
+        onCancel={() => setRefundInformation(null)}
+        title="Xác nhận hoàn tiền"
+      >
+        <h1>Thông tin hoàn tiền</h1>
+        {refundInformation && (
+          <Descriptions column={1} bordered>
+            <Descriptions.Item label="Khách hàng">
+              <strong>{refundInformation.customer.full_name}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Số điện thoại">
+              <strong>{refundInformation.customer.phone}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Loại xét nghiệm">
+              {refundInformation.lab.map((l, index) => (
+                <span key={index}>
+                  {l.name || 'Xét nghiệm'}
+                  {index < refundInformation.lab.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày hẹn">
+              <strong>
+                {dayjs(refundInformation.date).format('DD/MM/YYYY')}
+              </strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Tên ngân hàng">
+              <strong>{refundInformation.bankName}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Số tài khoảng">
+              <strong>{refundInformation.accountNumber}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Số tiền">
+              <strong>{refundInformation.amount}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Nguyên nhân">
+              <strong>{refundInformation.description}</strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày tạo">
+              <strong>
+                {dayjs(refundInformation.created_at).format('DD/MM/YYYY')}
+              </strong>
+            </Descriptions.Item>
+            <Descriptions.Item label="Đã hoàn tiền">
+              {refundInformation.isRefunded ? (
+                <span style={{ color: 'green' }}>Đã hoàn tiền</span>
+              ) : (
+                <Button
+                  onClick={() => handleRefund(refundInformation.app_id)}
+                  style={{ color: 'red' }}
+                >
+                  Chưa hoàn tiền
+                </Button>
+              )}
+            </Descriptions.Item>
+          </Descriptions>
+        )}
+      </Modal>
     </div>
   );
 };
