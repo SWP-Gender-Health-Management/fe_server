@@ -348,7 +348,9 @@ const UserAccount = () => {
         return 'green';
       case 'pending':
         return 'orange';
-      case 'cancelled':
+      case 'pending_cancelled':
+        return 'red';
+      case 'confirm_cancelled':
         return 'red';
       case 'completed':
         return 'blue';
@@ -364,7 +366,9 @@ const UserAccount = () => {
         return 'Đã xác nhận';
       case 'pending':
         return 'Chờ xác nhận';
-      case 'cancelled':
+      case 'pending_cancelled':
+        return 'Đã hủy';
+      case 'confirmed_cancelled':
         return 'Đã hủy';
       case 'completed':
         return 'Đã hoàn thành';

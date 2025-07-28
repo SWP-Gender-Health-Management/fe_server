@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
 import Dashboard from './components/Dashboard/Dashboard';
 import ServiceManagement from './components/ServiceManagement/ServiceManagement';
 import BlogManagement from './components/BlogManagement/BlogManagement';
@@ -128,12 +128,14 @@ const ManagerDashboard = () => {
       <div className={`manager-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         {/* Logo */}
         <div className="sidebar-header">
-          <div className="logo">
-            <span className="logo-icon">🏥</span>
-            {!sidebarCollapsed && (
-              <span className="logo-text">HealthManager</span>
-            )}
-          </div>
+          <Link to="/">
+            <div className="logo">
+              <span className="logo-icon">🏥</span>
+              {!sidebarCollapsed && (
+                <span className="logo-text">HealthManager</span>
+              )}
+            </div>
+          </Link>
           <button
             className="sidebar-toggle"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}

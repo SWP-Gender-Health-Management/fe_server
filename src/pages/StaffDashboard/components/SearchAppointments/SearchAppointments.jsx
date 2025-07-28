@@ -358,7 +358,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       }
 
 
-      if (newStatus === "completed" && selectedAppointment.tests.filter(test => test.status === "completed").length === 0) {
+      if (newStatus === "completed" && selectedAppointment.tests.filter(test => test.status === "completed").length < selectedAppointment.tests.length) {
         alert("The tests of appointment haven't been completed!!!");
         return;
       }

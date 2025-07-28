@@ -311,7 +311,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Upcoming Appointments */}
+      {/* Upcoming Appointments
       <div className="appointments-section">
         <div className="section-header">
           <h2>Lịch hẹn sắp tới</h2>
@@ -379,7 +379,7 @@ const Dashboard = () => {
         <div className="appointments-footer">
           <button className="view-all-btn">Xem tất cả lịch hẹn</button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
