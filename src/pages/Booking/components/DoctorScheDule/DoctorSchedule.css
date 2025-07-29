@@ -35,21 +35,24 @@
   padding: 25px;
   border-radius: 15px;
   border: 1px solid #e2e8f0;
+  
 }
-
-.doctor-avatar-header {
+#root > div > div.booking-page > div > div.booking-content > div > div.schedule-header > div > div.doctor-avatar-header{
+  height: auto;
   position: relative;
   flex-shrink: 0;
 }
 
+
 .doctor-avatar-header img {
-  width: 80px;
-  height: 80px;
+  width: 100%;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
 }
+
 
 .online-indicator {
   position: absolute;
@@ -113,7 +116,7 @@
 }
 
 .nav-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
   color: white;
   border: none;
   padding: 10px 20px;
@@ -121,11 +124,14 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
+  width: fit-content;
 }
 
 .nav-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #ffb74b, #f89e28) !important;
+
 }
 
 .week-title {
@@ -145,7 +151,7 @@
 /* Schedule Grid */
 .schedule-grid {
   display: grid;
-  grid-template-columns: 80px repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 1px;
   background: #e2e8f0;
   border-radius: 10px;
@@ -172,10 +178,13 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%) !important;
 }
 
 .day-header.today {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
+  border-color: #ff8e53 ;
+  border: #ff5353 double 0.3em ;
   color: white;
 }
 
@@ -352,7 +361,7 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .schedule-grid {
-    grid-template-columns: 70px repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr);
   }
 
   .time-slot {
@@ -452,3 +461,4 @@
     font-size: 0.65rem;
   }
 }
+

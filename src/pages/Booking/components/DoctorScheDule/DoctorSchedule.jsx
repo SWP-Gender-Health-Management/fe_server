@@ -13,42 +13,6 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
   const accountId = Cookies.get('accountId');
   const token = Cookies.get('accessToken');
 
-  // Chỉ lấy tuần hiện tại
-  // const currentWeek = new Date();
-
-  // Mock data cho lịch khám (true = available, false = booked)
-  // const generateMockSchedule = () => {
-  //   const schedule = {};
-  //   const timeSlots = [
-  //     '08:00',
-  //     '09:00',
-  //     '10:00',
-  //     '11:00',
-  //     '14:00',
-  //     '15:00',
-  //     '16:00',
-  //     '17:00',
-  //   ];
-
-  //   // Chỉ tạo lịch cho tuần hiện tại
-  //   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-  //     const date = new Date(currentWeek);
-  //     date.setDate(date.getDate() - date.getDay() + dayOffset);
-  //     const dateKey = date.toISOString().split('T')[0];
-
-  //     schedule[dateKey] = {};
-
-  //     timeSlots.forEach((time) => {
-  //       // Random availability (70% available)
-  //       schedule[dateKey][time] = Math.random() > 0.3;
-  //     });
-  //   }
-
-  //   return schedule;
-  // };
-
-  // 1. State tuần
-
   const [weekStart, setWeekStart] = useState(() => {
     const now = new Date();
     const start = new Date();
@@ -292,76 +256,79 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
             ))}
           </div>
 
-          {getWeekDates().map((date, dayIndex) => {
-            const dateKey = date.toISOString().split('T')[0];
-            const isToday = date.toDateString() === new Date().toDateString();
-            const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
-            return (
-              <div
-                key={dayIndex}
-                className={`day-column ${isPast ? 'past-day' : ''}`}
-              >
-                <div className={`day-header ${isToday ? 'today' : ''}`}>
-                  <div className="day-name">{formatDayName(date)}</div>
-                  <div className="day-date">{formatDate(date)}</div>
-                </div>
+          {/* Đảm bảo chỉ có đúng 7 day-column */}
+          {(() => {
+            const weekDates = getWeekDates();
+            if (weekDates.length !== 7) {
+              console.warn('Số lượng cột ngày không đúng:', weekDates.length);
+            }
+            return weekDates.slice(0, 7).map((date, dayIndex) => {
+              const dateKey = date.toISOString().split('T')[0];
+              const isToday = date.toDateString() === new Date().toDateString();
+              const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+              return (
+                <div
+                  key={dayIndex}
+                  className={`day-column ${isPast ? 'past-day' : ''}`}
+                >
+                  <div className={`day-header ${isToday ? 'today' : ''}`}>
+                    <div className="day-name">{formatDayName(date)}</div>
+                    <div className="day-date">{formatDate(date)}</div>
+                  </div>
 
-                {timeSlots.map((time) => {
-                  const isAvailable =
-                    schedule[dateKey] && schedule[dateKey][time] === true;
-                  const isBooked =
-                    schedule[dateKey] && schedule[dateKey][time] === false;
-                  const isSelected =
-                    selectedSlot &&
-                    selectedSlot.date.toDateString() === date.toDateString() &&
-                    selectedSlot.start_at === time;
+                  {timeSlots.map((time) => {
+                    const isAvailable =
+                      schedule[dateKey] && schedule[dateKey][time] === true;
+                    const isBooked =
+                      schedule[dateKey] && schedule[dateKey][time] === false;
+                    const isSelected =
+                      selectedSlot &&
+                      selectedSlot.date.toDateString() === date.toDateString() &&
+                      selectedSlot.start_at === time;
 
-                  console.log(
-                    `Date: ${dateKey}, Time: ${time}, Available: ${isAvailable}, Booked: ${isBooked}`
-                  );
-
-                  return (
-                    <div
-                      key={time}
-                      className={`schedule-slot ${isPast
-                        ? 'past'
-                        : isAvailable
-                          ? 'available'
-                          : isBooked
-                            ? 'booked'
-                            : 'no-slot'
-                        } ${isSelected ? 'selected' : ''}`}
-                      onClick={() =>
-                        !isPast && isAvailable && handleSlotClick(date, time)
-                      }
-                      title={
-                        isPast
-                          ? 'Đã qua'
+                    return (
+                      <div
+                        key={time}
+                        className={`schedule-slot ${isPast
+                          ? 'past'
                           : isAvailable
-                            ? 'Còn trống - Click để chọn'
+                            ? 'available'
                             : isBooked
-                              ? 'Đã được đặt'
-                              : ''
-                      }
-                    >
-                      {isPast
-                        ? '⏰'
-                        : isAvailable
-                          ? '✅'
-                          : isBooked
-                            ? '❌'
-                            : ''}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+                              ? 'booked'
+                              : 'no-slot'
+                          } ${isSelected ? 'selected' : ''}`}
+                        onClick={() =>
+                          !isPast && isAvailable && handleSlotClick(date, time)
+                        }
+                        title={
+                          isPast
+                            ? 'Đã qua'
+                            : isAvailable
+                              ? 'Còn trống - Click để chọn'
+                              : isBooked
+                                ? 'Đã được đặt'
+                                : ''
+                        }
+                      >
+                        {isPast
+                          ? '⏰'
+                          : isAvailable
+                            ? '✅'
+                            : isBooked
+                              ? '❌'
+                              : ''}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            });
+          })()}
         </div>
 
         <div className="legend">
           <div className="legend-item">
-            <span className="legend-icon available">✅</span>
+            <span className="legend-icon available">✅</span> 
             <span>Còn trống</span>
           </div>
           <div className="legend-item">

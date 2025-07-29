@@ -123,7 +123,7 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
 
   return (
     <div className="booking-form">
-      <div className="form-header">
+      <div className="info-form-header">
         <button className="back-button" onClick={onBack}>
           ← Quay lại chọn lịch
         </button>
