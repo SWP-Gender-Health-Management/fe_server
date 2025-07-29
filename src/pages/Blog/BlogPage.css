@@ -532,8 +532,14 @@
 }
 
 /* Pagination */
+.pagination {
+  display: flex;
+  flex-direction: row !important;
+  justify-content: center !important;
+}
 .pagination-but {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 15px;

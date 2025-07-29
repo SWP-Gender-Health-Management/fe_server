@@ -13,7 +13,7 @@ import {
   SearchOutlined,
   TeamOutlined,
   UserOutlined,
-  WechatWorkOutlined
+  WechatWorkOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Button, Dropdown, Menu, Tooltip } from 'antd';
 import axios from 'axios';
@@ -26,8 +26,9 @@ import Logout from '@components/Logout/Logout';
 import { useAuth } from '@context/AuthContext';
 import '@styles/reset.css';
 import NotificationDropdown from '../Notification/NotificationDropdown';
-import './Navbar.css';
+import api from '@/api/api';
 
+import './Navbar.css';
 
 const API_URL = 'http://localhost:3000';
 
@@ -39,6 +40,7 @@ const Navbar = ({ onLoginClick }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLogoutVisible, setIsLogoutVisible] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [blogTitle, setBlogTitle] = useState(null);
   const [loading, setLoading] = useState(false); // Sửa tên _loading thành loading
 
   // Handle scroll effect
@@ -52,6 +54,23 @@ const Navbar = ({ onLoginClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const match = location.pathname.match(/^\/blog\/(\d+)$/);
+    if (match) {
+      const blogId = match[1];
+      const fetchBlogTitle = async () => {
+        try {
+          const res = await api.get(`/blog/get-blog-by-id/${blogId}`);
+          setBlogTitle(res.data.result.title);
+        } catch (error) {
+          console.error('Không lấy được tiêu đề blog:', error);
+          setBlogTitle('Không tìm thấy');
+        }
+      };
+      fetchBlogTitle();
+    }
+  }, [location.pathname]);
+
   const pathDisplayNames = {
     'dich-vu': 'Dịch vụ',
     'tin-tuc': 'Tin tức',
@@ -61,7 +80,8 @@ const Navbar = ({ onLoginClick }) => {
     'chu-ki': 'Theo dõi chu kỳ',
     'hoi-dap': 'Hỏi đáp',
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
-    'admin': 'Quản trị viên',
+    admin: 'Quản trị viên',
+    blog: 'Blog',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -189,19 +209,19 @@ const Navbar = ({ onLoginClick }) => {
       ...(role === 'CUSTOMER' || role === 3
         ? []
         : [
-          {
-            key: 'settings',
-            label: (
-              <Link
-                to={roleRoutes[role]?.path || '/settings'}
-                className="dropdown-link"
-              >
-                <AppstoreOutlined style={{ marginRight: '8px' }} />
-                {roleRoutes[role]?.label || 'Cài đặt'}
-              </Link>
-            ),
-          },
-        ]),
+            {
+              key: 'settings',
+              label: (
+                <Link
+                  to={roleRoutes[role]?.path || '/settings'}
+                  className="dropdown-link"
+                >
+                  <AppstoreOutlined style={{ marginRight: '8px' }} />
+                  {roleRoutes[role]?.label || 'Cài đặt'}
+                </Link>
+              ),
+            },
+          ]),
       { type: 'divider' },
       {
         key: 'logout',
@@ -434,20 +454,34 @@ const Navbar = ({ onLoginClick }) => {
                   },
                   ...pathnames.map((name, index) => {
                     const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-                    const displayName =
-                      pathDisplayNames[name] || name.replace(/-/g, ' ');
-                    return {
-                      title:
-                        index === pathnames.length - 1 ? (
+                    if (
+                      index === pathnames.length - 1 &&
+                      pathnames[index - 1] === 'blog' &&
+                      !isNaN(name)
+                    ) {
+                      return {
+                        title: (
                           <span className="breadcrumb-current">
-                            {displayName}
+                            {blogTitle || 'Đang tải...'}
                           </span>
-                        ) : (
-                          <Link to={routeTo} className="breadcrumb-link">
-                            {displayName}
-                          </Link>
                         ),
-                    };
+                      };
+                    } else {
+                      const displayName =
+                        pathDisplayNames[name] || name.replace(/-/g, ' ');
+                      return {
+                        title:
+                          index === pathnames.length - 1 ? (
+                            <span className="breadcrumb-current">
+                              {displayName}
+                            </span>
+                          ) : (
+                            <Link to={routeTo} className="breadcrumb-link">
+                              {displayName}
+                            </Link>
+                          ),
+                      };
+                    }
                   }),
                 ]}
               />
