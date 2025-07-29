@@ -12,19 +12,22 @@ import StaffBlog from '@pages/StaffDashboard/components/StaffBlog/StaffBlog';
 import StaffProfile from '@pages/StaffDashboard/components/StaffProfile/StaffProfile';
 
 import StaffLaboratory from './components/StaffLab/StaffLaboratory';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
+import Sidebar from '../../components/Sidebar';
 
 
 // Import icons
 import {
-  HomeOutlined,
-  CalendarOutlined,
-  SearchOutlined,
-  EditOutlined,
-  UserOutlined,
   LogoutOutlined,
   BellOutlined,
   ClockCircleOutlined,
   MenuOutlined,
+  SettingOutlined, // Thêm icon bánh răng
+  HomeOutlined,
+  CalendarOutlined,
+  SearchOutlined,
+  EditOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 
 const API_URL = 'http://localhost:3000';
@@ -87,10 +90,6 @@ const StaffDashboard = () => {
         // console.log("generated: ", generated)
         setAppointments(generated);
         setStaffData((prev) => {
-          const totalAppointments = appointments.length;
-          const confirmedAppointments = appointments.filter((appointment) => {
-            return appointment.status == 'true'
-          }).length;
           prev = {
             ...prev,
             totalAppointments: appointments.length,
@@ -235,11 +234,13 @@ const StaffDashboard = () => {
       );
       setStaffData((prev) => {
         if (viewResponse.data.result) {
+          console.log("Staff role from API:", viewResponse.data.result.role);
+          console.log("Staff data from API:", viewResponse.data.result);
           prev = {
             ...prev,
             ...viewResponse.data.result,
-            department: getDepartment(viewResponse.data.result.role),
-            position: getPosition(viewResponse.data.result.role)
+            position: "Front Desk Staff",
+            department: "Front Desk"
           }
         }
         if (ratingResponse.data.result) {
@@ -286,35 +287,33 @@ const StaffDashboard = () => {
   const menuItems = [
     {
       id: 'overview',
-      label: 'Tổng quan',
+      label: 'Overview',
       icon: <HomeOutlined />,
-      description: 'Dashboard chính',
+      description: 'Main dashboard',
     },
     {
       id: 'today-appointments',
-      label: 'Lịch hẹn Hôm nay',
+      label: 'Today\'s Appointments',
       icon: <CalendarOutlined />,
-      description: 'Xét nghiệm trong ngày',
-
+      description: 'Today\'s laboratory tests',
     },
     {
       id: 'search-appointments',
-      label: 'Tìm kiếm Lịch hẹn',
+      label: 'Search Appointments',
       icon: <SearchOutlined />,
-      description: 'Tra cứu lịch sử',
+      description: 'Search appointment history',
     },
     {
       id: 'blog-management',
-      label: 'Quản lý Bài viết',
+      label: 'Blog Management',
       icon: <EditOutlined />,
-      description: 'Viết bài & chia sẻ',
-
+      description: 'Write & share articles',
     },
     {
       id: 'profile',
-      label: 'Hồ sơ cá nhân',
+      label: 'Personal Profile',
       icon: <UserOutlined />,
-      description: 'Thông tin cá nhân',
+      description: 'Personal information',
     },
   ];
 
@@ -331,10 +330,6 @@ const StaffDashboard = () => {
     navigate('/');
   };
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -345,49 +340,6 @@ const StaffDashboard = () => {
       minute: '2-digit',
     });
   };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-  const getPosition = (role) => {
-    switch (role) {
-      case 0:
-        return "Quản trị viên";
-      case 1:
-        return "Tư vấn viên";
-      case 2:
-        return "Kỹ thuật viên Xét nghiệm";
-      case 4:
-        return "Quản Lý";
-      case 5:
-        return "Tiếp tân";
-      default:
-        return "Khách hàng";
-    }
-  }
-
-  const getDepartment = (role) => {
-    switch (role) {
-      case 0:
-        return "Quản trị viên";
-      case 1:
-        return "Bộ phận tư vấn";
-      case 2:
-        return "Phòng xét nghiệm";
-      case 4:
-        return "Phòng QUản Lý";
-      case 5:
-        return "Tiếp tân";
-      default:
-        return "Khách hàng";
-    }
-  }
 
   const renderContent = () => {
     switch (activeSection) {
@@ -408,106 +360,28 @@ const StaffDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="staff-workspace">
-        <div className="workspace-loading">
-          <div className="loading-spinner"></div>
-          <h3>Đang tải Workspace</h3>
-          <p>Đang chuẩn bị khu vực làm việc của bạn ....
-            Vui lòng đợi trong giây lát
-          </p>
-        </div>
-      </div>
+      <WorkspaceLoading
+        className="staff-workspace"
+        title="Loading Workspace"
+        description="Preparing your workspace... Please wait a moment"
+      />
     );
   }
 
   return (
     <div className="staff-workspace">
       {/* Sidebar */}
-      <div
-        className={`staff-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
-      >
-        {/* Header */}
-        <div className="sidebar-header">
-          <div className="center-logo">
-            <Link to={`/`} >
-              <img src="/src/assets/blue-logo.svg" alt="Logo" />
-            </Link>
-          </div>
-          {!sidebarCollapsed && (
-            <div className="header-text">
-              <h2>Lab Workspace</h2>
-              <p>Khu vực xét nghiệm</p>
-            </div>
-          )}
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            {sidebarCollapsed ? '▶' : '◀'}
-          </button>
-        </div>
-
-        {/* Staff Info Card */}
-        {!sidebarCollapsed && (
-          <div className="staff-info-card">
-            <div className="staff-avatar-section">
-              <img
-                src={staffData.avatar}
-                alt="Staff Avatar"
-                className="staff-avatar-large"
-              />
-              <div className="status-indicator active"></div>
-            </div>
-            <div className="staff-info-details">
-              <h4>{staffData.full_name}</h4>
-              <p>{staffData.position}</p>
-              <p>{staffData.department}</p>
-              <div className="rating-section">
-                <span>⭐ {staffData.averageFeedBackRating}</span>
-                <span className="rating">{staffData.totalAppointments} tests</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Current Time & Date */}
-        {!sidebarCollapsed && (
-          <div className="time-widget">
-            <div className="current-time">{formatTime(currentTime)}</div>
-            <div className="current-date">{formatDate(currentTime)}</div>
-          </div>
-        )}
-
-        {/* Navigation Menu */}
-        <nav className="nav-menu">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-              onClick={() => handleSectionChange(item.id)}
-              title={sidebarCollapsed ? item.label : ''}
-            >
-              <div className="nav-icon">{item.icon}</div>
-              {!sidebarCollapsed && (
-                <div className="nav-content">
-                  <div className="nav-label">{item.label}</div>
-                  <div className="nav-description">{item.description}</div>
-                </div>
-              )}
-
-            </button>
-          ))}
-        </nav>
-
-        {/* Logout */}
-        <div className="sidebar-footer">
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-            title={sidebarCollapsed ? 'Đăng xuất' : ''}
-          >
-            <LogoutOutlined />
-            {!sidebarCollapsed && <span>Đăng xuất</span>}
-          </button>
-        </div>
-      </div>
+      <Sidebar
+        userData={staffData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={mobileMenuOpen}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
+        activeSection={activeSection}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+        basePath="/staff"
+      />
 
       {/* Main Content */}
       <div className={`main-content ${sidebarCollapsed ? 'expanded' : ''}`}>

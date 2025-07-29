@@ -18,13 +18,13 @@ const AuthImageSection = ({ doctor }) => (
         Dịch vụ y tế chuyên nghiệp, tin cậy cho sức khỏe của bạn.
       </p>
       <div className="stats-container">
-        <div className="stat-item">
-          <span className="stat-number">24/7</span>
-          <span className="stat-label">Hỗ trợ</span>
+        <div className="login-stat-item">
+          <span className="login-stat-number">24/7</span>
+          <span className="login-stat-label">Hỗ trợ</span>
         </div>
-        <div className="stat-item">
-          <span className="stat-number">500+</span>
-          <span className="stat-label">Bác sĩ</span>
+        <div className="login-stat-item">
+          <span className="login-stat-number">500+</span>
+          <span className="login-stat-label">Bác sĩ</span>
         </div>
       </div>
     </div>

@@ -42,7 +42,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
       value: kpiData.pendingBlogs,
       icon: '📝',
       color: 'purple',
-      description: 'Đang chờ phê duyệt',
+              description: 'Pending approval',
       action: () => onSectionChange('blogs'),
     },
     {

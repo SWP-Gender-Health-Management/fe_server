@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
+import { 
+  DashboardOutlined,
+  TeamOutlined,
+  UserAddOutlined,
+  BarChartOutlined,
+  MailOutlined,
+  ThunderboltOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 import Dashboard from './components/DashBoard/Dashboard';
 import AccountManagement from './components/AccountManagement/AccountManagement';
 import AdminProfile from './components/AdminProfile/AdminProfile';
@@ -7,184 +16,120 @@ import UserManagement from './components/UserManagement/UserManagement';
 import Reports from './components/Report/Reports';
 import BulkEmail from './components/BulkEmail/BulkEmail';
 import RecentActivities from './components/RecentActivities/RecentActivities';
+import Sidebar from '../../components/Sidebar';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 import Logo from '@assets/Logo-full.svg?react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [activeSection, setActiveSection] = useState('dashboard');
 
   const adminName = sessionStorage.getItem('full_name') || 'Admin';
   const adminEmail = sessionStorage.getItem('email') || 'admin@example.com';
 
   // Loading effect when component mounts
   useEffect(() => {
-    // Simulate loading progress
-    const progressInterval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          // Hide loading screen after progress completes
-          setTimeout(() => setIsLoading(false), 300);
-          return 100;
-        }
-        return prev + Math.random() * 20;
-      });
-    }, 100);
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
 
-    return () => clearInterval(progressInterval);
+    return () => clearTimeout(timer);
   }, []);
 
+  // Menu items for admin
   const menuItems = [
     {
-      path: '/admin/dashboard',
-      name: 'Bảng điều khiển',
-      icon: '📊',
+      id: 'dashboard',
+      icon: <DashboardOutlined />,
+      label: 'Dashboard',
+      description: 'Main dashboard'
     },
     {
-      path: '/admin/accounts',
-      name: 'Quản lý tài khoản',
-      icon: '👥',
+      id: 'accounts',
+      icon: <TeamOutlined />,
+      label: 'Account Management',
+      description: 'Manage system accounts'
     },
     {
-      path: '/admin/users',
-      name: 'Thêm người dùng',
-      icon: '➕',
+      id: 'users',
+      icon: <UserAddOutlined />,
+      label: 'Add Users',
+      description: 'Create new accounts'
     },
     {
-      path: '/admin/reports',
-      name: 'Báo cáo',
-      icon: '📈',
+      id: 'reports',
+      icon: <BarChartOutlined />,
+      label: 'Reports',
+      description: 'View statistics reports'
     },
     {
-      path: '/admin/bulk-email',
-      name: 'Gửi email hàng loạt',
-      icon: '📧',
+      id: 'bulk-email',
+      icon: <MailOutlined />,
+      label: 'Bulk Email',
+      description: 'Send emails to multiple users'
     },
     {
-      path: '/admin/activities',
-      name: 'Hoạt động gần đây',
-      icon: '⚡',
+      id: 'activities',
+      icon: <ThunderboltOutlined />,
+      label: 'Recent Activities',
+      description: 'Track activities'
     },
     {
-      path: '/admin/profile',
-      name: 'Hồ sơ cá nhân',
-      icon: '👤',
+      id: 'profile',
+      icon: <UserOutlined />,
+      label: 'Personal Profile',
+      description: 'Personal information'
     },
   ];
+
+  // Admin data for sidebar
+  const adminData = {
+    full_name: adminName,
+    email: adminEmail,
+    position: 'Administrator',
+    department: 'System Management',
+    avatar: `https://ui-avatars.com/api/?name=${adminName}&background=667eea&color=fff&size=60`,
+    averageFeedBackRating: '5.0',
+    totalAppointments: '∞'
+  };
+
+  const handleSectionChange = (sectionId) => {
+    setActiveSection(sectionId);
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    console.log('Logout clicked');
+  };
 
   // Loading Screen Component
   if (isLoading) {
     return (
-      <div className="admin-loading-screen">
-        <div className="loading-container">
-          {/* Logo and Title */}
-          <div className="loading-header">
-            <div className="loading-logo">
-              <span className="loading-icon">🏥</span>
-              <div className="loading-pulse"></div>
-            </div>
-            <h1 className="loading-title">GenderCare</h1>
-            {/* <Logo className="loading-logo-img" /> */}
-            <p className="loading-subtitle">
-              Đang tải bảng điều khiển quản trị...
-            </p>
-          </div>
-
-          {/* Progress Bar */}
-          {/* <div className="loading-progress">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-            </div>
-            <div className="progress-text">{Math.round(loadingProgress)}%</div>
-          </div> */}
-
-          {/* Loading Animation */}
-          {/* <div className="loading-dots">
-            <div className="dot"></div>
-            <div className="dot"></div>
-            <div className="dot"></div>
-          </div> */}
-
-          {/* Feature Loading Text */}
-          {/* <div className="loading-features">
-            <div className="feature-item">
-              <span className="feature-icon">🔒</span>
-              <span>Kiểm tra bảo mật</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">📊</span>
-              <span>Tải dữ liệu dashboard</span>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon">👥</span>
-              <span>Đồng bộ tài khoản</span>
-            </div>
-          </div> */}
-        </div>
-      </div>
+      <WorkspaceLoading 
+        className="admin-workspace"
+        title="Loading Admin Dashboard"
+        description="Preparing system administration tools... Please wait"
+      />
     );
   }
 
   return (
     <div className="admin-dashboard">
       {/* Sidebar */}
-      <div className={`admin-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        {/* Logo */}
-        <div className="sidebar-header">
-          <Link to="/" className="logo-link">
-            {!sidebarCollapsed && <Logo className="sidebar-logo" />}
-          </Link>
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            <span className="hamburger-icon">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-          </button>
-        </div>
-
-        {/* Navigation Menu */}
-        <nav className="sidebar-nav">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? 'active' : ''}`
-              }
-            >
-              <span className="nav-icon">{item.icon}</span>
-              {!sidebarCollapsed && (
-                <span className="nav-text">{item.name}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Admin Info */}
-        <div className="sidebar-footer">
-          <div className="admin-info">
-            <div className="admin-avatar">
-              {adminName.charAt(0).toUpperCase()}
-            </div>
-            {!sidebarCollapsed && (
-              <div className="admin-details">
-                <div className="admin-name">{adminName}</div>
-                <div className="admin-email">{adminEmail}</div>
-                <div className="admin-role">Admin</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <Sidebar
+        userData={adminData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={false}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
+        activeSection={activeSection}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+        basePath="/admin"
+      />
 
       {/* Main Content */}
       <div className="admin-content">

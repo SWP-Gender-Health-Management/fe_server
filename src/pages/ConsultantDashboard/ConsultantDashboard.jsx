@@ -8,9 +8,17 @@ import React, { useEffect, useState } from 'react';
 import {
   useNavigate
 } from 'react-router-dom';
-import ConsultantSidebar from './components/ConsultantSidebar';
+import { 
+  HomeOutlined,
+  CalendarOutlined,
+  EditOutlined,
+  UserOutlined,
+  QuestionCircleOutlined
+} from '@ant-design/icons';
+import Sidebar from '../../components/Sidebar';
 import DashboardOverview from './components/DashboardOverview';
 import './ConsultantDashboard.css';
+import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 
 const API_URL = 'http://localhost:3000';
 
@@ -27,6 +35,40 @@ const ConsultantDashboard = () => {
 
   const accessToken = Cookies.get("accessToken");
   const accountId = Cookies.get("accountId");
+
+  // Menu items for consultant
+  const menuItems = [
+    {
+      id: 'dashboard',
+      icon: <HomeOutlined />,
+      label: 'Overview',
+      description: 'Main dashboard'
+    },
+    {
+      id: 'appointments',
+      icon: <CalendarOutlined />,
+      label: 'Appointment Management',
+      description: 'View and manage appointments'
+    },
+    {
+      id: 'blogs',
+      icon: <EditOutlined />,
+      label: 'Blog Management',
+      description: 'Write and manage blogs'
+    },
+    {
+      id: 'questions',
+      icon: <QuestionCircleOutlined />,
+      label: 'Q&A',
+      description: 'Answer questions'
+    },
+    {
+      id: 'profile',
+      icon: <UserOutlined />,
+      label: 'Personal Profile',
+      description: 'Personal information'
+    },
+  ];
 
   // Mock consultant data - would come from API
   useEffect(() => {
@@ -252,9 +294,7 @@ const ConsultantDashboard = () => {
     }
   };
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
+  // Note: toggleSidebar function removed as it's not used
 
   const renderContent = () => {
     switch (activeSection) {
@@ -315,28 +355,27 @@ const ConsultantDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="consultant-workspace">
-        <div className="workspace-loading">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <h3>Đang tải workspace...</h3>
-            <p>Chuẩn bị không gian làm việc của bạn</p>
-          </div>
-        </div>
-      </div>
+      <WorkspaceLoading
+        className="consultant-workspace"
+        title="Loading Consultant Dashboard"
+        description="Preparing consultation tools and patient data... Please wait"
+      />
     );
   }
 
   return (
     <div className="consultant-workspace">
       {/* Sidebar Navigation */}
-      <ConsultantSidebar
+      <Sidebar
+        userData={consultantData}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileMenuOpen={false}
+        setSidebarCollapsed={setSidebarCollapsed}
+        menuItems={menuItems}
         activeSection={activeSection}
-        onSectionChange={handleSectionChange}
-        onLogout={handleLogout}
-        consultantData={consultantData}
-        collapsed={sidebarCollapsed}
-        onToggle={toggleSidebar}
+        handleSectionChange={handleSectionChange}
+        handleLogout={handleLogout}
+        basePath="/consultant"
       />
 
       {/* Main Content Area */}
