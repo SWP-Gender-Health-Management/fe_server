@@ -160,6 +160,7 @@ const LabManagement = () => {
             lab: appointment.lab,
             date: appointment.date,
             app_id: appointment.app_id,
+            isRefunded: appointment.isRefunded,
           } || null
         );
       })
@@ -311,17 +312,16 @@ const LabManagement = () => {
                     >
                       👁
                     </button>
-                    {appointment.isRequestedRefund ? (
+                    {appointment.isRequestedRefund && (
                       <button
                         className="view-btn"
                         onClick={() => handleRefundAppointment(appointment)}
                       >
-                        💸 Hoàn tiền
+                        💸{' '}
+                        {appointment.isRefunded
+                          ? 'Đã hoàn tiền'
+                          : 'Chưa hoàn tiền'}
                       </button>
-                    ) : (
-                      appointment.isRefunded && (
-                        <span className="refund-completed">Đã hoàn tiền</span>
-                      )
                     )}
                   </div>
                 </td>
@@ -420,6 +420,7 @@ const LabManagement = () => {
         }
         open={showModal}
         onCancel={() => setShowModal(false)}
+        onOk={() => setShowModal(false)}
         footer={[
           <Button key="close" onClick={() => setShowModal(false)}>
             Đóng
@@ -506,6 +507,7 @@ const LabManagement = () => {
       <Modal
         open={refundInformation !== null}
         onCancel={() => setRefundInformation(null)}
+        onOk={() => setRefundInformation(null)}
         title="Xác nhận hoàn tiền"
       >
         <h1>Thông tin hoàn tiền</h1>
