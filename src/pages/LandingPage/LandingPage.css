@@ -172,7 +172,7 @@
 /* Consultation Section */
 .consultation-section {
   padding: 100px 0;
-  background: linear-gradient(135deg, #02A1FF 0%, #0766F7 100%);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
   position: relative;
 }
 
@@ -494,9 +494,10 @@
   align-items: center;
   gap: 3em;
   padding: 15px;
-  background: linear-gradient(135deg, #f8fbff, #f0f8ff);
+  margin-top: 10px;
+  background: linear-gradient(135deg, #edf5ff, #c9e7ff);
   border-radius: 12px;
-  border-left: 4px solid #667eea;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.08);
 }
 
 .about-section > .about-description-card > .mission-values{
@@ -510,20 +511,26 @@
   padding-top: 0.5em;
 }
 
-.stats-container {
+.about-stats-container {
   margin-top: 30px;
+  width: 100%;
+}
+
+.about-content{
+  width: 100%
 }
 
 .stat-card {
-  text-align: center;
-  background: white;
+  display: flex;
+  flex-direction: column;
+    background: white;
   border-radius: 16px;
-  padding: 25px 15px;
+  padding: 2px 1px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border: 2px solid transparent;
-  height: 9em;
-  width: 12em;
+  width: fit-content;
+  height:100%;
 }
 
 .stat-card:hover {
@@ -532,19 +539,18 @@
   border-color: #667eea;
 }
 
-.stat-number {
-  font-size: 2.2rem;
+.about-stat-number {
+  font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #ff6b6b, #667eea);
+  margin-bottom: 8px;
+  background: -webkit-linear-gradient(#ff6b6b, #ff8e53);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 8px;
 }
 
-.stat-label {
+.about-stat-label {
   color: #64748b;
-  font-size: 0.85rem;
+  font-size: 1em;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;

@@ -30,6 +30,8 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { viewAccount } from '../../api/accountApi';
+import Cookies from 'js-cookie';
 import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 import './LandingPage.css';
 
@@ -42,8 +44,68 @@ const LandingPage = () => {
   const [consultationForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
+  const [loadingUserInfo, setLoadingUserInfo] = useState(false);
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, userInfo } = useAuth();
+
+  // Load user detail info when logged in
+  useEffect(() => {
+    const loadUserDetailInfo = async () => {
+      console.log('useEffect triggered - isLoggedIn:', isLoggedIn, 'userInfo.accountId:', userInfo.accountId);
+      if (isLoggedIn && userInfo.accountId) {
+        setLoadingUserInfo(true);
+        try {
+          const token = Cookies.get('accessToken');
+          console.log('Access token:', token ? 'exists' : 'missing');
+          if (token) {
+            const response = await viewAccount(token);
+                         console.log('API response:', response.data);
+             if (response.data && response.data.result) {
+               const userData = response.data.result;
+               console.log('User data received:', userData);
+               
+               // Pre-fill form with user info - map to correct field names
+               const formValues = {};
+               
+               if (userData.full_name) {
+                 formValues.fullName = userData.full_name;
+               }
+               if (userData.email) {
+                 formValues.email = userData.email;
+               }
+               if (userData.phone) {
+                 formValues.phone = userData.phone;
+               }
+               
+               console.log('Setting form values:', formValues);
+               
+               // Set form values directly
+               consultationForm.setFieldsValue(formValues);
+               console.log('Form values set successfully');
+              
+              // Show warning if user doesn't have complete info
+              if (!userData.email || !userData.phone) {
+                console.log('User missing complete information for pre-fill');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading user info:', error);
+        } finally {
+          setLoadingUserInfo(false);
+        }
+      }
+    };
+
+    loadUserDetailInfo();
+  }, [isLoggedIn, userInfo.accountId, consultationForm]);
+
+  // Reset form when user logs out
+  useEffect(() => {
+    if (!isLoggedIn) {
+      consultationForm.resetFields();
+    }
+  }, [isLoggedIn, consultationForm]);
 
   // useEffect(() => {
   //   window.scrollTo(0, 0);
@@ -278,6 +340,29 @@ const LandingPage = () => {
             </Col>
             <Col xs={24} lg={12}>
               <Card className="consultation-card">
+                {isLoggedIn && (
+                  <div style={{ 
+                    background: loadingUserInfo ? '#fff7e6' : '#f6ffed', 
+                    border: `1px solid ${loadingUserInfo ? '#ffd591' : '#b7eb8f'}`, 
+                    borderRadius: '6px', 
+                    padding: '8px 12px', 
+                    marginBottom: '16px',
+                    fontSize: '14px',
+                    color: loadingUserInfo ? '#fa8c16' : '#52c41a'
+                  }}>
+                    {loadingUserInfo ? (
+                      <>
+                        <CalendarOutlined style={{ marginRight: '8px' }} />
+                        Đang tải thông tin của bạn...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircleOutlined style={{ marginRight: '8px' }} />
+                        Thông tin của bạn đã được điền sẵn
+                      </>
+                    )}
+                  </div>
+                )}
                 <Form
                   form={consultationForm}
                   layout="vertical"
@@ -526,30 +611,30 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                <div className="stats-container">
+                <div className="about-stats-container">
                   <Row gutter={[20, 20]}>
                     <Col xs={12} sm={6}>
                       <div className="stat-card">
-                        <div className="stat-number">10+</div>
-                        <div className="stat-label">Năm kinh nghiệm</div>
+                        <div className="about-stat-number">10+</div>
+                        <div className="about-stat-label">Năm kinh nghiệm</div>
                       </div>
                     </Col>
                     <Col xs={12} sm={6}>
                       <div className="stat-card">
-                        <div className="stat-number">50K+</div>
-                        <div className="stat-label">Bệnh nhân tin tưởng</div>
+                        <div className="about-stat-number">50K+</div>
+                        <div className="about-stat-label">Bệnh nhân tin tưởng</div>
                       </div>
                     </Col>
                     <Col xs={12} sm={6}>
                       <div className="stat-card">
-                        <div className="stat-number">100+</div>
-                        <div className="stat-label">Bác sĩ chuyên khoa</div>
+                        <div className="about-stat-number">100+</div>
+                        <div className="about-stat-label">Bác sĩ chuyên khoa</div>
                       </div>
                     </Col>
                     <Col xs={12} sm={6}>
                       <div className="stat-card">
-                        <div className="stat-number">98%</div>
-                        <div className="stat-label">Hài lòng</div>
+                        <div className="about-stat-number">98%</div>
+                        <div className="about-stat-label">Hài lòng</div>
                       </div>
                     </Col>
                   </Row>
