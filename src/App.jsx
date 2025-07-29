@@ -9,6 +9,7 @@ import {
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
 import Navbar from '@components/Navbar/Navbar';
 import Footer from '@components/Footer/Footer';
+import NotificationToast from '@components/Notification/NotificationToast';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
@@ -103,7 +104,7 @@ const AppLayout = () => {
           onLogout={handleLogout}
         />
       )}
-      <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
@@ -120,31 +121,41 @@ const AppLayout = () => {
         <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
 
-        <Route path="/admin/*" element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/manager/*"
+          element={
+            <ProtectedRoute allowedRoles={['MANAGER']}>
+              <ManagerDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/manager/*" element={
-          <ProtectedRoute allowedRoles={['MANAGER']}>
-            <ManagerDashboard />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/consultant/*"
+          element={
+            <ProtectedRoute allowedRoles={['CONSULTANT']}>
+              <ConsultantDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-
-        <Route path="/consultant/*" element={
-          <ProtectedRoute allowedRoles={['CONSULTANT']}>
-            <ConsultantDashboard />
-          </ProtectedRoute>} />
-
-
-        <Route path="/staff/*" element={
-          <ProtectedRoute allowedRoles={['STAFF']}>
-            <StaffDashboard />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/staff/*"
+          element={
+            <ProtectedRoute allowedRoles={['STAFF']}>
+              <StaffDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
@@ -178,10 +189,10 @@ const AppLayout = () => {
 };
 
 function App() {
-
   return (
     <AuthProvider>
       <AppLayout />
+      <NotificationToast />
     </AuthProvider>
   );
 }
