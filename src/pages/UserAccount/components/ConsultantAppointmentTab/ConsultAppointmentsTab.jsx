@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   Table,
   Empty,
@@ -10,6 +10,9 @@ import {
   Modal,
   Descriptions,
   Typography,
+  Form,
+  Input,
+  Select,
 } from 'antd';
 import {
   CalendarOutlined,
@@ -23,8 +26,6 @@ import { Link } from 'react-router-dom';
 
 const API_URL = 'http://localhost:3000';
 
-
-
 const ConsultAppointmentsTab = ({
   conApps,
   conAppsPagination,
@@ -36,10 +37,8 @@ const ConsultAppointmentsTab = ({
   setConAppDetailVisible,
   selectedConApp,
   dayjs,
-  fetchConApp
+  fetchConApp,
 }) => {
-
-
   const accessToken = Cookies.get('accessToken');
   const accountId = Cookies.get('accountId');
 
@@ -49,36 +48,117 @@ const ConsultAppointmentsTab = ({
     type: 'consult',
     rating: 0,
   });
+  const [refundForm, setRefundForm] = useState({
+    description: '',
+    app_id: '',
+    bankName: '',
+    accountNumber: '',
+  });
+
+  const [deleteAppointment, setDeleteAppointment] = useState(null);
+  const [refundAppointment, setRefundAppointment] = useState(null);
+  const [bankList, setBankList] = useState([]);
+
+  useEffect(() => {
+    fetchBankList();
+  }, []);
+
+  const fetchBankList = async () => {
+    try {
+      await axios.get(`https://api.vietqr.io/v2/banks`).then((response) => {
+        setBankList(
+          response.data.data.map((bank) => ({
+            code: bank.code,
+            shortName: bank.shortName,
+          })) || []
+        );
+      });
+    } catch (error) {
+      console.error('Error fetching bank list:', error);
+      setBankList([]);
+    }
+  };
+
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      await axios
+        .put(
+          `${API_URL}/consult-appointment/cancel-appointment/${appointmentId}`,
+          {
+            appointment_id: appointmentId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Cancel appointment response: ', response.data);
+        });
+    } catch (error) {
+      alert('Hủy lịch hẹn không thành công, vui lòng thử lại sau!');
+      console.error('Cancel appointment error: ', error);
+    }
+  };
+
+  const handleRefundAppointment = async () => {
+    try {
+      await axios
+        .post(
+          `${API_URL}/consult-appointment/create-appointment-refund`,
+          {
+            ...refundForm,
+            app_id: refundAppointment.app_id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Refund appointment response: ', response.data);
+        });
+    } catch (error) {
+      alert('Yêu cầu hoàn tiền không thành công, vui lòng thử lại sau!');
+      console.error('Refund appointment error: ', error);
+    }
+  };
 
   const handleSubmitFeedBack = async () => {
     if (feedbackForm.content.trim().length === 0) {
-      alert("Xin hãy nhập feedback ạ!!!");
+      alert('Xin hãy nhập feedback ạ!!!');
       return;
     }
-    console.log("feedbackForm: ", feedbackForm)
+    console.log('feedbackForm: ', feedbackForm);
     try {
-      await axios.post(
-        `${API_URL}/feedback/create-feedback`,
-        {
-          ...feedbackForm,
-          app_id: selectedConApp.app_id
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+      await axios
+        .post(
+          `${API_URL}/feedback/create-feedback`,
+          {
+            ...feedbackForm,
+            app_id: selectedConApp.app_id,
           },
-        }
-      ).then((response) => {
-        console.log("create-feedback response: ", response.data);
-      })
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('create-feedback response: ', response.data);
+        });
     } catch (error) {
-      console.error("Create feedback error: ", error);
+      console.error('Create feedback error: ', error);
     } finally {
       await fetchConApp();
       setConAppDetailVisible(false);
     }
-  }
+  };
 
   // Columns cho bảng lịch hẹn tư vấn
   const conAppColumns = [
@@ -159,13 +239,35 @@ const ConsultAppointmentsTab = ({
           >
             Chi tiết
           </Button>
-          {record.status === 'pending' && (
-            <Button type="link" size="small" danger>
+          {(record.status === 'pending' || record.status === 'confirmed') && (
+            <Button
+              type="link"
+              size="small"
+              danger
+              onClick={() => {
+                setDeleteAppointment(record);
+              }}
+            >
               Hủy
             </Button>
           )}
+          {record.status === 'confirmed_cancelled' && (
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                setRefundAppointment(record);
+                console.log('Refund appointment: ', record);
+              }}
+              disabled={record.isRequestedRefund ? true : false}
+            >
+              {record.isRequestedRefund
+                ? (record.isRefunded ? 'Đã hoàn tiền' : 'Đang xử lý hoàn tiền')
+                : 'Yêu cầu hoàn tiền'}
+            </Button>
+          )}
           {record.status === 'confirmed' && (
-            <Link to='https://meet.google.com/pfa-oqau-zwn' target="_blank">
+            <Link to="https://meet.google.com/pfa-oqau-zwn" target="_blank">
               Meeting
             </Link>
           )}
@@ -176,13 +278,7 @@ const ConsultAppointmentsTab = ({
       title: 'Feedback',
       key: 'feedback',
       render: (_, record) => (
-        <>
-          {record.feed_id ? (
-            <p>Đã feedback</p>
-          ) : (
-            <p>Chưa feedback</p>
-          )}
-        </>
+        <>{record.feed_id ? <p>Đã feedback</p> : <p>Chưa feedback</p>}</>
       ),
     },
   ];
@@ -275,35 +371,151 @@ const ConsultAppointmentsTab = ({
                 description="Chưa có kết quả tư vấn"
               />
             )}
-            {selectedConApp.feed_id ?
-              (<>
+            {selectedConApp.feed_id ? (
+              <>
                 <p>Feedback: {selectedConApp.feedback?.content}</p>
                 <p>Rating: {selectedConApp.feedback?.rating}</p>
-              </>) : (
-                <>
-                  <label>
-                    Feedback:
-                  </label>
-                  <input type='text' name='feedback' value={feedbackForm.content} onChange={(e) => {
+              </>
+            ) : (
+              <>
+                <label>Feedback:</label>
+                <input
+                  type="text"
+                  name="feedback"
+                  value={feedbackForm.content}
+                  onChange={(e) => {
                     setFeedbackForm((prev) => ({
                       ...prev,
-                      content: e.target.value
-                    }))
-                  }} />
-                  <label>
-                    Rating:
-                  </label>
-                  <input type='number' name='rating' max={5} min={0} value={feedbackForm.rating} onChange={(e) => {
+                      content: e.target.value,
+                    }));
+                  }}
+                />
+                <label>Rating:</label>
+                <input
+                  type="number"
+                  name="rating"
+                  max={5}
+                  min={0}
+                  value={feedbackForm.rating}
+                  onChange={(e) => {
                     setFeedbackForm((prev) => ({
                       ...prev,
-                      rating: e.target.value
-                    }))
-                  }} />
-                  <button key="sendFeed" onClick={handleSubmitFeedBack}>Send Feedback</button>
-                </>
-              )
-            }
+                      rating: e.target.value,
+                    }));
+                  }}
+                />
+                <button key="sendFeed" onClick={handleSubmitFeedBack}>
+                  Send Feedback
+                </button>
+              </>
+            )}
           </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={deleteAppointment !== null}
+        title="Xác nhận hủy lịch hẹn"
+        onCancel={() => {
+          setDeleteAppointment(null);
+        }}
+        onOk={() => {
+          handleCancelAppointment(deleteAppointment.app_id);
+          setDeleteAppointment(null);
+        }}
+        okText="Xác nhận hủy"
+        afterClose={() => {
+          fetchConApp();
+        }}
+      >
+        <h1>Nếu bạn đã thanh toán, bạn chỉ được hoàn trả 70% sốt tiền!!!</h1>
+        <h1>Bạn có chắc chắn muốn hủy lịch hẹn không</h1>
+      </Modal>
+
+      <Modal
+        open={refundAppointment !== null}
+        title="Xác nhận hoàn tiền"
+        onCancel={() => {
+          setRefundAppointment(null);
+        }}
+        onOk={ async () => {
+          await handleRefundAppointment(refundAppointment.app_id);
+          setRefundAppointment(null);
+          fetchConApp();
+        }}
+        okText="Gửi yêu cầu hoàn tiền"
+      >
+        <p>
+          Bạn có chắc chắn muốn gửi yêu cầu hoàn tiền cho lịch hẹn này? Vui lòng
+          liên hệ với bộ phận hỗ trợ nếu cần thêm thông tin.
+        </p>
+        {/* Thêm thông tin chi tiết về lịch hẹn nếu cần */}
+        {refundAppointment && (
+          <>
+            <Descriptions column={1} bordered>
+              <Descriptions.Item label="Chuyên gia">
+                {refundAppointment.consultant}
+              </Descriptions.Item>
+              <Descriptions.Item label="Ngày hẹn">
+                {dayjs(refundAppointment.date).format('DD/MM/YYYY')}
+              </Descriptions.Item>
+              <Descriptions.Item label="Thời gian">
+                {refundAppointment.time}
+              </Descriptions.Item>
+            </Descriptions>
+            <Form>
+              <Form.Item label="Nội dung">
+                <Input.TextArea
+                  value={refundForm.description}
+                  onChange={(e) => {
+                    setRefundForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }));
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Tên ngân hàng">
+                {/* <Input
+                  value={refundForm.bankName}
+                  onChange={(e) => {
+                    setRefundForm((prev) => ({
+                      ...prev,
+                      bankName: e.target.value,
+                    }));
+                  }}
+                /> */}
+                <Select
+                  value={refundForm.bankName}
+                  onChange={(value) => {
+                    setRefundForm((prev) => ({
+                      ...prev,
+                      bankName: value,
+                    }));
+                  }}
+                  placeholder="Chọn ngân hàng"
+                  showSearch
+                >
+                  {bankList.map((bank) => (
+                    <Select.Option key={bank.code} value={bank.shortName}>
+                      {bank.shortName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item label="Số tài khoản">
+                <Input
+                  value={refundForm.accountNumber}
+                  onChange={(e) => {
+                    setRefundForm((prev) => ({
+                      ...prev,
+                      accountNumber: e.target.value,
+                    }));
+                  }}
+                />
+              </Form.Item>
+            </Form>
+          </>
         )}
       </Modal>
     </div>

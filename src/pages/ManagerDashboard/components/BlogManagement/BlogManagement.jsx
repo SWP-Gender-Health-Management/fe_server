@@ -308,7 +308,7 @@ const BlogManagement = () => {
                 <td>
                   <div className="status-cell">
                     {getStatusBadge(blog.status)}
-                    <select
+                    {/* <select
                       value={blog.status}
                       onChange={(e) =>
                         handleStatusChange(blog.id, e.target.value)
@@ -320,7 +320,7 @@ const BlogManagement = () => {
                           {option.label}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
                   </div>
                 </td>
                 <td>{formatDate(blog.createdAt)}</td>
