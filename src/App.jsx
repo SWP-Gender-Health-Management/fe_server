@@ -153,7 +153,7 @@ const AppLayout = () => {
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-fail" element={<PaymentFail />} />
+        <Route path="/payment-failed" element={<PaymentFail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
