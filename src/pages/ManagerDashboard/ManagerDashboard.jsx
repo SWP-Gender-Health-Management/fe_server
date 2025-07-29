@@ -123,7 +123,7 @@ const ManagerDashboard = () => {
       />
 
       {/* Main Content */}
-      <div className="manager-content">
+      <div className={`manager-content${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
         <Routes>
           <Route
             path="/"

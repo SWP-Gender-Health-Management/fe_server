@@ -17,6 +17,11 @@
   overflow-y: auto;
 }
 
+.manager-dashboard .sidebar.collapsed ~ .manager-content,
+.manager-content.sidebar-collapsed {
+  margin-left: 80px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .manager-content {

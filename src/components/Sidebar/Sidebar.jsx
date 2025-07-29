@@ -80,7 +80,7 @@ const Sidebar = ({
             title={sidebarCollapsed ? item.label : ''}
             onClick={() => handleSectionChange(item.id)}
           >
-                         <div className="nav-icon">{item.icon}</div>
+              <div className="nav-icon">{item.icon}</div>
             {!sidebarCollapsed && (
               <div className="nav-content">
                 <div className="nav-label">{item.label}</div>
