@@ -20,7 +20,7 @@ const Sidebar = ({
   const formatTime = (date) => date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   const formatDate = (date) => date.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' });
   const currentTime = new Date();
-
+  const avatar = `https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg`;
 
 
   return (
@@ -45,7 +45,7 @@ const Sidebar = ({
         <div className="sidebar-info-card">
           <div className="sidebar-avatar-section">
             <img
-              src={userData.avatar}
+              src={avatar}
               alt="User Avatar"
               className="sidebar-avatar-large"
             />
@@ -99,7 +99,7 @@ const Sidebar = ({
           title={sidebarCollapsed ? 'Logout' : ''}
         >
           <LogoutOutlined />
-                     {sidebarCollapsed ? <SettingOutlined style={{ marginLeft: 8 }} /> : <span>Logout</span>}
+          {!sidebarCollapsed && <span>Logout</span>}
         </button>
       </div>
     </div>
