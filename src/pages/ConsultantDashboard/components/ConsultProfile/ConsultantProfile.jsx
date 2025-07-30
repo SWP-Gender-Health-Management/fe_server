@@ -5,6 +5,7 @@ import { BookOutlined, CheckCircleOutlined, ExperimentOutlined, MessageOutlined,
 
 const ConsultantProfile = ({ consultantData }) => {
   const [activeTab, setActiveTab] = useState('info');
+  const avatar = `https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg`;
 
   if (!consultantData) {
     return (
@@ -30,37 +31,42 @@ const ConsultantProfile = ({ consultantData }) => {
     });
   };
 
-  const formatDateTime = (date) => {
-    return new Date(date).toLocaleString('vi-VN');
-  };
+  // const formatDateTime = (date) => {
+  //   return new Date(date).toLocaleString('vi-VN');
+  // };
 
-  const getTimeAgo = (date) => {
-    const now = new Date();
-    const diffInMs = now - new Date(date);
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInHours / 24);
+  // const getTimeAgo = (date) => {
+  //   const now = new Date();
+  //   const diffInMs = now - new Date(date);
+  //   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  //   const diffInDays = Math.floor(diffInHours / 24);
 
-    if (diffInDays > 0) {
-      return `${diffInDays} ngày trước`;
-    } else if (diffInHours > 0) {
-      return `${diffInHours} giờ trước`;
-    } else {
-      return 'Vừa xong';
-    }
-  };
+  //   if (diffInDays > 0) {
+  //     return `${diffInDays} ngày trước`;
+  //   } else if (diffInHours > 0) {
+  //     return `${diffInHours} giờ trước`;
+  //   } else {
+  //     return 'Vừa xong';
+  //   }
+  // };
 
   const getDepartment = (role) => {
     console.log("role: ", role)
     switch (role) {
-      case "0" || 0:
+      case "0":
+      case 0:
         return "Quản trị viên";
-      case "1" || 1:
+      case "1":
+      case 1:
         return "Bộ phận tư vấn";
-      case "2" || 2:
+      case "2":
+      case 2:
         return "Phòng xét nghiệm";
-      case "4" || 4:
+      case "4":
+      case 4:
         return "Phòng QUản Lý";
-      case "5" || 5:
+      case "5":
+      case 5:
         return "Tiếp tân";
       default:
         return "Khách hàng";
@@ -81,7 +87,7 @@ const ConsultantProfile = ({ consultantData }) => {
       <div className="profile-card">
         <div className="profile-main">
           <div className="profile-avatar">
-            <img src={consultantData.avatar} alt={consultantData.full_name} />
+            <img src={avatar} alt={consultantData.full_name} />
           </div>
 
           <div className="profile-info">
@@ -133,12 +139,6 @@ const ConsultantProfile = ({ consultantData }) => {
           onClick={() => setActiveTab('info')}
         >
           📋 Thông tin chi tiết
-        </button>
-        <button
-          className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
-          onClick={() => setActiveTab('activity')}
-        >
-          📊 Thống kê công việc
         </button>
         <button
           className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
