@@ -13,6 +13,8 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
     gender: '',
     id: '',
     password: '',
+    gg_meet_link: '',
+    description: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -22,27 +24,31 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
   useEffect(() => {
     if (user && mode !== 'create') {
       setFormData({
-        name: user.name || '',
+        name: user.full_name || '',
         email: user.email || '',
-        role: user.role || 'User',
-        status: user.status || 'active',
+        role: user.role || 'CUSTOMER',
+        status: (user.is_banned ? 'banned' : 'active'),
         phone: user.phone || '',
         address: user.address || '',
-        dateOfBirth: user.dateOfBirth || '',
+        dateOfBirth: user.dob || '',
         gender: user.gender || '',
-        id: user.id,
+        id: user.account_id,
+        description: user.description || '',
+        gg_meet_link: user.staff_profile?.gg_meet || '',
       });
     } else if (mode === 'create') {
       setFormData({
         name: '',
         email: '',
-        role: 'User',
+        role: 'CUSTOMER',
         status: 'active',
         phone: '',
         address: '',
         dateOfBirth: '',
         gender: '',
         password: '',
+        gg_meet_link: '',
+        description: '',
       });
     }
   }, [user, mode]);
@@ -183,9 +189,11 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
                     onChange={handleChange}
                     disabled={isReadOnly}
                   >
-                    <option value="User">User</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Admin">Admin</option>
+                    <option value="CUSTOMER">Customer</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="CONSULTANT">Consultant</option>
+                    <option value="STAFF">Staff</option>
                   </select>
                 </div>
 
@@ -202,6 +210,21 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
                     <option value="banned">Bị khóa</option>
                   </select>
                 </div>
+
+                {user.role === 'CONSULTANT' && (
+                  <div className="form-group">
+                    <label htmlFor="gg_meet_link">Link Google Meet</label>
+                    <input
+                      id="gg_meet_link"
+                      name="gg_meet_link"
+                      value={formData.gg_meet_link}
+                      onChange={handleChange}
+                      readOnly={isReadOnly}
+                      className={errors.gg_meet_link ? 'error' : ''}
+                      placeholder="Nhập link Google Meet"
+                    />
+                  </div>
+                )}
               </div>
 
               {mode === 'create' && (
@@ -298,8 +321,8 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
                     disabled={isReadOnly}
                   >
                     <option value="">Chọn giới tính</option>
-                    <option value="male">Nam</option>
-                    <option value="female">Nữ</option>
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
                     <option value="other">Khác</option>
                   </select>
                 </div>
@@ -314,20 +337,20 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
                 <div className="info-grid">
                   <div className="info-item">
                     <label>ID người dùng:</label>
-                    <span>{user.id}</span>
+                    <span>{user.account_id}</span>
                   </div>
 
                   <div className="info-item">
                     <label>Ngày tham gia:</label>
                     <span>
-                      {new Date(user.joinDate).toLocaleDateString('vi-VN')}
+                      {new Date(user.created_at).toLocaleDateString('vi-VN')}
                     </span>
                   </div>
 
                   <div className="info-item">
                     <label>Trạng thái tài khoản:</label>
-                    <span className={`status-indicator ${user.status}`}>
-                      {user.status === 'active' ? 'Hoạt động' : 'Bị khóa'}
+                    <span className={`status-indicator ${user.is_banned ? 'banned' : 'active'}`}>
+                      {user.is_banned ? 'Bị khóa' : 'Hoạt động'}
                     </span>
                   </div>
                 </div>
