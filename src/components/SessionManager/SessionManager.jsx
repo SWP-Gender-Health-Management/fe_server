@@ -97,11 +97,9 @@ const SessionManager = () => {
     };
   }, [isLoggedIn]);
 
-  // Không cần render gì nếu chưa đăng nhập
   if (!isLoggedIn) return null;
 
   return (
-    // Thay đổi 3: Cập nhật lại Modal
     <Modal
       open={isSessionExpired}
       title="Phiên làm việc sắp hết hạn"
