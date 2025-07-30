@@ -1,414 +1,413 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Table,
+  Input,
+  Select,
+  Button,
+  Modal,
+  Tag,
+  Avatar,
+  Typography,
+  Space,
+  Pagination,
+  Card,
+  Statistic,
+  Row,
+  Col,
+  Tooltip,
+  message,
+} from 'antd';
+import {
+  SearchOutlined,
+  EyeOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  QuestionCircleOutlined,
+  UserOutlined,
+  CalendarOutlined,
+} from '@ant-design/icons';
 import './QuestionManagement.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { Button } from 'antd';
+import moment from 'moment';
 
-
+const { Text, Title } = Typography;
+const { Option } = Select;
 
 const API_URL = 'http://localhost:3000';
 
 const QuestionManagement = () => {
-
-
-
   const [questions, setQuestions] = useState([]);
-  const [filteredQuestions, setFilteredQuestions] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [replyModal, setReplyModal] = useState(false);
-  const [replyContent, setReplyContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(1);
-  const [questionsPerPage, setQuestionsPerPage] = useState(10);
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
+  // Stats
+  const [stats, setStats] = useState({
+    total: 0,
+    answered: 0,
+    pending: 0,
+  });
 
-  // Mock data - trong thực tế sẽ fetch từ API
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage]);
-
-  // Pagination
-  const startIndex = (currentPage - 1) * questionsPerPage;
-  const paginatedQuestions = filteredQuestions.slice(
-    startIndex,
-    startIndex + questionsPerPage
-  );
+  }, [currentPage, statusFilter]);
 
   const fetchQuestions = async () => {
+    setLoading(true);
     const accessToken = Cookies.get('accessToken');
-    const accountId = Cookies.get('accountId');
+
     try {
-      let status;
-      let is_replied;
-      switch (statusFilter) {
-        case 'all':
-          status = null;
-          is_replied = null;
-          break;
-        case 'pending':
-          status = 'true';
-          is_replied = 'false';
-          break;
-        case 'answered':
-          status = 'true';
-          is_replied = 'true';
-          break;
-        case 'closed':
-          status = 'false';
-          is_replied = null;
-          break;
-        default:
-          status = null;
-          is_replied = null;
-          break;
+      const params = {
+        page: currentPage,
+        limit: pageSize,
+      };
+
+      // Add filter params based on status
+      if (statusFilter === 'answered') {
+        params.is_replied = 'true';
+      } else if (statusFilter === 'pending') {
+        params.is_replied = 'false';
       }
-      console.log('status', status);
-      console.log('is_replied', is_replied);
+
       const response = await axios.get(`${API_URL}/manager/get-questions`, {
-        params: {
-          page: currentPage,
-          limit: questionsPerPage,
-          ...(status !== null && { status: status }),
-          ...(is_replied !== null && { is_replied: is_replied }),
-        },
+        params,
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
         },
       });
-      setQuestions(response.data.result.questions);
-      setTotalPages(response.data.result.totalPage);
+
+      if (response.data && response.data.result) {
+        setQuestions(response.data.result.result || []);
+        setTotalQuestions(response.data.result.total || 0);
+
+        // Calculate stats
+        const allQuestions = response.data.result.result || [];
+        const answered = allQuestions.filter((q) => q.reply?.content).length;
+        const pending = allQuestions.filter((q) => !q.reply?.content).length;
+
+        setStats({
+          total: allQuestions.length,
+          answered,
+          pending,
+        });
+      }
     } catch (error) {
       console.error('Error fetching questions:', error);
+      message.error('Không thể tải danh sách câu hỏi');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusBadge = (status, is_replied) => {
-    if (status === 'false') {
+  const getStatusTag = (question) => {
+    const hasReply = question.reply?.content;
+
+    if (hasReply) {
       return (
-        <span className={`status-badge closed`}>
-          <span className="status-icon">🔒</span>
-          Đã đóng
-        </span>
+        <Tag color="success" icon={<CheckCircleOutlined />}>
+          Đã trả lời
+        </Tag>
+      );
+    } else {
+      return (
+        <Tag color="warning" icon={<ClockCircleOutlined />}>
+          Chờ trả lời
+        </Tag>
       );
     }
-    const statusConfig = {
-      false: { label: 'Chờ trả lời', class: 'pending', icon: '⏳' },
-      true: { label: 'Đã trả lời', class: 'answered', icon: '✅' },
-    };
-    const config = statusConfig[is_replied] || statusConfig.false;
-    return (
-      <span className={`status-badge ${config.class}`}>
-        <span className="status-icon">{config.icon}</span>
-        {config.label}
-      </span>
-    );
   };
 
-
-  const handleStatusChange = async (questionId, newStatus) => {
-    try {
-      await axios.put(`${API_URL}/manager/set-question-status`, {
-        ques_id: questionId,
-        status: newStatus,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-      fetchQuestions();
-    } catch (error) {
-      console.error('Error updating question status:', error);
-    }
+  const handleViewDetail = (question) => {
+    setSelectedQuestion(question);
+    setModalVisible(true);
   };
 
-  const getStats = () => {
-    const total = questions.length;
-    const pending = questions.filter((q) => q.status === 'pending').length;
-    const answered = questions.filter((q) => q.status === 'answered').length;
-
-    return { total, pending, answered };
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Chưa có';
+    return moment(dateString).format('DD/MM/YYYY HH:mm');
   };
 
-  const stats = getStats();
+  const filteredQuestions = questions.filter((question) => {
+    const matchesSearch =
+      !searchText ||
+      question.customer?.toLowerCase().includes(searchText.toLowerCase()) ||
+      question.content?.toLowerCase().includes(searchText.toLowerCase());
+
+    return matchesSearch;
+  });
+
+  const columns = [
+    {
+      title: 'Khách hàng',
+      dataIndex: 'customer',
+      key: 'customer',
+      width: 200,
+      render: (customer) => (
+        <Space>
+          <Avatar
+            size="large"
+            icon={<UserOutlined />}
+            style={{ backgroundColor: '#667eea' }}
+          >
+            {customer?.charAt(0)?.toUpperCase()}
+          </Avatar>
+          <div>
+            <Text strong>{customer}</Text>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: 'Nội dung câu hỏi',
+      dataIndex: 'content',
+      key: 'content',
+      ellipsis: true,
+      render: (content) => (
+        <Tooltip title={content}>
+          <Text>
+            {content?.length > 100
+              ? `${content.substring(0, 100)}...`
+              : content}
+          </Text>
+        </Tooltip>
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      key: 'status',
+      width: 150,
+      align: 'center',
+      render: (_, record) => getStatusTag(record),
+    },
+    {
+      title: 'Thời gian tạo',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      width: 180,
+      render: (date) => (
+        <Space>
+          <CalendarOutlined />
+          <Text>{formatDate(date)}</Text>
+        </Space>
+      ),
+    },
+    {
+      title: 'Hành động',
+      key: 'actions',
+      width: 120,
+      align: 'center',
+      render: (_, record) => (
+        <Button
+          type="primary"
+          icon={<EyeOutlined />}
+          onClick={() => handleViewDetail(record)}
+          size="small"
+        >
+          Chi tiết
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <div className="manager-question-management">
-      <div className="manager-question-management-header">
-        <h1>
-          <span className="header-icon">💬</span>
-          Quản lý câu hỏi
-        </h1>
-        <p>
-          <span className="desc-icon">📝</span>
-          Quản lý và trả lời các câu hỏi từ khách hàng
-        </p>
+    <div className="question-management-container">
+      {/* Header */}
+      <div className="page-header">
+        <Title level={2}>
+          <QuestionCircleOutlined style={{ marginRight: 12 }} />
+          Quản lý câu hỏi khách hàng
+        </Title>
+        <Text type="secondary">
+          Quản lý và theo dõi các câu hỏi từ khách hàng
+        </Text>
       </div>
 
-      {/* Stats Cards */}
-      {/* <div className="stats-grid">
-        <div className="stat-card total">
-          <div className="stat-icon">📊</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.total}</div>
-            <div className="stat-label">Tổng câu hỏi</div>
-          </div>
-        </div>
-        <div className="stat-card pending">
-          <div className="stat-icon">⏳</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.pending}</div>
-            <div className="stat-label">Chờ trả lời</div>
-          </div>
-        </div>
-        <div className="stat-card answered">
-          <div className="stat-icon">✅</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.answered}</div>
-            <div className="stat-label">Đã trả lời</div>
-          </div>
-        </div>
-        <div className="stat-card urgent">
-          <div className="stat-icon">🚨</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.urgent}</div>
-            <div className="stat-label">Khẩn cấp</div>
-          </div>
-        </div>
-      </div> */}
+      {/* Statistics Cards */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={8}>
+          <Card>
+            <Statistic
+              title="Tổng câu hỏi"
+              value={stats.total}
+              prefix={<QuestionCircleOutlined />}
+              valueStyle={{ color: '#1890ff' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card>
+            <Statistic
+              title="Đã trả lời"
+              value={stats.answered}
+              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card>
+            <Statistic
+              title="Chờ trả lời"
+              value={stats.pending}
+              prefix={<ClockCircleOutlined />}
+              valueStyle={{ color: '#faad14' }}
+            />
+          </Card>
+        </Col>
+      </Row>
 
       {/* Filters */}
-      <div className="filters-section">
-        <div className="search-box">
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tên khách hàng, email hoặc nội dung..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="filter-group">
-          <label>Trạng thái:</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">Tất cả</option>
-            <option value="pending">Chờ trả lời</option>
-            <option value="answered">Đã trả lời</option>
-            <option value="closed">Đã đóng</option>
-          </select>
-        </div>
-
-        <Button
-          onClick={() => {
-            if (currentPage !== 1) {
-              setCurrentPage(1);
-            } else {
-              fetchAppointments();
-            }
-          }}
-          type="primary"
-          className="filter-button"
-        >
-          <span className="filter-button">Tìm kiếm</span>
-        </Button>
-      </div>
+      <Card style={{ marginBottom: 24 }}>
+        <Row gutter={[16, 16]} align="middle">
+          <Col xs={24} sm={12} md={8}>
+            <Input
+              placeholder="Tìm kiếm theo tên khách hàng hoặc nội dung..."
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              allowClear
+            />
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Select
+              style={{ width: '100%' }}
+              placeholder="Trạng thái"
+              value={statusFilter}
+              onChange={setStatusFilter}
+            >
+              <Option value="all">Tất cả</Option>
+              <Option value="pending">Chờ trả lời</Option>
+              <Option value="answered">Đã trả lời</Option>
+            </Select>
+          </Col>
+          <Col xs={24} sm={24} md={10}>
+            <Space>
+              <Button type="primary" onClick={fetchQuestions} loading={loading}>
+                Làm mới
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Card>
 
       {/* Questions Table */}
-      <div className="questions-table-container">
-        <table className="manager-question-management-table">
-          <thead>
-            <tr>
-              <th>Khách hàng</th>
-              <th>Câu hỏi</th>
-              {/* <th>Danh mục</th> */}
-              {/* <th>Độ ưu tiên</th> */}
-              <th>Trạng thái</th>
-              <th>Thời gian</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {questions.map((question) => (
-              <tr key={question.ques_id} className="question-row" onClick={() => setSelectedQuestion(question)} style={{ cursor: 'pointer' }}>
-                <td>
-                  <div className="customer-info">
-                    <div className="customer-avatar">
-                      {question.customer_name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="customer-details">
-                      <div className="customer-name">
-                        {question.customer_name}
-                      </div>
-                      <div className="customer-email">
-                        {question.customer_email}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="question-content">
-                    <p className="manager-question-management-question-text">
-                      {question.content.length > 100
-                        ? `${question.content.substring(0, 100)}...`
-                        : question.content}
-                    </p>
-                  </div>
-                </td>
-                <td>{getStatusBadge(question.status, question.is_replied)}</td>
-                <td>
-                  <div className="time-info">
-                    <div className="created-time">{question.created_at}</div>
-                    {question.reply.created_at && (
-                      <div className="replied-time">
-                        Trả lời: {question.reply.created_at}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="btn-status">
-                    <button
-                      className='manager-question-management-btn-status'
-                      onClick={() =>
-                        handleStatusChange(question.ques_id, question.status.toString() === 'true' ? 'false' : 'true')
-                      }
-                    >
-                      {question.status.toString() === 'true' ? '🔒 Đóng câu hỏi' : '🔓 Mở lại'}
-                    </button>
-                    <button
-                      className='manager-question-management-btn-view'
-                      onClick={() => setSelectedQuestion(question)}
-                    >
-                      <span className="view-icon">👁</span>
-                      Xem chi tiết
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Card>
+        <Table
+          columns={columns}
+          dataSource={filteredQuestions}
+          loading={loading}
+          pagination={false}
+          rowKey={(record, index) => `question-${index}`}
+          locale={{
+            emptyText: 'Không có câu hỏi nào',
+          }}
+        />
 
-      {/* Pagination */}
-      <div className="pagination">
-        <div className="pagination-info">
-          Trang {currentPage} của {totalPages}
-        </div>
-        <div className="pagination-controls">
-          <button
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
-          >
-            Đầu
-          </button>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Trước
-          </button>
-
-          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-            let pageNum;
-            if (totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (currentPage <= 3) {
-              pageNum = i + 1;
-            } else if (currentPage >= totalPages - 2) {
-              pageNum = totalPages - 4 + i;
-            } else {
-              pageNum = currentPage - 2 + i;
+        {/* Custom Pagination */}
+        <div style={{ marginTop: 16, textAlign: 'center' }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={totalQuestions}
+            onChange={(page) => setCurrentPage(page)}
+            showSizeChanger={false}
+            showQuickJumper
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} của ${total} câu hỏi`
             }
-
-            return (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={currentPage === pageNum ? 'active' : ''}
-              >
-                {pageNum}
-              </button>
-            );
-          })}
-
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Sau
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            Cuối
-          </button>
+          />
         </div>
-      </div>
+      </Card>
 
-      {/* Reply Modal */}
-      {selectedQuestion && (
-        <div className="manager-question-management-modal-overlay" onClick={() => setSelectedQuestion(null)}>
-          <div className="manager-question-management-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="manager-question-management-modal-header">
-              <h2>
-                <span className="manager-question-management-modal-icon">💬</span>
-                Chi tiết câu hỏi
-              </h2>
-              <button
-                className="manager-question-management-modal-close"
-                onClick={() => setSelectedQuestion(null)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="manager-question-management-modal-body">
-              <div className="manager-question-management-question-detail">
-                <div className="manager-question-management-question-info">
-                  <div className="manager-question-management-info-icon">👤</div>
-                  <div className="manager-question-management-customer-name">
-                    {selectedQuestion?.customer_name}
-                  </div>
-                  <div className="manager-question-management-question-time">
-                    <span className="manager-question-management-info-icon">🕒</span>
-                    {selectedQuestion?.created_at}
-                  </div>
+      {/* Detail Modal */}
+      <Modal
+        title={
+          <Space>
+            <QuestionCircleOutlined />
+            Chi tiết câu hỏi
+          </Space>
+        }
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setModalVisible(false)}>
+            Đóng
+          </Button>,
+        ]}
+        width={700}
+      >
+        {selectedQuestion && (
+          <div className="question-detail">
+            {/* Customer Info */}
+            <Card size="small" style={{ marginBottom: 16 }}>
+              <Space>
+                <Avatar
+                  size={48}
+                  icon={<UserOutlined />}
+                  style={{ backgroundColor: '#667eea' }}
+                >
+                  {selectedQuestion.customer?.charAt(0)?.toUpperCase()}
+                </Avatar>
+                <div>
+                  <Title level={5} style={{ margin: 0 }}>
+                    {selectedQuestion.customer}
+                  </Title>
+                  <Text type="secondary">
+                    <CalendarOutlined style={{ marginRight: 4 }} />
+                    {formatDate(selectedQuestion.created_at)}
+                  </Text>
                 </div>
-                <div className="manager-question-management-question-content-detail">
-                  <strong>Câu hỏi:</strong>
-                  <p>{selectedQuestion?.content}</p>
-                </div>
-                {selectedQuestion?.reply.content && (
-                  <div className="manager-question-management-current-reply">
-                    <strong>Trả lời hiện tại:</strong>
-                    <p>{selectedQuestion.reply.content}</p>
-                  </div>
-                )}
-              </div>
+              </Space>
+            </Card>
 
-            </div>
-            <div className="manager-question-management-modal-footer">
-              <button
-                className="manager-question-management-btn-cancel"
-                onClick={() => setSelectedQuestion(null)}
-                disabled={loading}
-              >
-                Hủy
-              </button>
-            </div>
+            {/* Question Content */}
+            <Card
+              title="Nội dung câu hỏi"
+              size="small"
+              style={{ marginBottom: 16 }}
+            >
+              <Text>{selectedQuestion.content}</Text>
+            </Card>
+
+            {/* Reply Content */}
+            <Card
+              title={
+                <Space>
+                  Trả lời
+                  {getStatusTag(selectedQuestion)}
+                </Space>
+              }
+              size="small"
+            >
+              {selectedQuestion.reply?.content ? (
+                <div>
+                  <Text>{selectedQuestion.reply.content}</Text>
+                  {selectedQuestion.reply.created_at && (
+                    <div style={{ marginTop: 8 }}>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        <CalendarOutlined style={{ marginRight: 4 }} />
+                        Trả lời vào:{' '}
+                        {formatDate(selectedQuestion.reply.created_at)}
+                      </Text>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Text type="secondary" italic>
+                  Chưa có câu trả lời
+                </Text>
+              )}
+            </Card>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };
