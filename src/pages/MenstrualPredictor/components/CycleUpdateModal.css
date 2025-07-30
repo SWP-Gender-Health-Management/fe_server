@@ -30,6 +30,7 @@
 
 .cycle-update-modal .ant-modal-body {
   padding: 24px;
+  background-color: transparent;
 }
 
 .modal-content {
