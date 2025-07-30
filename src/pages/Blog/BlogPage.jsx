@@ -53,7 +53,7 @@ export default function BlogPage() {
     })),
   ];
 
-  const featuredPost = blogs[0];
+  // const featuredPost = blogs[0];
 
   return (
     <div className="blog-page">
@@ -81,7 +81,7 @@ export default function BlogPage() {
             </div>
           </div>
 
-          {featuredPost && (
+          {/* {featuredPost && (
             <div className="sidebar-section">
               <h3 className="sidebar-title">Bài viết nổi bật</h3>
               <div
@@ -113,7 +113,7 @@ export default function BlogPage() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </aside>
 
         <main className="blog-main">
@@ -228,6 +228,7 @@ export default function BlogPage() {
           {totalPages > 1 && (
             <div className="pagination">
               <Button
+                className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
@@ -245,6 +246,7 @@ export default function BlogPage() {
                 </button>
               ))}
               <Button
+                className="pagination-btn"
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
               >
