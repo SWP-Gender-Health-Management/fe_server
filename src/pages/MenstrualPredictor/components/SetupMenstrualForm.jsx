@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   Button,
@@ -171,6 +171,18 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
+  // Tự động tính periodLength khi startDate và endDate thay đổi
+  const handleFormValuesChange = (changedValues, allValues) => {
+    const { startDate, endDate } = allValues;
+    
+    if (startDate && endDate) {
+      const daysDiff = endDate.diff(startDate, 'day') + 1;
+      if (daysDiff >= 3 && daysDiff <= 10) {
+        form.setFieldsValue({ periodLength: daysDiff });
+      }
+    }
+  };
+
   const handleSubmit = async (values) => {
     setLoading(true);
 
@@ -188,7 +200,8 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
       payload = {
         start_date: values.startDate.toISOString(),
         end_date: values.endDate.toISOString(),
-        period: values.cycleLength.toString() || '5',
+        period: values.cycleLength.toString() || '28',
+        periodLength: values.periodLength || '5',
         note: values.description || 'Đăng ký theo dõi chu kỳ lần đầu',
       };
 
@@ -282,6 +295,7 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
             layout="vertical"
             onFinish={handleSubmit}
             onFinishFailed={handleFormFailed}
+            onValuesChange={handleFormValuesChange}
             className="setup-form"
             initialValues={{
               cycleLength: 28,
@@ -317,11 +331,32 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
             <Form.Item
               name="endDate"
               label="Ngày kết thúc kỳ kinh gần nhất"
+              dependencies={['startDate']}
               rules={[
                 {
                   required: true,
                   message: 'Vui lòng chọn ngày kết thúc kỳ kinh!',
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || !getFieldValue('startDate')) {
+                      return Promise.resolve();
+                    }
+                    
+                    const startDate = getFieldValue('startDate');
+                    if (value.isBefore(startDate, 'day')) {
+                      return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!'));
+                    }
+                    
+                    // Kiểm tra độ dài kỳ kinh (từ ngày bắt đầu đến kết thúc)
+                    const daysDiff = value.diff(startDate, 'day') + 1;
+                    if (daysDiff < 3 || daysDiff > 10) {
+                      return Promise.reject(new Error('Độ dài kỳ kinh phải từ 3-10 ngày!'));
+                    }
+                    
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <DatePicker
@@ -343,13 +378,63 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
                   required: true,
                   message: 'Vui lòng nhập độ dài chu kỳ!',
                 },
+                {
+                  type: 'number',
+                  min: 21,
+                  max: 35,
+                  message: 'Độ dài chu kỳ phải từ 21-35 ngày!',
+                },
               ]}
             >
               <InputNumber
                 style={{ width: '100%' }}
                 placeholder="Nhập số ngày (21-35)"
-              // min={21}
-              // max={35}
+                min={21}
+                max={35}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="periodLength"
+              label="Độ dài kỳ kinh (ngày)"
+              extra="Số ngày hành kinh (tự động tính từ ngày bắt đầu và kết thúc)"
+              dependencies={['startDate', 'endDate']}
+              initialValue={5}
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập độ dài kỳ kinh!',
+                },
+                {
+                  type: 'number',
+                  min: 3,
+                  max: 10,
+                  message: 'Độ dài kỳ kinh phải từ 3-10 ngày!',
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const startDate = getFieldValue('startDate');
+                    const endDate = getFieldValue('endDate');
+                    
+                    if (startDate && endDate && value) {
+                      const calculatedDays = endDate.diff(startDate, 'day') + 1;
+                      if (value !== calculatedDays) {
+                        return Promise.reject(new Error(`Độ dài kỳ kinh phải là ${calculatedDays} ngày (tính từ ngày bắt đầu đến kết thúc)!`));
+                      }
+                    }
+                    
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+            >
+              <InputNumber
+                style={{ width: '100%' }}
+                placeholder="Tự động tính từ ngày bắt đầu và kết thúc"
+                min={3}
+                max={10}
+                disabled
+                addonAfter="ngày"
               />
             </Form.Item>
 

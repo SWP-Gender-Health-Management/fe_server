@@ -17,6 +17,17 @@ const CycleUpdateModal = ({
 }) => {
   const [form] = Form.useForm();
 
+  // Tự động tính periodLength khi lastPeriodStart thay đổi
+  const handleFormValuesChange = (changedValues, allValues) => {
+    const { lastPeriodStart } = allValues;
+    
+    if (lastPeriodStart) {
+      // Tính periodLength dựa trên cycleLength (thường là 5-7 ngày)
+      const calculatedPeriodLength = Math.min(7, Math.max(3, Math.floor(cycleLength / 5)));
+      form.setFieldsValue({ periodLength: calculatedPeriodLength });
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -38,6 +49,13 @@ const CycleUpdateModal = ({
   const handleCancel = () => {
     form.resetFields();
     onCancel();
+  };
+
+  const disabledDate = (current) => {
+    const threeMonthsAgo = moment().subtract(3, 'months');
+    return (
+      current && (current > moment().endOf('day') || current < threeMonthsAgo)
+    );
   };
 
   return (
@@ -85,6 +103,7 @@ const CycleUpdateModal = ({
             cycleLength: cycleLength || 28,
             periodLength: periodLength || 5,
           }}
+          onValuesChange={handleFormValuesChange}
         >
           <Form.Item
             label="Ngày bắt đầu kỳ kinh gần nhất"
@@ -94,12 +113,33 @@ const CycleUpdateModal = ({
                 required: true,
                 message: 'Vui lòng chọn ngày bắt đầu kỳ kinh!',
               },
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+                  
+                  const today = moment();
+                  const threeMonthsAgo = moment().subtract(3, 'months');
+                  
+                  if (value.isAfter(today, 'day')) {
+                    return Promise.reject(new Error('Ngày bắt đầu không thể là ngày trong tương lai!'));
+                  }
+                  
+                  if (value.isBefore(threeMonthsAgo, 'day')) {
+                    return Promise.reject(new Error('Ngày bắt đầu không thể quá 3 tháng trước!'));
+                  }
+                  
+                  return Promise.resolve();
+                },
+              },
             ]}
           >
             <DatePicker
               style={{ width: '100%' }}
               placeholder="Chọn ngày"
               format="DD/MM/YYYY"
+              disabledDate={disabledDate}
             />
           </Form.Item>
 
