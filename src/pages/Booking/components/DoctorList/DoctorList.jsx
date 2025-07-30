@@ -129,15 +129,14 @@ const DoctorList = ({ onDoctorSelect }) => {
 
   const calculatePrice = (rating) => {
     const basePrice = 10 * 1000;
-    if(rating < 3) {
+    if (rating < 3) {
       return basePrice;
-    } else if(rating < 4) {
-      
-    } else if(rating <= 5) {
+    } else if (rating < 4) {
+    } else if (rating <= 5) {
       return basePrice + 100 * 1000;
     }
     return basePrice;
-  }
+  };
 
   useEffect(() => {
     let filtered = doctors;

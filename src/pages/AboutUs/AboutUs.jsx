@@ -15,14 +15,10 @@ const AboutUs = () => {
       id: 1,
       title: 'Phòng khám Nam khoa hiện đại',
       description:
-        'Trang bị máy móc tiên tiến, không gian riêng tư đảm bảo sự thoải mái cho bệnh nhân',
+        'Trang bị máy móc tiên tiến, đảm bảo sự thoải mái cho bệnh nhân',
       image:
         'https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=600',
-      features: [
-        'Máy siêu âm 4D',
-        'Thiết bị nội soi',
-        'Phòng xét nghiệm tại chỗ',
-      ],
+      features: ['Máy siêu âm 4D', 'Thiết bị nội soi'],
     },
     {
       id: 2,
@@ -30,11 +26,7 @@ const AboutUs = () => {
       description:
         'Chăm sóc toàn diện sức khỏe phụ nữ từ tuổi dậy thì đến mãn kinh',
       image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600',
-      features: [
-        'Khám thai định kỳ',
-        'Tầm soát ung thư',
-        'Tư vấn kế hoạch hóa gia đình',
-      ],
+      features: ['Khám thai định kỳ', 'Tầm soát ung thư'],
     },
     {
       id: 3,
@@ -43,11 +35,7 @@ const AboutUs = () => {
         'Hệ thống xét nghiệm hiện đại với kết quả nhanh chóng và chính xác',
       image:
         'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600',
-      features: [
-        'Xét nghiệm hormone',
-        'Test HIV nhanh',
-        'Sàng lọc bệnh lây truyền',
-      ],
+      features: ['Xét nghiệm hormone', 'Test HIV nhanh'],
     },
     {
       id: 4,
@@ -56,11 +44,7 @@ const AboutUs = () => {
         'Không gian thoải mái để thảo luận các vấn đề nhạy cảm về sức khỏe sinh sản',
       image:
         'https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=600',
-      features: [
-        'Phòng tư vấn 1:1',
-        'Tuyệt đối bảo mật',
-        'Đội ngũ tư vấn viên kinh nghiệm',
-      ],
+      features: ['Phòng tư vấn 1:1', 'Tuyệt đối bảo mật'],
     },
   ];
 
@@ -133,7 +117,7 @@ const AboutUs = () => {
         <div className="hero-content">
           <h1 className="hero-title">Về Gender Care</h1>
           <p className="hero-subtitle">
-            Chăm sóc sức khỏe sinh sản với tình yêu thương và chuyên nghiệp
+            Chăm sóc sức khỏe giới tính với sự tận tâm và chuyên nghiệp
           </p>
           <div className="hero-stats">
             {stats.map((stat, index) => (
@@ -151,7 +135,7 @@ const AboutUs = () => {
         {/* Mission Section */}
         <section className="mission-section">
           <div className="section-header">
-            <h2 className="section-title">Sứ mệnh của chúng tôi</h2>
+            <h2 className="section-titles">Sứ mệnh của chúng tôi</h2>
             <p className="section-subtitle">
               Mang đến dịch vụ chăm sóc sức khỏe sinh sản tốt nhất với công nghệ
               hiện đại
@@ -195,7 +179,7 @@ const AboutUs = () => {
         {/* Facilities Section */}
         <section className="facilities-section">
           <div className="section-header">
-            <h2 className="section-title">Cơ sở vật chất hiện đại</h2>
+            <h2 className="section-titles">Cơ sở vật chất hiện đại</h2>
             <p className="section-subtitle">
               Trang bị đầy đủ thiết bị y tế tiên tiến để đảm bảo chất lượng điều
               trị tốt nhất
@@ -207,9 +191,6 @@ const AboutUs = () => {
               <div key={facility.id} className="facility-card">
                 <div className="facility-image">
                   <img src={facility.image} alt={facility.title} />
-                  <div className="facility-overlay">
-                    <Button className="view-btn">Xem chi tiết</Button>
-                  </div>
                 </div>
                 <div className="facility-content">
                   <h3 className="facility-title">{facility.title}</h3>
@@ -231,7 +212,7 @@ const AboutUs = () => {
         {/* Doctors Section */}
         <section className="doctors-section">
           <div className="section-header">
-            <h2 className="section-title">Đội ngũ bác sĩ giàu kinh nghiệm</h2>
+            <h2 className="section-titles">Đội ngũ bác sĩ giàu kinh nghiệm</h2>
             <p className="section-subtitle">
               Các chuyên gia hàng đầu trong lĩnh vực chăm sóc sức khỏe sinh sản
             </p>
@@ -258,7 +239,6 @@ const AboutUs = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button className="contact-doctor-btn">Đặt lịch khám</Button>
                 </div>
               </div>
             ))}
@@ -268,7 +248,7 @@ const AboutUs = () => {
         {/* Certifications Section */}
         <section className="certifications-section">
           <div className="section-header">
-            <h2 className="section-title">Chứng nhận và Giấy phép</h2>
+            <h2 className="section-titles">Chứng nhận và Giấy phép</h2>
             <p className="section-subtitle">
               Đảm bảo chất lượng dịch vụ theo tiêu chuẩn quốc gia và quốc tế
             </p>
@@ -290,7 +270,7 @@ const AboutUs = () => {
         <section className="history-section">
           <div className="history-container">
             <div className="history-content">
-              <h2 className="section-title">Lịch sử phát triển</h2>
+              <h2 className="section-titles">Lịch sử phát triển</h2>
               <div className="timeline">
                 <div className="timeline-item">
                   <div className="timeline-year">2008</div>
@@ -329,18 +309,6 @@ const AboutUs = () => {
                 src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600"
                 alt="Hospital building"
               />
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="cta-section">
-          <div className="cta-content">
-            <h2>Sẵn sàng chăm sóc sức khỏe của bạn?</h2>
-            <p>Đặt lịch khám ngay hôm nay để được tư vấn từ các chuyên gia</p>
-            <div className="cta-buttons">
-              <Button className="primary-btn">Đặt lịch khám</Button>
-              <Button className="secondary-btn">Tư vấn trực tuyến</Button>
             </div>
           </div>
         </section>

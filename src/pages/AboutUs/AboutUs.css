@@ -57,20 +57,26 @@
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 40px;
-  max-width: 800px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .stat-item {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1) !important;
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 30px 20px;
   text-align: center;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-item:hover {
@@ -82,22 +88,69 @@
 .stat-icon {
   font-size: 2.5rem;
   margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+  margin: 0 !important;
 }
 
 .stat-number {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 10px;
-  background: linear-gradient(45deg, #ff6b6b, #ff8e53);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  text-align: center !important;
+  width: 100% !important;
 }
 
 .stat-label {
   font-size: 1rem;
-  opacity: 0.9;
+  color: #ffffff !important;
   font-weight: 500;
+  text-align: center;
+  width: 100%;
+}
+
+.hero-stats .stat-item .stat-number {
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Maximum specificity override */
+div.about-page
+  section.about-hero
+  div.hero-content
+  div.hero-stats
+  div.stat-item
+  div.stat-number {
+  all: unset !important;
+  color: #ffffff !important;
+  background: none !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  text-align: center !important;
 }
 
 /* Main Container */
@@ -111,26 +164,32 @@
 .section-header {
   text-align: center;
   margin-bottom: 60px;
+  display: flex;
+  flex-direction: column !important;
 }
 
-.section-title {
-  font-size: 2.5rem;
+.section-titles {
+  font-size: 3em !important;
   font-weight: 700;
-  color: #1f2b6c;
+  color: #1f2b6c !important;
   margin-bottom: 20px;
-  position: relative;
+  display: flex;
+  justify-content: center !important;
+  padding: 0 !important;
 }
 
-.section-title::after {
-  content: '';
-  position: absolute;
+.section-titles::after {
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
+  width: 20rem !important;
   height: 4px;
   background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   border-radius: 2px;
+  display: flex;
+  justify-content: center !important;
+  margin: 0;
+  padding: 0;
 }
 
 .section-subtitle {
@@ -194,8 +253,10 @@
 
 .facilities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .facility-card {
@@ -281,7 +342,7 @@
 }
 
 .facility-description {
-  color: #64748b;
+  color: #000000 !important;
   line-height: 1.6;
   margin-bottom: 20px;
 }
@@ -290,27 +351,37 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .feature-item {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  color: #64748b;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #000000 !important;
+  line-height: 1.4;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .feature-icon {
   background: linear-gradient(135deg, #337ab7, #1f2b6c);
   color: white;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+  position: relative;
+  top: 0;
+  margin: 0 !important;
 }
 
 /* Doctors Section */
@@ -361,24 +432,24 @@
 .doctor-name {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #1f2b6c;
+  color: #1f2b6c !important;
   margin-bottom: 5px;
 }
 
 .doctor-title {
-  color: #337ab7;
+  color: #337ab7 !important;
   font-weight: 600;
   margin-bottom: 5px;
 }
 
 .doctor-experience {
-  color: #64748b;
+  color: #000000 !important;
   font-size: 0.9rem;
   margin-bottom: 10px;
 }
 
 .doctor-specialization {
-  color: #64748b;
+  color: #64748b !important;
   font-size: 0.95rem;
   margin-bottom: 20px;
   font-style: italic;
@@ -403,7 +474,6 @@
 .achievement-icon {
   color: #ff6b6b;
   font-size: 0.8rem;
-  margin-top: 2px;
 }
 
 .contact-doctor-btn {
@@ -461,7 +531,7 @@
 .cert-title {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1f2b6c;
+  color: #1f2b6c !important;
   margin-bottom: 10px;
 }
 
@@ -660,6 +730,7 @@
 @media (max-width: 1024px) {
   .hero-stats {
     grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
   .history-container {
@@ -686,20 +757,24 @@
   }
 
   .hero-stats {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
-  .section-title {
+  .section-titles {
     font-size: 2rem;
   }
 
   .mission-grid,
-  .facilities-grid,
   .doctors-grid,
   .certifications-grid {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .facilities-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
   .facility-content,
@@ -734,6 +809,16 @@
 
   .hero-title {
     font-size: 2rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .facilities-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
   .stat-item {
