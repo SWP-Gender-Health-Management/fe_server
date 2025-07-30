@@ -3,18 +3,10 @@ import {
   CalendarOutlined,
   HeartOutlined,
   SettingOutlined,
-  UserOutlined
+  UserOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '@context/AuthContext.jsx';
-import {
-  Card,
-  Form,
-  Input,
-  message,
-  Select,
-  Tabs,
-  Typography
-} from 'antd';
+import { Card, Form, Input, message, Select, Tabs, Typography } from 'antd';
 import dayjs from 'dayjs';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
@@ -30,8 +22,8 @@ import axios from 'axios';
 // import './components/styles.css';
 
 const API_URL = 'http://localhost:3000';
-const accountId = await Cookies.get('accountId')
-const accessToken = await Cookies.get('accessToken')
+const accountId = await Cookies.get('accountId');
+const accessToken = await Cookies.get('accessToken');
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -162,7 +154,7 @@ const UserAccount = () => {
             {}
           );
           const labAppData = labAppRes.data.result.labApp || [];
-          console.log("labAppData: ", labAppData);
+          console.log('labAppData: ', labAppData);
           setLabApps(labAppData);
           setLabAppsPagination((prev) => ({
             ...prev,
@@ -215,7 +207,7 @@ const UserAccount = () => {
         message.error('Lỗi khi tải lịch hẹn');
       }
     }
-  }
+  };
 
   const fetchConApp = async () => {
     try {
@@ -244,7 +236,7 @@ const UserAccount = () => {
         message.error('Lỗi khi tải lịch hẹn');
       }
     }
-  }
+  };
 
   // Tính toán tỷ lệ hoàn thành hồ sơ
   const calculateProfileCompletion = (data) => {
@@ -556,37 +548,34 @@ const UserAccount = () => {
   // Hàm hiển thị chi tiết lịch hẹn
   const showConAppDetail = async (record) => {
     let feedback = null;
-    console.log("record?.feed_id: ", record?.feed_id || "Không có")
+    console.log('record?.feed_id: ', record?.feed_id || 'Không có');
     if (record?.feed_id) {
       try {
-        await axios.get(
-          `${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`,
-          {
+        await axios
+          .get(`${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
             },
-          }
-        ).then((response) => {
-          feedback = response.data.result || null;
-          setSelectedConApp({
-            ...record,
-            feedback
           })
-        });
+          .then((response) => {
+            feedback = response.data.result || null;
+            setSelectedConApp({
+              ...record,
+              feedback,
+            });
+          });
       } catch (error) {
-        console.error("Get feedback error: ", error);
-        setSelectedConApp(record)
-        feedback = null
+        console.error('Get feedback error: ', error);
+        setSelectedConApp(record);
+        feedback = null;
       } finally {
-        setConAppDetailVisible(true)
+        setConAppDetailVisible(true);
       }
-    }
-    else {
+    } else {
       setSelectedConApp(record);
-      setConAppDetailVisible(true)
+      setConAppDetailVisible(true);
     }
-
   };
 
   // Hàm hiển thị chi tiết lịch hẹn xét nghiệm
@@ -596,37 +585,34 @@ const UserAccount = () => {
   // };
   const showLabAppDetail = async (record) => {
     let feedback = null;
-    console.log("record?.feed_id: ", record?.feed_id || "Không có")
+    console.log('record?.feed_id: ', record?.feed_id || 'Không có');
     if (record?.feed_id) {
       try {
-        await axios.get(
-          `${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`,
-          {
+        await axios
+          .get(`${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
             },
-          }
-        ).then((response) => {
-          feedback = response.data.result || null;
-          setSelectedLabApp({
-            ...record,
-            feedback
           })
-        });
+          .then((response) => {
+            feedback = response.data.result || null;
+            setSelectedLabApp({
+              ...record,
+              feedback,
+            });
+          });
       } catch (error) {
-        console.error("Get feedback error: ", error);
-        setSelectedLabApp(record)
-        feedback = null
+        console.error('Get feedback error: ', error);
+        setSelectedLabApp(record);
+        feedback = null;
       } finally {
-        setLabAppDetailVisible(true)
+        setLabAppDetailVisible(true);
       }
-    }
-    else {
+    } else {
       setSelectedLabApp(record);
-      setLabAppDetailVisible(true)
+      setLabAppDetailVisible(true);
     }
-
   };
 
   // Thay thế phần render:
