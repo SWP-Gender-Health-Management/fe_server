@@ -173,14 +173,14 @@ const Reports = () => {
       <div className="reports-overview">
         <div className="overview-card">
           <h3>Người dùng</h3>
-          <div className="metric">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {formatNumber(reportData.userStats.total)}
             </span>
             <span className="metric-label">Tổng số</span>
           </div>
-          <div className="metric-small">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {formatNumber(reportData.userStats.newThisMonth)}
             </span>
             <span className="metric-label">Mới tháng này</span>
@@ -189,14 +189,14 @@ const Reports = () => {
 
         <div className="overview-card">
           <h3>Doanh thu</h3>
-          <div className="metric">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {formatCurrency(reportData.revenueStats.total)}
             </span>
             <span className="metric-label">Tổng</span>
           </div>
-          <div className="metric-small">
-            <span className="metric-value positive">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value positive">
               +{reportData.revenueStats.growth}%
             </span>
             <span className="metric-label">Tăng trưởng</span>
@@ -205,14 +205,14 @@ const Reports = () => {
 
         <div className="overview-card">
           <h3>Cuộc hẹn</h3>
-          <div className="metric">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {formatNumber(reportData.appointmentStats.total)}
             </span>
             <span className="metric-label">Tổng số</span>
           </div>
-          <div className="metric-small">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {formatNumber(reportData.appointmentStats.completed)}
             </span>
             <span className="metric-label">Hoàn thành</span>
@@ -221,14 +221,14 @@ const Reports = () => {
 
         <div className="overview-card">
           <h3>Đánh giá</h3>
-          <div className="metric">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {reportData.reviewStats.average}/5
             </span>
             <span className="metric-label">Điểm trung bình</span>
           </div>
-          <div className="metric-small">
-            <span className="metric-value">
+          <div className="manager-report-metric">
+            <span className="manager-report-metric-value">
               {formatNumber(reportData.reviewStats.total)}
             </span>
             <span className="metric-label">Tổng đánh giá</span>
@@ -256,7 +256,7 @@ const Reports = () => {
         </div>
 
         {/* Appointments Chart */}
-        <div className="chart-container">
+        {/* <div className="chart-container">
           <h3>Số lượng cuộc hẹn</h3>
           <LineChart
             data={chartData.appointments.map((item) => ({
@@ -264,7 +264,7 @@ const Reports = () => {
               users: item.appointments,
             }))}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Pie Charts Section */}

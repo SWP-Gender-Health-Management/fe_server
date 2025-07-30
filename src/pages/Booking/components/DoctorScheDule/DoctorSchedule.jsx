@@ -143,7 +143,6 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         // Sau khi có filteredData
 
         // console.log('Final timeSlots:', slotTimes);
-        fetchTimeSlots();
       } catch (err) {
         console.error('Lỗi khi lấy lịch bác sĩ:', err);
       }

@@ -392,7 +392,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                 {selectedAppointment.status === 'confirmed' &&
                   <div className="info-row">
                     <label>Link Meeting:</label>
-                    <Link to='https://meet.google.com/pfa-oqau-zwn' target="_blank">
+                    <Link to={selectedAppointment.gg_meet} target="_blank">
                       <Button >
                         Meeting
                       </Button>

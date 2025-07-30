@@ -191,8 +191,14 @@ const Question = () => {
       <div className="question-page">
         <LoginRequiredModal
           visible={isLoginModalVisible}
-          onOk={() => setIsLoginModalVisible(false)}
           onCancel={() => setIsLoginModalVisible(false)}
+          onLoginSuccess={() => {
+            setIsLoginModalVisible(false);
+            // Reload trang sau khi đăng nhập thành công
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }}
           message="Bạn cần đăng nhập để sử dụng tính năng hỏi đáp!"
         />
         <div className="question-right">

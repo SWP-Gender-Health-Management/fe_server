@@ -47,9 +47,36 @@ const CalendarView = ({
   const numDays = daysInMonth(month, year);
   const firstDay = getFirstDayOfMonth(month, year);
 
-  const days = Array.from({ length: firstDay }, () => null).concat(
-    Array.from({ length: numDays }, (_, i) => i + 1)
-  );
+  // Tạo mảng ngày với padding để đảm bảo luôn có 7 cột
+  const totalCells = Math.ceil((firstDay + numDays) / 7) * 7;
+  const days = [];
+  
+  // Thêm các ô trống cho ngày đầu tháng
+  for (let i = 0; i < firstDay; i++) {
+    days.push(null);
+  }
+  
+  // Thêm các ngày trong tháng
+  for (let i = 1; i <= numDays; i++) {
+    days.push(i);
+  }
+  
+  // Thêm các ô trống để hoàn thành grid 7 cột
+  while (days.length < totalCells) {
+    days.push(null);
+  }
+  
+  // Debug: Kiểm tra số lượng ngày và cột
+  console.log('Calendar Debug:', {
+    month,
+    year,
+    firstDay,
+    numDays,
+    totalCells,
+    daysLength: days.length,
+    dayNamesLength: dayNames.length,
+    dayNames: dayNames.slice(0, 7)
+  });
 
   const prevMonth = () => {
     if (month === 0) {
@@ -189,12 +216,12 @@ const CalendarView = ({
           />
         </div>
 
-        {/* Calendar Grid */}
+        {/* Calendar Grid - Cấu trúc table tương tự DoctorSchedule */}
         <div className="calendar-grid">
-          {/* Day headers */}
-          {dayNames.map((dayName) => (
+          {/* Day headers - Đảm bảo chỉ hiển thị 7 ngày */}
+          {dayNames.slice(0, 7).map((dayName) => (
             <div key={dayName} className="day-header">
-              {dayName}
+              <div className="day-name">{dayName}</div>
             </div>
           ))}
 

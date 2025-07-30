@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './BulkEmail.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = 'http://localhost:3000';
+
 
 const BulkEmail = () => {
   const [emailData, setEmailData] = useState({
     subject: '',
-    htmlFile: null,
+    templateFile: null,
     targetRoles: [],
-    priority: 'normal',
-    scheduleDate: '',
-    attachments: [],
+    body: '',
   });
 
   const [users, setUsers] = useState([]);
@@ -20,11 +23,11 @@ const BulkEmail = () => {
   const [previewMode, setPreviewMode] = useState(false);
 
   const roles = [
-    { value: 'admin', label: 'Admin', count: 2 },
-    { value: 'manager', label: 'Manager', count: 4 },
-    { value: 'staff', label: 'Staff', count: 8 },
-    { value: 'consultant', label: 'Consultant', count: 15 },
-    { value: 'customer', label: 'Customer', count: 2450 },
+    { value: 'ADMIN', label: 'Admin' },
+    { value: 'MANAGER', label: 'Manager' },
+    { value: 'STAFF', label: 'Staff' },
+    { value: 'CONSULTANT', label: 'Consultant' },
+    { value: 'CUSTOMER', label: 'Customer' },
   ];
 
   const emailTemplates = [
@@ -128,7 +131,7 @@ const BulkEmail = () => {
     if (file && file.type === 'text/html') {
       setEmailData((prev) => ({
         ...prev,
-        htmlFile: file,
+        templateFile: file,
       }));
     } else {
       alert('Vui lòng chọn file HTML (.html)');
@@ -140,7 +143,7 @@ const BulkEmail = () => {
     if (!emailData.subject.trim()) {
       return 'Vui lòng nhập tiêu đề email';
     }
-    if (!emailData.htmlFile) {
+    if (!emailData.templateFile) {
       return 'Vui lòng đính kèm file HTML';
     }
     if (emailData.targetRoles.length === 0) {
@@ -159,22 +162,33 @@ const BulkEmail = () => {
     setLoading(true);
     try {
       // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      const recipientCount = filteredUsers.length;
-      setMessage({
-        type: 'success',
-        text: `Đã gửi email thành công đến ${recipientCount} người dùng`,
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+      await axios.post(`${API_URL}/admin/send-campaign-from-file`, {
+        subject: emailData.subject,
+        body: emailData.body,
+        templateFile: emailData.templateFile,
+        targetRoles: emailData.targetRoles,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+      ).then((response) => {
+        console.log("send-email response: ", response);
+        setMessage({
+          type: 'success',
+          text: `${response.data.message} Có hiệu lực với ${emailData.targetRoles.map((r) => r).join(', ')}`,
+        });
       });
 
       // Reset form
       setEmailData({
         subject: '',
-        htmlFile: null,
+        templateFile: null,
         targetRoles: [],
-        priority: 'normal',
-        scheduleDate: '',
-        attachments: [],
+        body: '',
       });
       setSelectedTemplate('');
     } catch (error) {
@@ -193,15 +207,15 @@ const BulkEmail = () => {
 
   const getRoleIcon = (roleValue) => {
     switch (roleValue) {
-      case 'admin':
+      case 'ADMIN':
         return '👑';
-      case 'manager':
+      case 'MANAGER':
         return '👨‍💼';
-      case 'staff':
+      case 'STAFF':
         return '👷‍♂️';
-      case 'consultant':
+      case 'CONSULTANT':
         return '👨‍🔬';
-      case 'customer':
+      case 'CUSTOMER':
         return '👤';
       default:
         return '❓';
@@ -254,31 +268,44 @@ const BulkEmail = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="htmlFile">Đính kèm file HTML *</label>
+              <label htmlFor="subject">Mội dung email *</label>
+              <input
+                type="text"
+                id="body"
+                name="body"
+                value={emailData.body}
+                onChange={handleInputChange}
+                placeholder="Nhập nội dung email"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="templateFile">Đính kèm file HTML *</label>
               <div className="file-input-container">
                 <input
                   type="file"
-                  id="htmlFile"
+                  id="templateFile"
                   accept=".html"
                   onChange={handleFileSelect}
                   className="file-input"
                 />
-                <label htmlFor="htmlFile" className="file-input-label">
+                <label htmlFor="templateFile" className="file-input-label">
                   <span className="file-icon">📎</span>
-                  {emailData.htmlFile
-                    ? emailData.htmlFile.name
+                  {emailData.templateFile
+                    ? emailData.templateFile.name
                     : 'Chọn file HTML'}
                 </label>
-                {emailData.htmlFile && (
+                {emailData.templateFile && (
                   <div className="file-info">
                     <span className="file-size">
-                      ({(emailData.htmlFile.size / 1024).toFixed(1)} KB)
+                      ({(emailData.templateFile.size / 1024).toFixed(1)} KB)
                     </span>
                     <button
                       type="button"
                       className="remove-file-btn"
                       onClick={() =>
-                        setEmailData((prev) => ({ ...prev, htmlFile: null }))
+                        setEmailData((prev) => ({ ...prev, templateFile: null }))
                       }
                     >
                       ✕
@@ -292,33 +319,6 @@ const BulkEmail = () => {
               </small>
             </div>
 
-            {/* <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="priority">Mức độ ưu tiên</label>
-                <select
-                  id="priority"
-                  name="priority"
-                  value={emailData.priority}
-                  onChange={handleInputChange}
-                >
-                  <option value="low">Thấp</option>
-                  <option value="normal">Bình thường</option>
-                  <option value="high">Cao</option>
-                  <option value="urgent">Khẩn cấp</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="scheduleDate">Lên lịch gửi (tùy chọn)</label>
-                <input
-                  type="datetime-local"
-                  id="scheduleDate"
-                  name="scheduleDate"
-                  value={emailData.scheduleDate}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div> */}
           </div>
 
           <div className="form-section">
@@ -372,10 +372,10 @@ const BulkEmail = () => {
                 </div>
                 <div className="summary-content">
                   <div className="summary-main">
-                    <span className="summary-label">Tổng số người nhận:</span>
+                    {/* <span className="summary-label">Tổng số người nhận:</span>
                     <span className="summary-count">
                       {getTotalRecipients()}
-                    </span>
+                    </span> */}
                   </div>
                   <div className="summary-breakdown">
                     {emailData.targetRoles.map((roleValue) => {
@@ -416,7 +416,7 @@ const BulkEmail = () => {
               type="button"
               className="btn-preview"
               onClick={() => setPreviewMode(true)}
-              disabled={!emailData.subject || !emailData.htmlFile}
+              disabled={!emailData.subject || !emailData.templateFile}
             >
               Xem trước
             </button>
@@ -455,26 +455,39 @@ const BulkEmail = () => {
                     <strong>Từ:</strong> admin@health.com
                   </p>
                   <p>
-                    <strong>Đến:</strong> {getTotalRecipients()} người nhận
+                    <strong>Đến:</strong>
+                    {emailData.targetRoles.map((roleValue) => {
+                      const role = roles.find((r) => r.value === roleValue);
+                      return (
+                        <span key={roleValue} className="breakdown-item">
+                          <span className="breakdown-icon">
+                            {getRoleIcon(roleValue)}
+                          </span>
+                          <span className="breakdown-text">
+                            {role.label}: {role.count}
+                          </span>
+                        </span>
+                      );
+                    })}
                   </p>
                   <p>
                     <strong>Tiêu đề:</strong> {emailData.subject}
                   </p>
-                  <p>
-                    <strong>Mức độ:</strong> {emailData.priority}
-                  </p>
                 </div>
                 <div className="email-body">
                   <h3>Nội dung:</h3>
+                  <div className="email-body-content">
+                    <p>{emailData.body}</p>
+                  </div>
                   <div className="email-content">
-                    {emailData.htmlFile ? (
+                    {emailData.templateFile ? (
                       <div className="html-file-preview">
                         <p>
-                          <strong>File HTML:</strong> {emailData.htmlFile.name}
+                          <strong>File HTML:</strong> {emailData.templateFile.name}
                         </p>
                         <p>
                           <strong>Kích thước:</strong>{' '}
-                          {(emailData.htmlFile.size / 1024).toFixed(1)} KB
+                          {(emailData.templateFile.size / 1024).toFixed(1)} KB
                         </p>
                         <p>
                           <em>Nội dung email sẽ được lấy từ file HTML này.</em>
