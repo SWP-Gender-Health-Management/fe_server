@@ -135,7 +135,6 @@ const UserAccount = () => {
             {}
           );
           const conAppsData = appointmentRes.data.result.conApp || [];
-          // const totalPages = appointmentRes.data.pages || 1;
           setConApps(conAppsData);
           setConAppsPagination((prev) => ({
             ...prev,
@@ -143,7 +142,7 @@ const UserAccount = () => {
           }));
         } catch (error) {
           if (error.response?.status === 404) {
-            setConApps([]); // Không có lịch hẹn thì đặt mảng rỗng
+            setConApps([]); 
           } else {
             console.error('Lỗi khi tải dữ liệu:', error);
             message.error('Lỗi khi tải lịch hẹn');

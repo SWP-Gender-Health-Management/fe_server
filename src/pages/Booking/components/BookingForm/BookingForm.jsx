@@ -138,7 +138,7 @@ const BookingForm = ({ doctor, slot, onSubmit, onBack }) => {
             <div className="summary-grid">
               <div className="summary-item">
                 <span className="label">👨‍⚕️ Bác sĩ:</span>
-                <span className="value">{doctor.name}</span>
+                <span className="value">{doctor.fullName}</span>
               </div>
               <div className="summary-item">
                 <span className="label">🩺 Chuyên khoa:</span>
