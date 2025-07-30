@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import './Contact.css';
 
+
+
 const Contact = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -130,19 +134,11 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate form submission
+
     setTimeout(() => {
       setLoading(false);
-      alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong vòng 24h.');
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        service: '',
-        message: '',
-        appointment: '',
-      });
-    }, 2000);
+      navigate('/hoi-dap');
+    }, 1000);
   };
 
   return (
@@ -184,7 +180,7 @@ const Contact = () => {
         {/* Contact Methods */}
         <section className="contact-methods-section">
           <div className="section-header">
-            <h2 className="section-title">Phương thức liên hệ</h2>
+            <h2 className="section-titles">Phương thức liên hệ</h2>
             <p className="section-subtitle">
               Chọn cách thức liên hệ phù hợp nhất với bạn
             </p>
@@ -202,7 +198,6 @@ const Contact = () => {
                 <h3 className="method-type">{method.type}</h3>
                 <p className="method-value">{method.value}</p>
                 <p className="method-description">{method.description}</p>
-                <Button className="contact-method-btn">Liên hệ ngay</Button>
               </div>
             ))}
           </div>
@@ -211,7 +206,7 @@ const Contact = () => {
         {/* Emergency Contacts */}
         <section className="emergency-section">
           <div className="section-header">
-            <h2 className="section-title">Liên hệ khẩn cấp</h2>
+            <h2 className="section-titles">Liên hệ khẩn cấp</h2>
             <p className="section-subtitle">
               Các đường dây nóng cho trường hợp cần hỗ trợ gấp
             </p>
@@ -228,7 +223,6 @@ const Contact = () => {
                 </div>
                 <p className="emergency-phone">{contact.phone}</p>
                 <p className="emergency-description">{contact.description}</p>
-                <Button className="emergency-btn">Gọi ngay</Button>
               </div>
             ))}
           </div>
@@ -372,7 +366,7 @@ const Contact = () => {
         {/* Locations */}
         <section className="locations-section">
           <div className="section-header">
-            <h2 className="section-title">Địa điểm khám</h2>
+            <h2 className="section-titles">Địa điểm khám</h2>
             <p className="section-subtitle">
               Hệ thống cơ sở hiện đại phục vụ bạn tại nhiều địa điểm
             </p>
@@ -384,7 +378,6 @@ const Contact = () => {
                 <div className="location-image">
                   <img src={location.image} alt={location.name} />
                   <div className="location-overlay">
-                    <Button className="direction-btn">Chỉ đường</Button>
                   </div>
                 </div>
 
@@ -431,68 +424,11 @@ const Contact = () => {
                       ))}
                     </ul>
                   </div>
-
                   <div className="location-actions">
-                    <Button className="book-btn">Đặt lịch khám</Button>
-                    <Button className="call-btn">Gọi điện</Button>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Map Section */}
-        <section className="map-section">
-          <div className="section-header">
-            <h2 className="section-title">Bản đồ vị trí</h2>
-            <p className="section-subtitle">
-              Tìm đường đến các cơ sở của chúng tôi
-            </p>
-          </div>
-
-          <div className="map-container">
-            <div className="map-placeholder">
-              <div className="map-content">
-                <h3>🗺️ Bản đồ tương tác</h3>
-                <p>Tích hợp Google Maps hoặc các dịch vụ bản đồ khác</p>
-                <Button className="view-map-btn">Xem bản đồ chi tiết</Button>
-              </div>
-            </div>
-
-            <div className="map-info">
-              <h4>Hướng dẫn di chuyển</h4>
-              <div className="transport-options">
-                <div className="transport-item">
-                  <span className="transport-icon">🚗</span>
-                  <div>
-                    <strong>Xe ô tô</strong>
-                    <p>Có bãi đỗ xe miễn phí tại tất cả cơ sở</p>
-                  </div>
-                </div>
-                <div className="transport-item">
-                  <span className="transport-icon">🚌</span>
-                  <div>
-                    <strong>Xe buýt</strong>
-                    <p>Các tuyến: 01, 05, 18, 52, 68</p>
-                  </div>
-                </div>
-                <div className="transport-item">
-                  <span className="transport-icon">🏍️</span>
-                  <div>
-                    <strong>Xe máy</strong>
-                    <p>Chỗ để xe rộng rãi, an toàn</p>
-                  </div>
-                </div>
-                <div className="transport-item">
-                  <span className="transport-icon">🚕</span>
-                  <div>
-                    <strong>Taxi/Grab</strong>
-                    <p>Dễ dàng đặt xe đến cửa chính</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
       </div>
