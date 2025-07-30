@@ -3,11 +3,11 @@
   max-width: 100%;
 }
 
-.form-header {
+.info-form-header{
   margin-bottom: 30px;
 }
 
-.form-header .back-button {
+.info-form-header .back-button {
   background: #f8fafc;
   border: 2px solid #e2e8f0;
   color: #64748b;
@@ -20,17 +20,20 @@
   margin-bottom: 20px;
 }
 
-.form-header .back-button:hover {
+.info-form-header .back-button:hover {
   background: #e2e8f0;
   color: #334155;
   transform: translateX(-2px);
 }
 
-.form-header h2 {
+#root > div > div.booking-page > div > div.booking-content > div > div.info-form-header> h2{
   font-size: 2rem;
   font-weight: 700;
-  color: #1e293b;
   margin: 0;
+  color: #1a202c;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Form Content Layout */
@@ -334,7 +337,7 @@
     padding: 20px;
   }
 
-  .form-header h2 {
+  .info-form-header h2 {
     font-size: 1.5rem;
   }
 
@@ -369,7 +372,7 @@
     padding: 15px;
   }
 
-  .form-header h2 {
+  .info-form-header h2 {
     font-size: 1.25rem;
   }
 

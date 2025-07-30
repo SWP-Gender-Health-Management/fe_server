@@ -11,75 +11,6 @@ const DoctorList = ({ onDoctorSelect }) => {
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [selectedRating, setSelectedRating] = useState('all');
 
-  // Mock data cho danh sách bác sĩ
-  // const mockDoctors = [
-  //   {
-  //     id: 1,
-  //     name: 'BS. Nguyễn Văn An',
-  //     specialty: 'Tim mạch',
-  //     avatar: '/src/assets/doctor.jpg',
-  //     rating: 4.8,
-  //     reviewCount: 124,
-  //     price: 500000,
-  //     experience: '15 năm kinh nghiệm',
-  //     location: 'Bệnh viện Chợ Rẫy',
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'BS. Trần Thị Bình',
-  //     specialty: 'Da liễu',
-  //     avatar: '/src/assets/doctor.jpg',
-  //     rating: 4.5,
-  //     reviewCount: 89,
-  //     price: 400000,
-  //     experience: '12 năm kinh nghiệm',
-  //     location: 'Bệnh viện Đại học Y Dược',
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'BS. Lê Văn Cường',
-  //     specialty: 'Nhi khoa',
-  //     avatar: '/src/assets/doctor.jpg',
-  //     rating: 4.9,
-  //     reviewCount: 156,
-  //     price: 450000,
-  //     experience: '18 năm kinh nghiệm',
-  //     location: 'Bệnh viện Nhi Đồng 1',
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'BS. Phạm Thị Dung',
-  //     specialty: 'Sản phụ khoa',
-  //     avatar: '/src/assets/doctor.jpg',
-  //     rating: 4.7,
-  //     reviewCount: 98,
-  //     price: 600000,
-  //     experience: '20 năm kinh nghiệm',
-  //     location: 'Bệnh viện Từ Dũ',
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'BS. Hoàng Minh Đức',
-  //     specialty: 'Thần kinh',
-  //     avatar: '/src/assets/doctor.jpg',
-  //     rating: 4.6,
-  //     reviewCount: 76,
-  //     price: 550000,
-  //     experience: '14 năm kinh nghiệm',
-  //     location: 'Bệnh viện 115',
-  //   },
-  //   {
-  //     id: 6,
-  //     name: 'BS. Ngô Thị Hoa',
-  //     specialty: 'Tim mạch',
-  //     avatar: '/src/assets/doctor.jpg',
-  //     rating: 4.8,
-  //     reviewCount: 142,
-  //     price: 520000,
-  //     experience: '16 năm kinh nghiệm',
-  //     location: 'Bệnh viện Thống Nhất',
-  //   },
-  // ];
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -310,15 +241,17 @@ const DoctorList = ({ onDoctorSelect }) => {
                   <div className="doctor-description">
                     <span>{doctor.description ?? 'Chưa có mô tả'}</span>
                   </div>
-                  <button
-                    className="book-button"
-                    onClick={() => {
-                      console.log(doctor);
-                      onDoctorSelect(doctor);
-                    }}
-                  >
-                    📅 Xem lịch & Đặt lịch
-                  </button>
+                  <div className="book-button-wrapper">
+                    <button
+                      className="book-button"
+                      onClick={() => {
+                        console.log(doctor);
+                        onDoctorSelect(doctor);
+                      }}
+                    >
+                      📅 Xem lịch & Đặt lịch
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

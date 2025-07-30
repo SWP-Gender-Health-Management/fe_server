@@ -9,6 +9,7 @@ import {
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
 import Navbar from '@components/Navbar/Navbar';
 import Footer from '@components/Footer/Footer';
+import NotificationToast from '@components/Notification/NotificationToast';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
@@ -163,7 +164,7 @@ const AppLayout = () => {
         <Route path="/hoi-dap" element={<Question />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-fail" element={<PaymentFail />} />
+        <Route path="/payment-failed" element={<PaymentFail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
@@ -190,6 +191,7 @@ function App() {
   return (
     <AuthProvider>
       <AppLayout />
+      <NotificationToast />
     </AuthProvider>
   );
 }

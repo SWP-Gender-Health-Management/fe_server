@@ -136,14 +136,13 @@
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
   border-radius: 24px 24px 0 0;
+  backdrop-filter: blur(100px);
 }
 
 .doctor-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 50px rgba(102, 126, 234, 0.15);
-  border-color: #667eea;
 }
 
 .doctor-card:hover::before {
@@ -182,8 +181,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 12px;
+}
+
+.book-button-wrapper {
+  margin-top: auto;
 }
 
 .doctor-name {
@@ -306,7 +309,7 @@
 .book-button {
   width: 100%;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important;
   color: white;
   border: none;
   border-radius: 12px;
@@ -323,6 +326,8 @@
 .book-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #ffb74b, #f89e28) !important;
+
 }
 
 /* No Results */

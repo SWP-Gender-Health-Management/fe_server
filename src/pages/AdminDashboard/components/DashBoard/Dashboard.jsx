@@ -19,7 +19,7 @@ const Dashboard = () => {
     importantNews: 0,
   });
 
-  const kpiData = async () => {
+  const fetchKpiData = async () => {
     try {
       const response = await axios.get(`${API_URL}/get-overall-kpis`, {
         headers: {
@@ -163,7 +163,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const kpiDatas = kpiData();
+    const kpiDatas = fetchKpiData();
     setKpiDatas(kpiDatas);
   }, []);
 

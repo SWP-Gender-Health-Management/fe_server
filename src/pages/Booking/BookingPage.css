@@ -1,6 +1,6 @@
 .booking-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
   padding: 20px 0;
 }
 
@@ -31,7 +31,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
 }
 
 .step {
@@ -55,7 +55,7 @@
 }
 
 .step.active:not(:last-child)::after {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
 }
 
 .step-number {
@@ -76,7 +76,7 @@
 }
 
 .step.active .step-number {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
   color: white;
   transform: scale(1.1);
 }

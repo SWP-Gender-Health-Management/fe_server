@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 import { createConAppTransaction, createPaymentUrl } from '../../api/conApi';
 
-const accessToken = await Cookies.get('accessToken');
+const accessToken = Cookies.get('accessToken');
 const API_URL = 'http://localhost:3000';
 
 const BookingPage = () => {
@@ -24,22 +24,43 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  // Nếu chưa đăng nhập, hiện modal và không cho thao tác
+  // Hiển thị modal login khi chưa đăng nhập
   useEffect(() => {
     if (!isLoggedIn) {
       setIsLoginModalVisible(true);
+    } else {
+      setIsLoginModalVisible(false);
     }
   }, [isLoggedIn]);
+
+  // Khôi phục trạng thái từ sessionStorage khi vào trang
+  useEffect(() => {
+    const savedStep = sessionStorage.getItem('bookingStep');
+    const savedDoctor = sessionStorage.getItem('selectedDoctor');
+    const savedSlot = sessionStorage.getItem('selectedSlot');
+    const savedBookingData = sessionStorage.getItem('bookingData');
+
+    if (savedStep && savedDoctor && savedSlot && savedBookingData) {
+      setCurrentStep(parseInt(savedStep));
+      setSelectedDoctor(JSON.parse(savedDoctor));
+      setSelectedSlot(JSON.parse(savedSlot));
+      setBookingData(JSON.parse(savedBookingData));
+    }
+
+    // Xóa sessionStorage sau khi khôi phục để tránh lặp lại
+    sessionStorage.removeItem('bookingStep');
+    sessionStorage.removeItem('selectedDoctor');
+    sessionStorage.removeItem('selectedSlot');
+    sessionStorage.removeItem('bookingData');
+  }, []);
 
   // Nhận data từ LandingPage và fill vào BookingForm
   useEffect(() => {
     if (location.state && location.state.consultationData) {
-      // Lưu vào sessionStorage để BookingForm lấy được
       const { fullName, phone, email } = location.state.consultationData;
       sessionStorage.setItem('full_name', fullName || '');
       sessionStorage.setItem('phone', phone || '');
       sessionStorage.setItem('email', email || '');
-      // Có thể lưu thêm service nếu BookingForm cần
     }
   }, [location.state]);
 
@@ -54,7 +75,6 @@ const BookingPage = () => {
   };
 
   const handleBookingSubmit = async (data) => {
-    console.log("handleBookingSubmit data.totalAmount: ", data.totalAmount, " ", typeof data.totalAmount)
     setBookingData(data);
     try {
       const response = await axios.post(
@@ -71,14 +91,10 @@ const BookingPage = () => {
         }
       );
       if (response.data && response.data.result) {
-        alert('Booking success');
-        console.log("Booking success: ", response.data)
         const { savedConsultAppointment } = response.data.result;
         const app = savedConsultAppointment.app_id;
 
-        // setCurrentStep(4);
-
-        // 2. Tạo giao dịch
+        // Tạo giao dịch
         const transactionRes = await createConAppTransaction(
           {
             app_id: app,
@@ -89,24 +105,18 @@ const BookingPage = () => {
           accessToken
         );
 
-        console.log(
-          '[ConAppConfirmation] createLabTransaction response: ',
-          transactionRes.data.data
-        );
-
         const orderCode = transactionRes.data.data.order_code;
-        console.log('orderCode:', orderCode);
-        // 3. Tạo payment url
         const paymentRes = await createPaymentUrl({ orderCode }, accessToken);
-        console.log(
-          '[ConAppConfirmation] createPaymentUrl response:',
-          paymentRes.data
-        );
         const paymentUrl = paymentRes.data.data.checkoutUrl;
-        console.log('paymentUrl:', paymentUrl);
-        // 4. Điều hướng sang trang thanh toán
-        window.location.href = paymentUrl;
 
+        // Lưu trạng thái vào sessionStorage trước khi chuyển hướng
+        sessionStorage.setItem('bookingStep', 3);
+        sessionStorage.setItem('selectedDoctor', JSON.stringify(selectedDoctor));
+        sessionStorage.setItem('selectedSlot', JSON.stringify(selectedSlot));
+        sessionStorage.setItem('bookingData', JSON.stringify(data));
+
+        // Chuyển hướng sang trang thanh toán
+        window.location.href = paymentUrl;
       }
     } catch (error) {
       console.error('Booking error:', error);
@@ -115,9 +125,6 @@ const BookingPage = () => {
         alert('Lỗi chi tiết từ backend:', error.response.data?.message);
       }
     }
-
-
-
   };
 
   const handleBackToStep = (step) => {
@@ -139,10 +146,11 @@ const BookingPage = () => {
       case 3:
         return (
           <BookingForm
-            doctor={selectedDoctor}
-            slot={selectedSlot}
-            onSubmit={handleBookingSubmit}
-            onBack={() => handleBackToStep(2)}
+          doctor={selectedDoctor}
+          slot={selectedSlot}
+          onSubmit={handleBookingSubmit}
+          onBack={() => handleBackToStep(2)}
+          initialData={bookingData} // Truyền dữ liệu ban đầu
           />
         );
       case 4:
@@ -162,7 +170,6 @@ const BookingPage = () => {
   return (
     <div className="booking-page">
       <div className="booking-container">
-        {/* Progress Steps */}
         <div className="booking-progress">
           <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
             <span className="step-number">1</span>
@@ -181,19 +188,20 @@ const BookingPage = () => {
             <span className="step-title">Hoàn Thành</span>
           </div>
         </div>
-
-        {/* Content */}
         <div className="booking-content">{isLoggedIn ? renderCurrentStep() : null}</div>
       </div>
       <LoginRequiredModal
         visible={isLoginModalVisible}
-        onOk={() => {
-          setIsLoginModalVisible(false);
-          navigate('/login');
-        }}
         onCancel={() => {
           setIsLoginModalVisible(false);
           navigate('/');
+        }}
+        onLoginSuccess={() => {
+          setIsLoginModalVisible(false);
+          // Reload trang sau khi đăng nhập thành công
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }}
         message="Bạn cần đăng nhập để đặt lịch tư vấn!"
       />

@@ -392,7 +392,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                 {selectedAppointment.status === 'confirmed' &&
                   <div className="info-row">
                     <label>Link Meeting:</label>
-                    <Link to='https://meet.google.com/pfa-oqau-zwn' target="_blank">
+                    <Link to={selectedAppointment.gg_meet} target="_blank">
                       <Button >
                         Meeting
                       </Button>
@@ -425,7 +425,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
               </div>
 
               <div className="modal-actions">
-                {selectedAppointment.status === 'pending' && (
+                {/* {selectedAppointment.status === 'pending' && (
                   <>
                     <button
                       className="action-btn confirm"
@@ -452,7 +452,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                       ❌ Hủy bỏ
                     </button>
                   </>
-                )}
+                )} */}
 
                 {selectedAppointment.status === 'confirmed' && (
                   <button

@@ -27,6 +27,7 @@ import axios from 'axios';
 import moment from 'moment';
 import 'moment/locale/vi';
 import './NotificationDropdown.css';
+import Cookies from 'js-cookie';
 
 const { Text } = Typography;
 
@@ -53,7 +54,7 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
 
     const currentSize = pageNum === 1 ? pageSize : loadMoreSize;
     const skip = pageNum === 1 ? 0 : pageSize + (pageNum - 2) * loadMoreSize;
-
+    const token = Cookies.get('accessToken');
     try {
       if (pageNum === 1) {
         setLoading(true);
@@ -62,50 +63,47 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
       }
 
       const response = await axios.get(
-        `${API_URL}/api/notifications`,
+        `${API_URL}/notification/get-notification`,
         {
           params: {
             limit: currentSize,
             skip: skip,
-            userId: getUserId(), // Hàm helper để lấy user ID
+            // userId: getUserId(), // Hàm helper để lấy user ID
           },
           headers: {
-            Authorization: `Bearer ${getToken()}`, // Hàm helper để lấy token
+            Authorization: `Bearer ${token}`, // Hàm helper để lấy token
           },
         }
       );
 
       const {
-        notifications: newNotifications,
-        total: totalCount,
-        hasMore: moreAvailable,
+        noti,
+        total,
+        // hasMore: moreAvailable,
       } = response.data;
 
       if (pageNum === 1 || reset) {
-        setNotifications(newNotifications);
+        setNotifications(noti);
       } else {
-        setNotifications((prev) => [...prev, ...newNotifications]);
+        setNotifications((prev) => [...prev, ...noti]);
       }
 
-      setTotal(totalCount);
-      setHasMore(
-        moreAvailable &&
-        notifications.length + newNotifications.length < totalCount
-      );
+      setTotal(total);
+      setHasMore(total > noti.length);
       setPage(pageNum);
     } catch (error) {
       console.error('Lỗi khi tải thông báo:', error);
       // Fallback với dữ liệu mẫu nếu API lỗi
-      if (pageNum === 1) {
-        setNotifications(getMockNotifications());
-        setTotal(15);
-        setHasMore(true);
-      } else {
-        // Load more data mẫu
-        const moreNotifications = getMoreMockNotifications();
-        setNotifications((prev) => [...prev, ...moreNotifications]);
-        setHasMore(moreNotifications.length === loadMoreSize);
-      }
+      // if (pageNum === 1) {
+      //   setNotifications(getMockNotifications());
+      //   setTotal(15);
+      //   setHasMore(true);
+      // } else {
+      //   // Load more data mẫu
+      //   const moreNotifications = getMoreMockNotifications();
+      //   setNotifications((prev) => [...prev, ...moreNotifications]);
+      //   setHasMore(moreNotifications.length === loadMoreSize);
+      // }
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -127,162 +125,162 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
   };
 
   // Dữ liệu mẫu cho thông báo
-  const getMockNotifications = () => [
-    {
-      id: 1,
-      title: 'Đặt lịch thành công',
-      message:
-        'Bạn đã đặt lịch khám sức khỏe tổng quát thành công vào ngày 28/12/2024 lúc 9:00 AM',
-      type: 'appointment',
-      read: false,
-      createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 phút trước
-      priority: 'high',
-    },
-    {
-      id: 2,
-      title: 'Đã trả lời câu hỏi',
-      message:
-        'Bác sĩ Nguyễn Văn A đã trả lời câu hỏi "Làm thế nào để duy trì chu kỳ kinh nguyệt đều đặn?" của bạn',
-      type: 'question',
-      read: false,
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 giờ trước
-      priority: 'medium',
-    },
-    {
-      id: 3,
-      title: 'Đổi mật khẩu thành công',
-      message:
-        'Mật khẩu tài khoản của bạn đã được thay đổi thành công lúc 14:30 hôm nay',
-      type: 'security',
-      read: false,
-      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 giờ trước
-      priority: 'high',
-    },
-    {
-      id: 4,
-      title: 'Đặt lịch thành công',
-      message:
-        'Lịch hẹn tư vấn dinh dưỡng của bạn đã được xác nhận vào ngày 30/12/2024 lúc 14:00',
-      type: 'appointment',
-      read: true,
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 5,
-      title: 'Câu hỏi được phản hồi',
-      message:
-        'Chuyên gia đã trả lời câu hỏi "Thực đơn dinh dưỡng cho phụ nữ mang thai" của bạn',
-      type: 'question',
-      read: true,
-      createdAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000), // 1.5 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 6,
-      title: 'Đặt lịch khám thành công',
-      message:
-        'Bạn đã đặt lịch xét nghiệm máu định kỳ thành công. Ngày hẹn: 02/01/2025 lúc 8:00 AM',
-      type: 'appointment',
-      read: true,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 ngày trước
-      priority: 'high',
-    },
-    {
-      id: 7,
-      title: 'Cập nhật bảo mật',
-      message:
-        'Bạn đã cập nhật thông tin bảo mật tài khoản và thiết lập xác thực 2 bước thành công',
-      type: 'security',
-      read: true,
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 8,
-      title: 'Phản hồi câu hỏi mới',
-      message:
-        'Bác sĩ đã trả lời câu hỏi "Cách chăm sóc sức khỏe sau sinh" với lời khuyên chi tiết',
-      type: 'question',
-      read: true,
-      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 9,
-      title: 'Đặt lịch tái khám thành công',
-      message:
-        'Lịch tái khám sau điều trị đã được đặt thành công vào ngày 15/01/2025 lúc 10:30 AM',
-      type: 'appointment',
-      read: true,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 ngày trước
-      priority: 'high',
-    },
-    {
-      id: 10,
-      title: 'Thay đổi mật khẩu',
-      message:
-        'Mật khẩu của bạn đã được thay đổi thành công. Nếu không phải bạn, vui lòng liên hệ hỗ trợ',
-      type: 'security',
-      read: true,
-      createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 ngày trước
-      priority: 'high',
-    },
-  ];
+  // const getMockNotifications = () => [
+  //   {
+  //     id: 1,
+  //     title: 'Đặt lịch thành công',
+  //     message:
+  //       'Bạn đã đặt lịch khám sức khỏe tổng quát thành công vào ngày 28/12/2024 lúc 9:00 AM',
+  //     type: 'appointment',
+  //     read: false,
+  //     createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 phút trước
+  //     priority: 'high',
+  //   },
+  //   {
+  //     id: 2,
+  //     title: 'Đã trả lời câu hỏi',
+  //     message:
+  //       'Bác sĩ Nguyễn Văn A đã trả lời câu hỏi "Làm thế nào để duy trì chu kỳ kinh nguyệt đều đặn?" của bạn',
+  //     type: 'question',
+  //     read: false,
+  //     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 giờ trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 3,
+  //     title: 'Đổi mật khẩu thành công',
+  //     message:
+  //       'Mật khẩu tài khoản của bạn đã được thay đổi thành công lúc 14:30 hôm nay',
+  //     type: 'security',
+  //     read: false,
+  //     createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 giờ trước
+  //     priority: 'high',
+  //   },
+  //   {
+  //     id: 4,
+  //     title: 'Đặt lịch thành công',
+  //     message:
+  //       'Lịch hẹn tư vấn dinh dưỡng của bạn đã được xác nhận vào ngày 30/12/2024 lúc 14:00',
+  //     type: 'appointment',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 5,
+  //     title: 'Câu hỏi được phản hồi',
+  //     message:
+  //       'Chuyên gia đã trả lời câu hỏi "Thực đơn dinh dưỡng cho phụ nữ mang thai" của bạn',
+  //     type: 'question',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000), // 1.5 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 6,
+  //     title: 'Đặt lịch khám thành công',
+  //     message:
+  //       'Bạn đã đặt lịch xét nghiệm máu định kỳ thành công. Ngày hẹn: 02/01/2025 lúc 8:00 AM',
+  //     type: 'appointment',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 ngày trước
+  //     priority: 'high',
+  //   },
+  //   {
+  //     id: 7,
+  //     title: 'Cập nhật bảo mật',
+  //     message:
+  //       'Bạn đã cập nhật thông tin bảo mật tài khoản và thiết lập xác thực 2 bước thành công',
+  //     type: 'security',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 8,
+  //     title: 'Phản hồi câu hỏi mới',
+  //     message:
+  //       'Bác sĩ đã trả lời câu hỏi "Cách chăm sóc sức khỏe sau sinh" với lời khuyên chi tiết',
+  //     type: 'question',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 9,
+  //     title: 'Đặt lịch tái khám thành công',
+  //     message:
+  //       'Lịch tái khám sau điều trị đã được đặt thành công vào ngày 15/01/2025 lúc 10:30 AM',
+  //     type: 'appointment',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 ngày trước
+  //     priority: 'high',
+  //   },
+  //   {
+  //     id: 10,
+  //     title: 'Thay đổi mật khẩu',
+  //     message:
+  //       'Mật khẩu của bạn đã được thay đổi thành công. Nếu không phải bạn, vui lòng liên hệ hỗ trợ',
+  //     type: 'security',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 ngày trước
+  //     priority: 'high',
+  //   },
+  // ];
 
-  // Dữ liệu mẫu bổ sung cho load more
-  const getMoreMockNotifications = () => [
-    {
-      id: 11,
-      title: 'Câu hỏi về dinh dưỡng đã được trả lời',
-      message:
-        'Chuyên gia dinh dưỡng đã phản hồi câu hỏi "Chế độ ăn cho người tiểu đường thai kỳ"',
-      type: 'question',
-      read: true,
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 12,
-      title: 'Đặt lịch tư vấn thành công',
-      message:
-        'Lịch tư vấn tâm lý sau sinh đã được đặt thành công vào ngày 20/01/2025 lúc 16:00',
-      type: 'appointment',
-      read: true,
-      createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 13,
-      title: 'Thay đổi email thành công',
-      message:
-        'Email tài khoản đã được cập nhật thành công. Vui lòng kiểm tra email xác nhận',
-      type: 'security',
-      read: true,
-      createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 ngày trước
-      priority: 'medium',
-    },
-    {
-      id: 14,
-      title: 'Phản hồi tư vấn sức khỏe',
-      message:
-        'Bác sĩ đã trả lời câu hỏi "Cách tăng cường sức đề kháng cho phụ nữ"',
-      type: 'question',
-      read: true,
-      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 ngày trước
-      priority: 'low',
-    },
-    {
-      id: 15,
-      title: 'Đặt lịch kiểm tra thành công',
-      message:
-        'Lịch kiểm tra sức khỏe định kỳ đã được đặt vào ngày 25/01/2025 lúc 9:30 AM',
-      type: 'appointment',
-      read: true,
-      createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000), // 11 ngày trước
-      priority: 'low',
-    },
-  ];
+  // // Dữ liệu mẫu bổ sung cho load more
+  // const getMoreMockNotifications = () => [
+  //   {
+  //     id: 11,
+  //     title: 'Câu hỏi về dinh dưỡng đã được trả lời',
+  //     message:
+  //       'Chuyên gia dinh dưỡng đã phản hồi câu hỏi "Chế độ ăn cho người tiểu đường thai kỳ"',
+  //     type: 'question',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 12,
+  //     title: 'Đặt lịch tư vấn thành công',
+  //     message:
+  //       'Lịch tư vấn tâm lý sau sinh đã được đặt thành công vào ngày 20/01/2025 lúc 16:00',
+  //     type: 'appointment',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 13,
+  //     title: 'Thay đổi email thành công',
+  //     message:
+  //       'Email tài khoản đã được cập nhật thành công. Vui lòng kiểm tra email xác nhận',
+  //     type: 'security',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 ngày trước
+  //     priority: 'medium',
+  //   },
+  //   {
+  //     id: 14,
+  //     title: 'Phản hồi tư vấn sức khỏe',
+  //     message:
+  //       'Bác sĩ đã trả lời câu hỏi "Cách tăng cường sức đề kháng cho phụ nữ"',
+  //     type: 'question',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 ngày trước
+  //     priority: 'low',
+  //   },
+  //   {
+  //     id: 15,
+  //     title: 'Đặt lịch kiểm tra thành công',
+  //     message:
+  //       'Lịch kiểm tra sức khỏe định kỳ đã được đặt vào ngày 25/01/2025 lúc 9:30 AM',
+  //     type: 'appointment',
+  //     read: true,
+  //     createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000), // 11 ngày trước
+  //     priority: 'low',
+  //   },
+  // ];
 
   // Load thêm thông báo
   const loadMoreNotifications = () => {
@@ -292,43 +290,44 @@ const NotificationDropdown = ({ isLoggedIn, onLoginClick }) => {
   };
 
   // Đánh dấu đã đọc
-  const markAsRead = async (notificationId) => {
-    try {
-      await axios.patch(
-        `${API_URL}/api/notifications/${notificationId}/read`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      );
+  // const markAsRead = async (notificationId) => {
+  //   try {
+  //     await axios.patch(
+  //       `${API_URL}/api/notifications/${notificationId}/read`,
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${getToken()}`,
+  //         },
+  //       }
+  //     );
 
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.id === notificationId ? { ...notif, read: true } : notif
-        )
-      );
-    } catch (error) {
-      console.error('Lỗi khi đánh dấu đã đọc:', error);
-      // Fallback: update local state
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.id === notificationId ? { ...notif, read: true } : notif
-        )
-      );
-    }
-  };
+  //     setNotifications((prev) =>
+  //       prev.map((notif) =>
+  //         notif.id === notificationId ? { ...notif, read: true } : notif
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error('Lỗi khi đánh dấu đã đọc:', error);
+  //     // Fallback: update local state
+  //     setNotifications((prev) =>
+  //       prev.map((notif) =>
+  //         notif.id === notificationId ? { ...notif, read: true } : notif
+  //       )
+  //     );
+  //   }
+  // };
 
   // Đánh dấu tất cả đã đọc
   const markAllAsRead = async () => {
+    const token = Cookies.get('accessToken');
     try {
-      await axios.patch(
-        `${API_URL}/api/notifications/mark-all-read`,
+      await axios.put(
+        `${API_URL}/notification/read-all`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${getToken()}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );

@@ -10,7 +10,7 @@ const PaymentFailed = () => {
   };
 
   const handleTryAgain = () => {
-    navigate('/payment');
+    navigate('/dat-lich-tu-van');
   };
 
   return (
