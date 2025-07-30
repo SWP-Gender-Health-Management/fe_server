@@ -25,6 +25,7 @@ import {
   QuestionCircleOutlined,
   UserOutlined,
   CalendarOutlined,
+  LockOutlined,
 } from '@ant-design/icons';
 import './QuestionManagement.css';
 import axios from 'axios';
@@ -46,6 +47,7 @@ const QuestionManagement = () => {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [paginatedQuestions, setPaginatedQuestions] = useState([]);
 
   // Stats
   const [stats, setStats] = useState({
@@ -56,27 +58,41 @@ const QuestionManagement = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, [currentPage, statusFilter]);
+  }, []);
+
+  useEffect(() => {
+    const filteredQuestions = questions.filter((question) => {
+      const matchesSearch =
+        !searchText ||
+        question.customer?.toLowerCase().includes(searchText.toLowerCase()) ||
+        question.content?.toLowerCase().includes(searchText.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || question.is_replied === (statusFilter === 'answered');
+      const matchesName = !searchText || question.customer_name?.toLowerCase().includes(searchText.toLowerCase());
+      return (matchesSearch || matchesName) && matchesStatus;
+    });
+    setTotalQuestions(filteredQuestions.length);
+    setPaginatedQuestions(filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize));
+  }, [statusFilter, searchText, currentPage]);
 
   const fetchQuestions = async () => {
     setLoading(true);
     const accessToken = Cookies.get('accessToken');
 
     try {
-      const params = {
-        page: currentPage,
-        limit: pageSize,
-      };
+      // const params = {
+      //   page: currentPage,
+      //   limit: pageSize,
+      // };
 
       // Add filter params based on status
-      if (statusFilter === 'answered') {
-        params.is_replied = 'true';
-      } else if (statusFilter === 'pending') {
-        params.is_replied = 'false';
-      }
+      // if (statusFilter === 'answered') {
+      //   params.is_replied = 'true';
+      // } else if (statusFilter === 'pending') {
+      //   params.is_replied = 'false';
+      // }
 
       const response = await axios.get(`${API_URL}/manager/get-questions`, {
-        params,
+        // params,
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
@@ -84,11 +100,12 @@ const QuestionManagement = () => {
       });
 
       if (response.data && response.data.result) {
-        setQuestions(response.data.result.result || []);
-        setTotalQuestions(response.data.result.total || 0);
+        setQuestions(response.data.result.questions || []);
+        setPaginatedQuestions(response.data.result.questions.slice((currentPage - 1) * pageSize, currentPage * pageSize) || []);
+        setTotalQuestions(response.data.result.questions.length || 0);
 
         // Calculate stats
-        const allQuestions = response.data.result.result || [];
+        const allQuestions = response.data.result.questions || [];
         const answered = allQuestions.filter((q) => q.reply?.content).length;
         const pending = allQuestions.filter((q) => !q.reply?.content).length;
 
@@ -106,10 +123,45 @@ const QuestionManagement = () => {
     }
   };
 
-  const getStatusTag = (question) => {
-    const hasReply = question.reply?.content;
+  const handleLock = async (question) => {
+    const accessToken = Cookies.get('accessToken');
+    try {
+      const response = await axios.put(`${API_URL}/manager/set-question-status`, {
+        ques_id: question.ques_id,
+        status: question.status === 'false' || question.status === false ? 'true' : 'false',
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (hasReply) {
+      if (response.data && response.data.message) {
+        message.success("Khoá câu hỏi thành công");
+        await fetchQuestions();
+        setModalVisible(false);
+        setSelectedQuestion(null);
+      }
+    } catch (error) {
+      console.error('Error locking question:', error);
+      message.error('Không thể khoá câu hỏi');
+    }
+
+  };
+
+  const getStatusTag = (question) => {
+    const status = question.status;
+    const is_replied = question.is_replied;
+
+    if (status === 'false' || status === false) {
+      return (
+        <Tag color="error" icon={<LockOutlined />}>
+          Khoá
+        </Tag>
+      );
+    }
+
+    if (is_replied) {
       return (
         <Tag color="success" icon={<CheckCircleOutlined />}>
           Đã trả lời
@@ -139,27 +191,28 @@ const QuestionManagement = () => {
       !searchText ||
       question.customer?.toLowerCase().includes(searchText.toLowerCase()) ||
       question.content?.toLowerCase().includes(searchText.toLowerCase());
-
-    return matchesSearch;
+    const matchesStatus = statusFilter === 'all' || question.is_replied === (statusFilter === 'answered');
+    const matchesName = !searchText || question.customer_name?.toLowerCase().includes(searchText.toLowerCase());
+    return (matchesSearch || matchesName) && matchesStatus;
   });
 
   const columns = [
     {
       title: 'Khách hàng',
-      dataIndex: 'customer',
-      key: 'customer',
+      dataIndex: 'customer_name',
+      key: 'customer_name',
       width: 200,
-      render: (customer) => (
+      render: (_, record) => (
         <Space>
-          <Avatar
+          {/* <Avatar
             size="large"
             icon={<UserOutlined />}
             style={{ backgroundColor: '#667eea' }}
           >
-            {customer?.charAt(0)?.toUpperCase()}
-          </Avatar>
+            {record.customer_name?.charAt(0)?.toUpperCase()}
+          </Avatar> */}
           <div>
-            <Text strong>{customer}</Text>
+            <Text strong>{record.customer_name}</Text>
           </div>
         </Space>
       ),
@@ -191,11 +244,12 @@ const QuestionManagement = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       width: 180,
-      render: (date) => (
+      render: (_, record) => (
         <Space>
           <CalendarOutlined />
-          <Text>{formatDate(date)}</Text>
+          <Text>{formatDate(record.created_at)}</Text>
         </Space>
+
       ),
     },
     {
@@ -301,7 +355,7 @@ const QuestionManagement = () => {
       <Card>
         <Table
           columns={columns}
-          dataSource={filteredQuestions}
+          dataSource={paginatedQuestions}
           loading={loading}
           pagination={false}
           rowKey={(record, index) => `question-${index}`}
@@ -335,11 +389,26 @@ const QuestionManagement = () => {
           </Space>
         }
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+          setModalVisible(false)
+          setSelectedQuestion(null)
+        }}
         footer={[
-          <Button key="close" onClick={() => setModalVisible(false)}>
+          <Button key="close" onClick={() => {
+            setModalVisible(false)
+            setSelectedQuestion(null)
+          }}>
             Đóng
           </Button>,
+          selectedQuestion?.status === 'false' || selectedQuestion?.status === false ? (
+            <Button key="lock" onClick={() => handleLock(selectedQuestion)}>
+              Mở khoá
+            </Button>
+          ) : (
+            <Button key="lock" onClick={() => handleLock(selectedQuestion)}>
+              Khoá
+            </Button>
+          )
         ]}
         width={700}
       >
@@ -353,11 +422,11 @@ const QuestionManagement = () => {
                   icon={<UserOutlined />}
                   style={{ backgroundColor: '#667eea' }}
                 >
-                  {selectedQuestion.customer?.charAt(0)?.toUpperCase()}
+                  {selectedQuestion.customer_name?.charAt(0)?.toUpperCase()}
                 </Avatar>
                 <div>
                   <Title level={5} style={{ margin: 0 }}>
-                    {selectedQuestion.customer}
+                    {selectedQuestion.customer_name}
                   </Title>
                   <Text type="secondary">
                     <CalendarOutlined style={{ marginRight: 4 }} />
@@ -395,6 +464,10 @@ const QuestionManagement = () => {
                         <CalendarOutlined style={{ marginRight: 4 }} />
                         Trả lời vào:{' '}
                         {formatDate(selectedQuestion.reply.created_at)}
+                      </Text><br />
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        <UserOutlined style={{ marginRight: 4 }} />
+                        Bởi: {selectedQuestion.reply.created_by}
                       </Text>
                     </div>
                   )}

@@ -9,6 +9,8 @@ import {
 } from '@ant-design/icons';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import './ConsultantTab.css';
+import moment from 'moment/moment';
 
 
 
@@ -27,33 +29,20 @@ const ConsultantTab = () => {
   const [consultants, setConsultants] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [consultantsPerPage] = useState(10);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [weeklySchedule, setWeeklySchedule] = useState({
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
+    saturday: [],
+    sunday: [],
+  });
 
   const accountId = Cookies.get('accountId');
   const accessToken = Cookies.get('accessToken');
 
-  // Enhanced mock data for consultants
-  // const consultants = [
-  //   {
-  //     id: 1,
-  //     name: 'Dr. John Doe',
-  //     status: 'active',
-  //     avatar: 'https://randomuser.me/api/portraits/men/41.jpg',
-  //     specialty: 'Gynecology',
-  //     email: 'john.doe@gendercare.com',
-  //     phone: '(+84) 912-345-678',
-  //   },
-  // ];
-
-  const timeSlots = [
-    { id: 1, time: '07:00 - 08:30' },
-    { id: 2, time: '08:30 - 10:00' },
-    { id: 3, time: '10:00 - 11:30' },
-    { id: 4, time: '11:30 - 13:00' },
-    { id: 5, time: '13:00 - 14:30' },
-    { id: 6, time: '14:30 - 16:00' },
-    { id: 7, time: '16:00 - 17:30' },
-    { id: 8, time: '17:30 - 19:00' },
-  ];
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -67,24 +56,71 @@ const ConsultantTab = () => {
         const slotTimes = Array.from(
           new Set(
             workingSlots.map((workingSlot) => {
-              const rawStart = workingSlot.start_at;
-              // return formatTime(rawStart);
-              return rawStart;
+              return {
+                id: workingSlot.name.split('-')[0].trim(),
+                time: `${workingSlot.start_at.slice(0, 5)} - ${workingSlot.end_at.slice(0, 5)}`,
+                slot_id: workingSlot.slot_id,
+              }
             })
           )
         ).sort();
-        // setTimeSlots(slotTimes);
+        console.log("Slot Times:", slotTimes);
+        setTimeSlots(slotTimes);
       } catch (error) {
         console.error('Error fetching Slot:', error);
         return;
       }
     };
-    // fetchTimeSlots();
+    fetchTimeSlots();
   }, []);
 
   useEffect(() => {
+
     fetchConsultant();
+
   }, [currentPage]);
+
+  useEffect(() => {
+    if (selectedConsultant) {
+      fetchWeeklySchedule();
+    }
+  }, [selectedConsultant]);
+
+  const getStartOfWeek = (date) => {
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -5 : 1); // -5 because we want to start from Monday
+    return new Date(startOfWeek.setDate(diff)).toISOString().split('T')[0];
+  };
+
+  const fetchWeeklySchedule = async () => {
+    try {
+      await axios.get(`${API_URL}/manager/get-consultant-pattern-by-week`, {
+        params: {
+          consultant_id: selectedConsultant?.account_id || '',
+          start_date: getStartOfWeek(new Date()),
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }).then((response) => {
+        console.log("Weekly schedule response:", response.data.result);
+        const schedule = response.data.result;
+        setWeeklySchedule({
+          monday: schedule.monday,
+          tuesday: schedule.tuesday,
+          wednesday: schedule.wednesday,
+          thursday: schedule.thursday,
+          friday: schedule.friday,
+          saturday: schedule.saturday,
+          sunday: schedule.sunday,
+        })
+      });
+    } catch (error) {
+      console.error("Error fetching weekly schedule:", error);
+    }
+  }
 
   const fetchConsultant = async () => {
     try {
@@ -113,15 +149,7 @@ const ConsultantTab = () => {
   }
 
   // Mock weekly schedule data - mảng chứa các slot ID cho mỗi ngày
-  const weeklySchedule = {
-    monday: [1, 3, 5],
-    tuesday: [2, 4, 6],
-    wednesday: [1, 4, 7],
-    thursday: [2, 5, 8],
-    friday: [3, 6],
-    saturday: [1, 2],
-    sunday: [], // Sunday is always empty (day off)
-  };
+
 
   const handleSchedule = (consultant) => {
     setSelectedConsultant(consultant);
@@ -133,16 +161,37 @@ const ConsultantTab = () => {
     setViewScheduleModalVisible(true);
   };
 
-  const handleScheduleSubmit = () => {
+  const handleScheduleSubmit = async () => {
     // Handle schedule submission
-    console.log('Schedule submitted:', {
-      consultant: selectedConsultant,
-      date: selectedDate,
-      slots: selectedSlots,
-    });
-    setScheduleModalVisible(false);
-    setSelectedDate(null);
-    setSelectedSlots([]);
+
+
+    try {
+      await axios.post(`${API_URL}/manager/create-consultant-pattern`, {
+        consultant_id: selectedConsultant?.account_id || '',
+        date: new Date(selectedDate).toISOString().split('T')[0],
+        working_slot_ids: selectedSlots,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }).then((response) => {
+        console.log("Schedule set response:", response.data.result);
+        console.log('Schedule submitted:', {
+          consultant: selectedConsultant,
+          date: selectedDate,
+          slots: selectedSlots,
+        });
+      });
+    } catch (error) {
+      console.error("Error setting consultant pattern:", error);
+    } finally {
+      setScheduleModalVisible(false);
+      setSelectedDate(null);
+      setSelectedSlots([]);
+      setSelectedConsultant(null);
+    }
+
   };
 
   // const filteredConsultants = consultants.filter((consultant) => {
@@ -173,6 +222,8 @@ const ConsultantTab = () => {
       'saturday',
       'sunday',
     ];
+
+
 
     return (
       <div className="weekly-schedule">
@@ -263,7 +314,7 @@ const ConsultantTab = () => {
         <table className="management-table">
           <thead>
             <tr>
-              <th className="avatar-column"></th>
+              {/* <th className="avatar-column"></th> */}
               <th>Tên bác sĩ</th>
               {/* <th>Chuyên khoa</th> */}
               <th>Email</th>
@@ -276,11 +327,11 @@ const ConsultantTab = () => {
             {consultants.map((consultant) => (
               <tr
                 key={consultant.id}
-                className={consultant.status === 'blocked' ? 'blocked-row' : ''}
+                className={consultant.is_banned === true ? 'blocked-row' : ''}
               >
-                <td className="avatar-column">
+                {/* <td className="avatar-column">
                   <Avatar src={consultant.avatar} />
-                </td>
+                </td> */}
                 <td className="name-column">{consultant.full_name}</td>
                 {/* <td>{consultant.specialty}</td> */}
                 <td>{consultant.email}</td>
@@ -296,7 +347,7 @@ const ConsultantTab = () => {
                     onClick={() => handleSchedule(consultant)}
                     type="primary"
                     size="small"
-                    className="action-button"
+                    className="consltant-tab-action-button"
                   >
                     Xếp lịch
                   </Button>
@@ -304,7 +355,7 @@ const ConsultantTab = () => {
                     icon={<EyeOutlined />}
                     onClick={() => handleViewSchedule(consultant)}
                     size="small"
-                    className="action-button"
+                    className="consltant-tab-action-button"
                   >
                     Xem lịch
                   </Button>
@@ -379,7 +430,12 @@ const ConsultantTab = () => {
         title={`Xếp lịch làm việc - ${selectedConsultant?.full_name}`}
         open={scheduleModalVisible}
         onOk={handleScheduleSubmit}
-        onCancel={() => setScheduleModalVisible(false)}
+        onCancel={() => {
+          setScheduleModalVisible(false);
+          setSelectedConsultant(null);
+          setSelectedDate(null);
+          setSelectedSlots([]);
+        }}
         width={600}
       >
         <div className="schedule-form">
@@ -388,10 +444,11 @@ const ConsultantTab = () => {
             <DatePicker
               onChange={(date) => setSelectedDate(date)}
               disabledDate={(current) => {
-                return current && current.day() === 0; // Disable Sundays
+                return current && (current.day() === 0 || current.isBefore(moment())); // Disable Sundays and past days
               }}
               placeholder="Chọn ngày làm việc"
               className="date-picker-field"
+              required
             />
           </div>
           <div className="time-slots-grid">
@@ -399,13 +456,13 @@ const ConsultantTab = () => {
             <div className="time-slots-container">
               {timeSlots.map((slot) => (
                 <Checkbox
-                  key={slot.id}
+                  key={slot.slot_id}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSelectedSlots([...selectedSlots, slot.id]);
+                      setSelectedSlots([...selectedSlots, slot.slot_id]);
                     } else {
                       setSelectedSlots(
-                        selectedSlots.filter((id) => id !== slot.id)
+                        selectedSlots.filter((id) => id !== slot.slot_id)
                       );
                     }
                   }}
@@ -419,16 +476,18 @@ const ConsultantTab = () => {
       </Modal>
 
       {/* View Schedule Modal */}
-      <Modal
-        title={`Lịch làm việc - ${selectedConsultant?.full_name}`}
-        open={viewScheduleModalVisible}
-        onCancel={() => setViewScheduleModalVisible(false)}
-        footer={null}
-        width={1200}
-        className="schedule-modal"
-      >
-        {renderWeeklySchedule()}
-      </Modal>
+      {selectedConsultant && (
+        <Modal
+          title={`Lịch làm việc - ${selectedConsultant?.full_name}`}
+          open={viewScheduleModalVisible}
+          onCancel={() => setViewScheduleModalVisible(false)}
+          footer={null}
+          width={1200}
+          className="schedule-modal"
+        >
+          {renderWeeklySchedule()}
+        </Modal>
+      )}
     </div>
   );
 };
