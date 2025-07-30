@@ -60,7 +60,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         );
         console.log('Slot Response:', response.data.result);
         // setTimeSlots(response.data.result || []);
-        const workingSlots = response.data.result
+        const workingSlots = response.data.result;
         const slotTimes = Array.from(
           new Set(
             workingSlots.map((workingSlot) => {
@@ -72,10 +72,10 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         ).sort();
         setTimeSlots(slotTimes);
       } catch (error) {
-        console.error("Error fetching Slot:", error);
+        console.error('Error fetching Slot:', error);
         return;
       }
-    }
+    };
     const fetchSchedule = async () => {
       // const token = Cookies.get('accessToken');
       try {
@@ -250,7 +250,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
           <div className="time-column">
             <div className="time-header">Giờ</div>
             {timeSlots.map((time) => (
-              <div key={time} className="time-slot">
+              <div key={time} className="time-slot-booking">
                 {time}
               </div>
             ))}
@@ -271,7 +271,9 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
                   key={dayIndex}
                   className={`day-column ${isPast ? 'past-day' : ''}`}
                 >
-                  <div className={`day-header ${isToday ? 'today' : ''}`}>
+                  <div
+                    className={`day-header-booking ${isToday ? 'today' : ''}`}
+                  >
                     <div className="day-name">{formatDayName(date)}</div>
                     <div className="day-date">{formatDate(date)}</div>
                   </div>
@@ -281,42 +283,49 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
                       schedule[dateKey] && schedule[dateKey][time] === true;
                     const isBooked =
                       schedule[dateKey] && schedule[dateKey][time] === false;
+                    const hasSlotData =
+                      schedule[dateKey] &&
+                      schedule[dateKey][time] !== undefined;
                     const isSelected =
                       selectedSlot &&
-                      selectedSlot.date.toDateString() === date.toDateString() &&
+                      selectedSlot.date.toDateString() ===
+                        date.toDateString() &&
                       selectedSlot.start_at === time;
+
+                    // Xác định class và icon
+                    let slotClass = '';
+                    let slotIcon = '';
+                    let slotTitle = '';
+
+                    if (isPast) {
+                      slotClass = 'past';
+                      slotIcon = '⏰';
+                      slotTitle = 'Đã qua - Không thể đặt lịch';
+                    } else if (isAvailable) {
+                      slotClass = 'available';
+                      slotIcon = '✅';
+                      slotTitle = 'Còn trống - Click để chọn lịch';
+                    } else if (isBooked) {
+                      slotClass = 'booked';
+                      slotIcon = '❌';
+                      slotTitle = 'Đã được đặt - Không thể chọn';
+                    } else {
+                      // Khi không có dữ liệu hoặc không có slot -> hiển thị nghỉ
+                      slotClass = 'no-slot';
+                      slotIcon = '💤'; // Icon ngủ để thể hiện nghỉ
+                      slotTitle = 'Bác sĩ nghỉ - Không có lịch làm việc';
+                    }
 
                     return (
                       <div
                         key={time}
-                        className={`schedule-slot ${isPast
-                          ? 'past'
-                          : isAvailable
-                            ? 'available'
-                            : isBooked
-                              ? 'booked'
-                              : 'no-slot'
-                          } ${isSelected ? 'selected' : ''}`}
+                        className={`schedule-slot ${slotClass} ${isSelected ? 'selected' : ''}`}
                         onClick={() =>
                           !isPast && isAvailable && handleSlotClick(date, time)
                         }
-                        title={
-                          isPast
-                            ? 'Đã qua'
-                            : isAvailable
-                              ? 'Còn trống - Click để chọn'
-                              : isBooked
-                                ? 'Đã được đặt'
-                                : ''
-                        }
+                        title={slotTitle}
                       >
-                        {isPast
-                          ? '⏰'
-                          : isAvailable
-                            ? '✅'
-                            : isBooked
-                              ? '❌'
-                              : ''}
+                        {slotIcon}
                       </div>
                     );
                   })}
@@ -328,12 +337,16 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
         <div className="legend">
           <div className="legend-item">
-            <span className="legend-icon available">✅</span> 
+            <span className="legend-icon available">✅</span>
             <span>Còn trống</span>
           </div>
           <div className="legend-item">
             <span className="legend-icon booked">❌</span>
             <span>Đã được đặt</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-icon no-slot">💤</span>
+            <span>Bác sĩ nghỉ</span>
           </div>
           <div className="legend-item">
             <span className="legend-icon past">⏰</span>

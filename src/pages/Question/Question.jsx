@@ -71,7 +71,11 @@ const Question = () => {
       console.log('Total from API:', res.data.result.total);
       console.log('=== API CALL END ===');
 
-      setMyQuestions(Array.isArray(res.data.result.questions) ? res.data.result.questions : []);
+      setMyQuestions(
+        Array.isArray(res.data.result.questions)
+          ? res.data.result.questions
+          : []
+      );
       setTotalQuestions(res.data.result.total || 0);
       // setTotalPages(Math.ceil((res.data.result.total || 0) / pageSize)); // Không dùng
 
@@ -114,10 +118,7 @@ const Question = () => {
     };
 
     try {
-      await api.post(
-        '/question/create-question',
-        payload
-      );
+      await api.post('/question/create-question', payload);
 
       // Reset về trang 1 sau khi tạo câu hỏi mới
       setCurrentPage(1);

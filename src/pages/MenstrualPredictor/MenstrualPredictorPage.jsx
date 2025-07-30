@@ -276,11 +276,14 @@ const MenstrualPredictorPage = () => {
       const startDate = new Date(lastPeriodStart);
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
-      await updateMenstrualCycle({
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
-      }, token);
+      await updateMenstrualCycle(
+        {
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+          note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
+        },
+        token
+      );
       await getPredictionData();
       message.success('Cập nhật thành công!');
       setShowUpdateModal(false);
@@ -289,7 +292,9 @@ const MenstrualPredictorPage = () => {
       if (err.response?.status === 401) {
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
       } else if (err.response?.status === 400) {
-        message.error('Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!');
+        message.error(
+          'Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!'
+        );
       } else {
         message.error('Không thể cập nhật chu kỳ. Vui lòng thử lại!');
       }
@@ -313,7 +318,7 @@ const MenstrualPredictorPage = () => {
   // Get day information for modal
   const getDayInfo = (day) => {
     if (!day) return null;
-    
+
     const selectedDate = new Date(year, month, day);
     const isPeriod = periodDays[`${year}-${month}`]?.includes(day);
     const isOvulation = ovulationDays[`${year}-${month}`]?.includes(day);
@@ -345,7 +350,6 @@ const MenstrualPredictorPage = () => {
       phaseInfo: getPhaseInfo(phase),
     };
   };
-  
 
   // Show loading spinner during initial check
   if (initialLoading) {
