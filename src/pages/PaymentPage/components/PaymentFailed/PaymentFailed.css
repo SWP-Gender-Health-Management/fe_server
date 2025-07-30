@@ -1,8 +1,8 @@
 /* Payment Failed Page */
 .payment-failed {
   min-height: 100vh;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  display: flex;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+    display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
@@ -41,18 +41,8 @@
 }
 
 .crossmark {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: block;
-  stroke-width: 2;
-  stroke: #ef4444;
-  stroke-miterlimit: 10;
-  margin: 0 auto;
-  box-shadow: inset 0px 0px 0px #ef4444;
-  animation:
-    fill 0.4s ease-in-out 0.4s forwards,
-    scale 0.3s ease-in-out 0.9s both;
+  display: flex;
+  justify-content: center;
 }
 
 .cross-icon {
@@ -150,7 +140,8 @@
 .btn-secondary {
   background: white;
   color: #374151;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #337ab7 !important;
+
 }
 
 .btn-secondary:hover {

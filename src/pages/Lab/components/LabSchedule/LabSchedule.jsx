@@ -115,6 +115,13 @@ const LabSchedule = () => {
       <LoginRequiredModal
         visible={showLoginModal}
         onCancel={() => navigate('/')}
+        onLoginSuccess={() => {
+          setShowLoginModal(false);
+          // Reload trang sau khi đăng nhập thành công
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }}
         message="Bạn cần đăng nhập để đặt lịch xét nghiệm!"
       />
     );
