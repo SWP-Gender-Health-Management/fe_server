@@ -71,12 +71,12 @@ const AdminDashboard = () => {
       label: 'Bulk Email',
       description: 'Send emails to multiple users'
     },
-    {
-      id: 'activities',
-      icon: <ThunderboltOutlined />,
-      label: 'Recent Activities',
-      description: 'Track activities'
-    },
+    // {
+    //   id: 'activities',
+    //   icon: <ThunderboltOutlined />,
+    //   label: 'Recent Activities',
+    //   description: 'Track activities'
+    // },
     {
       id: 'profile',
       icon: <UserOutlined />,

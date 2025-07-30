@@ -267,7 +267,7 @@ const ConsultAppointmentsTab = ({
             </Button>
           )}
           {record.status === 'confirmed' && (
-            <Link to="https://meet.google.com/pfa-oqau-zwn" target="_blank">
+            <Link to={record.gg_meet} target="_blank">
               Meeting
             </Link>
           )}

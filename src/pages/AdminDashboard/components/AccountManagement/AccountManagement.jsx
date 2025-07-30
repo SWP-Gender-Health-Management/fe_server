@@ -129,9 +129,72 @@ const AccountManagement = () => {
     navigate('/admin/users');
   };
 
+  const handleUpdateUser = async (updatedUser) => {
+    console.log("updatedUser: ", updatedUser);
+    if (updatedUser.role === 'CONSULTANT') {
+      try {
+        await axios.put(`${API_URL}/admin/update-con-profile`,
+          {
+            acc_id: updatedUser.id,
+            full_name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            is_banned: updatedUser.status === 'banned' ? true : false,
+            dob: updatedUser.dateOfBirth,
+            gender: updatedUser.gender || '',
+            phone: updatedUser.phone || '',
+            address: updatedUser.address || '',
+            description: updatedUser.description || '',
+            gg_meet: updatedUser.gg_meet_link || '',
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }).then((response) => {
+            console.log("update-account response: ", response);
+            fetchAccounts();
+          });
+      } catch (error) {
+        console.error("update-account error: ", error);
+      }
+    } else {
+      try {
+        await axios.put(`${API_URL}/admin/update-profile`,
+          {
+            acc_id: updatedUser.id,
+            full_name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            is_banned: updatedUser.status === 'banned' ? true : false,
+            dob: updatedUser.dateOfBirth,
+            gender: updatedUser.gender || '',
+            phone: updatedUser.phone || '',
+            address: updatedUser.address || '',
+            description: updatedUser.description || '',
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }).then((response) => {
+            console.log("update-account response: ", response);
+            fetchAccounts();
+          });
+      } catch (error) {
+        console.error("update-account error: ", error);
+      }
+    }
+
+  }
+
+
   const handleViewUser = (user) => {
     setModalMode('view');
     setSelectedUser(user);
+    console.log("selectedUser: ", user);
     setShowModal(true);
   };
 
@@ -201,6 +264,7 @@ const AccountManagement = () => {
 
   const handleResetPassword = (user) => {
     alert(`Đặt lại mật khẩu cho ${user.full_name}`);
+
   };
 
   const handleSelectUser = (userId) => {
@@ -269,7 +333,7 @@ const AccountManagement = () => {
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Tìm kiếm theo tên hoặc email..."
+              placeholder="     Tìm kiếm theo tên hoặc email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -360,7 +424,7 @@ const AccountManagement = () => {
                   <div className="user-info">
                     {getAvatar(user)}
                     <div className="user-details">
-                      <div className="user-name">{user.full_name}</div>
+                      <div className="account-management-user-name">{user.full_name}</div>
                       {/* <div className="user-id">ID: {user.account_id}</div> */}
                     </div>
                   </div>
@@ -384,14 +448,6 @@ const AccountManagement = () => {
                           ? '🔒 Khóa tài khoản'
                           : '🔓 Mở khóa tài khoản'}
                       </button>
-                      {user.role !== 'Admin' && (
-                        <button
-                          onClick={() => handleDeleteUser(user)}
-                          className="delete-action"
-                        >
-                          🗑 Xóa
-                        </button>
-                      )}
                     </div>
                   </div>
                 </td>
@@ -468,9 +524,7 @@ const AccountManagement = () => {
           onClose={() => setShowModal(false)}
           onSave={(updatedUser) => {
             if (modalMode === 'edit') {
-              setUsers(
-                users.map((u) => (u.account_id === updatedUser.account_id ? updatedUser : u))
-              );
+              handleUpdateUser(updatedUser);
             }
             setShowModal(false);
           }}
@@ -478,30 +532,6 @@ const AccountManagement = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay">
-          <div className="delete-modal">
-            <h3>Xác nhận xóa</h3>
-            <p>
-              Bạn có chắc chắn muốn xóa người dùng{' '}
-              <strong>{userToDelete?.full_name}</strong>?
-            </p>
-            <p className="warning">Hành động này không thể hoàn tác!</p>
-            <div className="modal-actions">
-              <button
-                className="cancel-btn"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Hủy
-              </button>
-              <button className="delete-btn" onClick={confirmDelete}>
-                Xóa
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
