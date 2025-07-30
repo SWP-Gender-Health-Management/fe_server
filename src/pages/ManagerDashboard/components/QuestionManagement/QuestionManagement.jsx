@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './QuestionManagement.css';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Button } from 'antd';
 
 
 
 const API_URL = 'http://localhost:3000';
 
 const QuestionManagement = () => {
-  const accountId = Cookies.get('accountId');
-  const accessToken = Cookies.get('accessToken');
+
+
 
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
@@ -37,6 +38,8 @@ const QuestionManagement = () => {
   );
 
   const fetchQuestions = async () => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     try {
       let status;
       let is_replied;
@@ -201,6 +204,20 @@ const QuestionManagement = () => {
             <option value="closed">Đã đóng</option>
           </select>
         </div>
+
+        <Button
+          onClick={() => {
+            if (currentPage !== 1) {
+              setCurrentPage(1);
+            } else {
+              fetchAppointments();
+            }
+          }}
+          type="primary"
+          className="filter-button"
+        >
+          <span className="filter-button">Tìm kiếm</span>
+        </Button>
       </div>
 
       {/* Questions Table */}
@@ -219,7 +236,7 @@ const QuestionManagement = () => {
           </thead>
           <tbody>
             {questions.map((question) => (
-              <tr key={question.ques_id} className="question-row" onClick={() => setSelectedQuestion(question)} style={{cursor: 'pointer'}}>
+              <tr key={question.ques_id} className="question-row" onClick={() => setSelectedQuestion(question)} style={{ cursor: 'pointer' }}>
                 <td>
                   <div className="customer-info">
                     <div className="customer-avatar">

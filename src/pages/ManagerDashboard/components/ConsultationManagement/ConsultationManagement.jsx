@@ -5,8 +5,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Button, Descriptions, Modal } from 'antd';
 
-const accountId = Cookies.get('accountId');
-const accessToken = Cookies.get('accessToken');
+
 
 const API_URL = 'http://localhost:3000';
 
@@ -91,6 +90,9 @@ const ConsultationManagement = () => {
   // }, [searchTerm, statusFilter, dateFilter, appointments]);
 
   const fetchAppointments = async () => {
+    const accountId = Cookies.get('accountId');
+    const accessToken = Cookies.get('accessToken');
+
     try {
       await axios
         .get(`${API_URL}/consult-appointment/get-all-consult-appointments`, {
@@ -250,7 +252,7 @@ const ConsultationManagement = () => {
           <div className="filter-group">
             <Button
               onClick={() => {
-                if(currentPage !== 1) {
+                if (currentPage !== 1) {
                   setCurrentPage(1);
                 } else {
                   fetchAppointments();
@@ -330,7 +332,7 @@ const ConsultationManagement = () => {
                         className="view-btn"
                         onClick={() => handleRefundAppointment(appointment)}
                       >
-                         💸 {appointment.isRefunded ? "Đã hoàn tiền" : "Chưa hoàn tiền"}
+                        💸 {appointment.isRefunded ? "Đã hoàn tiền" : "Chưa hoàn tiền"}
                       </button>
                     )}
                   </div>

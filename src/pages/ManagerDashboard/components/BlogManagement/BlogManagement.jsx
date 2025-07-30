@@ -9,8 +9,7 @@ const API_URL = 'http://localhost:3000';
 
 
 const BlogManagement = () => {
-  const accountId = Cookies.get('accountId');
-  const accessToken = Cookies.get('accessToken');
+
 
   const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
@@ -38,6 +37,8 @@ const BlogManagement = () => {
   //   setCurrentPage(1); // Reset to first page when filter changes
   // }, [blogs, selectedStatus, searchTerm, searchBy]);
   const fetchBlogs = async () => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     try {
       await axios
         .get(`${API_URL}/manager/get-blogs`, {
