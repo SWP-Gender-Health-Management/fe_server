@@ -48,7 +48,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
       console.log('Raw start is null/undefined:', rawStart);
       return '';
     }
-    const timeStr = rawStart.length === 5 ? rawStart + ':00' : rawStart;
+    const timeStr = rawStart.length === 5 ? rawStart  : rawStart;
     return timeStr.slice(0, 5);
   };
 
@@ -170,7 +170,6 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
       currency: 'VND',
     }).format(price);
   };
-  // Đã xóa navigation giữa các tuần - chỉ hiển thị tuần hiện tại
 
   const handleSlotClick = (date, time) => {
     const dateKey = date.toISOString().split('T')[0];
@@ -312,7 +311,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
                     } else {
                       // Khi không có dữ liệu hoặc không có slot -> hiển thị nghỉ
                       slotClass = 'no-slot';
-                      slotIcon = '💤'; // Icon ngủ để thể hiện nghỉ
+                      slotIcon = ''; // Icon ngủ để thể hiện nghỉ
                       slotTitle = 'Bác sĩ nghỉ - Không có lịch làm việc';
                     }
 
