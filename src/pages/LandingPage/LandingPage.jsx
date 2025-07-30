@@ -575,11 +575,11 @@ const LandingPage = () => {
           </div>
 
           <Row gutter={[40, 40]} align="middle">
-            <Col xs={24} lg={10}>
+            <Col xs={24} lg={12}>
               <div className="about-image-container">
                 <div className="about-main-image">
                   <img
-                    src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600&h=400&fit=crop"
+                    src="https://www.ama.com.au/sites/default/files/inline-images/317_MG_6618%20-%20High%20Res%20crop.jpg"
                     alt="Về chúng tôi"
                   />
                 </div>
@@ -596,7 +596,7 @@ const LandingPage = () => {
               </div>
             </Col>
 
-            <Col xs={24} lg={14}>
+            <Col xs={24} lg={12}>
               <div className="about-content">
                 <div className="about-description-card">
                   <Paragraph className="about-description">
@@ -632,36 +632,32 @@ const LandingPage = () => {
                 </div>
 
                 <div className="about-stats-container">
-                  <Row gutter={[20, 20]}>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">10+</div>
-                        <div className="about-stat-label">Năm kinh nghiệm</div>
+                  <div className="stats-row">
+                    <div className="stat-card">
+                      <div className="about-stat-number">10+</div>
+                      <div className="about-stat-label">Năm kinh nghiệm</div>
+                    </div>
+                    <div className="stat-card">
+                      <div className="about-stat-number">50K+</div>
+                      <div className="about-stat-label">
+                        Bệnh nhân tin tưởng
                       </div>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">50K+</div>
-                        <div className="about-stat-label">
-                          Bệnh nhân tin tưởng
-                        </div>
+                    </div>
+                    <div className="stat-card">
+                      <div className="about-stat-number">100+</div>
+                      <div className="about-stat-label">
+                        <br />
+                        Bác sĩ
                       </div>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">100+</div>
-                        <div className="about-stat-label">
-                          Bác sĩ chuyên khoa
-                        </div>
+                    </div>
+                    <div className="stat-card">
+                      <div className="about-stat-number">98%</div>
+                      <div className="about-stat-label">
+                        <br />
+                        Hài lòng
                       </div>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">98%</div>
-                        <div className="about-stat-label">Hài lòng</div>
-                      </div>
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="certifications-modern">
@@ -685,7 +681,6 @@ const LandingPage = () => {
           </Row>
         </div>
       </div>
-      {/* Cuối cùng, thêm modal đăng nhập */}
       <LoginRequiredModal
         visible={isLoginModalVisible}
         onOk={() => setIsLoginModalVisible(false)}
