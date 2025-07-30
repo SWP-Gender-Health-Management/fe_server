@@ -18,7 +18,7 @@ import {
   InfoCircleOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import './SetupMenstrualForm.css';
@@ -174,7 +174,7 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
   // Tự động tính periodLength khi startDate và endDate thay đổi
   const handleFormValuesChange = (changedValues, allValues) => {
     const { startDate, endDate } = allValues;
-    
+
     if (startDate && endDate) {
       const daysDiff = endDate.diff(startDate, 'day') + 1;
       if (daysDiff >= 3 && daysDiff <= 10) {
@@ -245,9 +245,9 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
   };
 
   const disabledDate = (current) => {
-    const threeMonthsAgo = dayjs().subtract(3, 'month');
+    const threeMonthsAgo = moment().subtract(3, 'month');
     return (
-      current && (current > dayjs().endOf('day') || current < threeMonthsAgo)
+      current && (current > moment().endOf('day') || current < threeMonthsAgo)
     );
   };
 
@@ -311,7 +311,7 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
 
             <Form.Item
               name="startDate"
-              label="Ngày bắt đầu kỳ kinh gần nhất"
+              label="Ngày bắt đầu kỳ kinh gần tháng này"
               rules={[
                 {
                   required: true,
@@ -322,15 +322,16 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
               <DatePicker
                 style={{ width: '100%' }}
                 placeholder="Chọn ngày bắt đầu"
-                disabledDate={disabledDate}
+                // disabledDate={disabledDate}
                 format="DD/MM/YYYY"
+                selected={moment()}
                 suffixIcon={<CalendarOutlined />}
               />
             </Form.Item>
 
             <Form.Item
               name="endDate"
-              label="Ngày kết thúc kỳ kinh gần nhất"
+              label="Ngày kết thúc kỳ kinh gần tháng này"
               dependencies={['startDate']}
               rules={[
                 {
@@ -342,18 +343,22 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
                     if (!value || !getFieldValue('startDate')) {
                       return Promise.resolve();
                     }
-                    
+
                     const startDate = getFieldValue('startDate');
                     if (value.isBefore(startDate, 'day')) {
-                      return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!'));
+                      return Promise.reject(
+                        new Error('Ngày kết thúc phải sau ngày bắt đầu!')
+                      );
                     }
-                    
+
                     // Kiểm tra độ dài kỳ kinh (từ ngày bắt đầu đến kết thúc)
                     const daysDiff = value.diff(startDate, 'day') + 1;
                     if (daysDiff < 3 || daysDiff > 10) {
-                      return Promise.reject(new Error('Độ dài kỳ kinh phải từ 3-10 ngày!'));
+                      return Promise.reject(
+                        new Error('Độ dài kỳ kinh phải từ 3-10 ngày!')
+                      );
                     }
-                    
+
                     return Promise.resolve();
                   },
                 }),
@@ -362,7 +367,7 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
               <DatePicker
                 style={{ width: '100%' }}
                 placeholder="Chọn ngày kết thúc"
-                disabledDate={disabledDate}
+                // disabledDate={disabledDate}
                 format="DD/MM/YYYY"
                 suffixIcon={<CalendarOutlined />}
               />
@@ -415,14 +420,18 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
                   validator(_, value) {
                     const startDate = getFieldValue('startDate');
                     const endDate = getFieldValue('endDate');
-                    
+
                     if (startDate && endDate && value) {
                       const calculatedDays = endDate.diff(startDate, 'day') + 1;
                       if (value !== calculatedDays) {
-                        return Promise.reject(new Error(`Độ dài kỳ kinh phải là ${calculatedDays} ngày (tính từ ngày bắt đầu đến kết thúc)!`));
+                        return Promise.reject(
+                          new Error(
+                            `Độ dài kỳ kinh phải là ${calculatedDays} ngày (tính từ ngày bắt đầu đến kết thúc)!`
+                          )
+                        );
                       }
                     }
-                    
+
                     return Promise.resolve();
                   },
                 }),

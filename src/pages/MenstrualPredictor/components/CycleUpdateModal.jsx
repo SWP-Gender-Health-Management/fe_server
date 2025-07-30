@@ -1,7 +1,15 @@
 import React from 'react';
-import { Modal, Form, Input, DatePicker, Button, message } from 'antd';
+import {
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  DatePicker,
+  Button,
+  message,
+} from 'antd';
 import { CalendarOutlined, EditOutlined } from '@ant-design/icons';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import './CycleUpdateModal.css';
 
 const CycleUpdateModal = ({
@@ -9,6 +17,8 @@ const CycleUpdateModal = ({
   onCancel,
   lastPeriodStart,
   setLastPeriodStart,
+  lastPeriodEnd,
+  setLastPeriodEnd,
   cycleLength,
   setCycleLength,
   periodLength,
@@ -20,10 +30,13 @@ const CycleUpdateModal = ({
   // Tự động tính periodLength khi lastPeriodStart thay đổi
   const handleFormValuesChange = (changedValues, allValues) => {
     const { lastPeriodStart } = allValues;
-    
+
     if (lastPeriodStart) {
       // Tính periodLength dựa trên cycleLength (thường là 5-7 ngày)
-      const calculatedPeriodLength = Math.min(7, Math.max(3, Math.floor(cycleLength / 5)));
+      const calculatedPeriodLength = Math.min(
+        7,
+        Math.max(3, Math.floor(cycleLength / 5))
+      );
       form.setFieldsValue({ periodLength: calculatedPeriodLength });
     }
   };
@@ -34,8 +47,9 @@ const CycleUpdateModal = ({
 
       // Update state with form values
       setLastPeriodStart(values.lastPeriodStart.format('YYYY-MM-DD'));
+      setLastPeriodEnd(values.lastPeriodEnd.format('YYYY-MM-DD'));
       setCycleLength(values.cycleLength);
-      setPeriodLength(values.periodLength);
+      // setPeriodLength(values.periodLength);
 
       // Call parent update function
       await onUpdate();
@@ -51,12 +65,12 @@ const CycleUpdateModal = ({
     onCancel();
   };
 
-  const disabledDate = (current) => {
-    const threeMonthsAgo = moment().subtract(3, 'months');
-    return (
-      current && (current > moment().endOf('day') || current < threeMonthsAgo)
-    );
-  };
+  // const disabledDate = (current) => {
+  //   const threeMonthsAgo = moment().subtract(3, 'months');
+  //   return (
+  //     current && (current > moment().endOf('day') || current < threeMonthsAgo)
+  //   );
+  // };
 
   return (
     <Modal
@@ -74,7 +88,7 @@ const CycleUpdateModal = ({
         </Button>,
         <Button
           key="submit"
-          type="primary"
+          // type="primary"
           onClick={handleSubmit}
           className="submit-button"
         >
@@ -99,7 +113,7 @@ const CycleUpdateModal = ({
           layout="vertical"
           className="update-form"
           initialValues={{
-            lastPeriodStart: lastPeriodStart ? moment(lastPeriodStart) : null,
+            lastPeriodStart: lastPeriodStart ? dayjs(lastPeriodStart) : null,
             cycleLength: cycleLength || 28,
             periodLength: periodLength || 5,
           }}
@@ -118,18 +132,24 @@ const CycleUpdateModal = ({
                   if (!value) {
                     return Promise.resolve();
                   }
-                  
-                  const today = moment();
-                  const threeMonthsAgo = moment().subtract(3, 'months');
-                  
-                  if (value.isAfter(today, 'day')) {
-                    return Promise.reject(new Error('Ngày bắt đầu không thể là ngày trong tương lai!'));
+
+                  const today = dayjs();
+                  const threeMonthsAgo = dayjs().subtract(3, 'months');
+
+                  if (value.isAfter(today)) {
+                    return Promise.reject(
+                      new Error(
+                        'Ngày bắt đầu không thể là ngày trong tương lai!'
+                      )
+                    );
                   }
-                  
-                  if (value.isBefore(threeMonthsAgo, 'day')) {
-                    return Promise.reject(new Error('Ngày bắt đầu không thể quá 3 tháng trước!'));
+
+                  if (value.isBefore(threeMonthsAgo)) {
+                    return Promise.reject(
+                      new Error('Ngày bắt đầu không thể quá 3 tháng trước!')
+                    );
                   }
-                  
+
                   return Promise.resolve();
                 },
               },
@@ -139,7 +159,62 @@ const CycleUpdateModal = ({
               style={{ width: '100%' }}
               placeholder="Chọn ngày"
               format="DD/MM/YYYY"
-              disabledDate={disabledDate}
+              selected={dayjs()}
+              suffixIcon={<CalendarOutlined />}
+              // disabledDate={disabledDate}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Ngày kết thúc kỳ kinh gần tháng này"
+            name="lastPeriodEnd"
+            rules={[
+              {
+                required: true,
+                message: 'Vui lòng chọn ngày kết thúc kỳ kinh!',
+              },
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+
+                  const today = dayjs();
+                  const threeMonthsAgo = dayjs().subtract(3, 'months');
+
+                  if (value.isAfter(today)) {
+                    return Promise.reject(
+                      new Error(
+                        'Ngày kết thúc không thể là ngày trong tương lai!'
+                      )
+                    );
+                  }
+
+                  if (value.isBefore(threeMonthsAgo)) {
+                    return Promise.reject(
+                      new Error('Ngày kết thúc không thể quá 3 tháng trước!')
+                    );
+                  }
+
+                  const startDate = dayjs(lastPeriodStart);
+                  if (value.isBefore(startDate)) {
+                    return Promise.reject(
+                      new Error('Ngày kết thúc phải sau ngày bắt đầu!')
+                    );
+                  }
+
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <DatePicker
+              style={{ width: '100%' }}
+              placeholder="Chọn ngày"
+              format="DD/MM/YYYY"
+              selected={dayjs()}
+              suffixIcon={<CalendarOutlined />}
+              // disabledDate={disabledDate}
             />
           </Form.Item>
 
@@ -159,26 +234,13 @@ const CycleUpdateModal = ({
               },
             ]}
           >
-            <Input type="number" placeholder="Ví dụ: 28" min={21} max={35} />
-          </Form.Item>
-
-          <Form.Item
-            label="Độ dài kỳ kinh (ngày)"
-            name="periodLength"
-            rules={[
-              {
-                required: true,
-                message: 'Vui lòng nhập độ dài kỳ kinh!',
-              },
-              {
-                type: 'number',
-                min: 3,
-                max: 7,
-                message: 'Độ dài kỳ kinh phải từ 3-7 ngày!',
-              },
-            ]}
-          >
-            <Input type="number" placeholder="Ví dụ: 5" min={3} max={7} />
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="Ví dụ: 28"
+              min={21}
+              max={35}
+              defaultValue={cycleLength || 28}
+            />
           </Form.Item>
         </Form>
 
@@ -186,7 +248,7 @@ const CycleUpdateModal = ({
           <h4>💡 Lưu ý:</h4>
           <ul>
             <li>Độ dài chu kỳ thường từ 21-35 ngày</li>
-            <li>Kỳ kinh thường kéo dài 3-7 ngày</li>
+            <li>Kỳ kinh thường kéo dài 1-7 ngày</li>
             <li>Cập nhật thông tin chính xác để có dự đoán tốt hơn</li>
           </ul>
         </div>

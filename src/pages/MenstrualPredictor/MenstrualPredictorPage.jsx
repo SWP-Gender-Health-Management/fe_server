@@ -32,6 +32,7 @@ const MenstrualPredictorPage = () => {
   const [cycleLength, setCycleLength] = useState(null);
   const [periodLength, setPeriodLength] = useState(null);
   const [lastPeriodStart, setLastPeriodStart] = useState('');
+  const [lastPeriodEnd, setLastPeriodEnd] = useState('');
 
   // Prediction data states
   // const [nextStartDate, setNextStartDate] = useState(null); // Xóa nếu không dùng
@@ -175,19 +176,23 @@ const MenstrualPredictorPage = () => {
   }, [accountId, token]);
 
   const handleUpdate = useCallback(async () => {
-    if (!lastPeriodStart || !periodLength) {
+    if (!lastPeriodStart || !lastPeriodEnd || !cycleLength) {
       message.error('Vui lòng nhập đầy đủ thông tin chu kỳ!');
       return;
     }
     try {
-      const startDate = new Date(lastPeriodStart);
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
-      await updateMenstrualCycle({
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
-      }, token);
+      // const startDate = new Date(lastPeriodStart);
+      // const endDate = new Date(startDate);
+      // endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
+      await updateMenstrualCycle(
+        {
+          start_date: new Date(lastPeriodStart).toISOString().split('T')[0],
+          end_date: new Date(lastPeriodEnd).toISOString().split('T')[0],
+          // period_length: cycleLength,
+          note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
+        },
+        token
+      );
       await getPredictionData();
       message.success('Cập nhật thành công!');
       setShowUpdateModal(false);
@@ -196,7 +201,9 @@ const MenstrualPredictorPage = () => {
       if (err.response?.status === 401) {
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
       } else if (err.response?.status === 400) {
-        message.error('Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!');
+        message.error(
+          'Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!'
+        );
       } else {
         message.error('Không thể cập nhật chu kỳ. Vui lòng thử lại!');
       }
@@ -314,7 +321,7 @@ const MenstrualPredictorPage = () => {
   // Get day information for modal
   const getDayInfo = (day) => {
     if (!day) return null;
-    
+
     const selectedDate = new Date(year, month, day);
     const isPeriod = periodDays[`${year}-${month}`]?.includes(day);
     const isOvulation = ovulationDays[`${year}-${month}`]?.includes(day);
@@ -346,7 +353,6 @@ const MenstrualPredictorPage = () => {
       phaseInfo: getPhaseInfo(phase),
     };
   };
-  
 
   // Show loading spinner during initial check
   if (initialLoading) {
@@ -420,6 +426,8 @@ const MenstrualPredictorPage = () => {
         onCancel={() => setShowUpdateModal(false)}
         lastPeriodStart={lastPeriodStart}
         setLastPeriodStart={setLastPeriodStart}
+        lastPeriodEnd={lastPeriodEnd}
+        setLastPeriodEnd={setLastPeriodEnd}
         cycleLength={cycleLength}
         setCycleLength={setCycleLength}
         periodLength={periodLength}
