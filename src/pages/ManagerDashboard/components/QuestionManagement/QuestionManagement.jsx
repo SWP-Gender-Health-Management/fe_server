@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './QuestionManagement.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
+
+const API_URL = 'http://localhost:3000';
 
 const QuestionManagement = () => {
+  const accountId = Cookies.get('accountId');
+  const accessToken = Cookies.get('accessToken');
+
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -11,156 +20,83 @@ const QuestionManagement = () => {
   const [replyModal, setReplyModal] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const [questionsPerPage, setQuestionsPerPage] = useState(10);
 
-  const questionsPerPage = 10;
 
   // Mock data - trong thực tế sẽ fetch từ API
   useEffect(() => {
-    const mockQuestions = [
-      {
-        id: 1,
-        customer_name: 'Nguyễn Thị Lan',
-        customer_email: 'lan.nguyen@email.com',
-        content:
-          'Tôi muốn hỏi về các dịch vụ khám phụ khoa tại bệnh viện. Chi phí và thời gian thực hiện như thế nào?',
-        status: 'pending', // pending, answered, closed
-        created_at: '2024-12-20 14:30',
-        reply: null,
-        replied_at: null,
-        replied_by: null,
-        priority: 'normal', // low, normal, high, urgent
-        category: 'service',
-      },
-      {
-        id: 2,
-        customer_name: 'Trần Văn Minh',
-        customer_email: 'minh.tran@email.com',
-        content:
-          'Có thể đặt lịch khám online không? Tôi ở xa và muốn biết trước khi đến.',
-        status: 'answered',
-        created_at: '2024-12-19 09:15',
-        reply:
-          'Chào anh/chị! Hiện tại chúng tôi có hỗ trợ đặt lịch khám online qua website. Anh/chị có thể truy cập mục "Đặt lịch khám" để chọn thời gian phù hợp.',
-        replied_at: '2024-12-19 10:30',
-        replied_by: 'Manager',
-        priority: 'normal',
-        category: 'booking',
-      },
-      {
-        id: 3,
-        customer_name: 'Lê Thị Hoa',
-        customer_email: 'hoa.le@email.com',
-        content:
-          'Tôi cần tư vấn về các xét nghiệm tiền hôn nhân. Có những xét nghiệm nào cần thiết?',
-        status: 'pending',
-        created_at: '2024-12-18 16:45',
-        reply: null,
-        replied_at: null,
-        replied_by: null,
-        priority: 'high',
-        category: 'consultation',
-      },
-      {
-        id: 4,
-        customer_name: 'Phạm Văn Đức',
-        customer_email: 'duc.pham@email.com',
-        content:
-          'Bệnh viện có dịch vụ khám sức khỏe tổng quát không? Giá cả như thế nào?',
-        status: 'answered',
-        created_at: '2024-12-17 11:20',
-        reply:
-          'Chúng tôi có gói khám sức khỏe tổng quát với nhiều mức giá khác nhau. Anh/chị có thể tham khảo chi tiết tại mục "Dịch vụ" hoặc liên hệ trực tiếp.',
-        replied_at: '2024-12-17 14:15',
-        replied_by: 'Manager',
-        priority: 'normal',
-        category: 'service',
-      },
-      {
-        id: 5,
-        customer_name: 'Hoàng Thị Mai',
-        customer_email: 'mai.hoang@email.com',
-        content:
-          'Tôi muốn hỏi về chế độ dinh dưỡng sau sinh. Có bác sĩ nào tư vấn được không?',
-        status: 'pending',
-        created_at: '2024-12-16 13:10',
-        reply: null,
-        replied_at: null,
-        replied_by: null,
-        priority: 'urgent',
-        category: 'consultation',
-      },
-    ];
-
-    // Generate more mock questions
-    const additionalQuestions = Array.from({ length: 15 }, (_, index) => ({
-      id: index + 6,
-      customer_name: `Khách hàng ${index + 6}`,
-      customer_email: `customer${index + 6}@example.com`,
-      content: `Câu hỏi số ${index + 6} về dịch vụ y tế. Tôi muốn biết thêm thông tin chi tiết.`,
-      status: ['pending', 'answered', 'closed'][Math.floor(Math.random() * 3)],
-      created_at: new Date(
-        2024,
-        11,
-        Math.floor(Math.random() * 20) + 1,
-        Math.floor(Math.random() * 24),
-        Math.floor(Math.random() * 60)
-      ).toLocaleString('vi-VN'),
-      reply:
-        Math.random() > 0.5 ? 'Đây là câu trả lời mẫu cho câu hỏi này.' : null,
-      replied_at:
-        Math.random() > 0.5 ? new Date().toLocaleString('vi-VN') : null,
-      replied_by: Math.random() > 0.5 ? 'Manager' : null,
-      priority: ['low', 'normal', 'high', 'urgent'][
-        Math.floor(Math.random() * 4)
-      ],
-      category: ['service', 'booking', 'consultation', 'general'][
-        Math.floor(Math.random() * 4)
-      ],
-    }));
-
-    const allQuestions = [...mockQuestions, ...additionalQuestions];
-    setQuestions(allQuestions);
-    setFilteredQuestions(allQuestions);
-  }, []);
-
-  // Filter logic
-  useEffect(() => {
-    let filtered = questions;
-
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((q) => q.status === statusFilter);
-    }
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (q) =>
-          q.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.customer_email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredQuestions(filtered);
-    setCurrentPage(1);
-  }, [statusFilter, searchTerm, questions]);
+    fetchQuestions();
+  }, [currentPage]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
   const startIndex = (currentPage - 1) * questionsPerPage;
   const paginatedQuestions = filteredQuestions.slice(
     startIndex,
     startIndex + questionsPerPage
   );
 
-  const getStatusBadge = (status) => {
+  const fetchQuestions = async () => {
+    try {
+      let status;
+      let is_replied;
+      switch (statusFilter) {
+        case 'all':
+          status = null;
+          is_replied = null;
+          break;
+        case 'pending':
+          status = 'true';
+          is_replied = 'false';
+          break;
+        case 'answered':
+          status = 'true';
+          is_replied = 'true';
+          break;
+        case 'closed':
+          status = 'false';
+          is_replied = null;
+          break;
+        default:
+          status = null;
+          is_replied = null;
+          break;
+      }
+      console.log('status', status);
+      console.log('is_replied', is_replied);
+      const response = await axios.get(`${API_URL}/manager/get-questions`, {
+        params: {
+          page: currentPage,
+          limit: questionsPerPage,
+          ...(status !== null && { status: status }),
+          ...(is_replied !== null && { is_replied: is_replied }),
+        },
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setQuestions(response.data.result.questions);
+      setTotalPages(response.data.result.totalPage);
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+    }
+  };
+
+  const getStatusBadge = (status, is_replied) => {
+    if (status === 'false') {
+      return (
+        <span className={`status-badge closed`}>
+          <span className="status-icon">🔒</span>
+          Đã đóng
+        </span>
+      );
+    }
     const statusConfig = {
-      pending: { label: 'Chờ trả lời', class: 'pending', icon: '⏳' },
-      answered: { label: 'Đã trả lời', class: 'answered', icon: '✅' },
-      closed: { label: 'Đã đóng', class: 'closed', icon: '🔒' },
+      false: { label: 'Chờ trả lời', class: 'pending', icon: '⏳' },
+      true: { label: 'Đã trả lời', class: 'answered', icon: '✅' },
     };
-    const config = statusConfig[status] || statusConfig.pending;
+    const config = statusConfig[is_replied] || statusConfig.false;
     return (
       <span className={`status-badge ${config.class}`}>
         <span className="status-icon">{config.icon}</span>
@@ -169,90 +105,37 @@ const QuestionManagement = () => {
     );
   };
 
-  const getPriorityBadge = (priority) => {
-    const priorityConfig = {
-      low: { label: 'Thấp', class: 'low', icon: '🔽' },
-      normal: { label: 'Bình thường', class: 'normal', icon: '➖' },
-      high: { label: 'Cao', class: 'high', icon: '🔼' },
-      urgent: { label: 'Khẩn cấp', class: 'urgent', icon: '🚨' },
-    };
-    const config = priorityConfig[priority] || priorityConfig.normal;
-    return (
-      <span className={`priority-badge ${config.class}`}>
-        <span className="priority-icon">{config.icon}</span>
-        {config.label}
-      </span>
-    );
-  };
-
-  const getCategoryIcon = (category) => {
-    const categoryIcons = {
-      service: '🏥',
-      booking: '📅',
-      consultation: '💬',
-      general: '❓',
-    };
-    return categoryIcons[category] || '❓';
-  };
-
-  const handleReply = (question) => {
-    setSelectedQuestion(question);
-    setReplyContent('');
-    setReplyModal(true);
-  };
-
-  const handleSubmitReply = async () => {
-    if (!replyContent.trim()) return;
-
-    setLoading(true);
-    try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const updatedQuestions = questions.map((q) =>
-        q.id === selectedQuestion.id
-          ? {
-              ...q,
-              status: 'answered',
-              reply: replyContent,
-              replied_at: new Date().toLocaleString('vi-VN'),
-              replied_by: 'Manager',
-            }
-          : q
-      );
-
-      setQuestions(updatedQuestions);
-      setReplyModal(false);
-      setSelectedQuestion(null);
-      setReplyContent('');
-    } catch (error) {
-      console.error('Error submitting reply:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleStatusChange = async (questionId, newStatus) => {
-    const updatedQuestions = questions.map((q) =>
-      q.id === questionId ? { ...q, status: newStatus } : q
-    );
-    setQuestions(updatedQuestions);
+    try {
+      await axios.put(`${API_URL}/manager/set-question-status`, {
+        ques_id: questionId,
+        status: newStatus,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      fetchQuestions();
+    } catch (error) {
+      console.error('Error updating question status:', error);
+    }
   };
 
   const getStats = () => {
     const total = questions.length;
     const pending = questions.filter((q) => q.status === 'pending').length;
     const answered = questions.filter((q) => q.status === 'answered').length;
-    const urgent = questions.filter((q) => q.priority === 'urgent').length;
 
-    return { total, pending, answered, urgent };
+    return { total, pending, answered };
   };
 
   const stats = getStats();
 
   return (
-    <div className="question-management">
-      <div className="question-header">
+    <div className="manager-question-management">
+      <div className="manager-question-management-header">
         <h1>
           <span className="header-icon">💬</span>
           Quản lý câu hỏi
@@ -322,7 +205,7 @@ const QuestionManagement = () => {
 
       {/* Questions Table */}
       <div className="questions-table-container">
-        <table className="questions-table">
+        <table className="manager-question-management-table">
           <thead>
             <tr>
               <th>Khách hàng</th>
@@ -335,8 +218,8 @@ const QuestionManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {paginatedQuestions.map((question) => (
-              <tr key={question.id} className="question-row">
+            {questions.map((question) => (
+              <tr key={question.ques_id} className="question-row" onClick={() => setSelectedQuestion(question)} style={{cursor: 'pointer'}}>
                 <td>
                   <div className="customer-info">
                     <div className="customer-avatar">
@@ -354,66 +237,41 @@ const QuestionManagement = () => {
                 </td>
                 <td>
                   <div className="question-content">
-                    <p className="question-text">
+                    <p className="manager-question-management-question-text">
                       {question.content.length > 100
                         ? `${question.content.substring(0, 100)}...`
                         : question.content}
                     </p>
-                    {question.reply && (
-                      <div className="reply-preview">
-                        <strong>Trả lời:</strong>{' '}
-                        {question.reply.substring(0, 50)}...
-                      </div>
-                    )}
                   </div>
                 </td>
-                {/* <td>
-                  <span className="category-badge">
-                    <span className="category-icon">
-                      {getCategoryIcon(question.category)}
-                    </span>
-                    {question.category}
-                  </span>
-                </td>
-                {/* <td>{getPriorityBadge(question.priority)}</td> */}
-                <td>{getStatusBadge(question.status)}</td>
+                <td>{getStatusBadge(question.status, question.is_replied)}</td>
                 <td>
                   <div className="time-info">
                     <div className="created-time">{question.created_at}</div>
-                    {question.replied_at && (
+                    {question.reply.created_at && (
                       <div className="replied-time">
-                        Trả lời: {question.replied_at}
+                        Trả lời: {question.reply.created_at}
                       </div>
                     )}
                   </div>
                 </td>
                 <td>
-                  <div className="actions-dropdown">
-                    <button className="actions-btn">⋮</button>
-                    <div className="dropdown-menu">
-                      <button onClick={() => handleReply(question)}>
-                        💬{' '}
-                        {question.status === 'pending'
-                          ? 'Trả lời'
-                          : 'Sửa trả lời'}
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleStatusChange(question.id, 'closed')
-                        }
-                      >
-                        🔒 Đóng câu hỏi
-                      </button>
-                      {question.status === 'closed' && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(question.id, 'pending')
-                          }
-                        >
-                          🔓 Mở lại
-                        </button>
-                      )}
-                    </div>
+                  <div className="btn-status">
+                    <button
+                      className='manager-question-management-btn-status'
+                      onClick={() =>
+                        handleStatusChange(question.ques_id, question.status.toString() === 'true' ? 'false' : 'true')
+                      }
+                    >
+                      {question.status.toString() === 'true' ? '🔒 Đóng câu hỏi' : '🔓 Mở lại'}
+                    </button>
+                    <button
+                      className='manager-question-management-btn-view'
+                      onClick={() => setSelectedQuestion(question)}
+                    >
+                      <span className="view-icon">👁</span>
+                      Xem chi tiết
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -425,18 +283,19 @@ const QuestionManagement = () => {
       {/* Pagination */}
       <div className="pagination">
         <div className="pagination-info">
-          <span className="info-icon">📊</span>
-          Hiển thị {startIndex + 1}-
-          {Math.min(startIndex + questionsPerPage, filteredQuestions.length)}
-          trong tổng số {filteredQuestions.length} câu hỏi
+          Trang {currentPage} của {totalPages}
         </div>
         <div className="pagination-controls">
           <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+          >
+            Đầu
+          </button>
+          <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="page-btn"
           >
-            <span className="nav-icon">←</span>
             Trước
           </button>
 
@@ -456,7 +315,7 @@ const QuestionManagement = () => {
               <button
                 key={pageNum}
                 onClick={() => setCurrentPage(pageNum)}
-                className={`page-btn ${currentPage === pageNum ? 'active' : ''}`}
+                className={currentPage === pageNum ? 'active' : ''}
               >
                 {pageNum}
               </button>
@@ -468,81 +327,66 @@ const QuestionManagement = () => {
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className="page-btn"
           >
             Sau
-            <span className="nav-icon">→</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            Cuối
           </button>
         </div>
       </div>
 
       {/* Reply Modal */}
-      {replyModal && (
-        <div className="modal-overlay" onClick={() => setReplyModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+      {selectedQuestion && (
+        <div className="manager-question-management-modal-overlay" onClick={() => setSelectedQuestion(null)}>
+          <div className="manager-question-management-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="manager-question-management-modal-header">
               <h2>
-                <span className="modal-icon">💬</span>
-                Trả lời câu hỏi
+                <span className="manager-question-management-modal-icon">💬</span>
+                Chi tiết câu hỏi
               </h2>
               <button
-                className="modal-close"
-                onClick={() => setReplyModal(false)}
+                className="manager-question-management-modal-close"
+                onClick={() => setSelectedQuestion(null)}
               >
                 ×
               </button>
             </div>
-            <div className="modal-body">
-              <div className="question-detail">
-                <div className="question-info">
-                  <div className="customer-name">
-                    <span className="info-icon">👤</span>
+            <div className="manager-question-management-modal-body">
+              <div className="manager-question-management-question-detail">
+                <div className="manager-question-management-question-info">
+                  <div className="manager-question-management-info-icon">👤</div>
+                  <div className="manager-question-management-customer-name">
                     {selectedQuestion?.customer_name}
                   </div>
-                  <div className="question-time">
-                    <span className="info-icon">🕒</span>
+                  <div className="manager-question-management-question-time">
+                    <span className="manager-question-management-info-icon">🕒</span>
                     {selectedQuestion?.created_at}
                   </div>
                 </div>
-                <div className="question-content-detail">
+                <div className="manager-question-management-question-content-detail">
                   <strong>Câu hỏi:</strong>
                   <p>{selectedQuestion?.content}</p>
                 </div>
-                {selectedQuestion?.reply && (
-                  <div className="current-reply">
+                {selectedQuestion?.reply.content && (
+                  <div className="manager-question-management-current-reply">
                     <strong>Trả lời hiện tại:</strong>
-                    <p>{selectedQuestion.reply}</p>
+                    <p>{selectedQuestion.reply.content}</p>
                   </div>
                 )}
               </div>
-              <div className="reply-form">
-                <label htmlFor="replyContent">
-                  <span className="label-icon">✏️</span>
-                  Nội dung trả lời:
-                </label>
-                <textarea
-                  id="replyContent"
-                  value={replyContent}
-                  onChange={(e) => setReplyContent(e.target.value)}
-                  placeholder="Nhập nội dung trả lời..."
-                  rows="6"
-                />
-              </div>
+
             </div>
-            <div className="modal-footer">
+            <div className="manager-question-management-modal-footer">
               <button
-                className="btn-cancel"
-                onClick={() => setReplyModal(false)}
+                className="manager-question-management-btn-cancel"
+                onClick={() => setSelectedQuestion(null)}
                 disabled={loading}
               >
                 Hủy
-              </button>
-              <button
-                className="btn-submit"
-                onClick={handleSubmitReply}
-                disabled={loading || !replyContent.trim()}
-              >
-                {loading ? 'Đang gửi...' : 'Gửi trả lời'}
               </button>
             </div>
           </div>

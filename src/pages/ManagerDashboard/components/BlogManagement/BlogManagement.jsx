@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './BlogManagement.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
+
+const API_URL = 'http://localhost:3000';
+
 
 const BlogManagement = () => {
+  const accountId = Cookies.get('accountId');
+  const accessToken = Cookies.get('accessToken');
+
   const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,200 +21,62 @@ const BlogManagement = () => {
   const [blogsPerPage, setBlogsPerPage] = useState(5);
   const [searchBy, setSearchBy] = useState('title');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [totalPages, setTotalPages] = useState(1);
+  const [newStatus, setNewStatus] = useState(false);
 
   const statusSelectOptions = [
-    { value: 'draft', label: 'Bản nháp' },
-    { value: 'pending', label: 'Chờ duyệt' },
-    { value: 'approved', label: 'Đã duyệt' },
-    { value: 'rejected', label: 'Từ chối' },
-    { value: 'published', label: 'Đã xuất bản' },
+    { value: 'false', label: 'Chờ duyệt' },
+    { value: 'true', label: 'Đã duyệt' },
   ];
 
   useEffect(() => {
-    // Mock data for blogs
-    const mockBlogs = [
-      {
-        id: 1,
-        title: 'Chăm sóc sức khỏe sinh sản phụ nữ',
-        author: 'Dr. Nguyễn Thị Lan',
-        status: 'published',
-        createdAt: '2024-01-15',
-        updatedAt: '2024-01-16',
-        views: 1250,
-        category: 'Sức khỏe sinh sản',
-        excerpt:
-          'Hướng dẫn chi tiết về cách chăm sóc sức khỏe sinh sản cho phụ nữ...',
-        content: 'Nội dung bài viết đầy đủ về chăm sóc sức khỏe sinh sản...',
-      },
-      {
-        id: 2,
-        title: 'Tầm quan trọng của xét nghiệm định kỳ',
-        author: 'Dr. Trần Văn Nam',
-        status: 'pending',
-        createdAt: '2024-01-18',
-        updatedAt: '2024-01-18',
-        views: 0,
-        category: 'Xét nghiệm',
-        excerpt:
-          'Tại sao việc xét nghiệm định kỳ lại quan trọng đối với sức khỏe...',
-        content:
-          'Nội dung chi tiết về tầm quan trọng của xét nghiệm định kỳ...',
-      },
-      {
-        id: 3,
-        title: 'Phòng ngừa các bệnh lây truyền qua đường tình dục',
-        author: 'Dr. Phạm Thị Hoa',
-        status: 'approved',
-        createdAt: '2024-01-10',
-        updatedAt: '2024-01-12',
-        views: 890,
-        category: 'Phòng ngừa',
-        excerpt: 'Các biện pháp phòng ngừa hiệu quả các bệnh lây truyền...',
-        content:
-          'Hướng dẫn đầy đủ về phòng ngừa các bệnh lây truyền qua đường tình dục...',
-      },
-      {
-        id: 4,
-        title: 'Dinh dưỡng cho phụ nữ mang thai',
-        author: 'Dr. Lê Thị Mai',
-        status: 'draft',
-        createdAt: '2024-01-20',
-        updatedAt: '2024-01-20',
-        views: 0,
-        category: 'Thai kỳ',
-        excerpt: 'Những lưu ý về dinh dưỡng quan trọng trong thai kỳ...',
-        content: 'Nội dung chi tiết về dinh dưỡng cho phụ nữ mang thai...',
-      },
-      {
-        id: 5,
-        title: 'Tư vấn sức khỏe tâm lý cho phụ nữ',
-        author: 'Dr. Hoàng Văn Đức',
-        status: 'rejected',
-        createdAt: '2024-01-08',
-        updatedAt: '2024-01-14',
-        views: 0,
-        category: 'Tâm lý',
-        excerpt: 'Các vấn đề tâm lý thường gặp ở phụ nữ và cách giải quyết...',
-        content: 'Nội dung về tư vấn sức khỏe tâm lý cho phụ nữ...',
-        rejectionReason: 'Nội dung cần bổ sung thêm tài liệu tham khảo',
-      },
-      {
-        id: 6,
-        title: 'Các phương pháp tránh thai hiện đại',
-        author: 'Dr. Nguyễn Văn Tuấn',
-        status: 'published',
-        createdAt: '2024-01-05',
-        updatedAt: '2024-01-07',
-        views: 2100,
-        category: 'Kế hoạch hóa gia đình',
-        excerpt:
-          'Tổng quan về các phương pháp tránh thai hiện đại và hiệu quả...',
-        content: 'Nội dung chi tiết về các phương pháp tránh thai hiện đại...',
-      },
-      {
-        id: 7,
-        title: 'Chăm sóc sức khỏe sau sinh',
-        author: 'Dr. Trần Thị Hương',
-        status: 'published',
-        createdAt: '2024-01-03',
-        updatedAt: '2024-01-04',
-        views: 1800,
-        category: 'Sau sinh',
-        excerpt: 'Hướng dẫn chăm sóc sức khỏe cho mẹ sau khi sinh con...',
-        content: 'Nội dung chi tiết về chăm sóc sức khỏe sau sinh...',
-      },
-      {
-        id: 8,
-        title: 'Xét nghiệm tiền sản phụ khoa',
-        author: 'Dr. Lê Văn Hùng',
-        status: 'pending',
-        createdAt: '2024-01-22',
-        updatedAt: '2024-01-22',
-        views: 0,
-        category: 'Xét nghiệm',
-        excerpt:
-          'Các xét nghiệm quan trọng cần thực hiện trước khi mang thai...',
-        content: 'Nội dung chi tiết về xét nghiệm tiền sản phụ khoa...',
-      },
-    ];
+    fetchBlogs();
+  }, [currentPage]);
 
-    setBlogs(mockBlogs);
-    setFilteredBlogs(mockBlogs);
-  }, []);
-
-  useEffect(() => {
-    filterBlogs();
-    setCurrentPage(1); // Reset to first page when filter changes
-  }, [blogs, selectedStatus, searchTerm, searchBy]);
-
-  const filterBlogs = () => {
-    let filtered = blogs;
-
-    // Apply status filter
-    if (selectedStatus === 'true') {
-      filtered = filtered.filter((blog) =>
-        ['approved', 'published'].includes(blog.status)
-      );
-    } else if (selectedStatus === 'false') {
-      filtered = filtered.filter((blog) =>
-        ['draft', 'pending', 'rejected'].includes(blog.status)
-      );
+  // useEffect(() => {
+  //   filterBlogs();
+  //   setCurrentPage(1); // Reset to first page when filter changes
+  // }, [blogs, selectedStatus, searchTerm, searchBy]);
+  const fetchBlogs = async () => {
+    try {
+      await axios
+        .get(`${API_URL}/manager/get-blogs`, {
+          params: {
+            page: currentPage,
+            limit: blogsPerPage,
+            status: selectedStatus,
+            [searchBy]: searchTerm.trim(),
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((response) => {
+          const data = response.data.result;
+          console.log('Fetched manager blogs:', data);
+          setBlogs(data.result || []);
+          setFilteredBlogs(data.result || []);
+          setTotalPages(data.totalPage || 1);
+        });
+    } catch (error) {
+      console.error('Error fetching manager blogs:', error);
+      setBlogs([]);
+      setFilteredBlogs([]);
     }
-
-    // Apply search filter
-    if (searchTerm.trim()) {
-      if (searchBy === 'title') {
-        filtered = filtered.filter((blog) =>
-          blog.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      } else if (searchBy === 'author') {
-        filtered = filtered.filter((blog) =>
-          blog.author.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      } else if (searchBy === 'category') {
-        filtered = filtered.filter((blog) =>
-          blog.category.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-    }
-
-    setFilteredBlogs(filtered);
   };
+
 
   // Get current blogs for pagination
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  // const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Go to next page
-  const nextPage = () => {
-    if (currentPage < Math.ceil(filteredBlogs.length / blogsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  // Go to previous page
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleBlogsPerPageChange = (e) => {
-    setBlogsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      draft: { label: 'Bản nháp', class: 'status-draft' },
-      pending: { label: 'Chờ duyệt', class: 'status-pending' },
-      approved: { label: 'Đã duyệt', class: 'status-approved' },
-      rejected: { label: 'Từ chối', class: 'status-rejected' },
-      published: { label: 'Đã xuất bản', class: 'status-published' },
+      false: { label: 'Chờ duyệt', class: 'status-pending' },
+      true: { label: 'Đã duyệt', class: 'status-approved' },
     };
 
     const config = statusConfig[status] || {
@@ -216,21 +88,25 @@ const BlogManagement = () => {
     );
   };
 
-  const handleStatusChange = (blogId, newStatus) => {
-    setBlogs((prevBlogs) =>
-      prevBlogs.map((blog) =>
-        blog.id === blogId
-          ? {
-              ...blog,
-              status: newStatus,
-              updatedAt: new Date().toISOString().split('T')[0],
-            }
-          : blog
-      )
-    );
+  const handleStatusChange = async (blogId, newStatus) => {
+    try {
+      await axios.put(
+        `${API_URL}/manager/set-blog-status`,
+        { blog_id: blogId, status: newStatus },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      ).then((response) => {
+        console.log('Blog status updated:', response.data);
+        fetchBlogs();
+      });
+    } catch (error) {
+      console.error('Error updating blog status:', error);
+    }
   };
 
   const handleViewBlog = (blog) => {
+    setNewStatus(blog.status)
     setSelectedBlog(blog);
     setShowModal(true);
   };
@@ -276,6 +152,15 @@ const BlogManagement = () => {
               <option value="false">Chưa duyệt</option>
             </select>
           </div>
+          <button
+            className="btn-search"
+            onClick={async () => {
+              await setCurrentPage(1);
+              await fetchBlogs();
+            }}
+          >
+            Tìm kiếm
+          </button>
         </div>
       </div>
 
@@ -293,17 +178,17 @@ const BlogManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {currentBlogs.map((blog) => (
-              <tr key={blog.id}>
+            {filteredBlogs.map((blog) => (
+              <tr key={blog.blog_id}>
                 <td>
                   <div className="blog-title">
                     <h4>{blog.title}</h4>
-                    <p className="blog-excerpt">{blog.excerpt}</p>
+                    <p className="blog-excerpt">{blog.title}</p>
                   </div>
                 </td>
                 <td>{blog.author}</td>
                 <td>
-                  <span className="category-tag">{blog.category}</span>
+                  <span className="category-tag">{blog.major}</span>
                 </td>
                 <td>
                   <div className="status-cell">
@@ -311,7 +196,7 @@ const BlogManagement = () => {
                     {/* <select
                       value={blog.status}
                       onChange={(e) =>
-                        handleStatusChange(blog.id, e.target.value)
+                        handleStatusChange(blog.blog_id, e.target.value)
                       }
                       className="status-select"
                     >
@@ -323,7 +208,7 @@ const BlogManagement = () => {
                     </select> */}
                   </div>
                 </td>
-                <td>{formatDate(blog.createdAt)}</td>
+                <td>{formatDate(blog.created_at)}</td>
                 <td>
                   <div className="action-buttons">
                     <button
@@ -346,63 +231,63 @@ const BlogManagement = () => {
         )}
 
         {/* Pagination */}
-        {filteredBlogs.length > 0 && (
-          <div className="pagination">
-            <div className="pagination-info">
-              Hiển thị {indexOfFirstBlog + 1} đến{' '}
-              {Math.min(indexOfLastBlog, filteredBlogs.length)} trong tổng số{' '}
-              {filteredBlogs.length} bài viết
-            </div>
-            <div className="pagination-controls">
-              <button
-                onClick={prevPage}
-                disabled={currentPage === 1}
-                className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
-              >
-                &laquo; Trước
-              </button>
-
-              <div className="pagination-numbers">
-                {Array.from({
-                  length: Math.ceil(filteredBlogs.length / blogsPerPage),
-                }).map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => paginate(index + 1)}
-                    className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={nextPage}
-                disabled={
-                  currentPage === Math.ceil(filteredBlogs.length / blogsPerPage)
-                }
-                className={`pagination-btn ${currentPage === Math.ceil(filteredBlogs.length / blogsPerPage) ? 'disabled' : ''}`}
-              >
-                Tiếp &raquo;
-              </button>
-            </div>
-
-            <div className="items-per-page">
-              <label htmlFor="blogsPerPage">Số bài viết mỗi trang:</label>
-              <select
-                id="blogsPerPage"
-                value={blogsPerPage}
-                onChange={handleBlogsPerPageChange}
-                className="per-page-select"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-              </select>
-            </div>
+        <div className="pagination">
+          <div className="pagination-info">
+            Trang {currentPage} của {totalPages}
           </div>
-        )}
+          <div className="pagination-controls">
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              Đầu
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Trước
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={currentPage === pageNum ? 'active' : ''}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              Cuối
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Blog Detail Modal */}
@@ -424,7 +309,7 @@ const BlogManagement = () => {
                   <strong>Tác giả:</strong> {selectedBlog.author}
                 </p>
                 <p>
-                  <strong>Danh mục:</strong> {selectedBlog.category}
+                  <strong>Danh mục:</strong> {selectedBlog.major}
                 </p>
                 <p>
                   <strong>Trạng thái:</strong>{' '}
@@ -432,16 +317,16 @@ const BlogManagement = () => {
                 </p>
                 <p>
                   <strong>Ngày tạo:</strong>{' '}
-                  {formatDate(selectedBlog.createdAt)}
+                  {formatDate(selectedBlog.created_at)}
                 </p>
-                <p>
+                {/* <p>
                   <strong>Lần cập nhật cuối:</strong>{' '}
                   {formatDate(selectedBlog.updatedAt)}
-                </p>
-                <p>
+                </p> */}
+                {/* <p>
                   <strong>Lượt xem:</strong>{' '}
                   {selectedBlog.views.toLocaleString()}
-                </p>
+                </p> */}
                 {selectedBlog.rejectionReason && (
                   <p>
                     <strong>Lý do từ chối:</strong>{' '}
@@ -459,9 +344,9 @@ const BlogManagement = () => {
                 <label htmlFor="blog-status">Thay đổi trạng thái:</label>
                 <select
                   id="blog-status"
-                  value={selectedBlog.status}
+                  value={newStatus}
                   onChange={(e) => {
-                    handleStatusChange(selectedBlog.id, e.target.value);
+                    setNewStatus(e.target.value);
                   }}
                   className="status-select modal-status-select"
                 >
@@ -473,7 +358,10 @@ const BlogManagement = () => {
                 </select>
                 <button
                   className="btn-save-status"
-                  onClick={() => setShowModal(false)}
+                  onClick={async () => {
+                    await handleStatusChange(selectedBlog.blog_id, newStatus);
+                    setShowModal(false);
+                  }}
                 >
                   Lưu & Đóng
                 </button>

@@ -1,6 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Checkbox, DatePicker, Tag, Avatar } from 'antd';
-import { SearchOutlined, CalendarOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  SearchOutlined,
+  CalendarOutlined,
+  EyeOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
+
+const API_URL = 'http://localhost:3000';
+
 
 const ConsultantTab = () => {
   const [searchName, setSearchName] = useState('');
@@ -10,55 +23,26 @@ const ConsultantTab = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [consultants, setConsultants] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [consultantsPerPage] = useState(10);
+
+  const accountId = Cookies.get('accountId');
+  const accessToken = Cookies.get('accessToken');
 
   // Enhanced mock data for consultants
-  const consultants = [
-    { 
-      id: 1, 
-      name: 'Dr. John Doe', 
-      status: 'active',
-      avatar: 'https://randomuser.me/api/portraits/men/41.jpg',
-      specialty: 'Gynecology',
-      email: 'john.doe@gendercare.com',
-      phone: '(+84) 912-345-678'
-    },
-    { 
-      id: 2, 
-      name: 'Dr. Jane Smith', 
-      status: 'active',
-      avatar: 'https://randomuser.me/api/portraits/women/32.jpg',
-      specialty: 'Obstetrics',
-      email: 'jane.smith@gendercare.com',
-      phone: '(+84) 923-456-789'
-    },
-    { 
-      id: 3, 
-      name: 'Dr. Michael Chen', 
-      status: 'active',
-      avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
-      specialty: 'Reproductive Medicine',
-      email: 'michael.chen@gendercare.com',
-      phone: '(+84) 934-567-890'
-    },
-    { 
-      id: 4, 
-      name: 'Dr. Sarah Johnson', 
-      status: 'blocked',
-      avatar: 'https://randomuser.me/api/portraits/women/45.jpg',
-      specialty: 'Women Health',
-      email: 'sarah.johnson@gendercare.com',
-      phone: '(+84) 945-678-901'
-    },
-    { 
-      id: 5, 
-      name: 'Dr. David Williams', 
-      status: 'active',
-      avatar: 'https://randomuser.me/api/portraits/men/36.jpg',
-      specialty: 'Gynecologic Oncology',
-      email: 'david.williams@gendercare.com',
-      phone: '(+84) 956-789-012'
-    }
-  ];
+  // const consultants = [
+  //   {
+  //     id: 1,
+  //     name: 'Dr. John Doe',
+  //     status: 'active',
+  //     avatar: 'https://randomuser.me/api/portraits/men/41.jpg',
+  //     specialty: 'Gynecology',
+  //     email: 'john.doe@gendercare.com',
+  //     phone: '(+84) 912-345-678',
+  //   },
+  // ];
 
   const timeSlots = [
     { id: 1, time: '07:00 - 08:30' },
@@ -71,6 +55,63 @@ const ConsultantTab = () => {
     { id: 8, time: '17:30 - 19:00' },
   ];
 
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/working-slot/get-slot-by-type/1`
+        );
+        console.log('Slot Response:', response.data.result);
+        // setTimeSlots(response.data.result || []);
+        const workingSlots = response.data.result;
+        const slotTimes = Array.from(
+          new Set(
+            workingSlots.map((workingSlot) => {
+              const rawStart = workingSlot.start_at;
+              // return formatTime(rawStart);
+              return rawStart;
+            })
+          )
+        ).sort();
+        // setTimeSlots(slotTimes);
+      } catch (error) {
+        console.error('Error fetching Slot:', error);
+        return;
+      }
+    };
+    // fetchTimeSlots();
+  }, []);
+
+  useEffect(() => {
+    fetchConsultant();
+  }, [currentPage]);
+
+  const fetchConsultant = async () => {
+    try {
+      await axios.get(
+        `${API_URL}/manager/get-consultants`,
+        {
+          params: {
+            full_name: searchName,
+            ...(statusFilter !== 'all' && { is_banned: statusFilter }),
+            page: currentPage,
+            limit: consultantsPerPage,
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((response) => {
+        console.log('Consultant Response:', response.data.result);
+        setConsultants(response.data.result.consultants);
+        setTotalPages(response.data.result.totalPage);
+      });
+    } catch (error) {
+      console.error("Fetching manager consultant error: ", error);
+    }
+  }
+
   // Mock weekly schedule data - mảng chứa các slot ID cho mỗi ngày
   const weeklySchedule = {
     monday: [1, 3, 5],
@@ -79,7 +120,7 @@ const ConsultantTab = () => {
     thursday: [2, 5, 8],
     friday: [3, 6],
     saturday: [1, 2],
-    sunday: [] // Sunday is always empty (day off)
+    sunday: [], // Sunday is always empty (day off)
   };
 
   const handleSchedule = (consultant) => {
@@ -97,36 +138,58 @@ const ConsultantTab = () => {
     console.log('Schedule submitted:', {
       consultant: selectedConsultant,
       date: selectedDate,
-      slots: selectedSlots
+      slots: selectedSlots,
     });
     setScheduleModalVisible(false);
     setSelectedDate(null);
     setSelectedSlots([]);
   };
 
-  const filteredConsultants = consultants.filter(consultant => {
-    const nameMatch = consultant.name.toLowerCase().includes(searchName.toLowerCase());
-    const statusMatch = statusFilter === 'all' || consultant.status === statusFilter;
-    return nameMatch && statusMatch;
-  });
+  // const filteredConsultants = consultants.filter((consultant) => {
+  //   const nameMatch = consultant.full_name
+  //     .toLowerCase()
+  //     .includes(searchName.toLowerCase());
+  //   const statusMatch =
+  //     statusFilter === 'all' || consultant.is_banned === statusFilter;
+  //   return nameMatch && statusMatch;
+  // });
 
   const renderWeeklySchedule = () => {
-    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
-    const scheduleKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const days = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ Nhật',
+    ];
+    const scheduleKeys = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
 
     return (
       <div className="weekly-schedule">
         <div className="schedule-header">
-          <h3>Lịch làm việc của {selectedConsultant?.name}</h3>
-          <p>Chuyên khoa: {selectedConsultant?.specialty}</p>
+          <h3>Lịch làm việc của {selectedConsultant?.full_name}</h3>
+          {/* <p>Chuyên khoa: {selectedConsultant?.specialty}</p> */}
         </div>
-        
+
         <table className="schedule-table">
           <thead>
             <tr className="schedule-header-row">
               <th className="time-column">Thời gian</th>
               {days.map((day, index) => (
-                <th key={day} className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}>
+                <th
+                  key={day}
+                  className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}
+                >
                   {day}
                 </th>
               ))}
@@ -137,24 +200,22 @@ const ConsultantTab = () => {
               <tr key={slot.id} className="schedule-row">
                 <td className="time-slot-label">{slot.time}</td>
                 {scheduleKeys.map((day) => (
-                  <td 
-                    key={`${day}-${slot.id}`} 
+                  <td
+                    key={`${day}-${slot.id}`}
                     className={`schedule-cell ${day === 'sunday' ? 'day-off' : ''}`}
                   >
                     {day === 'sunday' ? (
                       <span className="day-off-icon">Nghỉ</span>
+                    ) : weeklySchedule[day].includes(slot.id) ? (
+                      <div className="scheduled-slot">
+                        <CheckOutlined className="scheduled-icon" />
+                        <span>Làm việc</span>
+                      </div>
                     ) : (
-                      weeklySchedule[day].includes(slot.id) ? (
-                        <div className="scheduled-slot">
-                          <CheckOutlined className="scheduled-icon" />
-                          <span>Làm việc</span>
-                        </div>
-                      ) : (
-                        <div className="not-scheduled-slot">
-                          <CloseOutlined className="not-scheduled-icon" />
-                          <span>Nghỉ</span>
-                        </div>
-                      )
+                      <div className="not-scheduled-slot">
+                        <CloseOutlined className="not-scheduled-icon" />
+                        <span>Nghỉ</span>
+                      </div>
                     )}
                   </td>
                 ))}
@@ -183,9 +244,19 @@ const ConsultantTab = () => {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="all">Tất cả trạng thái</option>
-          <option value="active">Hoạt động</option>
-          <option value="blocked">Bị khóa</option>
+          <option value="false">Hoạt động</option>
+          <option value="true">Bị khóa</option>
         </select>
+
+        <button
+          className="btn-search"
+          onClick={async () => {
+            await setCurrentPage(1);
+            await fetchConsultant();
+          }}
+        >
+          Tìm kiếm
+        </button>
       </div>
 
       <div className="consultant-list">
@@ -194,7 +265,7 @@ const ConsultantTab = () => {
             <tr>
               <th className="avatar-column"></th>
               <th>Tên bác sĩ</th>
-              <th>Chuyên khoa</th>
+              {/* <th>Chuyên khoa</th> */}
               <th>Email</th>
               <th>Số điện thoại</th>
               <th>Trạng thái</th>
@@ -202,18 +273,21 @@ const ConsultantTab = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredConsultants.map(consultant => (
-              <tr key={consultant.id} className={consultant.status === 'blocked' ? 'blocked-row' : ''}>
+            {consultants.map((consultant) => (
+              <tr
+                key={consultant.id}
+                className={consultant.status === 'blocked' ? 'blocked-row' : ''}
+              >
                 <td className="avatar-column">
                   <Avatar src={consultant.avatar} />
                 </td>
-                <td className="name-column">{consultant.name}</td>
-                <td>{consultant.specialty}</td>
+                <td className="name-column">{consultant.full_name}</td>
+                {/* <td>{consultant.specialty}</td> */}
                 <td>{consultant.email}</td>
                 <td>{consultant.phone}</td>
                 <td>
-                  <Tag color={consultant.status === 'active' ? 'green' : 'red'}>
-                    {consultant.status === 'active' ? 'Hoạt động' : 'Bị khóa'}
+                  <Tag color={consultant.is_banned === false ? 'green' : 'red'}>
+                    {consultant.is_banned === false ? 'Hoạt động' : 'Bị khóa'}
                   </Tag>
                 </td>
                 <td className="action-column">
@@ -239,11 +313,70 @@ const ConsultantTab = () => {
             ))}
           </tbody>
         </table>
+        {/* Pagination */}
+        <div className="pagination">
+          <div className="pagination-info">
+            Trang {currentPage} của {totalPages}
+          </div>
+          <div className="pagination-controls">
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+            >
+              Đầu
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Trước
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={currentPage === pageNum ? 'active' : ''}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              Cuối
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* Schedule Modal */}
       <Modal
-        title={`Xếp lịch làm việc - ${selectedConsultant?.name}`}
+        title={`Xếp lịch làm việc - ${selectedConsultant?.full_name}`}
         open={scheduleModalVisible}
         onOk={handleScheduleSubmit}
         onCancel={() => setScheduleModalVisible(false)}
@@ -264,14 +397,16 @@ const ConsultantTab = () => {
           <div className="time-slots-grid">
             <label>Chọn các slot thời gian:</label>
             <div className="time-slots-container">
-              {timeSlots.map(slot => (
+              {timeSlots.map((slot) => (
                 <Checkbox
                   key={slot.id}
                   onChange={(e) => {
                     if (e.target.checked) {
                       setSelectedSlots([...selectedSlots, slot.id]);
                     } else {
-                      setSelectedSlots(selectedSlots.filter(id => id !== slot.id));
+                      setSelectedSlots(
+                        selectedSlots.filter((id) => id !== slot.id)
+                      );
                     }
                   }}
                 >
@@ -285,7 +420,7 @@ const ConsultantTab = () => {
 
       {/* View Schedule Modal */}
       <Modal
-        title={`Lịch làm việc - ${selectedConsultant?.name}`}
+        title={`Lịch làm việc - ${selectedConsultant?.full_name}`}
         open={viewScheduleModalVisible}
         onCancel={() => setViewScheduleModalVisible(false)}
         footer={null}
@@ -298,4 +433,4 @@ const ConsultantTab = () => {
   );
 };
 
-export default ConsultantTab; 
+export default ConsultantTab;
