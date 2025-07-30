@@ -5,6 +5,7 @@ import { BookOutlined, CheckCircleOutlined, ExperimentOutlined, TrophyOutlined }
 
 const StaffProfile = ({ staffData }) => {
   const [activeTab, setActiveTab] = useState('info');
+  const avatar = `https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg`;
 
   if (!staffData) {
     return (
@@ -31,24 +32,24 @@ const StaffProfile = ({ staffData }) => {
     });
   };
 
-  const formatDateTime = (date) => {
-    return new Date(date).toLocaleString('vi-VN');
-  };
+  // const formatDateTime = (date) => {
+  //   return new Date(date).toLocaleString('vi-VN');
+  // };
 
-  const getTimeAgo = (date) => {
-    const now = new Date();
-    const diffInMs = now - new Date(date);
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInHours / 24);
+  // const getTimeAgo = (date) => {
+  //   const now = new Date();
+  //   const diffInMs = now - new Date(date);
+  //   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  //   const diffInDays = Math.floor(diffInHours / 24);
 
-    if (diffInDays > 0) {
-      return `${diffInDays} ngày trước`;
-    } else if (diffInHours > 0) {
-      return `${diffInHours} giờ trước`;
-    } else {
-      return 'Vừa xong';
-    }
-  };
+  //   if (diffInDays > 0) {
+  //     return `${diffInDays} ngày trước`;
+  //   } else if (diffInHours > 0) {
+  //     return `${diffInHours} giờ trước`;
+  //   } else {
+  //     return 'Vừa xong';
+  //   }
+  // };
 
 
   return (
@@ -64,8 +65,7 @@ const StaffProfile = ({ staffData }) => {
       <div className="profile-card">
         <div className="profile-main">
           <div className="profile-avatar">
-            <img src={staffData.avatar} alt={staffData.full_name} />
-            <div className="status-indicator active"></div>
+            <img src={avatar} alt={staffData.full_name} />
           </div>
 
           <div className="profile-info">
@@ -111,12 +111,7 @@ const StaffProfile = ({ staffData }) => {
         >
           📋 Thông tin chi tiết
         </button>
-        <button
-          className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
-          onClick={() => setActiveTab('activity')}
-        >
-          📊 Thống kê công việc
-        </button>
+
         <button
           className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => setActiveTab('settings')}

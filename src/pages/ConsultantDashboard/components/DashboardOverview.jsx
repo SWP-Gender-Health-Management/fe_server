@@ -141,7 +141,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
           </div>
         </div>
 
-        <div className="welcome-actions">
+        {/* <div className="welcome-actions">
           <button
             className="action-btn primary"
             onClick={() => onSectionChange('appointments')}
@@ -154,7 +154,7 @@ const DashboardOverview = ({ consultantData, onSectionChange, recentQuestions, u
           >
             ❓ Trả lời câu hỏi
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* KPI Cards */}

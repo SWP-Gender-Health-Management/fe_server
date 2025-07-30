@@ -8,7 +8,7 @@
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center;  
   margin-bottom: 24px;
   padding: 20px 0;
 }
@@ -296,6 +296,12 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.status-select {
+  margin: 0;
+  padding: 0;
+  
 }
 
 /* Enhanced spacing and typography */

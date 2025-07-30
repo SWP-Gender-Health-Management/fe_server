@@ -545,6 +545,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
               </Col>
               <Col xs={12} sm={6} md={3}>
                 <Select
+                  className="status-select"
                   placeholder="Trạng thái"
                   value={statusFilter}
                   onChange={setStatusFilter}
