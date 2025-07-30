@@ -18,7 +18,7 @@ import {
   InfoCircleOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import './SetupMenstrualForm.css';
@@ -244,12 +244,12 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
     message.error('Vui lòng kiểm tra và điền đầy đủ thông tin!');
   };
 
-  const disabledDate = (current) => {
-    const threeMonthsAgo = moment().subtract(3, 'month');
-    return (
-      current && (current > moment().endOf('day') || current < threeMonthsAgo)
-    );
-  };
+  // const disabledDate = (current) => {
+  //   const threeMonthsAgo = dayjs().subtract(3, 'month');
+  //   return (
+  //     current && (current > dayjs().endOf('day') || current < threeMonthsAgo)
+  //   );
+  // };
 
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -324,7 +324,7 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
                 placeholder="Chọn ngày bắt đầu"
                 // disabledDate={disabledDate}
                 format="DD/MM/YYYY"
-                selected={moment()}
+                selected={dayjs()}
                 suffixIcon={<CalendarOutlined />}
               />
             </Form.Item>
