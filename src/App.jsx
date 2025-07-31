@@ -9,7 +9,6 @@ import {
 import { AuthProvider, useAuth } from '@context/AuthContext.jsx';
 import Navbar from '@components/Navbar/Navbar';
 import Footer from '@components/Footer/Footer';
-import NotificationToast from '@components/Notification/NotificationToast';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
@@ -62,8 +61,15 @@ const AppLayout = () => {
   }
 
   useEffect(() => {
-    setShowLogin(false);
-  }, [location]);
+    // Kiểm tra xem có state showLogin từ navigation không
+    if (location.state?.showLogin) {
+      setShowLogin(true);
+      // Xóa state để tránh hiển thị lại khi refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    } else {
+      setShowLogin(false);
+    }
+  }, [location, navigate]);
 
   const hideNavbarPaths = ['/admin', '/manager', '/consultant', '/staff'];
   const shouldHideNavbar = hideNavbarPaths.some((prefix) =>
@@ -191,7 +197,6 @@ function App() {
   return (
     <AuthProvider>
       <AppLayout />
-      <NotificationToast />
     </AuthProvider>
   );
 }

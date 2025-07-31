@@ -30,10 +30,22 @@ api.interceptors.response.use(
       error.response.data.errors &&
       error.response.data.errors.authorization === 'jwt expired'
     ) {
+      // Xóa cookies trước
       Cookies.remove('accessToken');
       Cookies.remove('refreshToken');
-      // Có thể gọi hàm logout toàn cục hoặc chuyển hướng về login
-      window.location.href = '/login';
+      Cookies.remove('accountId');
+      Cookies.remove('fullname');
+      Cookies.remove('role');
+      
+      // Thông báo cho user biết session đã hết hạn
+      console.log('Phiên đăng nhập đã hết hạn, chuyển về trang chủ...');
+      
+      // Đảm bảo redirect về trang chủ và reload để reset state
+      if (window.location.pathname !== '/') {
+        window.location.replace('/');
+      } else {
+        window.location.reload();
+      }
     }
     return Promise.reject(error);
   }

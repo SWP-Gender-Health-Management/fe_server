@@ -369,7 +369,7 @@ const LandingPage = () => {
                     ) : (
                       <>
                         <CheckCircleOutlined style={{ marginRight: '8px' }} />
-                        Thông tin của bạn đã được điền sẵn
+                        Bạn cần tư vấn nhanh?
                       </>
                     )}
                   </div>

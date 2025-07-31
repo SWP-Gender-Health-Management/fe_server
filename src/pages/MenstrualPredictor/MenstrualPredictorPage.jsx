@@ -304,39 +304,39 @@ const MenstrualPredictorPage = () => {
     );
   };
 
-  const handleUpdate = useCallback(async () => {
-    if (!lastPeriodStart || !periodLength) {
-      message.error('Vui lòng nhập đầy đủ thông tin chu kỳ!');
-      return;
-    }
-    try {
-      const startDate = new Date(lastPeriodStart);
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
-      await updateMenstrualCycle(
-        {
-          start_date: startDate.toISOString(),
-          end_date: endDate.toISOString(),
-          note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
-        },
-        token
-      );
-      await getPredictionData();
-      message.success('Cập nhật thành công!');
-      setShowUpdateModal(false);
-    } catch (err) {
-      console.error('Lỗi khi cập nhật chu kỳ:', err);
-      if (err.response?.status === 401) {
-        message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
-      } else if (err.response?.status === 400) {
-        message.error(
-          'Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!'
-        );
-      } else {
-        message.error('Không thể cập nhật chu kỳ. Vui lòng thử lại!');
-      }
-    }
-  }, [lastPeriodStart, periodLength, getPredictionData, token]);
+  // const handleUpdate = useCallback(async () => {
+  //   if (!lastPeriodStart || !periodLength) {
+  //     message.error('Vui lòng nhập đầy đủ thông tin chu kỳ!');
+  //     return;
+  //   }
+  //   try {
+  //     const startDate = new Date(lastPeriodStart);
+  //     const endDate = new Date(startDate);
+  //     endDate.setDate(startDate.getDate() + (Number(periodLength) - 1));
+  //     await updateMenstrualCycle(
+  //       {
+  //         start_date: startDate.toISOString(),
+  //         end_date: endDate.toISOString(),
+  //         note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
+  //       },
+  //       token
+  //     );
+  //     await getPredictionData();
+  //     message.success('Cập nhật thành công!');
+  //     setShowUpdateModal(false);
+  //   } catch (err) {
+  //     console.error('Lỗi khi cập nhật chu kỳ:', err);
+  //     if (err.response?.status === 401) {
+  //       message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+  //     } else if (err.response?.status === 400) {
+  //       message.error(
+  //         'Thông tin cập nhật không hợp lệ. Vui lòng kiểm tra lại!'
+  //       );
+  //     } else {
+  //       message.error('Không thể cập nhật chu kỳ. Vui lòng thử lại!');
+  //     }
+  //   }
+  // }, [lastPeriodStart, periodLength, getPredictionData, token]);
 
   // Handle setup completion
   const handleSetupComplete = () => {
