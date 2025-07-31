@@ -1,0 +1,230 @@
+/* Cycle Update Modal Styles */
+.cycle-update-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.cycle-update-modal .ant-modal-header {
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+  border-bottom: none;
+  padding: 20px 24px;
+}
+
+.cycle-update-modal .ant-modal-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.modal-icon {
+  font-size: 20px;
+  color: white;
+}
+
+.cycle-update-modal .ant-modal-body {
+  padding: 24px;
+  background-color: transparent;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef7f0 0%, #fceee8 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 107, 157, 0.2);
+}
+
+.info-icon {
+  font-size: 24px;
+  color: #ff6b9d;
+  margin-top: 4px;
+}
+
+.info-text h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-text p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.update-form {
+  margin-top: 16px;
+}
+
+.update-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.update-form .ant-input,
+.update-form .ant-picker {
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s ease;
+}
+
+.update-form .ant-input:focus,
+.update-form .ant-picker:focus,
+.update-form .ant-input:hover,
+.update-form .ant-picker:hover {
+  border-color: #ff6b9d;
+  box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.1);
+}
+
+.update-form .ant-input-number {
+  width: 100%;
+}
+
+.tips-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.tips-section h4 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tips-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.tips-section li {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.cycle-update-modal .ant-modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cycle-update-modal .ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+  padding: 0 20px;
+}
+
+.cycle-update-modal .ant-btn-default {
+  border: 1px solid #d9d9d9;
+  color: #666;
+}
+
+.cycle-update-modal .ant-btn-default:hover {
+  border-color: #ff6b9d;
+  color: #ff6b9d;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+  border: none;
+  color: white;
+}
+
+.submit-button:hover {
+  background: linear-gradient(135deg, #e91e63 0%, #ff6b9d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cycle-update-modal {
+    width: 90% !important;
+    max-width: 400px;
+  }
+
+  .cycle-update-modal .ant-modal-body {
+    padding: 20px;
+  }
+
+  .info-section {
+    padding: 12px;
+  }
+
+  .info-icon {
+    font-size: 20px;
+  }
+
+  .info-text h4 {
+    font-size: 15px;
+  }
+
+  .info-text p {
+    font-size: 13px;
+  }
+
+  .tips-section {
+    padding: 12px;
+  }
+
+  .tips-section li {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cycle-update-modal .ant-modal-header {
+    padding: 16px 20px;
+  }
+
+  .cycle-update-modal .ant-modal-title {
+    font-size: 16px;
+  }
+
+  .modal-icon {
+    font-size: 18px;
+  }
+
+  .cycle-update-modal .ant-modal-body {
+    padding: 16px;
+  }
+
+  .info-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .info-icon {
+    align-self: center;
+  }
+}

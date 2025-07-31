@@ -1,0 +1,90 @@
+/* Menstrual Predictor Page Styles */
+.menstrual-tracker-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fef3f3 0%, #f0f9ff 100%);
+  padding: 0;
+  position: relative;
+}
+
+/* Main Content Styles */
+.tracker-main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.calendar-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .calendar-wrapper {
+    max-width: 900px;
+  }
+}
+
+@media (max-width: 992px) {
+  .calendar-wrapper {
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tracker-main-content {
+    padding: 24px 16px;
+  }
+
+  .calendar-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tracker-main-content {
+    padding: 16px 12px;
+  }
+
+  .calendar-wrapper {
+    max-width: 100%;
+  }
+}
+
+/* Loading State */
+.menstrual-tracker-container .ant-spin {
+  color: #ff6b9d;
+}
+
+.menstrual-tracker-container .ant-spin-dot-item {
+  background-color: #ff6b9d;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tracker-main-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Focus States */
+.update-button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+

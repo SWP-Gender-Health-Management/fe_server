@@ -1,0 +1,476 @@
+/* Calendar Container */
+.calendar-container {
+  width: 100%;
+  /* max-width: 900px; */
+  margin: 0 auto;
+}
+
+.calendar-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: none;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+
+
+/* Calendar Header */
+.calendar-header {
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 50%, #ffa8c0 100%);
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calendar-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.calendar-icon {
+  font-size: 24px;
+}
+
+.calendar-update-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-weight: 600;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.calendar-update-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-update-button:active {
+  transform: translateY(0);
+}
+
+.calendar-update-button .anticon {
+  font-size: 14px;
+}
+
+/* Navigation */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.nav-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.nav-button:hover {
+  background: #ff6b9d;
+  color: white;
+  border-color: #ff6b9d;
+  transform: scale(1.05);
+}
+
+.month-year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.month-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.year-number {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Calendar Grid - Cấu trúc tương tự DoctorSchedule */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 0.5fr) !important;
+  gap: 1px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 450px;
+  width: 100%;
+}
+
+/* Day Headers - Tương tự DoctorSchedule */
+.day-header {
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+  padding: 15px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Calendar Days - Tương tự DoctorSchedule */
+.calendar-day {
+  background: white;
+  padding: 15px 5px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+}
+
+.calendar-day.empty {
+  background: transparent;
+  cursor: default;
+  border: none;
+}
+
+.calendar-day.normal-day {
+  color: #333;
+  background: #f8fafc;
+}
+
+.calendar-day.normal-day:hover {
+  background: #f0fdf4;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.15);
+}
+
+.calendar-day.period-day {
+  background: linear-gradient(135deg, #ff6b9d, #e91e63);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+}
+
+.calendar-day.ovulation-day {
+  background: linear-gradient(135deg, #ffa726, #ff9800);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+}
+
+.calendar-day.today {
+  border: 2px solid #ff6b9d;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: white;
+}
+
+.calendar-day.today.normal-day {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: white;
+}
+
+.calendar-day.selected {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 2px solid #ff6b9d;
+}
+
+/* Legend */
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px 24px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.legend-dot.period-dot {
+  background: linear-gradient(135deg, #ff6b9d, #e91e63);
+}
+
+.legend-dot.ovulation-dot {
+  background: linear-gradient(135deg, #ffa726, #ff9800);
+}
+
+.legend-dot.today-dot {
+  background: #ff6b9d;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px #ff6b9d;
+}
+
+/* Tooltip Styles */
+.calendar-tooltip .ant-tooltip-content {
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 8px;
+}
+
+.tooltip-content {
+  text-align: center;
+}
+
+.tooltip-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tooltip-title.period-tooltip {
+  color: #ff6b9d;
+}
+
+.tooltip-title.ovulation-tooltip {
+  color: #ffa726;
+}
+
+.tooltip-title.today-tooltip {
+  color: #ff6b9d;
+}
+
+.tooltip-date {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .calendar-container {
+    max-width: 100%;
+  }
+
+  .calendar-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    
+  }
+
+  .calendar-title {
+    font-size: 18px;
+  }
+
+  .calendar-update-button {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
+  }
+
+  .calendar-grid {
+    margin: 16px;
+    gap: 1px;
+    min-height: 400px;
+    grid-template-columns: repeat(7, 1fr); /* Đảm bảo luôn 7 cột */
+  }
+
+  .calendar-day {
+    min-height: 60px;
+    font-size: 15px;
+    padding: 12px 5px;
+  }
+
+  .day-header {
+    height: 45px;
+    font-size: 13px;
+    padding: 12px 6px;
+  }
+
+  .calendar-nav {
+    padding: 16px 20px;
+  }
+
+  .month-name {
+    font-size: 16px;
+  }
+
+  .calendar-legend {
+    gap: 16px;
+    padding: 16px 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-header {
+    padding: 12px 16px;
+  }
+
+  .calendar-title {
+    font-size: 16px;
+    gap: 8px;
+  }
+
+  .calendar-icon {
+    font-size: 20px;
+  }
+
+  .calendar-update-button {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+.calendar-update-button.ant-btn-primary{
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
+  }
+
+  .calendar-update-button .anticon {
+    font-size: 12px;
+  }
+
+  .calendar-grid {
+    margin: 12px;
+    gap: 1px;
+    min-height: 350px;
+    grid-template-columns: repeat(7, 1fr); /* Đảm bảo luôn 7 cột */
+  }
+
+  .calendar-day {
+    min-height: 50px;
+    font-size: 14px;
+    padding: 10px 4px;
+  }
+
+  .day-header {
+    height: 40px;
+    font-size: 12px;
+    padding: 10px 4px;
+  }
+
+  .calendar-nav {
+    padding: 12px 16px;
+  }
+
+  .nav-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .month-name {
+    font-size: 14px;
+  }
+
+  .year-number {
+    font-size: 12px;
+  }
+
+  .calendar-legend {
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .legend-item {
+    font-size: 12px;
+  }
+
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Animation for smooth transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calendar-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Hover effects */
+.calendar-day:not(.empty):hover {
+  z-index: 1;
+}
+
+.calendar-day.period-day:hover,
+.calendar-day.ovulation-day:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Focus states for accessibility */
+.calendar-day:focus {
+  outline: 2px solid #ff6b9d;
+  outline-offset: 2px;
+}
+
+.nav-button:focus {
+  outline: 2px solid #ff6b9d;
+  outline-offset: 2px;
+}
+
+.calendar-update-button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}

@@ -1,0 +1,19 @@
+.summary-order {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.service-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.total {
+  margin-top: 16px;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+}

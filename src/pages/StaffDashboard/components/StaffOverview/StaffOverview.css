@@ -1,0 +1,382 @@
+.staff-overview-page {
+  padding: 24px;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+  min-height: 100vh;
+}
+
+/* Welcome Section */
+.welcome-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.welcome-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.welcome-text h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-text p {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.shift-info {
+  display: flex;
+  gap: 8px;
+}
+
+.staff-avatar-large {
+  flex-shrink: 0;
+}
+
+/* Summary Cards */
+.summary-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card.completed {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border-left: 4px solid #52c41a;
+}
+
+.summary-card.pending {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-left: 4px solid #faad14;
+}
+
+.summary-card.in-progress {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-left: 4px solid #1890ff;
+}
+
+.summary-card.has-result {
+  background: linear-gradient(135deg, #faf5ff, #e9d5ff);
+  border-left: 4px solid #722ed1;
+}
+
+/* Performance Card */
+.performance-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.performance-card .ant-card-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.performance-metrics {
+  border-radius: 12px !important;
+  height: 100%;
+  width: 100%;
+}
+
+.metric-item {
+  margin-bottom: 16px;
+}
+
+.metric-item:last-child {
+  margin-bottom: 0;
+}
+
+.metric-label {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.metric-values {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000 !important;
+  background-color: none !important;
+  margin-top: 4px;
+}
+
+.stat-box {
+  background: rgba(102, 126, 234, 0.1);
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #6b7280 !important;
+  font-weight: 500;
+}
+
+/* Activities Card */
+.activities-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  padding: 0 !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.activities-card .ant-card-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  min-width: 50px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-action {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.activity-patient {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Progress Card */
+.progress-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.daily-progress {
+  text-align: center;
+  padding: 16px;
+}
+
+.progress-circle {
+  margin-bottom: 16px;
+}
+
+.progress-info {
+  text-align: center;
+}
+
+.progress-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.progress-label {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Tasks Card */
+.tasks-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.task-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(4px);
+}
+
+.task-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  min-width: 80px;
+}
+
+.task-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .staff-overview-page {
+    padding: 16px;
+  }
+
+  .welcome-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .welcome-text h1 {
+    font-size: 24px;
+  }
+
+  .welcome-text p {
+    font-size: 14px;
+  }
+
+  .shift-info {
+    justify-content: center;
+  }
+
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .task-content {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metric-item {
+    margin-bottom: 12px;
+  }
+
+  .stat-box {
+    padding: 12px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+  }
+
+  .progress-text {
+    font-size: 16px;
+  }
+}
+
+/* Card Animations */
+.ant-card {
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Progress Bar Customization */
+.ant-progress-inner {
+  background: rgba(102, 126, 234, 0.1) !important;
+}
+
+.ant-progress-text {
+  color: #667eea !important;
+  font-weight: 600 !important;
+}
+
+/* Timeline Customization */
+.ant-timeline-item-head {
+  border-width: 2px !important;
+}
+
+.ant-timeline-item-content {
+  margin-top: -4px;
+}
+
+/* Button Customization */
+.ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.ant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6a4190);
+}

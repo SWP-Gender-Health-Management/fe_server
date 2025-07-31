@@ -1,0 +1,11 @@
+.staff-tab-action-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.staff-tab-action-button {
+    width: fit-content;
+}

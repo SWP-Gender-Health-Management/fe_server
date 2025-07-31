@@ -1,0 +1,14 @@
+.payment-page {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px;
+  background-color: #f9f9f9;
+}
+
+.summary-section {
+  width: 48%;
+}
+
+.payment-section {
+  width: 48%;
+}

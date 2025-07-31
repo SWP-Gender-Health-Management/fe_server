@@ -1,0 +1,231 @@
+/* Staff Dashboard Styles */
+.staff-workspace {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  position: relative;
+}
+
+/* Main Content */
+.main-content {
+  position: relative;
+  margin-left: 320px;
+  width: calc(100vw - 320px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.main-content.expanded {
+  margin-left: 80px;
+  width: calc(100vw - 80px);
+}
+
+/* Content Header */
+.content-header {
+  padding: 24px 32px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: none;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: #667eea;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.05);
+}
+
+.header-info h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a202c;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-info p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notifications {
+  position: relative;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(102, 126, 234, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.notifications:hover {
+  background: rgba(102, 126, 234, 0.15);
+  transform: scale(1.05);
+}
+
+.notification-count {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ff6b6b;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.current-time-header {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: #667eea;
+  padding: 8px 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 8px;
+}
+
+/* Content Body */
+.content-body {
+  flex: 1;
+  padding: 0;
+  overflow-y: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 300px;
+    width: calc(100vw - 300px);
+  }
+  .main-content.expanded {
+    margin-left: 80px;
+    width: calc(100vw - 80px);
+  }
+  .content-header {
+    padding: 20px 24px;
+  }
+  .header-info h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100vw;
+  }
+  .main-content.expanded {
+    margin-left: 0;
+    width: 100vw;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .content-header {
+    padding: 16px 20px;
+  }
+  .header-info h1 {
+    font-size: 20px;
+  }
+  .header-actions {
+    gap: 12px;
+  }
+  .current-time-header {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Loading States and Animations */
+.staff-workspace * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile Overlay */
+@media (max-width: 768px) {
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Smooth scrollbar for content */
+.content-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.content-body::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+}

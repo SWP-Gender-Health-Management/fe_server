@@ -1,0 +1,29 @@
+/* Admin Dashboard Layout */
+.admin-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f2fe 0%, #e3f2fd 100%);
+}
+
+/* Main Content Area */
+.admin-content {
+  margin-left: 320px;
+  flex: 1;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f2fe 0%, #e3f2fd 100%);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-content {
+    margin-left: 0;
+    width: 100vw;
+  }
+}
