@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import { 
+import {
   DashboardOutlined,
   TeamOutlined,
   MedicineBoxOutlined,
@@ -17,6 +17,11 @@ import StaffManagement from './components/StaffManagement/StaffManagement';
 import Sidebar from '../../components/Sidebar';
 import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 import './ManagerDashboard.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
+const API_URL = 'http://localhost:3000';
 
 const ManagerDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -26,8 +31,7 @@ const ManagerDashboard = () => {
   const managerName = sessionStorage.getItem('full_name') || 'Manager';
   const managerEmail = sessionStorage.getItem('email') || 'manager@example.com';
 
-  // Manager data for sidebar
-  const managerData = {
+  const [managerData, setManagerData] = useState({
     full_name: managerName,
     email: managerEmail,
     position: 'Manager',
@@ -35,6 +39,37 @@ const ManagerDashboard = () => {
     avatar: `https://ui-avatars.com/api/?name=${managerName}&background=52c41a&color=fff&size=60`,
     averageFeedBackRating: '4.8',
     totalAppointments: '∞'
+  });
+
+  useEffect(() => {
+    fetchManagerData();
+  }, []);
+
+  const fetchManagerData = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+      await axios.post(`${API_URL}/account/view-account`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }).then((response) => {
+          const data = response.data.result;
+          console.log("fetchManagerData data response: ", data);
+          setManagerData({
+            ...managerData,
+            full_name: data.full_name,
+            email: data.email,
+            is_banned: data.is_banned,
+            created_at: data.created_at,
+            role: data.role,
+            description: data.description,
+            avatar: data.avatar ? data.avatar : `https://ui-avatars.com/api/?name=${data.full_name}&background=52c41a&color=fff&size=60`,
+          });
+        });
+    } catch (error) {
+      console.error("fetchManagerData error: ", error);
+    }
   };
 
   const handleSectionChange = (sectionId) => {
@@ -99,7 +134,7 @@ const ManagerDashboard = () => {
   // Loading Screen Component
   if (isLoading) {
     return (
-      <WorkspaceLoading 
+      <WorkspaceLoading
         className="manager-workspace"
         title="Loading Management Dashboard"
         description="Preparing business management tools... Please wait"
@@ -134,7 +169,7 @@ const ManagerDashboard = () => {
           <Route path="/services" element={<ServiceManagement />} />
           <Route path="/blogs" element={<BlogManagement />} />
           <Route path="/questions" element={<QuestionManagement />} />
-          <Route path="/profile" element={<ManagerProfile />} />
+          <Route path="/profile" element={<ManagerProfile managerData={managerData} />} />
         </Routes>
       </div>
     </div>

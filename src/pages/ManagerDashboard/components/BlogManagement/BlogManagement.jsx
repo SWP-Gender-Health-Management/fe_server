@@ -90,6 +90,8 @@ const BlogManagement = () => {
   };
 
   const handleStatusChange = async (blogId, newStatus) => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     try {
       await axios.put(
         `${API_URL}/manager/set-blog-status`,

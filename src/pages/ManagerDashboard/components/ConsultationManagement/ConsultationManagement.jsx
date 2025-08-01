@@ -143,6 +143,8 @@ const ConsultationManagement = () => {
   };
 
   const handleRefundAppointment = async (appointment) => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     await axios
       .get(
         `${API_URL}/consult-appointment/get-refund-info/${appointment.app_id}`,
@@ -184,6 +186,8 @@ const ConsultationManagement = () => {
   };
 
   const handleRefund = async (appointmentId) => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     try {
       await axios
         .put(

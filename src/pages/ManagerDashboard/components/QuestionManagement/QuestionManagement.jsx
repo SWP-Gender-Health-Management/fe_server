@@ -90,6 +90,8 @@ const QuestionManagement = () => {
       // } else if (statusFilter === 'pending') {
       //   params.is_replied = 'false';
       // }
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
 
       const response = await axios.get(`${API_URL}/manager/get-questions`, {
         // params,
@@ -125,6 +127,7 @@ const QuestionManagement = () => {
 
   const handleLock = async (question) => {
     const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     try {
       const response = await axios.put(`${API_URL}/manager/set-question-status`, {
         ques_id: question.ques_id,
