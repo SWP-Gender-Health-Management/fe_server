@@ -349,7 +349,7 @@ const UserModal = ({ mode, user, onClose, onSave, onEdit }) => {
 
                   <div className="info-item">
                     <label>Trạng thái tài khoản:</label>
-                    <span className={`status-indicator ${user.is_banned ? 'banned' : 'active'}`}>
+                    <span className={`${user.is_banned ? 'banned' : 'active'}`}>
                       {user.is_banned ? 'Bị khóa' : 'Hoạt động'}
                     </span>
                   </div>
