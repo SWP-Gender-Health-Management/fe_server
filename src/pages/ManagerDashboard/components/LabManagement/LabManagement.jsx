@@ -65,6 +65,8 @@ const LabManagement = () => {
 
   const fetchAppointments = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       await axios
         .get(`${API_URL}/manager/get-lab-app`, {
           params: {
@@ -146,6 +148,8 @@ const LabManagement = () => {
   };
 
   const handleRefundAppointment = async (appointment) => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     await axios
       .get(`${API_URL}/manager/get-refund-info/${appointment.app_id}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -457,7 +461,7 @@ const LabManagement = () => {
               Kết quả xét nghiệm
             </Typography.Title>
             {selectedAppointment.result &&
-            selectedAppointment.result.length > 0 ? (
+              selectedAppointment.result.length > 0 ? (
               <Table
                 dataSource={selectedAppointment.result}
                 rowKey="result_id"

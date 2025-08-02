@@ -4,8 +4,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const API_URL = 'http://localhost:3000';
-const accessToken = Cookies.get('accessToken');
-const accountId = Cookies.get('accountId');
+
 
 const UserManagement = () => {
   const [formData, setFormData] = useState({
@@ -13,8 +12,8 @@ const UserManagement = () => {
     email: '',
     phone: '',
     role: 'CUSTOMER',
-    password: '@swp391fpt',
-    confirmPassword: '@swp391fpt',
+    password: '@SWP391fpt',
+    confirmPassword: '@SWP391fpt',
     is_banned: 'false',
   });
 
@@ -58,7 +57,7 @@ const UserManagement = () => {
   };
 
   const generatePassword = () => {
-    const defaultPassword = '@swp391fpt';
+    const defaultPassword = '@SWP391fpt';
     setFormData((prev) => ({
       ...prev,
       password: defaultPassword,
@@ -99,6 +98,8 @@ const UserManagement = () => {
       // Mock API call
       // await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log("REques form of create-account: ", formData)
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       await axios.post(`${API_URL}/admin/create-account`,
         formData,
         {
@@ -123,14 +124,14 @@ const UserManagement = () => {
         email: '',
         phone: '',
         role: 'CUSTOMER',
-        password: '@swp391fpt',
-        confirmPassword: '@swp391fpt',
+        password: '@SWP391fpt',
+        confirmPassword: '@SWP391fpt',
         is_banned: 'false',
       });
     } catch (error) {
       setMessage({ type: 'error', text: 'Có lỗi xảy ra khi tạo tài khoản' });
       console.error('create-account error', error);
-      
+      alert('Có lỗi xảy ra khi tạo tài khoản! \n' + 'Tạo tài khoản thất bại!');
     } finally {
       setLoading(false);
     }
@@ -232,7 +233,7 @@ const UserManagement = () => {
                   </button>
                 </div>
                 <small className="password-note">
-                  Mật khẩu mặc định: @swp391fpt
+                  Mật khẩu mặc định: @SWP391fpt
                 </small>
               </div>
 
@@ -277,8 +278,8 @@ const UserManagement = () => {
                   email: '',
                   phone: '',
                   role: 'CUSTOMER',
-                  password: '@swp391fpt',
-                  confirmPassword: '@swp391fpt',
+                  password: '@SWP391fpt',
+                  confirmPassword: '@SWP391fpt',
                   is_banned: 'false',
                 });
                 setMessage({ type: '', text: '' });
