@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '@/api/api';
 import { Input } from '@components/ui/input';
 import { Button } from '@components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import './BlogPage.css';
 
 const API_BASE = 'http://localhost:3000';
@@ -11,6 +12,7 @@ export default function BlogPage() {
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   const fetchAllBlogs = async () => {
     try {
@@ -51,7 +53,7 @@ export default function BlogPage() {
     })),
   ];
 
-  const featuredPost = blogs[0];
+  // const featuredPost = blogs[0];
 
   return (
     <div className="blog-page">
@@ -79,10 +81,14 @@ export default function BlogPage() {
             </div>
           </div>
 
-          {featuredPost && (
+          {/* {featuredPost && (
             <div className="sidebar-section">
               <h3 className="sidebar-title">Bài viết nổi bật</h3>
-              <div className="featured-post">
+              <div
+                className="featured-post"
+                onClick={() => navigate(`/tin-tuc/${featuredPost.blog_id}`)}
+                style={{ cursor: 'pointer' }}
+              >
                 <img
                   src={
                     featuredPost?.images?.[0] ||
@@ -107,7 +113,7 @@ export default function BlogPage() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </aside>
 
         <main className="blog-main">
@@ -140,7 +146,11 @@ export default function BlogPage() {
             <div className="blog-grid">
               {currentPosts.map((post) => (
                 <article key={post.blog_id} className="blog-card">
-                  <div className="card-image">
+                  <div
+                    className="card-image"
+                    onClick={() => navigate(`/tin-tuc/${post.blog_id}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <img
                       src={
                         post?.images?.[0] ||
@@ -169,7 +179,13 @@ export default function BlogPage() {
                         {(post.content.length / 500).toFixed(0)} phút đọc
                       </span>
                     </div>
-                    <h3 className="card-title">{post.title}</h3>
+                    <h3
+                      className="card-title"
+                      onClick={() => navigate(`/tin-tuc/${post.blog_id}`)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {post.title}
+                    </h3>
                     <p className="card-excerpt">
                       {post.content.slice(0, 100)}...
                     </p>
@@ -212,6 +228,7 @@ export default function BlogPage() {
           {totalPages > 1 && (
             <div className="pagination">
               <Button
+                className="pagination-btn"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
@@ -229,6 +246,7 @@ export default function BlogPage() {
                 </button>
               ))}
               <Button
+                className="pagination-btn"
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
               >

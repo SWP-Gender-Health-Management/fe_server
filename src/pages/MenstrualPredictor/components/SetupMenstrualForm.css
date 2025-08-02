@@ -1,7 +1,7 @@
 /* Setup Form Container */
 .setup-form-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,7 +40,6 @@
 
 .setup-steps .ant-steps-item-finish .ant-steps-item-icon {
   background-color: #ff69b4;
-  border-color: #ff69b4;
 }
 
 .setup-steps .ant-steps-item-process .ant-steps-item-icon {
@@ -150,7 +149,7 @@
 
 /* Buttons */
 .setup-form .ant-btn-primary {
-  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
   border: none;
   border-radius: 8px;
   font-weight: 500;
@@ -159,7 +158,7 @@
 }
 
 .setup-form .ant-btn-primary:hover {
-  background: linear-gradient(135deg, #ff1493, #dc143c);
+  background: linear-gradient(135deg, #ffb74b, #f89e28) !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
 }

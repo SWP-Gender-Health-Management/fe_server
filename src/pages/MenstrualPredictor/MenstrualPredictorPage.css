@@ -87,17 +87,4 @@
   outline-offset: 2px;
 }
 
-/* Dark mode support */
-/* @media (prefers-color-scheme: dark) {
-  .menstrual-tracker-container {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  }
-  
-  .update-button {
-    background: linear-gradient(135deg, #8e24aa 0%, #ad1457 100%);
-  }
-  
-  .update-button:hover {
-    background: linear-gradient(135deg, #7b1fa2 0%, #8e24aa 100%);
-  }
-} */
+

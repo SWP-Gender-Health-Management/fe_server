@@ -13,6 +13,7 @@ import LandingPage from '@pages/LandingPage/LandingPage';
 import ServicePage from '@pages/ServicePage/ServicePage';
 import MenstrualPredictorPage from '@pages/MenstrualPredictor/MenstrualPredictorPage';
 import BlogPage from '@pages/Blog/BlogPage';
+import BlogDetailPage from '@pages/Blog/BlogDetail/BlogDetailPage';
 import Question from '@pages/Question/Question';
 import AboutUs from '@pages/AboutUs/AboutUs';
 import Contact from '@pages/Contact/Contact';
@@ -60,10 +61,16 @@ const AppLayout = () => {
   }
 
   useEffect(() => {
-    setShowLogin(false);
-  }, [location]);
+    // Kiểm tra xem có state showLogin từ navigation không
+    if (location.state?.showLogin) {
+      setShowLogin(true);
+      // Xóa state để tránh hiển thị lại khi refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    } else {
+      setShowLogin(false);
+    }
+  }, [location, navigate]);
 
-  // ✅ Ẩn Navbar & Footer ở các trang dashboard
   const hideNavbarPaths = ['/admin', '/manager', '/consultant', '/staff'];
   const shouldHideNavbar = hideNavbarPaths.some((prefix) =>
     location.pathname.startsWith(prefix)
@@ -94,7 +101,6 @@ const AppLayout = () => {
 
   return (
     <div className="app-container">
-      {/* ✅ Chỉ hiện Navbar nếu không ở trang dashboard */}
       {!shouldHideNavbar && !isNotFoundPage && (
         <Navbar
           onLoginClick={() => setShowLogin(true)}
@@ -103,7 +109,7 @@ const AppLayout = () => {
           onLogout={handleLogout}
         />
       )}
-      <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
@@ -111,6 +117,7 @@ const AppLayout = () => {
           element={isLoggedIn ? <UserAccount /> : <Navigate to="/" />}
         />
         <Route path="/tin-tuc" element={<BlogPage />} />
+        <Route path="/tin-tuc/:blog_id" element={<BlogDetailPage />} />
         <Route path="/ve-chung-toi" element={<AboutUs />} />
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/dich-vu" element={<ServicePage />} />
@@ -120,31 +127,41 @@ const AppLayout = () => {
         <Route path="/thong-tin-xet-nghiem" element={<LabConfirmation />} />
         <Route path="/xac-nhan-xet-nghiem" element={<LabSuccess />} />
 
-        <Route path="/admin/*" element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/manager/*"
+          element={
+            <ProtectedRoute allowedRoles={['MANAGER']}>
+              <ManagerDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/manager/*" element={
-          <ProtectedRoute allowedRoles={['MANAGER']}>
-            <ManagerDashboard />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/consultant/*"
+          element={
+            <ProtectedRoute allowedRoles={['CONSULTANT']}>
+              <ConsultantDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-
-        <Route path="/consultant/*" element={
-          <ProtectedRoute allowedRoles={['CONSULTANT']}>
-            <ConsultantDashboard />
-          </ProtectedRoute>} />
-
-
-        <Route path="/staff/*" element={
-          <ProtectedRoute allowedRoles={['STAFF']}>
-            <StaffDashboard />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="/staff/*"
+          element={
+            <ProtectedRoute allowedRoles={['STAFF']}>
+              <StaffDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/dich-vu/chu-ky-kinh-nguyet"
@@ -157,7 +174,6 @@ const AppLayout = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-      {/* ✅ Chỉ hiện Footer & Login nếu không ở trang dashboard */}
       {!shouldHideNavbar && !isNotFoundPage && (
         <>
           <Login visible={showLogin} onCancel={() => setShowLogin(false)} />
@@ -178,7 +194,6 @@ const AppLayout = () => {
 };
 
 function App() {
-
   return (
     <AuthProvider>
       <AppLayout />

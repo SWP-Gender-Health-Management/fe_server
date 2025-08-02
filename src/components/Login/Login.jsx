@@ -13,9 +13,8 @@ import RegisterForm from './components/RegisterForm/RegisterForm';
 import './login.css';
 
 const { TabPane } = Tabs;
-const { confirm } = Modal;
 
-const Login = ({ visible, onCancel }) => {
+const Login = ({ visible, onCancel, onLoginSuccess }) => {
   const { login } = useAuth();
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
@@ -154,6 +153,11 @@ const Login = ({ visible, onCancel }) => {
       // Tắt modal ngay lập tức
       onCancel();
 
+      // Gọi callback nếu có
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+
       // Hiển thị thông báo thành công
       message.success({
         content: `Đăng nhập thành công! Chào mừng ${full_name || 'bạn'} đã quay trở lại!`,
@@ -240,6 +244,11 @@ const Login = ({ visible, onCancel }) => {
 
       // Tắt modal ngay lập tức
       onCancel();
+
+      // Gọi callback nếu có
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
 
       // Hiển thị thông báo thành công
       message.success({
