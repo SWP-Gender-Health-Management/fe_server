@@ -12,16 +12,14 @@ import Cookies from 'js-cookie';
 import './ConsultantTab.css';
 import moment from 'moment/moment';
 
-
-
 const API_URL = 'http://localhost:3000';
-
 
 const ConsultantTab = () => {
   const [searchName, setSearchName] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
-  const [viewScheduleModalVisible, setViewScheduleModalVisible] = useState(false);
+  const [viewScheduleModalVisible, setViewScheduleModalVisible] =
+    useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
@@ -40,10 +38,6 @@ const ConsultantTab = () => {
     sunday: [],
   });
 
-  const accountId = Cookies.get('accountId');
-  const accessToken = Cookies.get('accessToken');
-
-
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
@@ -60,11 +54,11 @@ const ConsultantTab = () => {
                 id: workingSlot.name.split('-')[0].trim(),
                 time: `${workingSlot.start_at.slice(0, 5)} - ${workingSlot.end_at.slice(0, 5)}`,
                 slot_id: workingSlot.slot_id,
-              }
+              };
             })
           )
         ).sort();
-        console.log("Slot Times:", slotTimes);
+        console.log('Slot Times:', slotTimes);
         setTimeSlots(slotTimes);
       } catch (error) {
         console.error('Error fetching Slot:', error);
@@ -75,9 +69,7 @@ const ConsultantTab = () => {
   }, []);
 
   useEffect(() => {
-
     fetchConsultant();
-
   }, [currentPage]);
 
   useEffect(() => {
@@ -95,38 +87,43 @@ const ConsultantTab = () => {
 
   const fetchWeeklySchedule = async () => {
     try {
-      await axios.get(`${API_URL}/manager/get-consultant-pattern-by-week`, {
-        params: {
-          consultant_id: selectedConsultant?.account_id || '',
-          start_date: getStartOfWeek(new Date()),
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => {
-        console.log("Weekly schedule response:", response.data.result);
-        const schedule = response.data.result;
-        setWeeklySchedule({
-          monday: schedule.monday,
-          tuesday: schedule.tuesday,
-          wednesday: schedule.wednesday,
-          thursday: schedule.thursday,
-          friday: schedule.friday,
-          saturday: schedule.saturday,
-          sunday: schedule.sunday,
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      await axios
+        .get(`${API_URL}/manager/get-consultant-pattern-by-week`, {
+          params: {
+            consultant_id: selectedConsultant?.account_id || '',
+            start_date: getStartOfWeek(new Date()),
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
         })
-      });
+        .then((response) => {
+          console.log('Weekly schedule response:', response.data.result);
+          const schedule = response.data.result;
+          setWeeklySchedule({
+            monday: schedule.monday,
+            tuesday: schedule.tuesday,
+            wednesday: schedule.wednesday,
+            thursday: schedule.thursday,
+            friday: schedule.friday,
+            saturday: schedule.saturday,
+            sunday: schedule.sunday,
+          });
+        });
     } catch (error) {
-      console.error("Error fetching weekly schedule:", error);
+      console.error('Error fetching weekly schedule:', error);
     }
-  }
+  };
 
   const fetchConsultant = async () => {
     try {
-      await axios.get(
-        `${API_URL}/manager/get-consultants`,
-        {
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      await axios
+        .get(`${API_URL}/manager/get-consultants`, {
           params: {
             full_name: searchName,
             ...(statusFilter !== 'all' && { is_banned: statusFilter }),
@@ -137,19 +134,18 @@ const ConsultantTab = () => {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
-        }
-      ).then((response) => {
-        console.log('Consultant Response:', response.data.result);
-        setConsultants(response.data.result.consultants);
-        setTotalPages(response.data.result.totalPage);
-      });
+        })
+        .then((response) => {
+          console.log('Consultant Response:', response.data.result);
+          setConsultants(response.data.result.consultants);
+          setTotalPages(response.data.result.totalPage);
+        });
     } catch (error) {
-      console.error("Fetching manager consultant error: ", error);
+      console.error('Fetching manager consultant error: ', error);
     }
-  }
+  };
 
   // Mock weekly schedule data - mảng chứa các slot ID cho mỗi ngày
-
 
   const handleSchedule = (consultant) => {
     setSelectedConsultant(consultant);
@@ -164,34 +160,40 @@ const ConsultantTab = () => {
   const handleScheduleSubmit = async () => {
     // Handle schedule submission
 
-
     try {
-      await axios.post(`${API_URL}/manager/create-consultant-pattern`, {
-        consultant_id: selectedConsultant?.account_id || '',
-        date: new Date(selectedDate).toISOString().split('T')[0],
-        working_slot_ids: selectedSlots,
-      }, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => {
-        console.log("Schedule set response:", response.data.result);
-        console.log('Schedule submitted:', {
-          consultant: selectedConsultant,
-          date: selectedDate,
-          slots: selectedSlots,
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      await axios
+        .post(
+          `${API_URL}/manager/create-consultant-pattern`,
+          {
+            consultant_id: selectedConsultant?.account_id || '',
+            date: new Date(selectedDate).toISOString().split('T')[0],
+            working_slot_ids: selectedSlots,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Schedule set response:', response.data.result);
+          console.log('Schedule submitted:', {
+            consultant: selectedConsultant,
+            date: selectedDate,
+            slots: selectedSlots,
+          });
         });
-      });
     } catch (error) {
-      console.error("Error setting consultant pattern:", error);
+      console.error('Error setting consultant pattern:', error);
     } finally {
       setScheduleModalVisible(false);
       setSelectedDate(null);
       setSelectedSlots([]);
       setSelectedConsultant(null);
     }
-
   };
 
   // const filteredConsultants = consultants.filter((consultant) => {
@@ -222,8 +224,6 @@ const ConsultantTab = () => {
       'saturday',
       'sunday',
     ];
-
-
 
     return (
       <div className="weekly-schedule">
@@ -422,7 +422,6 @@ const ConsultantTab = () => {
             </button>
           </div>
         </div>
-
       </div>
 
       {/* Schedule Modal */}
@@ -444,7 +443,9 @@ const ConsultantTab = () => {
             <DatePicker
               onChange={(date) => setSelectedDate(date)}
               disabledDate={(current) => {
-                return current && (current.day() === 0 || current.isBefore(moment())); // Disable Sundays and past days
+                return (
+                  current && (current.day() === 0 || current.isBefore(moment()))
+                ); // Disable Sundays and past days
               }}
               placeholder="Chọn ngày làm việc"
               className="date-picker-field"

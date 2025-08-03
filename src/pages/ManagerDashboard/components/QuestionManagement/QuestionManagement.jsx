@@ -76,8 +76,6 @@ const QuestionManagement = () => {
 
   const fetchQuestions = async () => {
     setLoading(true);
-    const accessToken = Cookies.get('accessToken');
-
     try {
       // const params = {
       //   page: currentPage,

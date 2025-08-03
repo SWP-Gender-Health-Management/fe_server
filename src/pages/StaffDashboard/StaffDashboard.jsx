@@ -15,7 +15,6 @@ import StaffLaboratory from './components/StaffLab/StaffLaboratory';
 import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 import Sidebar from '../../components/Sidebar';
 
-
 // Import icons
 import {
   LogoutOutlined,
@@ -27,7 +26,7 @@ import {
   CalendarOutlined,
   SearchOutlined,
   EditOutlined,
-  UserOutlined
+  UserOutlined,
 } from '@ant-design/icons';
 
 const API_URL = 'http://localhost:3000';
@@ -42,10 +41,6 @@ const StaffDashboard = () => {
   const [blogs, setBlogs] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [todayAppointments, setTodayAppointments] = useState([]);
-
-
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
 
   // Mock staff data
   const [staffData, setStaffData] = useState({});
@@ -74,6 +69,8 @@ const StaffDashboard = () => {
 
   const fetchAppointmentsOfStaff = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const appointmentResponse = await axios.get(
         `${API_URL}/staff/get-laborarity-appointment-of-staff`,
         {
@@ -94,18 +91,18 @@ const StaffDashboard = () => {
             ...prev,
             totalAppointments: appointments.length,
             pendingAppointments: appointments.filter((appointment) => {
-              return appointment.status == 'pending'
+              return appointment.status == 'pending';
             }).length,
             confirmedAppointments: appointments.filter((appointment) => {
-              return appointment.status == 'confirmed'
+              return appointment.status == 'confirmed';
             }).length,
             inProgressAppointments: appointments.filter((appointment) => {
-              return appointment.status == 'in_progress'
+              return appointment.status == 'in_progress';
             }).length,
             completedAppointments: appointments.filter((appointment) => {
-              return appointment.status == 'completed'
+              return appointment.status == 'completed';
             }).length,
-          }
+          };
           return prev;
         });
         return generated;
@@ -115,10 +112,12 @@ const StaffDashboard = () => {
       console.error('Error fetching appointment data:', error);
       return [];
     }
-  }
+  };
 
   const fetchTodayAppointmentsOfStaff = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const patternResponse = await axios.get(
         `${API_URL}/staff-pattern/get-pattern-by-date`,
         {
@@ -166,9 +165,7 @@ const StaffDashboard = () => {
       // Flatten and deduplicate appointments by app_id
       const flattenedAppointments = allAppointments.flat();
       const uniqueAppointments = Array.from(
-        new Map(
-          flattenedAppointments.map((app) => [app.app_id, app])
-        ).values()
+        new Map(flattenedAppointments.map((app) => [app.app_id, app])).values()
       );
 
       setTodayAppointments(uniqueAppointments); // Set deduplicated appointments
@@ -194,11 +191,12 @@ const StaffDashboard = () => {
               ...lab,
               result: result ? result.result : null,
               conclusion: result ? result.conclusion : null,
-              status: app.status === 'pending'
-                ? 'pending'
-                : result
-                  ? 'completed'
-                  : 'in_progress',
+              status:
+                app.status === 'pending'
+                  ? 'pending'
+                  : result
+                    ? 'completed'
+                    : 'in_progress',
             };
           })
         );
@@ -213,6 +211,8 @@ const StaffDashboard = () => {
 
   const fetchStaffData = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const viewResponse = await axios.post(
         `${API_URL}/account/view-account`,
         {},
@@ -234,36 +234,37 @@ const StaffDashboard = () => {
       );
       setStaffData((prev) => {
         if (viewResponse.data.result) {
-          console.log("Staff role from API:", viewResponse.data.result.role);
-          console.log("Staff data from API:", viewResponse.data.result);
+          console.log('Staff role from API:', viewResponse.data.result.role);
+          console.log('Staff data from API:', viewResponse.data.result);
           prev = {
             ...prev,
             ...viewResponse.data.result,
-            position: "Front Desk Staff",
-            department: "Front Desk"
-          }
+            position: 'Front Desk Staff',
+            department: 'Front Desk',
+          };
         }
         if (ratingResponse.data.result) {
-          console.log("ratingResponse: ", ratingResponse.data.result)
-          prev = { ...prev, ...ratingResponse.data.result }
+          console.log('ratingResponse: ', ratingResponse.data.result);
+          prev = { ...prev, ...ratingResponse.data.result };
         }
         return prev;
       });
-
     } catch (error) {
       console.error('Error fetching staff data:', error);
     }
-  }
+  };
 
   const fetchBlogs = async function () {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const response = await axios.get(
         `${API_URL}/blog/get-blog-by-account/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          }
+          },
         }
       );
       // console.log('Blog Response:', response.data.result);
@@ -272,14 +273,19 @@ const StaffDashboard = () => {
         if (response.data.result) {
           const totalBlogs = response.data.result.length;
           const publishedBlogs = response.data.result.filter((blog) => {
-            return blog.status == 'true' || blog.status == true
+            return blog.status == 'true' || blog.status == true;
           }).length;
-          prev = { ...prev, totalBlogs, publishedBlogs, pendingBlogs: totalBlogs - publishedBlogs }
+          prev = {
+            ...prev,
+            totalBlogs,
+            publishedBlogs,
+            pendingBlogs: totalBlogs - publishedBlogs,
+          };
         }
         return prev;
       });
     } catch (error) {
-      console.error("Error fetching blogs:", error);
+      console.error('Error fetching blogs:', error);
       return;
     }
   };
@@ -293,9 +299,9 @@ const StaffDashboard = () => {
     },
     {
       id: 'today-appointments',
-      label: 'Today\'s Appointments',
+      label: "Today's Appointments",
       icon: <CalendarOutlined />,
-      description: 'Today\'s laboratory tests',
+      description: "Today's laboratory tests",
     },
     {
       id: 'search-appointments',
@@ -325,8 +331,8 @@ const StaffDashboard = () => {
 
   const handleLogout = () => {
     // Handle logout logic
-    Cookies.remove("accessToken");
-    Cookies.remove("accountId");
+    Cookies.remove('accessToken');
+    Cookies.remove('accountId');
     navigate('/');
   };
 
@@ -346,9 +352,19 @@ const StaffDashboard = () => {
       case 'overview':
         return <StaffOverview staffData={staffData} />;
       case 'today-appointments':
-        return <TodayAppointments todayAppointments={todayAppointments} fetchTodayAppointmentsOfStaff={fetchTodayAppointmentsOfStaff} />;
+        return (
+          <TodayAppointments
+            todayAppointments={todayAppointments}
+            fetchTodayAppointmentsOfStaff={fetchTodayAppointmentsOfStaff}
+          />
+        );
       case 'search-appointments':
-        return <SearchAppointments inputAppointments={appointments} fetchInputAppointments={fetchAppointmentsOfStaff} />;
+        return (
+          <SearchAppointments
+            inputAppointments={appointments}
+            fetchInputAppointments={fetchAppointmentsOfStaff}
+          />
+        );
       case 'blog-management':
         return <StaffBlog blogs={blogs} fetchBlogs={fetchBlogs} />;
       case 'profile':
