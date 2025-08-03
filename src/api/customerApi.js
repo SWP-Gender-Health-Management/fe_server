@@ -19,6 +19,6 @@ export const getMenstrualCycleData = (token) => api.get('/customer/get-menstrual
   headers: { Authorization: `Bearer ${token}` },
 });
 
-export const updateMenstrualCycle = (data, token) => api.post('/customer/update-menstrual-cycle', data, {
+export const updateMenstrualCycle = (data, token) => api.put('/customer/update-menstrual-cycle', data, {
   headers: { Authorization: `Bearer ${token}` },
 }); 

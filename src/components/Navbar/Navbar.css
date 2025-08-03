@@ -89,9 +89,7 @@
   align-items: flex-start;
   gap: 8px;
   padding: 8px;
-  /* background: rgba(255, 255, 255, 0.05); */
   border-radius: 6px;
-  /* border: 1px solid rgba(255, 255, 255, 0.1); */
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
@@ -114,7 +112,6 @@
   justify-content: flex-start;
   text-align: left;
   padding-left: 0;
-  color: white;
 }
 
 .contact-info.row-direction .top-contact-item:nth-child(2),
@@ -281,8 +278,9 @@
   height: 16px;
   background: transparent;
 }
-.contact-info span{
-  color: white !important; 
+
+.top-bar > div > div > div > div > div > span{
+  color: white !important;
 }
 
 .mobile-contact {

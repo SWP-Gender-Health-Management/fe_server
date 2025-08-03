@@ -13,7 +13,7 @@ import {
   SafetyOutlined,
   StarOutlined,
   TeamOutlined,
-  UserOutlined
+  UserOutlined,
 } from '@ant-design/icons';
 import '@styles/reset.css'; // Reset CSS for consistent styling
 import {
@@ -25,7 +25,7 @@ import {
   Input,
   Row,
   Select,
-  Typography
+  Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,7 +51,12 @@ const LandingPage = () => {
   // Load user detail info when logged in
   useEffect(() => {
     const loadUserDetailInfo = async () => {
-      console.log('useEffect triggered - isLoggedIn:', isLoggedIn, 'userInfo.accountId:', userInfo.accountId);
+      console.log(
+        'useEffect triggered - isLoggedIn:',
+        isLoggedIn,
+        'userInfo.accountId:',
+        userInfo.accountId
+      );
       if (isLoggedIn && userInfo.accountId) {
         setLoadingUserInfo(true);
         try {
@@ -59,30 +64,30 @@ const LandingPage = () => {
           console.log('Access token:', token ? 'exists' : 'missing');
           if (token) {
             const response = await viewAccount(token);
-                         console.log('API response:', response.data);
-             if (response.data && response.data.result) {
-               const userData = response.data.result;
-               console.log('User data received:', userData);
-               
-               // Pre-fill form with user info - map to correct field names
-               const formValues = {};
-               
-               if (userData.full_name) {
-                 formValues.fullName = userData.full_name;
-               }
-               if (userData.email) {
-                 formValues.email = userData.email;
-               }
-               if (userData.phone) {
-                 formValues.phone = userData.phone;
-               }
-               
-               console.log('Setting form values:', formValues);
-               
-               // Set form values directly
-               consultationForm.setFieldsValue(formValues);
-               console.log('Form values set successfully');
-              
+            console.log('API response:', response.data);
+            if (response.data && response.data.result) {
+              const userData = response.data.result;
+              console.log('User data received:', userData);
+
+              // Pre-fill form with user info - map to correct field names
+              const formValues = {};
+
+              if (userData.full_name) {
+                formValues.fullName = userData.full_name;
+              }
+              if (userData.email) {
+                formValues.email = userData.email;
+              }
+              if (userData.phone) {
+                formValues.phone = userData.phone;
+              }
+
+              console.log('Setting form values:', formValues);
+
+              // Set form values directly
+              consultationForm.setFieldsValue(formValues);
+              console.log('Form values set successfully');
+
               // Show warning if user doesn't have complete info
               if (!userData.email || !userData.phone) {
                 console.log('User missing complete information for pre-fill');
@@ -232,7 +237,6 @@ const LandingPage = () => {
     }
   };
 
-
   return (
     <div className="landing-container">
       {/* Hero Banner */}
@@ -253,7 +257,12 @@ const LandingPage = () => {
                       <Paragraph className="slide-subtitle">
                         {image.subtitle}
                       </Paragraph>
-                      <Button type="primary" size="large" className="hero-cta" onClick={handleHeroBookingClick}>
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="hero-cta"
+                        onClick={handleHeroBookingClick}
+                      >
                         Đặt lịch tư vấn <ArrowRightOutlined />
                       </Button>
                     </div>
@@ -341,15 +350,17 @@ const LandingPage = () => {
             <Col xs={24} lg={12}>
               <Card className="consultation-card">
                 {isLoggedIn && (
-                  <div style={{ 
-                    background: loadingUserInfo ? '#fff7e6' : '#f6ffed', 
-                    border: `1px solid ${loadingUserInfo ? '#ffd591' : '#b7eb8f'}`, 
-                    borderRadius: '6px', 
-                    padding: '8px 12px', 
-                    marginBottom: '16px',
-                    fontSize: '14px',
-                    color: loadingUserInfo ? '#fa8c16' : '#52c41a'
-                  }}>
+                  <div
+                    style={{
+                      background: loadingUserInfo ? '#fff7e6' : '#f6ffed',
+                      border: `1px solid ${loadingUserInfo ? '#ffd591' : '#b7eb8f'}`,
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      marginBottom: '16px',
+                      fontSize: '14px',
+                      color: loadingUserInfo ? '#fa8c16' : '#52c41a',
+                    }}
+                  >
                     {loadingUserInfo ? (
                       <>
                         <CalendarOutlined style={{ marginRight: '8px' }} />
@@ -358,7 +369,7 @@ const LandingPage = () => {
                     ) : (
                       <>
                         <CheckCircleOutlined style={{ marginRight: '8px' }} />
-                        Thông tin của bạn đã được điền sẵn
+                        Bạn cần tư vấn nhanh?
                       </>
                     )}
                   </div>
@@ -481,6 +492,8 @@ const LandingPage = () => {
                 <div key={news.id} className="news-slide">
                   <Card
                     className="news-card"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigate('/tin-tuc')}
                     cover={
                       <div className="news-image-wrapper">
                         <img
@@ -499,7 +512,14 @@ const LandingPage = () => {
                         <span>
                           <LikeOutlined /> {news.likes}
                         </span>
-                        <span>
+                        <span
+                          className="read-more-link"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/tin-tuc');
+                          }}
+                          style={{ cursor: 'pointer', color: '#1890ff' }}
+                        >
                           <MessageOutlined /> Đọc thêm
                         </span>
                       </div>,
@@ -555,11 +575,11 @@ const LandingPage = () => {
           </div>
 
           <Row gutter={[40, 40]} align="middle">
-            <Col xs={24} lg={10}>
+            <Col xs={24} lg={12}>
               <div className="about-image-container">
                 <div className="about-main-image">
                   <img
-                    src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600&h=400&fit=crop"
+                    src="https://www.ama.com.au/sites/default/files/inline-images/317_MG_6618%20-%20High%20Res%20crop.jpg"
                     alt="Về chúng tôi"
                   />
                 </div>
@@ -576,7 +596,7 @@ const LandingPage = () => {
               </div>
             </Col>
 
-            <Col xs={24} lg={14}>
+            <Col xs={24} lg={12}>
               <div className="about-content">
                 <div className="about-description-card">
                   <Paragraph className="about-description">
@@ -612,32 +632,32 @@ const LandingPage = () => {
                 </div>
 
                 <div className="about-stats-container">
-                  <Row gutter={[20, 20]}>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">10+</div>
-                        <div className="about-stat-label">Năm kinh nghiệm</div>
+                  <div className="stats-row">
+                    <div className="stat-card">
+                      <div className="about-stat-number">10+</div>
+                      <div className="about-stat-label">Năm kinh nghiệm</div>
+                    </div>
+                    <div className="stat-card">
+                      <div className="about-stat-number">50K+</div>
+                      <div className="about-stat-label">
+                        Bệnh nhân tin tưởng
                       </div>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">50K+</div>
-                        <div className="about-stat-label">Bệnh nhân tin tưởng</div>
+                    </div>
+                    <div className="stat-card">
+                      <div className="about-stat-number">100+</div>
+                      <div className="about-stat-label">
+                        <br />
+                        Bác sĩ
                       </div>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">100+</div>
-                        <div className="about-stat-label">Bác sĩ chuyên khoa</div>
+                    </div>
+                    <div className="stat-card">
+                      <div className="about-stat-number">98%</div>
+                      <div className="about-stat-label">
+                        <br />
+                        Hài lòng
                       </div>
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <div className="stat-card">
-                        <div className="about-stat-number">98%</div>
-                        <div className="about-stat-label">Hài lòng</div>
-                      </div>
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="certifications-modern">
@@ -661,7 +681,6 @@ const LandingPage = () => {
           </Row>
         </div>
       </div>
-      {/* Cuối cùng, thêm modal đăng nhập */}
       <LoginRequiredModal
         visible={isLoginModalVisible}
         onOk={() => setIsLoginModalVisible(false)}

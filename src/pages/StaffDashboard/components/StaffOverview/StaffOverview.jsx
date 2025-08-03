@@ -57,39 +57,39 @@ const StaffOverview = ({ staffData }) => {
     total: 28,
   };
 
-  const performanceStats = {
-    completionRate: 95,
-    avgProcessTime: 25, // minutes
-    weeklyTests: 145,
-    monthlyTests: 580,
-  };
+  // const performanceStats = {
+  //   completionRate: 95,
+  //   avgProcessTime: 25, // minutes
+  //   weeklyTests: 145,
+  //   monthlyTests: 580,
+  // };
 
-  const recentActivities = [
-    {
-      time: '14:30',
-      action: 'Hoàn thành xét nghiệm máu',
-      patient: 'Nguyễn Văn A',
-      status: 'completed',
-    },
-    {
-      time: '14:15',
-      action: 'Bắt đầu xét nghiệm nước tiểu',
-      patient: 'Trần Thị B',
-      status: 'in-progress',
-    },
-    {
-      time: '14:00',
-      action: 'Upload kết quả xét nghiệm',
-      patient: 'Lê Văn C',
-      status: 'completed',
-    },
-    {
-      time: '13:45',
-      action: 'Nhận mẫu xét nghiệm mới',
-      patient: 'Phạm Thị D',
-      status: 'pending',
-    },
-  ];
+  // const recentActivities = [
+  //   {
+  //     time: '14:30',
+  //     action: 'Hoàn thành xét nghiệm máu',
+  //     patient: 'Nguyễn Văn A',
+  //     status: 'completed',
+  //   },
+  //   {
+  //     time: '14:15',
+  //     action: 'Bắt đầu xét nghiệm nước tiểu',
+  //     patient: 'Trần Thị B',
+  //     status: 'in-progress',
+  //   },
+  //   {
+  //     time: '14:00',
+  //     action: 'Upload kết quả xét nghiệm',
+  //     patient: 'Lê Văn C',
+  //     status: 'completed',
+  //   },
+  //   {
+  //     time: '13:45',
+  //     action: 'Nhận mẫu xét nghiệm mới',
+  //     patient: 'Phạm Thị D',
+  //     status: 'pending',
+  //   },
+  // ];
 
   const upcomingTasks = [
     {
@@ -187,7 +187,7 @@ const StaffOverview = ({ staffData }) => {
                   strokeColor="#52c41a"
                   size="small"
                 />
-                <div className="metric-value">
+                <div className="metric-values">
                   {(staffData.completedAppointments/staffData.totalAppointments)*100}%
                 </div>
               </div>

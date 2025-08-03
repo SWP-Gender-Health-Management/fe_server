@@ -445,7 +445,7 @@ const ConsultantAppointment = ({
               </div>
 
               <div className="modal-actions">
-                {selectedAppointment.status === 'pending' && (
+                {/* {selectedAppointment.status === 'pending' && (
                   <>
                     <button
                       className="action-btn confirm"
@@ -472,7 +472,7 @@ const ConsultantAppointment = ({
                       ❌ Hủy bỏ
                     </button>
                   </>
-                )}
+                )} */}
 
                 {selectedAppointment.status === 'confirmed' && (
                   <button

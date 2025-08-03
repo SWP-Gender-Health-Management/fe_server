@@ -23,6 +23,15 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
 
+  // Hiển thị modal login khi chưa đăng nhập
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsLoginModalVisible(true);
+    } else {
+      setIsLoginModalVisible(false);
+    }
+  }, [isLoggedIn]);
+
   // Khôi phục trạng thái từ sessionStorage khi vào trang
   useEffect(() => {
     const savedStep = sessionStorage.getItem('bookingStep');
@@ -188,13 +197,16 @@ const BookingPage = () => {
       </div>
       <LoginRequiredModal
         visible={isLoginModalVisible}
-        onOk={() => {
-          setIsLoginModalVisible(false);
-          navigate('/login');
-        }}
         onCancel={() => {
           setIsLoginModalVisible(false);
           navigate('/');
+        }}
+        onLoginSuccess={() => {
+          setIsLoginModalVisible(false);
+          // Reload trang sau khi đăng nhập thành công
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }}
         message="Bạn cần đăng nhập để đặt lịch tư vấn!"
       />

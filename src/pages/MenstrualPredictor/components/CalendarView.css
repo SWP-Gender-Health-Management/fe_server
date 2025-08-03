@@ -1,7 +1,7 @@
 /* Calendar Container */
 .calendar-container {
   width: 100%;
-  max-width: 900px;
+  /* max-width: 900px; */
   margin: 0 auto;
 }
 
@@ -13,9 +13,7 @@
   overflow: hidden;
 }
 
-.calendar-card .ant-card-body {
-  padding: 0;
-}
+
 
 /* Calendar Header */
 .calendar-header {
@@ -118,48 +116,53 @@
   color: #666;
 }
 
-/* Calendar Grid */
+/* Calendar Grid - Cấu trúc tương tự DoctorSchedule */
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
-  background: #f5f5f5;
-  padding: 24px;
+  grid-template-columns: repeat(7, 0.5fr) !important;
+  gap: 1px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
   min-height: 450px;
+  width: 100%;
 }
 
-/* Day Headers */
+/* Day Headers - Tương tự DoctorSchedule */
 .day-header {
-  background: white;
-  padding: 16px 8px;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
+  padding: 15px 10px;
   text-align: center;
   font-weight: 600;
-  font-size: 14px;
-  color: #666;
-  border-radius: 8px;
-  margin-bottom: 4px;
-  height: 50px;
+  color: white;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Calendar Days */
+.day-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Calendar Days - Tương tự DoctorSchedule */
 .calendar-day {
   background: white;
-  width: 100%;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
+  padding: 15px 5px;
+  text-align: center;
+  font-weight: 600;
   font-size: 16px;
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  margin: 1px;
-  border: 1px solid transparent;
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
 }
 
 .calendar-day.empty {
@@ -170,12 +173,11 @@
 
 .calendar-day.normal-day {
   color: #333;
-  border: 1px solid #f0f0f0;
+  background: #f8fafc;
 }
 
 .calendar-day.normal-day:hover {
-  background: #f8f9fa;
-  border-color: #ff6b9d;
+  background: #f0fdf4;
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(255, 107, 157, 0.15);
 }
@@ -185,7 +187,6 @@
   color: white;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .calendar-day.ovulation-day {
@@ -193,17 +194,18 @@
   color: white;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .calendar-day.today {
   border: 2px solid #ff6b9d;
   font-weight: 700;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: white;
 }
 
 .calendar-day.today.normal-day {
-  background: #fff5f8;
-  color: #ff6b9d;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: white;
 }
 
 .calendar-day.selected {
@@ -299,6 +301,7 @@
     flex-direction: column;
     gap: 12px;
     text-align: center;
+    
   }
 
   .calendar-title {
@@ -309,17 +312,20 @@
     height: 36px;
     padding: 0 12px;
     font-size: 13px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
   }
 
   .calendar-grid {
-    padding: 16px;
-    gap: 2px;
+    margin: 16px;
+    gap: 1px;
     min-height: 400px;
+    grid-template-columns: repeat(7, 1fr); /* Đảm bảo luôn 7 cột */
   }
 
   .calendar-day {
-    height: 60px;
+    min-height: 60px;
     font-size: 15px;
+    padding: 12px 5px;
   }
 
   .day-header {
@@ -367,19 +373,25 @@
     font-size: 12px;
   }
 
+.calendar-update-button.ant-btn-primary{
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
+  }
+
   .calendar-update-button .anticon {
     font-size: 12px;
   }
 
   .calendar-grid {
-    padding: 12px;
+    margin: 12px;
     gap: 1px;
     min-height: 350px;
+    grid-template-columns: repeat(7, 1fr); /* Đảm bảo luôn 7 cột */
   }
 
   .calendar-day {
-    height: 50px;
+    min-height: 50px;
     font-size: 14px;
+    padding: 10px 4px;
   }
 
   .day-header {

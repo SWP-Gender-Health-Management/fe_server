@@ -71,7 +71,11 @@ const Question = () => {
       console.log('Total from API:', res.data.result.total);
       console.log('=== API CALL END ===');
 
-      setMyQuestions(Array.isArray(res.data.result.questions) ? res.data.result.questions : []);
+      setMyQuestions(
+        Array.isArray(res.data.result.questions)
+          ? res.data.result.questions
+          : []
+      );
       setTotalQuestions(res.data.result.total || 0);
       // setTotalPages(Math.ceil((res.data.result.total || 0) / pageSize)); // Không dùng
 
@@ -114,10 +118,7 @@ const Question = () => {
     };
 
     try {
-      await api.post(
-        '/question/create-question',
-        payload
-      );
+      await api.post('/question/create-question', payload);
 
       // Reset về trang 1 sau khi tạo câu hỏi mới
       setCurrentPage(1);
@@ -190,8 +191,14 @@ const Question = () => {
       <div className="question-page">
         <LoginRequiredModal
           visible={isLoginModalVisible}
-          onOk={() => setIsLoginModalVisible(false)}
           onCancel={() => setIsLoginModalVisible(false)}
+          onLoginSuccess={() => {
+            setIsLoginModalVisible(false);
+            // Reload trang sau khi đăng nhập thành công
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }}
           message="Bạn cần đăng nhập để sử dụng tính năng hỏi đáp!"
         />
         <div className="question-right">

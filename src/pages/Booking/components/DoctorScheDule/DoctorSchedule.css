@@ -35,14 +35,20 @@
   padding: 25px;
   border-radius: 15px;
   border: 1px solid #e2e8f0;
-  
 }
-#root > div > div.booking-page > div > div.booking-content > div > div.schedule-header > div > div.doctor-avatar-header{
+#root
+  > div
+  > div.booking-page
+  > div
+  > div.booking-content
+  > div
+  > div.schedule-header
+  > div
+  > div.doctor-avatar-header {
   height: auto;
   position: relative;
   flex-shrink: 0;
 }
-
 
 .doctor-avatar-header img {
   width: 100%;
@@ -50,9 +56,7 @@
   object-fit: cover;
   border: 3px solid white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  
 }
-
 
 .online-indicator {
   position: absolute;
@@ -100,7 +104,6 @@
   background: white;
   border-radius: 15px;
   padding: 25px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* Week Navigation */
@@ -116,7 +119,7 @@
 }
 
 .nav-button {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -129,9 +132,7 @@
 
 .nav-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   background: linear-gradient(135deg, #ffb74b, #f89e28) !important;
-
 }
 
 .week-title {
@@ -152,157 +153,221 @@
 .schedule-grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 1px;
+  gap: 2px;
   background: #e2e8f0;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 25px;
+  border: 2px solid #e2e8f0;
 }
 
 .time-column,
 .day-column {
   background: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .time-header,
-.day-header {
+.day-header-booking {
   background: #f8fafc;
   padding: 15px 10px;
   text-align: center;
   font-weight: 600;
   color: #334155;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.day-header {
+  border-bottom: 2px solid #e2e8f0;
+  min-height: 70px;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
-  gap: 2px;
+}
+
+.time-header {
   background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%) !important;
-}
-
-.day-header.today {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
-  border-color: #ff8e53 ;
-  border: #ff5353 double 0.3em ;
   color: white;
-}
-
-.day-name {
-  font-size: 0.85rem;
+  font-size: 16px;
   font-weight: 700;
 }
 
-.day-date {
-  font-size: 0.75rem;
-  opacity: 0.8;
+.day-header-booking {
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%) !important;
+  color: white;
+  /* gap: 4px; */
 }
 
-.time-slot {
-  padding: 15px 10px;
+.day-header-booking.today {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important;
+  /* animation: pulse 2s infinite; */
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.day-name {
+  font-size: 16px !important;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.day-date {
+  font-size: 16px !important;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.time-slot-booking {
+  padding: 20px 8px;
   text-align: center;
   font-weight: 600;
-  color: #64748b;
-  font-size: 0.9rem;
+  color: white;
+  font-size: 16px;
   border-bottom: 1px solid #f1f5f9;
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%) !important;
+  min-height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .schedule-slot {
-  padding: 15px 5px;
+  padding: 20px 8px;
   text-align: center;
-  cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   border-bottom: 1px solid #f1f5f9;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  min-height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
 }
 
+/* Slot có thể đặt lịch */
 .schedule-slot.available {
-  background: #f0fdf4;
-  color: #16a34a;
+  background: #14b07c79;
+  color: white;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .schedule-slot.available:hover {
-  background: #dcfce7;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  border: 2px solid #10b981;
 }
 
+/* Slot đã được đặt */
 .schedule-slot.booked {
-  background: #fef2f2;
-  color: #dc2626;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.schedule-slot.past {
-  background: #f8fafc;
-  color: #94a3b8;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.schedule-slot.no-slot {
-  background: #fef3c7;
-  color: #d97706;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.schedule-slot.empty {
-  background: #f8fafc;
-  color: #cbd5e1;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.schedule-slot.selected {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 0, 0, 0.279);
   color: white;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  cursor: not-allowed;
+  border: 2px solid transparent;
+  font-size: 1.3rem;
+  font-weight: 600;
+  position: relative;
+}
+
+/* .schedule-slot.booked::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  background: white;
+  transform: translateY(-50%);
+  border-radius: 2px;
+} */
+
+/* Slot đã qua */
+.schedule-slot.past {
+  background: rgba(152, 152, 152, 0.107);
+  color: white;
+  cursor: not-allowed;
+  border: 2px solid #32353b1c;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Slot không có lịch làm việc (Nghỉ) */
+.schedule-slot.no-slot {
+  background: #e6f0fe;
+  color: white;
+  cursor: not-allowed;
+  border: 2px solid #32353b1c;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Slot đã chọn */
+.schedule-slot.selected {
+  /* background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important;  */
+  color: white;
+  transform: translateY(-2px) scale(1.02);
+  border: 4px solid #22a93f !important;
+  animation: selectedPulse 1.5s infinite;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+@keyframes selectedPulse {
+  0%,
+  100% {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+  }
 }
 
 .past-day {
-  opacity: 0.6;
+  opacity: 1;
 }
 
 /* Legend */
 .legend {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 25px;
   margin-bottom: 25px;
-  padding: 15px;
-  background: #f8fafc;
-  border-radius: 10px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 0.9rem;
-  color: #64748b;
+  color: #475569;
+  font-weight: 500;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .legend-icon {
-  font-size: 1.1rem;
-}
-
-.legend-icon.available {
-  color: #16a34a;
-}
-
-.legend-icon.booked {
-  color: #dc2626;
-}
-
-.legend-icon.past {
-  color: #94a3b8;
-}
-
-.legend-icon.no-slot {
-  color: #d97706;
+  font-size: 1.2rem;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
 }
 
 /* Selected Slot Info */
@@ -361,21 +426,30 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .schedule-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: 70px repeat(7, 1fr);
+    gap: 2px;
   }
 
-  .time-slot {
-    padding: 12px 5px;
-    font-size: 0.8rem;
+  .time-header,
+  .day-header-booking {
+    padding: 12px 6px;
+    min-height: 60px;
+  }
+
+  .time-slot-booking {
+    padding: 16px 6px;
+    font-size: 16px;
+    min-height: 65px;
   }
 
   .schedule-slot {
-    padding: 12px 3px;
-    font-size: 1rem;
+    padding: 16px 6px;
+    font-size: 1.2rem;
+    min-height: 65px;
   }
 
   .day-name {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 
   .day-date {
@@ -406,6 +480,25 @@
   .schedule-grid {
     grid-template-columns: 60px repeat(7, 1fr);
     font-size: 0.8rem;
+    gap: 2px;
+  }
+
+  .time-header,
+  .day-header-booking {
+    padding: 8px 4px;
+    min-height: 55px;
+  }
+
+  .time-slot-booking {
+    padding: 14px 3px;
+    font-size: 14px;
+    min-height: 60px;
+  }
+
+  .schedule-slot {
+    padding: 14px 3px;
+    font-size: 1.1rem;
+    min-height: 60px;
   }
 
   .legend {
@@ -437,20 +530,25 @@
 
   .schedule-grid {
     grid-template-columns: 50px repeat(7, 1fr);
+    gap: 1px;
   }
 
-  .time-slot {
-    padding: 10px 2px;
-    font-size: 0.7rem;
+  .time-header,
+  .day-header-booking {
+    padding: 6px 2px;
+    min-height: 50px;
+  }
+
+  .time-slot-booking {
+    padding: 12px 2px;
+    font-size: 12px;
+    min-height: 55px;
   }
 
   .schedule-slot {
-    padding: 10px 2px;
-    font-size: 0.9rem;
-  }
-
-  .day-header {
-    padding: 10px 5px;
+    padding: 12px 2px;
+    font-size: 1rem;
+    min-height: 55px;
   }
 
   .day-name {
@@ -458,7 +556,6 @@
   }
 
   .day-date {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
   }
 }
-
