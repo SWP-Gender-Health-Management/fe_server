@@ -82,7 +82,6 @@ const Navbar = ({ onLoginClick }) => {
     'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
     'admin': 'Quản trị viên',
     'blog': 'Blog',
-    'admin': 'Quản trị viên',
     'dat-lich-xet-nghiem': 'Đặt lịch xét nghiệm',
   };
 
