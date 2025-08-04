@@ -200,18 +200,18 @@ const MenstrualManagement = () => {
 
       {/* Statistics Overview */}
       <div className="stats-grid">
-        <div className="stat-card primary">
+        <div className="manager-stat-card primary">
           <div className="stat-icon">👥</div>
-          <div className="stat-content">
-            <div className="stat-value">{formatNumber(stats.totalUsers)}</div>
-            <div className="stat-label">Tổng người dùng theo dõi</div>
+          <div className="manager-stat-content">
+            <div className="manager-stat-value">{formatNumber(stats.totalUsers)}</div>
+            <div className="manager-stat-label">Tổng người dùng theo dõi</div>
             <div className="stat-change positive">
               +{formatNumber(stats.newUsersThisMonth)} người mới tháng này
             </div>
           </div>
         </div>
 
-        {/* <div className="stat-card secondary">
+        {/* <div className="manager-stat-card secondary">
           <div className="stat-icon">📊</div>
           <div className="stat-content">
             <div className="stat-value">
@@ -224,27 +224,27 @@ const MenstrualManagement = () => {
           </div>
         </div> */}
 
-        <div className="stat-card accent">
+        <div className="manager-stat-card accent">
           <div className="stat-icon">📅</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.averageCycleLength} ngày</div>
-            <div className="stat-label">Độ dài chu kỳ trung bình</div>
+          <div className="manager-stat-content">
+            <div className="manager-stat-value">{stats.averageCycleLength} ngày</div>
+            <div className="manager-stat-label">Độ dài chu kỳ trung bình</div>
             <div className="stat-change neutral">Dữ liệu tổng hợp</div>
           </div>
         </div>
 
-        <div className="stat-card info">
+        <div className="manager-stat-card info">
           <div className="stat-icon">⏱️</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.averagePeriodLength} ngày</div>
-            <div className="stat-label">Thời gian hành kinh TB</div>
+          <div className="manager-stat-content">
+            <div className="manager-stat-value">{stats.averagePeriodLength} ngày</div>
+            <div className="manager-stat-label">Thời gian hành kinh TB</div>
             <div className="stat-change neutral">Trung bình</div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="menstrual-main">
+      <div className="manager-menstrual-main ">
         {/* Cycle Distribution Chart */}
         <div className="chart-section">
           <div className="section-header">

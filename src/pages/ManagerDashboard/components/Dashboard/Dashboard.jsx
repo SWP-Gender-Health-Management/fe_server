@@ -292,28 +292,28 @@ const Dashboard = () => {
               <div className="stat-icon">⏰</div>
               <div className="stat-content">
                 <div className="stat-value">{quickStatsData.totalPendingApp}</div>
-                <div className="stat-label">Lịch hẹn chờ xác nhận</div>
+                <div className="stat-label"> Lịch hẹn chờ xác nhận</div>
               </div>
             </div>
             <div className="stat-item">
               <div className="stat-icon">✅</div>
               <div className="stat-content">
                 <div className="stat-value">{quickStatsData.totalCompletedApp}</div>
-                <div className="stat-label">Lịch hẹn đã xác nhận</div>
+                <div className="stat-label"> Lịch hẹn đã xác nhận</div>
               </div>
             </div>
             <div className="stat-item">
               <div className="stat-icon">👨‍⚕️</div>
               <div className="stat-content">
                 <div className="stat-value">{quickStatsData.goodFeedPercent}%</div>
-                <div className="stat-label">Tỉ lệ đánh giá tốt</div>
+                <div className="stat-label"> Tỉ lệ đánh giá tốt</div>
               </div>
             </div>
             <div className="stat-item">
               <div className="stat-icon">📊</div>
               <div className="stat-content">
                 <div className="stat-value">{quickStatsData.completedPercent}%</div>
-                <div className="stat-label">Tỷ lệ hoàn thành</div>
+                <div className="stat-label"> Tỷ lệ hoàn thành</div>
               </div>
             </div>
           </div>

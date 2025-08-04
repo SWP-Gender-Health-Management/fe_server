@@ -22,6 +22,8 @@ import axios from 'axios';
 // import './components/styles.css';
 
 const API_URL = 'http://localhost:3000';
+const accountId = await Cookies.get('accountId');
+const accessToken = await Cookies.get('accessToken');
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -179,8 +181,6 @@ const UserAccount = () => {
 
   const fetchLabApp = async () => {
     try {
-      const accountId = await Cookies.get('accountId');
-      const accessToken = await Cookies.get('accessToken');
       // Lấy lịch hẹn xét nghiệm
       const labAppRes = await api.get(
         `${API_URL}/customer/get-laborarity-appointments`,
@@ -211,8 +211,6 @@ const UserAccount = () => {
 
   const fetchConApp = async () => {
     try {
-      const accountId = await Cookies.get('accountId');
-      const accessToken = await Cookies.get('accessToken');
       const appointmentRes = await api.get(
         `${API_URL}/consult-appointment/customer/get-con-apps-by-id`,
         {
@@ -553,8 +551,6 @@ const UserAccount = () => {
     console.log('record?.feed_id: ', record?.feed_id || 'Không có');
     if (record?.feed_id) {
       try {
-        const accountId = await Cookies.get('accountId');
-        const accessToken = await Cookies.get('accessToken');
         await axios
           .get(`${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`, {
             headers: {
@@ -592,8 +588,6 @@ const UserAccount = () => {
     console.log('record?.feed_id: ', record?.feed_id || 'Không có');
     if (record?.feed_id) {
       try {
-        const accountId = await Cookies.get('accountId');
-        const accessToken = await Cookies.get('accessToken');
         await axios
           .get(`${API_URL}/feedback/get-by-id-feedback/${record.feed_id}`, {
             headers: {
