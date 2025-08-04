@@ -1,7 +1,7 @@
 /* ===== CONSULTANT PROFILE STYLES ===== */
 
 .staff-profile {
-  padding: 0;
+  padding: 20px;
   background: transparent;
   min-height: 100vh;
 }
@@ -72,7 +72,6 @@
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  
 }
 
 .header-content p {
@@ -207,7 +206,7 @@
 
 .profile-stats {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   padding: 20px 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -664,7 +663,7 @@
 /* Mobile */
 @media (max-width: 768px) {
   .staff-profile {
-    padding: 0;
+    padding: 20px;
   }
 
   .profile-header {

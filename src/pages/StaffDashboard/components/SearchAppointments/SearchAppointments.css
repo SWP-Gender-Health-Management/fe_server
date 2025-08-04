@@ -8,22 +8,24 @@
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;  
+  align-items: center;
   margin-bottom: 24px;
   padding: 20px 0;
 }
 
-.header-content h2 {
+.staff-header-content h2 {
   margin: 0;
-  color: #1a202c;
+  color: #ffffff;
   font-size: 28px;
   font-weight: 600;
+  padding-left: 20px;
 }
 
-.header-content p {
+.staff-header-content p {
   margin: 4px 0 0 0;
-  color: #718096;
+  color: #ffffff;
   font-size: 16px;
+  padding-left: 20px;
 }
 
 .search-filters {
@@ -201,10 +203,6 @@
     gap: 16px;
   }
 
-  .header-content h2 {
-    font-size: 24px;
-  }
-
   .search-filters {
     padding: 16px;
   }
@@ -253,11 +251,11 @@
     font-size: 13px;
   }
 
-  .header-content h2 {
-    font-size: 22px;
+  .staff-header-content h2 {
+    font-size: 14px;
   }
 
-  .header-content p {
+  .staff-header-content p {
     font-size: 14px;
   }
 }
@@ -301,7 +299,6 @@
 .status-select {
   margin: 0;
   padding: 0;
-  
 }
 
 /* Enhanced spacing and typography */
