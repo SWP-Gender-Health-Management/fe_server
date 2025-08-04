@@ -192,6 +192,8 @@ const QuestionList = ({
     setIsDetailModalVisible(true);
   };
 
+  console.log('Kiểm tra dữ liệu câu hỏi:', questions);
+
   return (
     <div className="my-questions-section">
       {/* Section Header */}

@@ -177,24 +177,40 @@
 .question-detail-modal .ant-modal-content {
   border-radius: 16px;
   overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.question-detail-modal .ant-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  max-height: calc(90vh - 120px);
 }
 
 .question-detail-modal .ant-modal-header {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
   border-bottom: none;
+  padding: 1rem 1.5rem;
 }
 
 .question-detail-modal .ant-modal-title {
   color: white;
   font-weight: 600;
+  font-size: 1.2rem;
+  padding: 0.2em;
 }
 
 .question-detail-modal .ant-modal-close {
   color: white;
+  height: 5em !important;
+  width: 5em !important;
+
 }
 
-.question-detail {
-  padding: 0;
+body > div:nth-child(5) > div > div.ant-modal-wrap > div > div:nth-child(1) > div > button > span > span > svg{
+  font-size: 2em !important;
 }
 
 .detail-header {
@@ -202,6 +218,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .detail-category {
@@ -211,6 +229,7 @@
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .detail-status {
@@ -220,6 +239,7 @@
   font-weight: 600;
   padding: 0.5rem 1rem;
   border-radius: 20px;
+  white-space: nowrap;
 }
 
 .detail-status.answered {
@@ -238,6 +258,7 @@
   color: #1f2937;
   margin: 1rem 0;
   line-height: 1.4;
+  word-wrap: break-word;
 }
 
 .detail-meta {
@@ -247,6 +268,7 @@
   padding: 1rem;
   background: rgba(102, 126, 234, 0.05);
   border-radius: 8px;
+  flex-wrap: wrap;
 }
 
 .meta-item {
@@ -255,19 +277,30 @@
   gap: 0.5rem;
   color: #6b7280;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .question-content,
 .answer-section {
   margin-bottom: 2rem;
+  width: 100%;
+}
+
+.question-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 25px !important;
+  height: fit-content !important;
+  justify-content: center !important;
+  padding: 2em;
 }
 
 .question-content h4,
 .answer-section h4 {
-  font-size: 1.1rem;
+  font-size: 1.5em !important;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -275,9 +308,13 @@
 
 .content-text {
   background: #f8fafc;
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
+  padding: 0.5em !important;
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
+  font-size: larger !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word; /* Tương thích với các trình duyệt cũ hơn */
+  word-break: break-word;
 }
 
 .content-text p {
@@ -299,6 +336,7 @@
   padding: 1.5rem;
   border-radius: 12px;
   border: 1px solid rgba(34, 197, 94, 0.1);
+  word-wrap: break-word;
 }
 
 .answer-header {
@@ -309,6 +347,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .doctor-name {
@@ -319,6 +359,7 @@
 .answer-date {
   color: #6b7280;
   font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .answer-text p {
@@ -404,6 +445,39 @@
     max-width: unset;
     top: 0;
     padding-bottom: 0;
+  }
+
+  .question-detail-modal .ant-modal-content {
+    max-height: 100vh;
+  }
+
+  .question-detail-modal .ant-modal-body {
+    max-height: calc(100vh - 100px);
+    padding: 1rem;
+  }
+
+  .detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detail-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .question-content h4,
+  .answer-section h4 {
+    padding: 0.5rem 0.75rem;
+    font-size: 1em;
+  }
+
+  .content-text {
+    padding: 0.75rem;
+  }
+
+  .answer-content {
+    padding: 1rem;
   }
 }
 
