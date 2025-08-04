@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 
-const AdminProfile = () => {
+const AdminProfile = ({ adminData }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [adminInfo, setAdminInfo] = useState({
-    name: sessionStorage.getItem('full_name') || 'Admin',
-    email: sessionStorage.getItem('email') || 'admin@example.com',
-    role: 'Admin',
-    joinDate: '2024-01-01',
-    avatar: null,
+    full_name: adminData.full_name,
+    email: adminData.email,
+    role: adminData.role,
+    created_at: adminData.created_at,
+    avatar: adminData.avatar ? adminData.avatar : `https://ui-avatars.com/api/?name=${adminData.full_name}&background=52c41a&color=fff&size=60`,
+    is_banned: adminData.is_banned,
+    description: adminData.description,
   });
   const [form, setForm] = useState({
-    name: adminInfo.name,
+    full_name: adminInfo.full_name,
     email: adminInfo.email,
+    is_banned: adminInfo.is_banned,
+    description: adminInfo.description,
   });
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -32,7 +36,7 @@ const AdminProfile = () => {
 
   const handleSave = () => {
     setAdminInfo((prev) => ({ ...prev, ...form }));
-    sessionStorage.setItem('full_name', form.name);
+    sessionStorage.setItem('full_name', form.full_name);
     sessionStorage.setItem('email', form.email);
     setIsEdit(false);
   };
@@ -110,7 +114,7 @@ const AdminProfile = () => {
               fontWeight: '700',
             }}
           >
-            {adminInfo.name.charAt(0).toUpperCase()}
+            <img src={adminInfo.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '20px' }} />
           </div>
           <div>
             <h2
@@ -121,7 +125,7 @@ const AdminProfile = () => {
                 margin: '0 0 4px 0',
               }}
             >
-              {adminInfo.name}
+              {adminInfo.full_name}
             </h2>
             <p
               style={{
@@ -177,7 +181,7 @@ const AdminProfile = () => {
                 Ngày tham gia:
               </span>
               <span style={{ color: '#1a202c' }}>
-                {new Date(adminInfo.joinDate).toLocaleDateString('vi-VN')}
+                {new Date(adminInfo.created_at).toLocaleDateString('vi-VN')}
               </span>
             </div>
             <div
@@ -190,7 +194,7 @@ const AdminProfile = () => {
               <span style={{ fontWeight: '600', color: '#4a5568' }}>
                 Quyền truy cập:
               </span>
-              <span style={{ color: '#1a202c' }}>Toàn quyền</span>
+              <span style={{ color: '#1a202c' }}>{adminInfo.role.charAt(0).toUpperCase() + adminInfo.role.toLowerCase().slice(1)}</span>
             </div>
             <div
               style={{
@@ -208,12 +212,19 @@ const AdminProfile = () => {
                   borderRadius: '20px',
                   fontSize: '12px',
                   fontWeight: '600',
-                  background: 'rgba(16, 185, 129, 0.1)',
-                  color: '#059669',
+                  background: adminInfo.is_banned ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                  color: adminInfo.is_banned ? '#ef4444' : '#059669', 
                 }}
               >
-                Hoạt động
+                {adminInfo.is_banned ? 'Khóa' : 'Hoạt động'}
               </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: '600', color: '#4a5568' }}>
+                Giới thiệu: 
+              </span>
+              <span style={{ color: '#1a202c' }}>{adminInfo.description ? adminInfo.description : 'Không có giới thiệu'}</span>
             </div>
           </div>
         </div>
@@ -275,8 +286,8 @@ const AdminProfile = () => {
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontWeight: 600 }}>Họ và tên</label>
               <input
-                name="name"
-                value={form.name}
+                name="full_name"
+                value={form.full_name}
                 onChange={handleChange}
                 style={{
                   width: '100%',

@@ -2,78 +2,93 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PieChart from '../Chart/PieChart';
 import './Dashboard.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = 'http://localhost:3000';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [kpiData, setKpiData] = useState({
-    totalAppointments: 23,
-    consultationRevenue: 1250000,
-    labRevenue: 2100000,
-    newMenstrualUsers: 8,
+    totalAppointments: 0,
+    totalConRevenue: 0,
+    totalLabRevenue: 0,
+    totalMenstrual: 0,
   });
 
-  const [bookingMixData, setBookingMixData] = useState([]);
-  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [quickStatsData, setQuickStatsData] = useState({
+    totalPendingApp: 0,
+    totalCompletedApp: 0,
+    goodFeedPercent: 0,
+    completedPercent: 0,
+  });
+
+  const [bookingMixData, setBookingMixData] = useState([
+    { label: 'Tư vấn', value: 0, color: '#1054b9' },
+    { label: 'Xét nghiệm', value: 0, color: '#059669' },
+  ]);
 
   useEffect(() => {
-    // Mock data for booking mix chart (7 days)
-    const generateBookingMix = () => [
-      { label: 'Tư vấn', value: 35, color: '#10b981' },
-      { label: 'Xét nghiệm', value: 42, color: '#059669' },
-    ];
-
-    // Mock data for upcoming appointments
-    const generateUpcomingAppointments = () => [
-      {
-        id: 1,
-        customerName: 'Nguyễn Thị Lan',
-        serviceName: 'Tư vấn sức khỏe sinh sản',
-        time: '2024-12-21 09:00',
-        consultant: 'BS. Trần Văn Nam',
-        type: 'consultation',
-        status: 'confirmed',
-      },
-      {
-        id: 2,
-        customerName: 'Lê Văn Minh',
-        serviceName: 'Xét nghiệm STD Panel',
-        time: '2024-12-21 10:30',
-        consultant: null,
-        type: 'lab',
-        status: 'confirmed',
-      },
-      {
-        id: 3,
-        customerName: 'Phạm Thị Hoa',
-        serviceName: 'Tư vấn kế hoạch hóa gia đình',
-        time: '2024-12-21 14:00',
-        consultant: 'BS. Nguyễn Thị Mai',
-        type: 'consultation',
-        status: 'pending',
-      },
-      {
-        id: 4,
-        customerName: 'Hoàng Văn Đức',
-        serviceName: 'Xét nghiệm HIV',
-        time: '2024-12-21 15:30',
-        consultant: null,
-        type: 'lab',
-        status: 'confirmed',
-      },
-      {
-        id: 5,
-        customerName: 'Trần Thị Bích',
-        serviceName: 'Tư vấn điều trị nhiễm trùng',
-        time: '2024-12-21 16:00',
-        consultant: 'BS. Lê Văn Tùng',
-        type: 'consultation',
-        status: 'confirmed',
-      },
-    ];
-
-    setBookingMixData(generateBookingMix());
-    setUpcomingAppointments(generateUpcomingAppointments());
+    fetchOveralKpi();
+    fetchQuickStats();
+    fetchBookingMix();
   }, []);
+
+  const fetchOveralKpi = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+
+      await axios.get(`${API_URL}/manager/get-overall`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }).then((response) => {
+        const data = response.data.result;
+        console.log("fetchOveralKpi data response: ", data);
+        setKpiData(data);
+      });
+    } catch (error) {
+      console.error("fetchOveralKpi error: ", error);
+    }
+  };
+
+  const fetchQuickStats = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+
+      await axios.get(`${API_URL}/manager/get-overall-weekly`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }).then((response) => {
+        const data = response.data.result;
+        console.log("fetchQuickStats data response: ", data);
+        setQuickStatsData(data);
+      });
+    } catch (error) {
+      console.error("fetchQuickStats error: ", error);
+    }
+  };
+
+  const fetchBookingMix = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+      await axios.get(`${API_URL}/manager/get-app-percent`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }).then((response) => {
+        const data = response.data.result;
+        console.log("fetchBookingMix data response: ", data);
+        setBookingMixData([
+          { label: 'Tư vấn', value: data.totalConApp, color: '#1054b9' },
+          { label: 'Xét nghiệm', value: data.totalLabApp, color: '#059669' },
+        ]);
+      });
+    } catch (error) {
+      console.error("fetchBookingMix error: ", error);
+    }
+  };
+
+
+
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -106,10 +121,6 @@ const Dashboard = () => {
         {config.text}
       </span>
     );
-  };
-
-  const getTypeIcon = (type) => {
-    return type === 'consultation' ? '💬' : '🧪';
   };
 
   const formatDateTime = (dateTimeString) => {
@@ -149,7 +160,6 @@ const Dashboard = () => {
             <div className="kpi-value">
               {formatNumber(kpiData.totalAppointments)}
             </div>
-            <div className="kpi-change positive">+15% so với hôm qua</div>
           </div>
         </div>
 
@@ -165,9 +175,9 @@ const Dashboard = () => {
           <div className="kpi-content">
             <div className="kpi-label">Doanh thu tư vấn</div>
             <div className="kpi-value">
-              {formatCurrency(kpiData.consultationRevenue)}
+              {formatCurrency(kpiData.totalConRevenue)}
             </div>
-            <div className="kpi-change positive">+8% so với hôm qua</div>
+
           </div>
         </div>
 
@@ -183,9 +193,8 @@ const Dashboard = () => {
           <div className="kpi-content">
             <div className="kpi-label">Doanh thu xét nghiệm</div>
             <div className="kpi-value">
-              {formatCurrency(kpiData.labRevenue)}
+              {formatCurrency(kpiData.totalLabRevenue)}
             </div>
-            <div className="kpi-change positive">+22% so với hôm qua</div>
           </div>
         </div>
 
@@ -201,7 +210,7 @@ const Dashboard = () => {
           <div className="kpi-content">
             <div className="kpi-label">Người dùng mới theo dõi chu kỳ</div>
             <div className="kpi-value">
-              {formatNumber(kpiData.newMenstrualUsers)}
+              {formatNumber(kpiData.totalMenstrual)}
             </div>
             <div className="kpi-change neutral">Hôm nay</div>
           </div>
@@ -275,35 +284,35 @@ const Dashboard = () => {
         {/* Quick Stats */}
         <div className="quick-stats-section">
           <div className="section-header">
-            <h2>Thống kê nhanh</h2>
+            <h2>Thống kê nhanh (7 ngày qua)</h2>
             <p>Các chỉ số quan trọng khác</p>
           </div>
           <div className="quick-stats-grid">
             <div className="stat-item">
               <div className="stat-icon">⏰</div>
               <div className="stat-content">
-                <div className="stat-value">4</div>
+                <div className="stat-value">{quickStatsData.totalPendingApp}</div>
                 <div className="stat-label">Lịch hẹn chờ xác nhận</div>
               </div>
             </div>
             <div className="stat-item">
               <div className="stat-icon">✅</div>
               <div className="stat-content">
-                <div className="stat-value">19</div>
+                <div className="stat-value">{quickStatsData.totalCompletedApp}</div>
                 <div className="stat-label">Lịch hẹn đã xác nhận</div>
               </div>
             </div>
             <div className="stat-item">
               <div className="stat-icon">👨‍⚕️</div>
               <div className="stat-content">
-                <div className="stat-value">5</div>
-                <div className="stat-label">Active Doctors</div>
+                <div className="stat-value">{quickStatsData.goodFeedPercent}%</div>
+                <div className="stat-label">Tỉ lệ đánh giá tốt</div>
               </div>
             </div>
             <div className="stat-item">
               <div className="stat-icon">📊</div>
               <div className="stat-content">
-                <div className="stat-value">92%</div>
+                <div className="stat-value">{quickStatsData.completedPercent}%</div>
                 <div className="stat-label">Tỷ lệ hoàn thành</div>
               </div>
             </div>

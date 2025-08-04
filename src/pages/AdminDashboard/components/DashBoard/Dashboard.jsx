@@ -6,8 +6,6 @@ import './Dashboard.css';
 import Cookies from 'js-cookie';
 
 const API_URL = 'http://localhost:3000/admin';
-const accessToken = Cookies.get('accessToken');
-const accountId = Cookies.get('accountId');
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,6 +19,8 @@ const Dashboard = () => {
 
   const fetchKpiData = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const response = await axios.get(`${API_URL}/get-overall-kpis`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -32,7 +32,7 @@ const Dashboard = () => {
       });
       console.log('Response:', response.data);
       const kpiData = response.data?.data
-      if(response.data?.data) {
+      if (response.data?.data) {
         setKpiDatas({
           ...kpiData,
           totalRevenue: kpiData.totalRevenue.total_revenue
@@ -53,77 +53,40 @@ const Dashboard = () => {
 
   // Mock data for chart (30 days)
   useEffect(() => {
-    const generateChartData = () => {
-      const data = [];
-      const today = new Date();
+    const fetchCustomerChartData = async () => {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+      try {
+        await axios.get(`${API_URL}/get-percent-customer`, {
+          params: {
+            day: 30,
+          },
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }).then(async (response) => {
+          const data = response.data.data;
+          // console.log('fetchCustomerChartData data: ', data);
 
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-
-        const users = Math.floor(Math.random() * 30) + 5; // 5-25 users per day
-        data.push({
-          date: date.toISOString().split('T')[0],
-          users: users,
-          label: `${date.getDate()}/${date.getMonth() + 1}`,
+          const { listCount, listDate } = data;
+          const customerGrowthData = await Promise.all(listCount.map(async (count, index) => {
+            const date = new Date(listDate[index]);
+            const dayLabel = `${date.getDate()}/${date.getMonth() + 1}`;
+            return {
+              date: date.toISOString().split('T')[0],
+              users: count,
+              label: dayLabel,
+            };
+          }));
+          // console.log('customerGrowthData: ', customerGrowthData);
+          setChartData(customerGrowthData);
         });
+      } catch (error) {
+        console.error('fetchCustomerChartData error: ', error);
+        return [];
       }
-      return data;
     };
 
-    const generateRecentActivities = () => [
-      {
-        id: 1,
-        type: 'user_register',
-        message: 'New user "Nguyễn Văn A" has registered an account',
-        time: '2 phút trước',
-        icon: '👤',
-        color: '#10b981',
-      },
-      {
-        id: 2,
-        type: 'appointment',
-        message: 'Cuộc hẹn khám với BS. Trần Thị B đã được xác nhận',
-        time: '15 phút trước',
-        icon: '📅',
-        color: '#3b82f6',
-      },
-      {
-        id: 3,
-        type: 'blog_approved',
-        message: 'Bài viết "Chăm sóc sức khỏe sinh sản" đã được duyệt',
-        time: '1 giờ trước',
-        icon: '📝',
-        color: '#8b5cf6',
-      },
-      {
-        id: 4,
-        type: 'payment',
-        message: 'Thanh toán 350.000đ cho dịch vụ xét nghiệm đã hoàn tất',
-        time: '2 giờ trước',
-        icon: '💳',
-        color: '#f59e0b',
-      },
-      {
-        id: 5,
-        type: 'consultation',
-        message: 'Câu hỏi tư vấn mới từ người dùng "user123"',
-        time: '3 giờ trước',
-        icon: '💬',
-        color: '#ef4444',
-      },
-      {
-        id: 6,
-        type: 'lab_booking',
-        message: 'Đặt lịch xét nghiệm STD Panel cho ngày 25/12/2024',
-        time: '4 giờ trước',
-        icon: '🧪',
-        color: '#06b6d4',
-      },
-    ];
+    fetchCustomerChartData();
 
-    setChartData(generateChartData());
-    setRecentActivities(generateRecentActivities());
   }, []);
 
   const quickActions = [
@@ -240,7 +203,7 @@ const Dashboard = () => {
           <div className="kpi-content">
             <div className="kpi-label">Important Activities</div>
             <div className="kpi-value">{formatNumber(kpiDatas.importantNews)}</div>
-                          <div className="kpi-change neutral">In the last 24h</div>
+            <div className="kpi-change neutral">In the last 24h</div>
           </div>
         </div>
       </div>
@@ -250,8 +213,8 @@ const Dashboard = () => {
         {/* User Growth Chart */}
         <div className="chart-section">
           <div className="section-header">
-            <h2>User Growth</h2>
-            <p>Number of new registrations in the last 30 days</p>
+            <h2>Tăng trưởng khách hàng</h2>
+            <p>Số lượng người dùng đăng ký trong 30 ngày qua</p>
           </div>
           <div className="chart-container">
             <LineChart data={chartData} />
@@ -261,8 +224,8 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="quick-actions-section">
           <div className="section-header">
-                    <h2>Quick Actions</h2>
-        <p>Common functions</p>
+            <h2>Quick Actions</h2>
+            <p>Common functions</p>
           </div>
           <div className="quick-actions-grid">
             {quickActions.map((action, index) => (

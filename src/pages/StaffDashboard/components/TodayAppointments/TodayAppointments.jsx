@@ -46,7 +46,10 @@ const { Panel } = Collapse;
 
 const API_URL = 'http://localhost:3000';
 
-const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff }) => {
+const TodayAppointments = ({
+  todayAppointments,
+  fetchTodayAppointmentsOfStaff,
+}) => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -61,9 +64,6 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
   const [internalDescription, setInternalDescription] = useState('');
   const [testResults, setTestResults] = useState({});
 
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
-
   // Mock data với nhiều xét nghiệm
   const mockAppointments = [
     {
@@ -71,36 +71,36 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
       queue_index: 'XN001',
       customer: {
         full_name: 'Nguyễn Văn An',
-        phone: "0901234567",
-        email: "a@1",
+        phone: '0901234567',
+        email: 'a@1',
       },
       tests: [
         {
           name: 'Xét nghiệm máu tổng quát',
           estimatedTime: 30,
           result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
+          status: 'pending',
+          normal_range: '1-2',
+          specimen: '',
+          unit: 'm',
+          conclusion: null,
         },
         {
           name: 'Xét nghiệm đường huyết',
           estimatedTime: 20,
           result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
+          status: 'pending',
+          normal_range: '1-2',
+          specimen: '',
+          unit: 'm',
+          conclusion: null,
         },
       ],
       working_slot: {
-        slot_id: "",
-        start_at: "08:30",
-        end_at: "",
-        name: "Slot 2a"
+        slot_id: '',
+        start_at: '08:30',
+        end_at: '',
+        name: 'Slot 2a',
       },
       date: '2024-01-10',
       status: 'pending',
@@ -112,41 +112,41 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
       queue_index: 'XN001',
       customer: {
         full_name: 'Nguyễn Văn An',
-        phone: "0901234567",
-        email: "a@1",
+        phone: '0901234567',
+        email: 'a@1',
       },
       tests: [
         {
           name: 'Xét nghiệm máu tổng quát',
           estimatedTime: 30,
           result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
+          status: 'pending',
+          normal_range: '1-2',
+          specimen: '',
+          unit: 'm',
+          conclusion: null,
         },
         {
           name: 'Xét nghiệm đường huyết',
           estimatedTime: 20,
           result: null,
-          status: "pending",
-          normal_range: "1-2",
-          specimen: "",
-          unit: "m",
-          conclusion: null
+          status: 'pending',
+          normal_range: '1-2',
+          specimen: '',
+          unit: 'm',
+          conclusion: null,
         },
       ],
       working_slot: {
-        slot_id: "",
-        start_at: "08:30",
-        end_at: "",
-        name: "Slot 1m"
+        slot_id: '',
+        start_at: '08:30',
+        end_at: '',
+        name: 'Slot 1m',
       },
       status: 'pending',
       description: 'Khách hàng nhịn ăn từ 10h tối hôm trước',
       created_at: '2024-01-15T07:30:00',
-    }
+    },
   ];
 
   useEffect(() => {
@@ -160,31 +160,29 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
   const filterAppointments = () => {
     let filtered = appointments;
     if (statusFilter !== 'all') {
-      filtered = appointments.filter(
-        (apt) => apt.status === statusFilter
-      );
+      filtered = appointments.filter((apt) => apt.status === statusFilter);
     }
     setFilteredAppointments(filtered);
   };
 
   const getStatusConfig = (status) => {
     const configs = {
-      'pending': {
+      pending: {
         color: 'orange',
         text: 'Chờ xử lý',
         icon: <ClockCircleOutlined />,
       },
-      'in_progress': {
+      in_progress: {
         color: 'blue',
         text: 'Đang xét nghiệm',
         icon: <SyncOutlined spin />,
       },
-      'completed': {
+      completed: {
         color: 'green',
         text: 'Đã hoàn thành',
         icon: <CheckCircleOutlined />,
       },
-      'confirmed': {
+      confirmed: {
         color: 'blue',
         text: 'Đã xác nhận',
         icon: <CheckCircleOutlined />,
@@ -192,9 +190,6 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
     };
     return configs[status] || configs.pending;
   };
-
-
-
 
   const handleUpdateAppointment = (appointment) => {
     setSelectedAppointment(appointment);
@@ -260,19 +255,21 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
     try {
       let result = await Promise.all(
         selectedAppointment.tests
-          .filter(test => testResults[test.name]?.value) // Only include tests with valid results
-          .map(test => ({
+          .filter((test) => testResults[test.name]?.value) // Only include tests with valid results
+          .map((test) => ({
             name: test.name,
-            result: testResults[test.name].value
+            result: testResults[test.name].value,
           }))
       );
-      console.log("result entities: ", result);
+      console.log('result entities: ', result);
       if (result.length > 0) {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         const responseUpdateResult = await axios.post(
           `${API_URL}/staff/update-result`,
           {
             result,
-            app_id: selectedAppointment.app_id
+            app_id: selectedAppointment.app_id,
           },
           {
             headers: {
@@ -283,19 +280,30 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
         );
       }
 
-
-      if (newStatus === "completed" && selectedAppointment.tests.filter(test => test.status === "completed").length < selectedAppointment.tests.length) {
+      if (
+        newStatus === 'completed' &&
+        selectedAppointment.tests.filter((test) => test.status === 'completed')
+          .length < selectedAppointment.tests.length
+      ) {
         alert("The tests of appointment haven't been completed!!!");
         return;
       }
 
-      if (newStatus !== selectedAppointment.status || (internalDescription.trim().length > 0 && (!selectedAppointment.description || selectedAppointment.description.trim() !== internalDescription.trim()))) {
+      if (
+        newStatus !== selectedAppointment.status ||
+        (internalDescription.trim().length > 0 &&
+          (!selectedAppointment.description ||
+            selectedAppointment.description.trim() !==
+              internalDescription.trim()))
+      ) {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         const responseUpdateStatus = await axios.post(
           `${API_URL}/staff/update-appointment-status`,
           {
             status: newStatus,
             app_id: selectedAppointment.app_id,
-            description: internalDescription
+            description: internalDescription,
           },
           {
             headers: {
@@ -304,22 +312,18 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
             },
           }
         );
-        console.log("responseUpdateStatus: ", responseUpdateStatus.data);
-
+        console.log('responseUpdateStatus: ', responseUpdateStatus.data);
       }
 
       const updatedData = await fetchTodayAppointmentsOfStaff(); // Get the updated appointments
       setAppointments(updatedData); // Update child component's appointments state
       await filterAppointments(); // Refresh filteredAppointments to update UI
-
     } catch (error) {
-      console.error("Error when save update: ", error)
+      console.error('Error when save update: ', error);
     } finally {
-
       setUpdateModalVisible(false);
       setUpdating(false);
     }
-
   };
 
   const renderTestsList = (tests) => {
@@ -340,7 +344,7 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
                   <Tooltip title="Đã có kết quả">
                     <FileTextOutlined style={{ color: '#52c41a' }} />
                   </Tooltip>
-                ) : (null)}
+                ) : null}
               </Space>
             </div>
           );
@@ -357,7 +361,8 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
       width: 80,
       render: (_, record) => (
         <>
-          <code>{record.queue_index}</code><br />
+          <code>{record.queue_index}</code>
+          <br />
           <code>{record.working_slot.name}</code>
         </>
       ),
@@ -439,15 +444,13 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
     },
     {
       title: 'Chờ xử lý',
-      value: appointments.filter((apt) => apt.status === 'pending')
-        .length,
+      value: appointments.filter((apt) => apt.status === 'pending').length,
       color: '#faad14',
       icon: <ClockCircleOutlined />,
     },
     {
       title: 'Đang xử lý',
-      value: appointments.filter((apt) => apt.status === 'in-progress')
-        .length,
+      value: appointments.filter((apt) => apt.status === 'in-progress').length,
       color: '#13c2c2',
       icon: <SyncOutlined />,
     },
@@ -462,7 +465,6 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
   ];
 
   return (
-
     <div className="today-appointments">
       {/* Header */}
       <div className="page-header">
@@ -470,7 +472,7 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
           <h2>Lịch hẹn Hôm nay</h2>
           <p>Quản lý các lịch hẹn xét nghiệm trong ngày</p>
         </div>
-        {true &&
+        {true && (
           <Button
             icon={<ReloadOutlined />}
             onClick={fetchTodayAppointmentsOfStaff}
@@ -478,12 +480,9 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
           >
             Làm mới
           </Button>
-        }
+        )}
       </div>
-
-      {/* Stats Cards */}
-
-      (
+      {/* Stats Cards */}(
       <>
         <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
           {statsCards.map((card, index) => (
@@ -555,7 +554,10 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
           title={
             <Space>
               <EditOutlined />
-              Cập nhật kết quả xét nghiệm - {selectedAppointment?.working_slot.name + " - " + selectedAppointment?.queue_index}
+              Cập nhật kết quả xét nghiệm -{' '}
+              {selectedAppointment?.working_slot.name +
+                ' - ' +
+                selectedAppointment?.queue_index}
             </Space>
           }
           open={updateModalVisible}
@@ -633,22 +635,24 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
                               rows={3}
                             />
                           </Form.Item> */}
-                        {test.status !== "pending" &&
+                        {test.status !== 'pending' && (
                           <Form.Item label="Nhập kết quả xé nghiệm">
-                            {
-                              test.result ?
-                                (<p>{test.result}</p>)
-                                : (<InputNumber
-                                  value={null}
-                                  // onChange={(e) =>
-                                  //   handleInputResult(test.name, e.target.value)
-                                  // }
-                                  onChange={(value) => handleInputResult(test.name, value)}
-                                  placeholder="Nhập kết quả xét nghiệm..."
-                                />)
-                            }
+                            {test.result ? (
+                              <p>{test.result}</p>
+                            ) : (
+                              <InputNumber
+                                value={null}
+                                // onChange={(e) =>
+                                //   handleInputResult(test.name, e.target.value)
+                                // }
+                                onChange={(value) =>
+                                  handleInputResult(test.name, value)
+                                }
+                                placeholder="Nhập kết quả xét nghiệm..."
+                              />
+                            )}
                           </Form.Item>
-                        }
+                        )}
                         <Form.Item label="Đơn vị">
                           <p>{test.unit}</p>
                         </Form.Item>
@@ -660,11 +664,11 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
                         <Form.Item label="Specimen">
                           <p>{test.specimen}</p>
                         </Form.Item>
-                        {test.status !== "pending" && test.conclusion &&
+                        {test.status !== 'pending' && test.conclusion && (
                           <Form.Item label="Conclusion">
                             <p>{test.conclusion}</p>
                           </Form.Item>
-                        }
+                        )}
                       </Space>
                     </Panel>
                   ))}
@@ -685,11 +689,8 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
         </Modal>
       </>
       )
-
     </div>
-
   );
-
 };
 
 export default TodayAppointments;

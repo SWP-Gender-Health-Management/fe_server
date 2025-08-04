@@ -53,20 +53,15 @@ const ConsultantProfile = ({ consultantData }) => {
   const getDepartment = (role) => {
     console.log("role: ", role)
     switch (role) {
-      case "0":
-      case 0:
+      case "ADMIN":
         return "Quản trị viên";
-      case "1":
-      case 1:
+      case "CONSULTANT":
         return "Bộ phận tư vấn";
-      case "2":
-      case 2:
+      case "STAFF":
         return "Phòng xét nghiệm";
-      case "4":
-      case 4:
+      case "MANAGER":
         return "Phòng QUản Lý";
-      case "5":
-      case 5:
+      case "RECEPTIONIST":
         return "Tiếp tân";
       default:
         return "Khách hàng";

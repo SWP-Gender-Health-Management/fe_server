@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 
-const ManagerProfile = () => {
+const ManagerProfile = ({ managerData }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [managerInfo, setManagerInfo] = useState({
-    name: sessionStorage.getItem('full_name') || 'Manager',
-    email: sessionStorage.getItem('email') || 'manager@example.com',
-    role: 'Manager',
-    joinDate: '2024-01-01',
-    avatar: null,
+    full_name: managerData.full_name,
+    email: managerData.email,
+    role: managerData.role,
+    created_at: managerData.created_at,
+    avatar: managerData.avatar ? managerData.avatar : `https://ui-avatars.com/api/?name=${managerData.full_name}&background=52c41a&color=fff&size=60`,
+    is_banned: managerData.is_banned,
+    description: managerData.description,
   });
   const [form, setForm] = useState({
-    name: managerInfo.name,
+    full_name: managerInfo.full_name,
     email: managerInfo.email,
+    is_banned: managerInfo.is_banned,
+    description: managerInfo.description,
   });
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -32,7 +36,7 @@ const ManagerProfile = () => {
 
   const handleSave = () => {
     setManagerInfo((prev) => ({ ...prev, ...form }));
-    sessionStorage.setItem('full_name', form.name);
+    sessionStorage.setItem('full_name', form.full_name);
     sessionStorage.setItem('email', form.email);
     setIsEdit(false);
   };
@@ -110,7 +114,7 @@ const ManagerProfile = () => {
               fontWeight: '700',
             }}
           >
-            {managerInfo.name.charAt(0).toUpperCase()}
+            <img src={managerInfo.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div>
             <h2
@@ -121,7 +125,7 @@ const ManagerProfile = () => {
                 margin: '0 0 4px 0',
               }}
             >
-              {managerInfo.name}
+              {managerInfo.full_name}
             </h2>
             <p
               style={{
@@ -177,7 +181,7 @@ const ManagerProfile = () => {
                 Ngày tham gia:
               </span>
               <span style={{ color: '#1a202c' }}>
-                {new Date(managerInfo.joinDate).toLocaleDateString('vi-VN')}
+                {new Date(managerInfo.created_at).toLocaleDateString('vi-VN')}
               </span>
             </div>
             <div
@@ -190,7 +194,7 @@ const ManagerProfile = () => {
               <span style={{ fontWeight: '600', color: '#4a5568' }}>
                 Quyền truy cập:
               </span>
-              <span style={{ color: '#1a202c' }}>Quản lý hệ thống</span>
+              <span style={{ color: '#1a202c' }}>{managerInfo.role}</span>
             </div>
             <div
               style={{
@@ -203,7 +207,14 @@ const ManagerProfile = () => {
                 Trạng thái:
               </span>
               <span
-                style={{
+                style={managerInfo.is_banned ? {
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  color: '#ef4444',
+                } : {
                   padding: '4px 12px',
                   borderRadius: '20px',
                   fontSize: '12px',
@@ -212,7 +223,21 @@ const ManagerProfile = () => {
                   color: '#059669',
                 }}
               >
-                Hoạt động
+                {managerInfo.is_banned ? 'Bị khóa' : 'Hoạt động'}
+              </span>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <span style={{ fontWeight: '600', color: '#4a5568' }}>
+                Giới thiệu:
+              </span>
+              <span style={{ color: '#1a202c' }}>
+                {managerInfo.description ? managerInfo.description : 'Không có giới thiệu'}
               </span>
             </div>
           </div>
@@ -275,8 +300,8 @@ const ManagerProfile = () => {
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontWeight: 600 }}>Họ và tên</label>
               <input
-                name="name"
-                value={form.name}
+                name="full_name"
+                value={form.full_name}
                 onChange={handleChange}
                 style={{
                   width: '100%',

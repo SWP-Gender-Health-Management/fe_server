@@ -6,8 +6,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const API_URL = 'http://localhost:3000';
-const accessToken = Cookies.get('accessToken');
-const accountId = Cookies.get('accountId');
+
 
 const AccountManagement = () => {
   const navigate = useNavigate();
@@ -69,6 +68,8 @@ const AccountManagement = () => {
 
   const fetchAccounts = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       await axios.get(`${API_URL}/admin/get-accounts`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -133,6 +134,8 @@ const AccountManagement = () => {
     console.log("updatedUser: ", updatedUser);
     if (updatedUser.role === 'CONSULTANT') {
       try {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         await axios.put(`${API_URL}/admin/update-con-profile`,
           {
             acc_id: updatedUser.id,
@@ -161,6 +164,8 @@ const AccountManagement = () => {
       }
     } else {
       try {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         await axios.put(`${API_URL}/admin/update-profile`,
           {
             acc_id: updatedUser.id,
@@ -227,6 +232,8 @@ const AccountManagement = () => {
     // setUsers(updatedUsers);
     try {
       if (user.is_banned === false || user.is_banned === 'false') {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         await axios.post(`${API_URL}/admin/ban-account`,
           {
             selected_account_id: user.account_id
@@ -241,6 +248,8 @@ const AccountManagement = () => {
           // console.log("ban-account response: ", response)
         })
       } else if (user.is_banned === true || user.is_banned === 'true') {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         await axios.post(`${API_URL}/admin/unban-account`,
           {
             selected_account_id: user.account_id

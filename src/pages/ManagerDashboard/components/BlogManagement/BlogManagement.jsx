@@ -75,6 +75,7 @@ const BlogManagement = () => {
 
 
   const getStatusBadge = (status) => {
+    console.log("status", status);
     const statusConfig = {
       false: { label: 'Chờ duyệt', class: 'status-pending' },
       true: { label: 'Đã duyệt', class: 'status-approved' },
@@ -85,11 +86,13 @@ const BlogManagement = () => {
       class: 'status-default',
     };
     return (
-      <span className={`status-badge ${config.class}`}>{config.label}</span>
+      <span className={`status-badge-manager ${config.class}`}>{config.label}</span>
     );
   };
 
   const handleStatusChange = async (blogId, newStatus) => {
+    const accessToken = Cookies.get('accessToken');
+    const accountId = Cookies.get('accountId');
     try {
       await axios.put(
         `${API_URL}/manager/set-blog-status`,
@@ -193,7 +196,7 @@ const BlogManagement = () => {
                 </td>
                 <td>
                   <div className="status-cell">
-                    {getStatusBadge(blog.status)}
+                    {getStatusBadge(blog.status.toString())}
                     {/* <select
                       value={blog.status}
                       onChange={(e) =>
@@ -314,7 +317,7 @@ const BlogManagement = () => {
                 </p>
                 <p>
                   <strong>Trạng thái:</strong>{' '}
-                  {getStatusBadge(selectedBlog.status)}
+                  {getStatusBadge(selectedBlog.status.toString())}
                 </p>
                 <p>
                   <strong>Ngày tạo:</strong>{' '}

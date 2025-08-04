@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
-import { 
+import {
   DashboardOutlined,
   TeamOutlined,
   UserAddOutlined,
@@ -20,14 +20,29 @@ import Sidebar from '../../components/Sidebar';
 import WorkspaceLoading from '../../components/ui/WorkspaceLoading';
 import Logo from '@assets/Logo-full.svg?react';
 import './AdminDashboard.css';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const API_URL = 'http://localhost:3000';
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [adminData, setAdminData] = useState({
+    full_name: "Admin",
+    email: "admin@example.com",
+    position: 'Administrator',
+    department: 'System Management',
+    avatar: `https://ui-avatars.com/api/?name=Admin&background=667eea&color=fff&size=60`,
+    averageFeedBackRating: '5.0',
+    totalAppointments: '∞'
+  });
 
-  const adminName = sessionStorage.getItem('full_name') || 'Admin';
-  const adminEmail = sessionStorage.getItem('email') || 'admin@example.com';
+  useEffect(() => {
+    fetchAdminData();
+  }, []); 
+
 
   // Loading effect when component mounts
   useEffect(() => {
@@ -38,6 +53,34 @@ const AdminDashboard = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+
+  const fetchAdminData = async () => {
+    try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
+      await axios.post(`${API_URL}/account/view-account`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }).then((response) => {
+          const data = response.data.result;
+          console.log("fetchManagerData data response: ", data);
+          setAdminData({
+            ...adminData,
+            full_name: data.full_name,
+            email: data.email,
+            is_banned: data.is_banned,
+            created_at: data.created_at,
+            role: data.role,
+            description: data.description,
+            avatar: data.avatar ? data.avatar : `https://ui-avatars.com/api/?name=${data.full_name}&background=52c41a&color=fff&size=60`,
+          });
+        });
+    } catch (error) {
+      console.error("fetchAdminData error: ", error);
+    }
+  };
 
   // Menu items for admin
   const menuItems = [
@@ -86,15 +129,15 @@ const AdminDashboard = () => {
   ];
 
   // Admin data for sidebar
-  const adminData = {
-    full_name: adminName,
-    email: adminEmail,
-    position: 'Administrator',
-    department: 'System Management',
-    avatar: `https://ui-avatars.com/api/?name=${adminName}&background=667eea&color=fff&size=60`,
-    averageFeedBackRating: '5.0',
-    totalAppointments: '∞'
-  };
+  // const adminData = {
+  //   full_name: adminName,
+  //   email: adminEmail,
+  //   position: 'Administrator',
+  //   department: 'System Management',
+  //   avatar: `https://ui-avatars.com/api/?name=${adminName}&background=667eea&color=fff&size=60`,
+  //   averageFeedBackRating: '5.0',
+  //   totalAppointments: '∞'
+  // };
 
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
@@ -108,7 +151,7 @@ const AdminDashboard = () => {
   // Loading Screen Component
   if (isLoading) {
     return (
-      <WorkspaceLoading 
+      <WorkspaceLoading
         className="admin-workspace"
         title="Loading Admin Dashboard"
         description="Preparing system administration tools... Please wait"
@@ -144,7 +187,7 @@ const AdminDashboard = () => {
           <Route path="/reports" element={<Reports />} />
           <Route path="/bulk-email" element={<BulkEmail />} />
           <Route path="/activities" element={<RecentActivities />} />
-          <Route path="/profile" element={<AdminProfile />} />
+          <Route path="/profile" element={<AdminProfile adminData={adminData} />} />
         </Routes>
       </div>
     </div>
