@@ -161,8 +161,6 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
   //   }
   // ];
 
-
-
   useEffect(() => {
     searchAppointments();
   }, [currentPage, pageSize, appointments]);
@@ -178,7 +176,9 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       if (searchText) {
         filtered = filtered.filter(
           (apt) =>
-            apt.customer.full_name.toLowerCase().includes(searchText.toLowerCase()) ||
+            apt.customer.full_name
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ||
             apt.customer.phone.includes(searchText) ||
             apt.tests.some((test) =>
               test.name.toLowerCase().includes(searchText.toLowerCase())
@@ -203,7 +203,6 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
         filtered = filtered.filter((apt) => apt.status === statusFilter);
       }
 
-
       // Pagination
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
@@ -224,7 +223,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
   const handleClearFilters = () => {
     setSearchText('');
     setDateRange([]);
-    setStatusFilter('all')
+    setStatusFilter('all');
     setCurrentPage(1);
     setTimeout(() => {
       searchAppointments();
@@ -233,22 +232,22 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
 
   const getStatusConfig = (status) => {
     const configs = {
-      'pending': {
+      pending: {
         color: 'orange',
         text: 'Chờ xử lý',
         icon: <ClockCircleOutlined />,
       },
-      'in_progress': {
+      in_progress: {
         color: 'blue',
         text: 'Đang xét nghiệm',
         icon: <SyncOutlined spin />,
       },
-      'completed': {
+      completed: {
         color: 'green',
         text: 'Đã hoàn thành',
         icon: <CheckCircleOutlined />,
       },
-      'confirmed': {
+      confirmed: {
         color: 'blue',
         text: 'Đã xác nhận',
         icon: <CheckCircleOutlined />,
@@ -256,8 +255,6 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
     };
     return configs[status] || configs.pending;
   };
-
-
 
   const getShiftConfig = (shift) => {
     const configs = {
@@ -325,28 +322,26 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
     }));
   };
 
-
-
   const handleSaveUpdate = async () => {
     if (!selectedAppointment) return;
     setUpdating(true);
     try {
       let result = await Promise.all(
         selectedAppointment.tests
-          .filter(test => testResults[test.name]?.value) // Only include tests with valid results
-          .map(test => ({
+          .filter((test) => testResults[test.name]?.value) // Only include tests with valid results
+          .map((test) => ({
             name: test.name,
-            result: testResults[test.name].value
+            result: testResults[test.name].value,
           }))
       );
-      console.log("result entities: ", result);
+      console.log('result entities: ', result);
       if (result.length > 0) {
         const accessToken = Cookies.get('accessToken');
         const responseUpdateResult = await axios.post(
           `${API_URL}/staff/update-result`,
           {
             result,
-            app_id: selectedAppointment.app_id
+            app_id: selectedAppointment.app_id,
           },
           {
             headers: {
@@ -357,8 +352,11 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
         );
       }
 
-
-      if (newStatus === "completed" && selectedAppointment.tests.filter(test => test.status === "completed").length < selectedAppointment.tests.length) {
+      if (
+        newStatus === 'completed' &&
+        selectedAppointment.tests.filter((test) => test.status === 'completed')
+          .length < selectedAppointment.tests.length
+      ) {
         alert("The tests of appointment haven't been completed!!!");
         return;
       }
@@ -370,7 +368,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
           {
             status: newStatus,
             description: internalDescription,
-            app_id: selectedAppointment.app_id
+            app_id: selectedAppointment.app_id,
           },
           {
             headers: {
@@ -384,15 +382,12 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       const updatedData = await fetchInputAppointments(); // Get the updated appointments
       setAppointments(updatedData); // Update child component's appointments state
       await searchAppointments(); // Refresh filteredAppointments to update UI
-
     } catch (error) {
-      console.error("Error when save update: ", error)
+      console.error('Error when save update: ', error);
     } finally {
-
       setUpdateModalVisible(false);
       setUpdating(false);
     }
-
   };
 
   const renderTestsList = (tests) => {
@@ -430,7 +425,8 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       width: 80,
       render: (_, record) => (
         <>
-          <code>{record.queue_index}</code><br />
+          <code>{record.queue_index}</code>
+          <br />
           <code>{record.working_slot.name}</code>
         </>
       ),
@@ -461,8 +457,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       render: (_, record) => (
         <Space direction="vertical" size="small">
           <span>
-            <CalendarOutlined />{' '}
-            {dayjs(record.date).format('DD/MM/YYYY')}
+            <CalendarOutlined /> {dayjs(record.date).format('DD/MM/YYYY')}
           </span>
           <span>
             <ClockCircleOutlined />
@@ -514,7 +509,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       <div className="search-appointments">
         {/* Header */}
         <div className="page-header">
-          <div className="header-content">
+          <div className="staff-header-content">
             <h2>Tìm kiếm Lịch hẹn</h2>
             <p>Tra cứu và cập nhật lịch sử các lịch hẹn xét nghiệm</p>
           </div>
@@ -629,7 +624,10 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
           title={
             <Space>
               <EditOutlined />
-              Cập nhật kết quả xét nghiệm - {selectedAppointment?.working_slot.name + " - " + selectedAppointment?.queue_index}
+              Cập nhật kết quả xét nghiệm -{' '}
+              {selectedAppointment?.working_slot.name +
+                ' - ' +
+                selectedAppointment?.queue_index}
             </Space>
           }
           open={updateModalVisible}
@@ -707,23 +705,24 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
                               rows={3}
                             />
                           </Form.Item> */}
-                        {test.status !== "pending" &&
+                        {test.status !== 'pending' && (
                           <Form.Item label="Nhập kết quả xé nghiệm">
-                            {
-                              test.result ?
-                                (<p>{test.result}</p>)
-                                : (<InputNumber
-                                  value={null}
-                                  // onChange={(e) =>
-                                  //   handleInputResult(test.name, e.target.value)
-                                  // }
-                                  onChange={(value) => handleInputResult(test.name, value)}
-                                  placeholder="Nhập kết quả xét nghiệm..."
-
-                                />)
-                            }
+                            {test.result ? (
+                              <p>{test.result}</p>
+                            ) : (
+                              <InputNumber
+                                value={null}
+                                // onChange={(e) =>
+                                //   handleInputResult(test.name, e.target.value)
+                                // }
+                                onChange={(value) =>
+                                  handleInputResult(test.name, value)
+                                }
+                                placeholder="Nhập kết quả xét nghiệm..."
+                              />
+                            )}
                           </Form.Item>
-                        }
+                        )}
                         <Form.Item label="Đơn vị">
                           <p>{test.unit}</p>
                         </Form.Item>
@@ -735,11 +734,11 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
                         <Form.Item label="Specimen">
                           <p>{test.specimen}</p>
                         </Form.Item>
-                        {test.status !== "pending" && test.conclusion &&
+                        {test.status !== 'pending' && test.conclusion && (
                           <Form.Item label="Conclusion">
                             <p>{test.conclusion}</p>
                           </Form.Item>
-                        }
+                        )}
                       </Space>
                     </Panel>
                   ))}

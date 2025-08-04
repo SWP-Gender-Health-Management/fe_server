@@ -183,7 +183,8 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       return;
     }
     newBlog.images = newBlog.images.map((image) => image.value);
- 
+    
+    const accountId = await Cookies.get('accountId');
 
 
     const formDataToSend = new FormData();
