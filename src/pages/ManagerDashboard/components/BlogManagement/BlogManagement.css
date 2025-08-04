@@ -160,11 +160,13 @@
   color: #374151;
 }
 
-.status-badge {
+.status-badge-manager {
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 .status-draft {

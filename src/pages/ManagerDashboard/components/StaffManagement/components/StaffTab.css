@@ -10,6 +10,18 @@
     width: fit-content;
 }
 
+.search-box {
+    height: 40px;
+}
+
+.select-status {
+    height: 40px;
+}
+
+.btn-search {
+    height: 40px;
+}
+
 /* Schedule Modal Styles */
 .schedule-modal .ant-modal-content {
     border-radius: 12px;

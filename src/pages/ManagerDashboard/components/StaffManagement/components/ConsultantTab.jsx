@@ -295,6 +295,7 @@ const ConsultantTab = () => {
           />
         </div>
         <select
+          className="select-status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -475,6 +476,7 @@ const ConsultantTab = () => {
                   }}
                 >
                   {slot.time}
+                  
                 </Checkbox>
               ))}
             </div>

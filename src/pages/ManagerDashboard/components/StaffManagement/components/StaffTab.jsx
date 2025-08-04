@@ -308,6 +308,7 @@ const StaffTab = () => {
           />
         </div>
         <select
+          className="select-status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -315,6 +316,16 @@ const StaffTab = () => {
           <option value="false">Hoạt động</option>
           <option value="true">Bị khóa</option>
         </select>
+
+        <button
+          className="btn-search"
+          onClick={async () => {
+            await setCurrentPage(1);
+            await fetchStaff();
+          }}
+        >
+          Tìm kiếm
+        </button>
       </div>
 
       <div className="staff-list">

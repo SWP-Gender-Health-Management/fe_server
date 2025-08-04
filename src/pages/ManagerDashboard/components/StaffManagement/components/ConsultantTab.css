@@ -166,6 +166,23 @@
     background-color: #fafafa;
 }
 
+.search-box {
+    height: 40px;
+}
+
+.search-box input{
+    height: 80%;
+}
+
+.select-status {
+    height: 40px;
+}
+
+.btn-search {
+    height: 40px;
+    border-radius: 10px;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .schedule-modal .ant-modal {

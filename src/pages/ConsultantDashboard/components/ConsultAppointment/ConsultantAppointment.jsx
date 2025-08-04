@@ -240,13 +240,13 @@ const ConsultantAppointment = ({
       </div>
 
       {/* Calendar Grid */}
-      <div className="calendar-container">
-        <div className="calendar-grid compact">
+      <div className="">
+        <div className="">
           {/* Time column */}
-          <div className="time-column">
-            <div className="time-header"></div>
+          <div className="">
+            <div className=""></div>
             {timeSlots.map((time) => (
-              <div key={time.slot_id} className="time-slot">
+              <div key={time.slot_id} className="">
                 {time.name.split('-')[0]} <br />
                 {time.start_at}
               </div>
@@ -255,12 +255,12 @@ const ConsultantAppointment = ({
 
           {/* Days columns */}
           {weekDates.map((date, dayIndex) => (
-            <div key={dayIndex} className="day-column">
-              <div className="day-header">
-                <span className="day-name">{daysOfWeek[dayIndex]}</span>
-                <span className="day-date">{date.getDate()}</span>
+            <div key={dayIndex} className="">
+              <div className="">
+                <span className="">{daysOfWeek[dayIndex]}</span>
+                <span className="">{date.getDate()}</span>
                 {date.toDateString() === new Date().toDateString() && (
-                  <span className="today-indicator">●</span>
+                  <span className="">●</span>
                 )}
               </div>
 
@@ -269,25 +269,25 @@ const ConsultantAppointment = ({
                 return (
                   <div
                     key={`${dayIndex}-${timeSlot.start_at}`}
-                    className={`time-cell ${appointment ? 'has-appointment' : ''}`}
+                    className={`${appointment ? 'has-appointment' : ''}`}
                   >
                     {appointment && (
                       <div
-                        className={`appointment-card ${appointment.status}`}
+                        className={`${appointment.status}`}
                         onClick={() => handleAppointmentClick(appointment)}
                         style={{
                           borderLeft: `4px solid ${getStatusColor(appointment.status)}`,
                         }}
                       >
                         <div
-                          className="appointment-time"
+                          className=""
                           style={{ color: 'black' }}
                         >
                           {appointment.consultant_pattern.working_slot.start_at}{' '}
                           - {appointment.consultant_pattern.working_slot.end_at}
                         </div>
                         <div
-                          className="appointment-customer"
+                          className=""
                           style={{ color: 'black' }}
                         >
                           {appointment.customer.full_name}

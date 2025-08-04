@@ -94,18 +94,21 @@ const LabManagement = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { text: 'Chờ thanh toán', color: '#f59e0b' },
-      confirmed: { text: 'Đã xác nhận', color: '#10b981' },
-      in_progress: { text: 'Đang thực hiện', color: '#3b82f6' },
-      completed: { text: 'Đã có kết quả', color: '#059669' },
-      confirmed_cancelled: { text: 'Đã huỷ', color: '#ef4444' },
-      pending_cancelled: { text: 'Đã huỷ', color: '#ef4444' },
+      pending: { text: 'Chờ thanh toán', color: '#f59e0b', textColor: '#fff' },
+      confirmed: { text: 'Đã xác nhận', color: '#10b981', textColor: '#fff' },
+      in_progress: { text: 'Đang thực hiện', color: '#3b82f6', textColor: '#fff' },
+      completed: { text: 'Đã có kết quả', color: '#059669', textColor: 'green' },
+      confirmed_cancelled: { text: 'Đã huỷ', color: '#ef4444', textColor: '#fff' },
+      pending_cancelled: { text: 'Đã huỷ', color: '#ef4444', textColor: '#fff' },
     };
     const config = statusConfig[status] || statusConfig.pending;
     return (
       <span
         className="status-badge"
-        style={{ backgroundColor: `${config.color}20`, color: config.color }}
+        style={{
+          backgroundColor: `${config.color}20`,
+          color: config.textColor,
+        }}
       >
         {config.text}
       </span>
