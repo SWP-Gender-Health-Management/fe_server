@@ -95,7 +95,8 @@
 
 /* Content Layout */
 .question-content {
-  display: grid;
+  display: flex;
+  flex-direction: row;
   grid-template-columns: 400px 1fr;
   gap: 25px;
   height: calc(100vh - 200px);
