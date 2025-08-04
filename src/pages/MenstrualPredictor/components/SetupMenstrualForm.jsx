@@ -198,8 +198,8 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
       let payload;
 
       payload = {
-        start_date: values.startDate.toISOString(),
-        end_date: values.endDate.toISOString(),
+        start_date: dayjs(values.startDate).format('YYYY-MM-DD'),
+        end_date: dayjs(values.endDate).format('YYYY-MM-DD'),
         period: values.cycleLength.toString() || '28',
         periodLength: values.periodLength || '5',
         note: values.description || 'Đăng ký theo dõi chu kỳ lần đầu',
@@ -215,7 +215,6 @@ const SetupMenstrualForm = ({ onSetupComplete }) => {
           },
         }
       );
-
       message.success('Thiết lập theo dõi chu kỳ kinh nguyệt thành công! 🎉');
 
       setCurrentStep(1);
