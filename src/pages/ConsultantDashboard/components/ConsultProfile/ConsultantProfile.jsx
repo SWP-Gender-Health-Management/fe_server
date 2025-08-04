@@ -79,8 +79,8 @@ const ConsultantProfile = ({ consultantData }) => {
   return (
     <div className="consultant-profile">
       {/* Header */}
-      <div className="profile-header">
-        <div className="header-content">
+      <div className="consult-profile-header">
+        <div className="consult-header-content">
           <h2>👤 Hồ sơ cá nhân</h2>
           <p>Thông tin chi tiết về tài khoản và hoạt động của bạn</p>
         </div>
