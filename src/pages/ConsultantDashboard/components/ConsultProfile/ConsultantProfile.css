@@ -27,7 +27,7 @@
 }
 
 /* Header */
-.profile-header {
+.consult-profile-header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
@@ -39,7 +39,7 @@
   overflow: hidden;
 }
 
-.profile-header::before {
+.consult-profile-header::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -64,16 +64,16 @@
   }
 }
 
-.header-content h2 {
+.consult-header-content h2 {
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53); 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.header-content p {
+.consult-header-content p {
   margin: 0;
   color: #6b7280;
   font-size: 15px;
