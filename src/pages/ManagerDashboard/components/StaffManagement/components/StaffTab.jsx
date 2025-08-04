@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Radio, DatePicker, Tag, Avatar } from 'antd';
-import { SearchOutlined, CalendarOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  SearchOutlined,
+  CalendarOutlined,
+  EyeOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
 
 const API_URL = 'http://localhost:3000';
 
 const StaffTab = () => {
-
-
-  const accountId = Cookies.get('accountId');
-  const accessToken = Cookies.get('accessToken');
-
   const [searchName, setSearchName] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
-  const [viewScheduleModalVisible, setViewScheduleModalVisible] = useState(false);
+  const [viewScheduleModalVisible, setViewScheduleModalVisible] =
+    useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedShift, setSelectedShift] = useState('morning');
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -31,25 +32,28 @@ const StaffTab = () => {
     thursday: '',
     friday: '',
     saturday: '',
-    sunday: ''
+    sunday: '',
   });
-  const [staffMembers, setStaffMembers] = useState([{
-    account_id: 1,
-    full_name: 'Sarah Johnson',
-    status: 'active',
-    // avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
-    // position: 'Senior Nurse',
-    // department: 'Women Health',
-    email: 'sarah.johnson@gendercare.com',
-    phone: '(+84) 912-345-678'
-  }]);
-
+  const [staffMembers, setStaffMembers] = useState([
+    {
+      account_id: 1,
+      full_name: 'Sarah Johnson',
+      status: 'active',
+      // avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
+      // position: 'Senior Nurse',
+      // department: 'Women Health',
+      email: 'sarah.johnson@gendercare.com',
+      phone: '(+84) 912-345-678',
+    },
+  ]);
 
   // Mock weekly schedule data
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
+        const accountId = Cookies.get('accountId');
+        const accessToken = Cookies.get('accessToken');
         const response = await axios.get(
           `${API_URL}/working-slot/get-slot-by-type/0`,
           {
@@ -69,11 +73,11 @@ const StaffTab = () => {
                 id: workingSlot.name.split('-')[0].trim(),
                 time: `${workingSlot.start_at.slice(0, 5)} - ${workingSlot.end_at.slice(0, 5)}`,
                 slot_id: workingSlot.slot_id,
-              }
+              };
             })
           )
         ).sort();
-        console.log("staff slot Times:", slotTimes);
+        console.log('staff slot Times:', slotTimes);
         setShifts(slotTimes);
       } catch (error) {
         console.error('Error fetching Slot:', error);
@@ -108,24 +112,31 @@ const StaffTab = () => {
     console.log('Schedule submitted:', {
       staff: selectedStaff,
       date: selectedDate,
-      shift: selectedShift
+      shift: selectedShift,
     });
     try {
-      await axios.post(`${API_URL}/manager/create-staff-pattern`, {
-        staff_id: selectedStaff?.account_id,
-        date: new Date(selectedDate).toISOString().split('T')[0],
-        working_slot_id: selectedShift,
-      }, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => {
-        console.log("Schedule submitted successfully:", response.data.result);
-      
-      });
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      await axios
+        .post(
+          `${API_URL}/manager/create-staff-pattern`,
+          {
+            staff_id: selectedStaff?.account_id,
+            date: new Date(selectedDate).toISOString().split('T')[0],
+            working_slot_id: selectedShift,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Schedule submitted successfully:', response.data.result);
+        });
     } catch (error) {
-      console.error("Error submitting schedule:", error);
+      console.error('Error submitting schedule:', error);
     } finally {
       setScheduleModalVisible(false);
       setSelectedDate(null);
@@ -143,17 +154,22 @@ const StaffTab = () => {
 
   const fetchWeeklySchedule = async () => {
     try {
-      const response = await axios.get(`${API_URL}/manager/get-staff-pattern-by-week`, {
-        params: {
-          staff_id: selectedStaff?.account_id,
-          start_date: getStartOfWeek(new Date()),
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log("Weekly staff schedule response:", response.data.result);
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      const response = await axios.get(
+        `${API_URL}/manager/get-staff-pattern-by-week`,
+        {
+          params: {
+            staff_id: selectedStaff?.account_id,
+            start_date: getStartOfWeek(new Date()),
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('Weekly staff schedule response:', response.data.result);
       const schedule = response.data.result;
       setWeeklySchedule({
         monday: schedule.monday,
@@ -163,14 +179,16 @@ const StaffTab = () => {
         friday: schedule.friday,
         saturday: schedule.saturday,
         sunday: schedule.sunday,
-      })
+      });
     } catch (error) {
-      console.error("Error fetching weekly schedule:", error);
+      console.error('Error fetching weekly schedule:', error);
     }
   };
 
   const fetchStaff = async () => {
     try {
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
       const response = await axios.get(`${API_URL}/manager/get-staffs`, {
         params: {
           full_name: searchName,
@@ -183,38 +201,62 @@ const StaffTab = () => {
           'Content-Type': 'application/json',
         },
       });
-      console.log("Staff response:", response.data.result);
+      console.log('Staff response:', response.data.result);
       setStaffMembers(response.data.result?.staffs || []);
       setTotalPages(response.data.result?.totalPage);
     } catch (error) {
-      console.error("Error fetching staff:", error);
+      console.error('Error fetching staff:', error);
     }
   };
 
-  const filteredStaff = staffMembers.filter(staff => {
-    const nameMatch = staff.full_name.toLowerCase().includes(searchName.toLowerCase());
-    const statusMatch = statusFilter === 'all' || staff.is_banned === statusFilter === 'true';
+  const filteredStaff = staffMembers.filter((staff) => {
+    const nameMatch = staff.full_name
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+    const statusMatch =
+      statusFilter === 'all' || (staff.is_banned === statusFilter) === 'true';
     return nameMatch && statusMatch;
   });
 
   const renderWeeklySchedule = () => {
-
-    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
-    const scheduleKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const days = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ Nhật',
+    ];
+    const scheduleKeys = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
 
     return (
-      <div className="weekly-schedule">
+      <div className="schedule-content">
         <div className="schedule-header">
-          <h3>Lịch làm việc của {selectedStaff?.full_name}</h3>
-          <p>Vị trí: {selectedStaff?.position} - Bộ phận: {selectedStaff?.department}</p>
+          {/* <h3>Lịch làm việc của {selectedStaff?.full_name}</h3> */}
+          {/* <p>
+            Vị trí: {selectedStaff?.position} - Bộ phận:{' '}
+            {selectedStaff?.department}
+          </p> */}
         </div>
 
         <table className="schedule-table">
           <thead>
-            <tr className="schedule-header-row">
-              <th className="time-column">Ca làm việc</th>
+            <tr>
+              <th>Ca làm việc</th>
               {days.map((day, index) => (
-                <th key={day} className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}>
+                <th
+                  key={day}
+                  className={`${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}
+                >
                   {day}
                 </th>
               ))}
@@ -222,27 +264,26 @@ const StaffTab = () => {
           </thead>
           <tbody>
             {shifts.map((shift) => (
-              <tr key={shift.id} className="schedule-row">
-                <td className="time-slot-label">{shift.time}</td>
+              <tr key={shift.id}>
+                <td>{shift.time}</td>
                 {scheduleKeys.map((day) => (
                   <td
                     key={`${day}-${shift.id}`}
-                    className={`schedule-cell ${day === 'sunday' ? 'day-off' : ''}`}
+                    className={`${day === 'sunday' ? 'day-off' : ''}`}
                   >
                     {day === 'sunday' ? (
                       <span className="day-off-icon">Nghỉ</span>
+                    ) : weeklySchedule[day] &&
+                      weeklySchedule[day].includes(shift.id) ? (
+                      <div className="time-slot scheduled">
+                        <CheckOutlined className="scheduled-icon" />
+                        <span>Làm việc</span>
+                      </div>
                     ) : (
-                      weeklySchedule[day] && weeklySchedule[day].includes(shift.id) ? (
-                        <div className="scheduled-slot">
-                          <CheckOutlined className="scheduled-icon" />
-                          <span>Làm việc</span>
-                        </div>
-                      ) : (
-                        <div className="not-scheduled-slot">
-                          <CloseOutlined className="not-scheduled-icon" />
-                          <span>Nghỉ</span>
-                        </div>
-                      )
+                      <div className="time-slot not-scheduled">
+                        <CloseOutlined className="not-scheduled-icon" />
+                        <span>Nghỉ</span>
+                      </div>
                     )}
                   </td>
                 ))}
@@ -267,6 +308,7 @@ const StaffTab = () => {
           />
         </div>
         <select
+          className="select-status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -274,13 +316,22 @@ const StaffTab = () => {
           <option value="false">Hoạt động</option>
           <option value="true">Bị khóa</option>
         </select>
+
+        <button
+          className="btn-search"
+          onClick={async () => {
+            await setCurrentPage(1);
+            await fetchStaff();
+          }}
+        >
+          Tìm kiếm
+        </button>
       </div>
 
       <div className="staff-list">
         <table className="management-table">
           <thead>
             <tr>
-
               <th>Tên nhân viên</th>
               {/* <th>Vị trí</th>
               <th>Bộ phận</th> */}
@@ -291,9 +342,11 @@ const StaffTab = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredStaff.map(staff => (
-              <tr key={staff.id} className={staff.is_banned === true ? 'blocked-row' : ''}>
-
+            {filteredStaff.map((staff) => (
+              <tr
+                key={staff.id}
+                className={staff.is_banned === true ? 'blocked-row' : ''}
+              >
                 <td className="name-column">{staff.full_name}</td>
                 {/* <td>{staff.position}</td>
                 <td>{staff.department}</td> */}
@@ -392,6 +445,8 @@ const StaffTab = () => {
         title={`Xếp lịch làm việc - ${selectedStaff?.full_name}`}
         open={scheduleModalVisible}
         onOk={handleScheduleSubmit}
+        okText="Xác nhận"
+        cancelText="Hủy"
         onCancel={() => {
           setScheduleModalVisible(false);
           setSelectedDate(null);
@@ -405,8 +460,9 @@ const StaffTab = () => {
             <label>Chọn ngày:</label>
             <DatePicker
               onChange={(date) => setSelectedDate(date)}
+              value={selectedDate}
               disabledDate={(current) => {
-                return current && current.day() === 0 || current < new Date(); // Disable Sundays and past days
+                return (current && current.day() === 0) || current < new Date(); // Disable Sundays and past days
               }}
               placeholder="Chọn ngày làm việc"
               className="date-picker-field"
@@ -416,11 +472,16 @@ const StaffTab = () => {
             <label>Chọn ca làm việc:</label>
             <Radio.Group
               value={selectedShift}
+              disabled={!selectedDate}
               onChange={(e) => setSelectedShift(e.target.value)}
               className="shift-radio-group"
             >
-              {shifts.map(shift => (
-                <Radio.Button key={shift.slot_id} value={shift.slot_id} className="shift-radio-button">
+              {shifts.map((shift) => (
+                <Radio.Button
+                  key={shift.slot_id}
+                  value={shift.slot_id}
+                  className="shift-radio-button"
+                >
                   {shift.time}
                 </Radio.Button>
               ))}
@@ -447,4 +508,4 @@ const StaffTab = () => {
   );
 };
 
-export default StaffTab; 
+export default StaffTab;

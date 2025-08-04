@@ -20,7 +20,7 @@ const Sidebar = ({
   const formatTime = (date) => date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   const formatDate = (date) => date.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long' });
   const currentTime = new Date();
-  const avatar = `https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg`;
+  const avatar = userData.avatar ? userData.avatar : `https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg`;
 
 
   return (

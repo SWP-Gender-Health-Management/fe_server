@@ -8,14 +8,18 @@ import { Button } from 'antd';
 
 const API_URL = 'http://localhost:3000';
 
-const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantData, fetchConsultAppointmentStat }) => {
+const ConsultantAppointment = ({
+  appointments,
+  fetchWeekAppointment,
+  consultantData,
+  fetchConsultAppointmentStat,
+}) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   // const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [reportText, setReportText] = useState('');
-
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -26,12 +30,11 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
         console.log('Slot Response:', response.data.result);
         setTimeSlots(response.data.result || []);
       } catch (error) {
-        console.error("Error fetching Slot:", error);
+        console.error('Error fetching Slot:', error);
         return;
       }
-    }
+    };
     fetchTimeSlots();
-
   }, []);
 
   useEffect(() => {
@@ -86,17 +89,19 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
     return week;
   };
 
-
-
   const getAppointmentsForDate = (date) => {
     return appointments.filter(
-      (apt) => new Date(apt.consultant_pattern.date).toDateString() === date.toDateString()
+      (apt) =>
+        new Date(apt.consultant_pattern.date).toDateString() ===
+        date.toDateString()
     );
   };
 
   const getAppointmentForSlot = (date, timeSlot) => {
     const dayAppointments = getAppointmentsForDate(date);
-    return dayAppointments.find((apt) => apt.consultant_pattern.working_slot.name === timeSlot.name);
+    return dayAppointments.find(
+      (apt) => apt.consultant_pattern.working_slot.name === timeSlot.name
+    );
   };
 
   const handleAppointmentClick = (appointment) => {
@@ -105,8 +110,6 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
   };
 
   const updateAppointmentStatus = async (appointment, status, reportText) => {
-    const accountId = Cookies.get("accountId");
-    const accessToken = Cookies.get("accessToken");
     if (status == 'completed') {
       if (!reportText.trim()) {
         alert('Vui lòng nhập báo cáo');
@@ -115,11 +118,15 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
 
       const reportForm = {
         app_id: appointment.app_id,
-        name: appointment.customer ? `Báo cáo tư vấn cho ${appointment.customer.full_name}` : 'Báo cáo tư vấn',
-        description: reportText
-      }
+        name: appointment.customer
+          ? `Báo cáo tư vấn cho ${appointment.customer.full_name}`
+          : 'Báo cáo tư vấn',
+        description: reportText,
+      };
 
       try {
+        const accountId = Cookies.get('accountId');
+        const accessToken = Cookies.get('accessToken');
         const response = await axios.post(
           `${API_URL}/consult-report/create-consult-report`,
           reportForm,
@@ -127,33 +134,35 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
             headers: {
               Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
-            }
+            },
           }
         );
         console.log('Createed report:', response.data.result);
       } catch (error) {
-        console.error("Error update appointment status:", error);
+        console.error('Error update appointment status:', error);
         return;
       } finally {
         setReportText('');
       }
     }
     try {
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
       const response = await axios.put(
         `${API_URL}/consult-appointment/update-consult-appointment/${appointment.app_id}`,
         {
-          status
+          status,
         },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          }
+          },
         }
       );
       console.log('Update Response:', response.data.result);
     } catch (error) {
-      console.error("Error update appointment status:", error);
+      console.error('Error update appointment status:', error);
       return;
     } finally {
       fetchWeekAppointment(selectedDate, false);
@@ -177,7 +186,6 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
     }
   };
 
-
   const formatDate = (date) => {
     return date.toLocaleDateString('vi-VN', {
       weekday: 'long',
@@ -198,7 +206,6 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
         </div>
 
         <div className="header-actions">
-
           <div className="date-navigation">
             <button
               className="nav-btn"
@@ -232,66 +239,101 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
         </div>
       </div>
 
-      {/* Calendar Grid */}
+      {/* New Calendar Grid */}
       <div className="calendar-container">
-        <div className="calendar-grid compact">
-          {/* Time column */}
-          <div className="time-column">
-            <div className="time-header"></div>
-            {timeSlots.map((time) => (
-              <div key={time.slot_id} className="time-slot">
-                {time.name.split("-")[0]} <br />
-                {time.start_at}
-              </div>
-            ))}
-          </div>
+        <div className="calendar-grid">
+          {/* Header Row */}
+          <div className="calendar-header-row">
+            {/* Time Header */}
+            <div className="time-header-cell">Thời gian</div>
 
-          {/* Days columns */}
-          {weekDates.map((date, dayIndex) => (
-            <div key={dayIndex} className="day-column">
-              <div className="day-header">
-                <span className="day-name">{daysOfWeek[dayIndex]}</span>
-                <span className="day-date">{date.getDate()}</span>
-                {date.toDateString() === new Date().toDateString() && (
-                  <span className="today-indicator">●</span>
-                )}
-              </div>
+            {/* Days Header Container */}
+            <div className="days-header-container">
+              {weekDates.map((date, dayIndex) => {
+                const isToday =
+                  date.toDateString() === new Date().toDateString();
+                const isWeekend = dayIndex === 0 || dayIndex === 6;
 
-              {timeSlots.map((timeSlot) => {
-                const appointment = getAppointmentForSlot(date, timeSlot);
                 return (
                   <div
-                    key={`${dayIndex}-${timeSlot.start_at}`}
-                    className={`time-cell ${appointment ? 'has-appointment' : ''}`}
+                    key={`header-${dayIndex}`}
+                    // className={`day-header-cell ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}`}
+                    className={`day-header-cell  ${isWeekend ? 'weekend' : ''}`}
                   >
-                    {appointment && (
-                      <div
-                        className={`appointment-card ${appointment.status}`}
-                        onClick={() => handleAppointmentClick(appointment)}
-                        style={{
-                          borderLeft: `4px solid ${getStatusColor(appointment.status)}`,
-                        }}
-                      >
-                        <div className="appointment-time" style={{ color: 'black' }}>
-                          {appointment.consultant_pattern.working_slot.start_at} - {appointment.consultant_pattern.working_slot.end_at}
-                        </div>
-                        <div className="appointment-customer" style={{ color: 'black' }}>
-                          {appointment.customer.full_name}
-                        </div>
-
-                      </div>
-                    )}
+                    <div className="day-name">{daysOfWeek[dayIndex]}</div>
+                    <div className="day-date">
+                      {date.getDate()} / {date.getMonth() + 1}
+                    </div>
+                    {/* <div className="day-month">Th{date.getMonth() + 1}</div> */}
+                    {isToday && <div className="today-indicator">●</div>}
                   </div>
                 );
               })}
             </div>
-          ))}
+          </div>
+
+          {/* Calendar Body */}
+          <div className="calendar-body">
+            {timeSlots.map((timeSlot) => (
+              <div key={`slot-${timeSlot.slot_id}`} className="time-slot-row">
+                {/* Time Slot Cell */}
+                <div className="time-slot-cell">
+                  <div className="time-slot-name">
+                    {timeSlot.name.split('-')[0]}
+                  </div>
+                  <div className="time-slot-time">
+                    {timeSlot.start_at.slice(0, 5)} -{' '}
+                    {timeSlot.end_at.slice(0, 5)}
+                  </div>
+                </div>
+
+                {/* Days Container */}
+                <div className="days-container">
+                  {weekDates.map((date, dayIndex) => {
+                    const appointment = getAppointmentForSlot(date, timeSlot);
+                    const isToday =
+                      date.toDateString() === new Date().toDateString();
+                    const isPast = date < new Date().setHours(0, 0, 0, 0);
+                    const isWeekend = dayIndex === 0 || dayIndex === 6;
+
+                    return (
+                      <div
+                        key={`cell-${dayIndex}-${timeSlot.slot_id}`}
+                        // className={`day-cell ${appointment ? 'has-appointment' : 'empty'} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''} ${isWeekend ? 'weekend' : ''}`}
+                        className={`day-cell ${appointment ? 'has-appointment' : 'empty'} ${isPast ? 'past' : ''} ${isWeekend ? 'weekend' : ''}`}
+                      >
+                        {appointment ? (
+                          <div
+                            className={`appointment-card ${appointment.status}`}
+                            onClick={() => handleAppointmentClick(appointment)}
+                          >
+                            <div className="appointment-time">
+                              {appointment.consultant_pattern.working_slot.start_at.slice(
+                                0,
+                                5
+                              )}
+                            </div>
+                            <div className="appointment-customer">
+                              {appointment.customer.full_name}
+                            </div>
+                            <div className="appointment-type">Tư vấn</div>
+                          </div>
+                        ) : (
+                          <div className="empty-slot">{/* Empty slot */}</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Statistics */}
       <div className="appointment-stats">
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">📊</span>
           <div className="stat-content">
             <h3>{consultantData.totalAppointments || 0}</h3>
@@ -299,32 +341,26 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">✅</span>
           <div className="stat-content">
-            <h3>
-              {consultantData.confirmedAppointments || 0}
-            </h3>
+            <h3>{consultantData.confirmedAppointments || 0}</h3>
             <p>Đã xác nhận</p>
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
-            <h3>
-              {consultantData.pendingAppointments || 0}
-            </h3>
+            <h3>{consultantData.pendingAppointments || 0}</h3>
             <p>Chờ xác nhận</p>
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">🔄</span>
           <div className="stat-content">
-            <h3>
-              {consultantData.completedAppointments || 0}
-            </h3>
+            <h3>{consultantData.completedAppointments || 0}</h3>
             <p>Đã hoàn thành</p>
           </div>
         </div>
@@ -354,8 +390,16 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                 <div className="info-row">
                   <label>Thời gian:</label>
                   <span>
-                    {new Date(selectedAppointment.consultant_pattern.date).toLocaleDateString('vi-VN')} -
-                    {selectedAppointment.consultant_pattern.working_slot.start_at} đến {selectedAppointment.consultant_pattern.working_slot.end_at}
+                    {new Date(
+                      selectedAppointment.consultant_pattern.date
+                    ).toLocaleDateString('vi-VN')}{' '}
+                    -
+                    {
+                      selectedAppointment.consultant_pattern.working_slot
+                        .start_at
+                    }{' '}
+                    đến{' '}
+                    {selectedAppointment.consultant_pattern.working_slot.end_at}
                   </span>
                 </div>
 
@@ -367,8 +411,6 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                   </div>
                 </div>
 
-
-
                 <div className="info-row">
                   <label>Trạng thái:</label>
                   <span
@@ -377,7 +419,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                       backgroundColor: getStatusColor(
                         selectedAppointment.status
                       ),
-                      color: "white"
+                      color: 'white',
                     }}
                   >
                     {selectedAppointment.status === 'confirmed' &&
@@ -389,39 +431,46 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
                   </span>
                 </div>
 
-                {selectedAppointment.status === 'confirmed' &&
+                {selectedAppointment.status === 'confirmed' && (
                   <div className="info-row">
                     <label>Link Meeting:</label>
                     <Link to={selectedAppointment.gg_meet} target="_blank">
-                      <Button >
-                        Meeting
-                      </Button>
+                      <Button>Meeting</Button>
                     </Link>
                   </div>
-                }
+                )}
 
                 <div className="info-row">
                   <label>Vấn đề:</label>
-                  <p className="issue-text">{selectedAppointment.description}</p>
+                  <p className="issue-text">
+                    {selectedAppointment.description}
+                  </p>
                 </div>
 
-                {selectedAppointment.status === 'confirmed' && <div className="info-row">
-                  <label>Report:</label><br />
-                  <textarea
-                    placeholder="Nhập báo cáo chi tiết và chuyên nghiệp..."
-                    value={reportText}
-                    onChange={(e) => setReportText(e.target.value)}
-                    className="report-textarea"
-                    rows="10"
-                  />
-                </div>}
+                {selectedAppointment.status === 'confirmed' && (
+                  <div className="info-row">
+                    <label>Report:</label>
+                    <br />
+                    <textarea
+                      placeholder="Nhập báo cáo chi tiết và chuyên nghiệp..."
+                      value={reportText}
+                      onChange={(e) => setReportText(e.target.value)}
+                      className="report-textarea"
+                      rows="10"
+                    />
+                  </div>
+                )}
 
-                {selectedAppointment.status === 'completed' && selectedAppointment.report && <div className="info-row">
-                  <label>Report:</label><br />
-                  <p className="issue-text">{selectedAppointment.report.description}</p>
-                </div>}
-
-
+                {selectedAppointment.status === 'completed' &&
+                  selectedAppointment.report && (
+                    <div className="info-row">
+                      <label>Report:</label>
+                      <br />
+                      <p className="issue-text">
+                        {selectedAppointment.report.description}
+                      </p>
+                    </div>
+                  )}
               </div>
 
               <div className="modal-actions">

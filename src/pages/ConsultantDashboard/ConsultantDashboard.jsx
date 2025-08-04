@@ -5,15 +5,13 @@ import ConsultantProfile from '@pages/ConsultantDashboard/components/ConsultProf
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Thêm import Cookies
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  useNavigate
-} from 'react-router-dom';
-import { 
   HomeOutlined,
   CalendarOutlined,
   EditOutlined,
   UserOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import Sidebar from '../../components/Sidebar';
 import DashboardOverview from './components/DashboardOverview';
@@ -33,40 +31,37 @@ const ConsultantDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
-
   // Menu items for consultant
   const menuItems = [
     {
       id: 'dashboard',
       icon: <HomeOutlined />,
       label: 'Overview',
-      description: 'Main dashboard'
+      description: 'Main dashboard',
     },
     {
       id: 'appointments',
       icon: <CalendarOutlined />,
       label: 'Appointment Management',
-      description: 'View and manage appointments'
+      description: 'View and manage appointments',
     },
     {
       id: 'blogs',
       icon: <EditOutlined />,
       label: 'Blog Management',
-      description: 'Write and manage blogs'
+      description: 'Write and manage blogs',
     },
     {
       id: 'questions',
       icon: <QuestionCircleOutlined />,
       label: 'Q&A',
-      description: 'Answer questions'
+      description: 'Answer questions',
     },
     {
       id: 'profile',
       icon: <UserOutlined />,
       label: 'Personal Profile',
-      description: 'Personal information'
+      description: 'Personal information',
     },
   ];
 
@@ -80,7 +75,7 @@ const ConsultantDashboard = () => {
       await fetchConsultAppointmentStat();
       await fetchBlogs();
       await fetchQuestions();
-      await fetchWeekAppointment((new Date()), true);
+      await fetchWeekAppointment(new Date(), true);
       setIsLoading(false);
     };
 
@@ -89,7 +84,7 @@ const ConsultantDashboard = () => {
 
   const fetchConsultantData = async () => {
     try {
-      const accessToken = Cookies.get("accessToken")
+      const accessToken = Cookies.get('accessToken');
       const viewResponse = await axios.post(
         `${API_URL}/account/view-account`,
         {},
@@ -114,14 +109,15 @@ const ConsultantDashboard = () => {
         ...(viewResponse.data.result || {}), // Fallback to empty object if undefined
         ...(ratingResponse.data.result || {}), // Fallback to empty object if undefined
       }));
-
     } catch (error) {
       console.error('Error fetching consultant data:', error);
     }
-  }
+  };
 
   const fetchConsultAppointmentStat = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const appointmentStatResponse = await axios.get(
         `${API_URL}/consult-appointment/get-consult-appointment-stats`,
         {
@@ -133,63 +129,69 @@ const ConsultantDashboard = () => {
       );
       setConsultantData((prev) => {
         if (appointmentStatResponse.data.result) {
-          prev = { ...prev, ...appointmentStatResponse.data.result }
+          prev = { ...prev, ...appointmentStatResponse.data.result };
         }
         return prev;
       });
-
     } catch (error) {
       console.error('Error fetching Consult Appointment Stat: ', error);
     }
-  }
+  };
 
   const fetchQuestions = async () => {
     // Simulate fetching questions from an API
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const responseUnreplied = await axios.get(
         `${API_URL}/question/get-unreplied-questions`,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       const responseReplied = await axios.get(
         `${API_URL}/question/get-question-by-id/consultant/${accountId}`,
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       const unrepliedQuestions = responseUnreplied.data.result || [];
       const repliedQuestions = responseReplied.data.result || [];
       setQuestions([...unrepliedQuestions, ...repliedQuestions]);
       setConsultantData((prev) => {
         if (responseReplied.data.result) {
           const questionsAnswered = responseReplied.data.result.length;
-          prev = { ...prev, questionsAnswered }
+          prev = { ...prev, questionsAnswered };
         }
         if (responseUnreplied.data.result) {
           const unansweredQuestions = responseUnreplied.data.result.length;
-          prev = { ...prev, unansweredQuestions }
+          prev = { ...prev, unansweredQuestions };
         }
         return prev;
       });
     } catch (error) {
       console.error('Error fetching questions:', error);
     }
-  }
+  };
 
   const fetchBlogs = async function () {
     try {
       // console.log('useEffect has been called!:', accountId);
       // console.log('useEffect has been called!:', accessToken);
+
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const response = await axios.get(
         `${API_URL}/blog/get-blog-by-account/${accountId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          }
+          },
         }
       );
       // console.log('Blog Response:', response.data.result);
@@ -198,14 +200,19 @@ const ConsultantDashboard = () => {
         if (response.data.result) {
           const totalBlogs = response.data.result.length;
           const publishedBlogs = response.data.result.filter((blog) => {
-            return blog.status == 'true' || blog.status == true
+            return blog.status == 'true' || blog.status == true;
           }).length;
-          prev = { ...prev, totalBlogs, publishedBlogs, pendingBlogs: totalBlogs - publishedBlogs }
+          prev = {
+            ...prev,
+            totalBlogs,
+            publishedBlogs,
+            pendingBlogs: totalBlogs - publishedBlogs,
+          };
         }
         return prev;
       });
     } catch (error) {
-      console.error("Error fetching blogs:", error);
+      console.error('Error fetching blogs:', error);
       return;
     }
   };
@@ -245,21 +252,21 @@ const ConsultantDashboard = () => {
 
   const fetchWeekAppointment = async (selectedDate, isInit) => {
     try {
-      const accountId = Cookies.get("accountId");
-      const accessToken = Cookies.get("accessToken");
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
       const startWeekDay = getWeekStartDay(selectedDate || new Date());
-      const startWeekDayString = startWeekDay.toISOString().split("T")[0];
-      console.log("Check selected date: ", startWeekDayString);
+      const startWeekDayString = startWeekDay.toISOString().split('T')[0];
+      console.log('Check selected date: ', startWeekDayString);
       const response = await axios.get(
         `${API_URL}/consult-appointment/get-consult-appointment-by-week/${accountId}`,
         {
           params: {
-            weekStartDate: startWeekDayString
+            weekStartDate: startWeekDayString,
           },
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          }
+          },
         }
       );
       console.log('Consult Appointment Response:', response.data.result);
@@ -268,11 +275,11 @@ const ConsultantDashboard = () => {
         setUpcomingAppointments(response.data.result || []);
       }
     } catch (error) {
-      console.error("Error fetching Consult Appointment:", error);
+      console.error('Error fetching Consult Appointment:', error);
       setAppointments([]);
       return;
     }
-  }
+  };
 
   const getWeekStartDay = (date) => {
     const startOfWeek = new Date(date);
@@ -307,9 +314,11 @@ const ConsultantDashboard = () => {
             recentQuestions={
               Array.isArray(questions)
                 ? questions
-                  .filter((ques) => !ques.status)
-                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                  .slice(0, 5)
+                    .filter((ques) => !ques.status)
+                    .sort(
+                      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+                    )
+                    .slice(0, 5)
                 : []
             }
           />
@@ -320,7 +329,7 @@ const ConsultantDashboard = () => {
             appointments={appointments || []}
             fetchWeekAppointment={fetchWeekAppointment}
             consultantData={consultantData || {}}
-            fetchConsultAppointmentStat = {fetchConsultAppointmentStat}
+            fetchConsultAppointmentStat={fetchConsultAppointmentStat}
           />
         );
       case 'blogs':
@@ -343,9 +352,11 @@ const ConsultantDashboard = () => {
             recentQuestions={
               Array.isArray(questions)
                 ? questions
-                  .filter((ques) => !ques.status)
-                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                  .slice(0, 5)
+                    .filter((ques) => !ques.status)
+                    .sort(
+                      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+                    )
+                    .slice(0, 5)
                 : []
             }
           />

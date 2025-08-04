@@ -13,9 +13,6 @@ import {
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const accountId = Cookies.get('accountId');
-const accessToken = Cookies.get('accessToken');
-
 const API_URL = 'http://localhost:3000';
 
 const LabManagement = () => {
@@ -97,18 +94,21 @@ const LabManagement = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { text: 'Chờ thanh toán', color: '#f59e0b' },
-      confirmed: { text: 'Đã xác nhận', color: '#10b981' },
-      in_progress: { text: 'Đang thực hiện', color: '#3b82f6' },
-      completed: { text: 'Đã có kết quả', color: '#059669' },
-      confirmed_cancelled: { text: 'Đã huỷ', color: '#ef4444' },
-      pending_cancelled: { text: 'Đã huỷ', color: '#ef4444' },
+      pending: { text: 'Chờ thanh toán', color: '#f59e0b', textColor: '#fff' },
+      confirmed: { text: 'Đã xác nhận', color: '#10b981', textColor: '#fff' },
+      in_progress: { text: 'Đang thực hiện', color: '#3b82f6', textColor: '#fff' },
+      completed: { text: 'Đã có kết quả', color: '#059669', textColor: 'green' },
+      confirmed_cancelled: { text: 'Đã huỷ', color: '#ef4444', textColor: '#fff' },
+      pending_cancelled: { text: 'Đã huỷ', color: '#ef4444', textColor: '#fff' },
     };
     const config = statusConfig[status] || statusConfig.pending;
     return (
       <span
         className="status-badge"
-        style={{ backgroundColor: `${config.color}20`, color: config.color }}
+        style={{
+          backgroundColor: `${config.color}20`,
+          color: config.textColor,
+        }}
       >
         {config.text}
       </span>
@@ -129,6 +129,8 @@ const LabManagement = () => {
 
   const handleRefund = async (appointmentId) => {
     try {
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
       await axios
         .put(
           `${API_URL}/manager/refund/${appointmentId}`,
@@ -461,7 +463,7 @@ const LabManagement = () => {
               Kết quả xét nghiệm
             </Typography.Title>
             {selectedAppointment.result &&
-              selectedAppointment.result.length > 0 ? (
+            selectedAppointment.result.length > 0 ? (
               <Table
                 dataSource={selectedAppointment.result}
                 rowKey="result_id"
