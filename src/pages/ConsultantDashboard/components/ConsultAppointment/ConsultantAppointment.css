@@ -839,7 +839,7 @@
   margin-bottom: 25px;
 }
 
-.stat-card {
+.stat-card-consultant {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 16px;
@@ -852,7 +852,7 @@
   transition: all 0.3s ease;
 }
 
-.stat-card:hover {
+.stat-card-consultant:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
@@ -862,6 +862,13 @@
   padding: 12px;
   background: rgba(102, 126, 234, 0.1);
   border-radius: 12px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-content h3 {
@@ -879,6 +886,8 @@
   color: #6b7280;
   font-weight: 500;
 }
+
+
 
 /* Modal Overlay */
 .modal-overlay {
@@ -1285,7 +1294,7 @@
     margin-bottom: 15px;
   }
 
-  .stat-card {
+  .stat-card-consultant {
     padding: 15px;
   }
 

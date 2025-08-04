@@ -257,11 +257,14 @@ const ConsultantAppointment = ({
                 return (
                   <div
                     key={`header-${dayIndex}`}
-                    className={`day-header-cell ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}`}
+                    // className={`day-header-cell ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}`}
+                    className={`day-header-cell  ${isWeekend ? 'weekend' : ''}`}
                   >
                     <div className="day-name">{daysOfWeek[dayIndex]}</div>
-                    <div className="day-date">{date.getDate()}</div>
-                    <div className="day-month">Th{date.getMonth() + 1}</div>
+                    <div className="day-date">
+                      {date.getDate()} / {date.getMonth() + 1}
+                    </div>
+                    {/* <div className="day-month">Th{date.getMonth() + 1}</div> */}
                     {isToday && <div className="today-indicator">●</div>}
                   </div>
                 );
@@ -296,7 +299,8 @@ const ConsultantAppointment = ({
                     return (
                       <div
                         key={`cell-${dayIndex}-${timeSlot.slot_id}`}
-                        className={`day-cell ${appointment ? 'has-appointment' : 'empty'} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''} ${isWeekend ? 'weekend' : ''}`}
+                        // className={`day-cell ${appointment ? 'has-appointment' : 'empty'} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''} ${isWeekend ? 'weekend' : ''}`}
+                        className={`day-cell ${appointment ? 'has-appointment' : 'empty'} ${isPast ? 'past' : ''} ${isWeekend ? 'weekend' : ''}`}
                       >
                         {appointment ? (
                           <div
@@ -329,7 +333,7 @@ const ConsultantAppointment = ({
 
       {/* Statistics */}
       <div className="appointment-stats">
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">📊</span>
           <div className="stat-content">
             <h3>{consultantData.totalAppointments || 0}</h3>
@@ -337,7 +341,7 @@ const ConsultantAppointment = ({
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">✅</span>
           <div className="stat-content">
             <h3>{consultantData.confirmedAppointments || 0}</h3>
@@ -345,7 +349,7 @@ const ConsultantAppointment = ({
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
             <h3>{consultantData.pendingAppointments || 0}</h3>
@@ -353,7 +357,7 @@ const ConsultantAppointment = ({
           </div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card-consultant">
           <span className="stat-icon">🔄</span>
           <div className="stat-content">
             <h3>{consultantData.completedAppointments || 0}</h3>

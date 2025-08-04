@@ -18,6 +18,7 @@ export default function BlogPage() {
     try {
       const res = await api.get('/blog/get-all-blogs');
       setBlogs(res.data.result || []);
+      console.log('blogs', res.data.result);
     } catch (err) {
       console.error(err);
     }

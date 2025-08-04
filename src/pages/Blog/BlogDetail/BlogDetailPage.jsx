@@ -31,14 +31,27 @@ function BlogDetailPage() {
       <div className="blog-detail-content">
         <h1 className="blog-detail-title">{blog.title}</h1>
         <div className="blog-detail-img">
-          <img
-            src={
-              blog.images ||
-              'https://via.placeholder.com/300x200?text=Không+có+hình+ảnh'
-            }
-            alt="Ảnh bài viết"
-            style={{ maxWidth: '100%', height: 'auto' }}
-          />
+          {blog.images ? (
+            <>
+              {blog.images.map((image) => (
+                <img
+                  src={image}
+                  alt="Ảnh bài viết"
+                  style={{ maxWidth: '100%', height: 'auto' }}
+                />
+              ))}
+            </>
+          ) : (
+            <img
+              src={
+                'https://via.placeholder.com/300x200?text=Không+có+hình+ảnh'
+              }
+              alt="Ảnh bài viết"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
+          )
+
+          }
         </div>{' '}
         <div className="blog-detail-meta">
           <span className="blog-detail-major">Chuyên khoa: {blog.major}</span>
