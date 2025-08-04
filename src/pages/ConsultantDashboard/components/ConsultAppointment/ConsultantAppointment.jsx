@@ -239,66 +239,91 @@ const ConsultantAppointment = ({
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="">
-        <div className="">
-          {/* Time column */}
-          <div className="">
-            <div className=""></div>
-            {timeSlots.map((time) => (
-              <div key={time.slot_id} className="">
-                {time.name.split('-')[0]} <br />
-                {time.start_at}
-              </div>
-            ))}
-          </div>
+      {/* New Calendar Grid */}
+      <div className="calendar-container">
+        <div className="calendar-grid">
+          {/* Header Row */}
+          <div className="calendar-header-row">
+            {/* Time Header */}
+            <div className="time-header-cell">Thời gian</div>
 
-          {/* Days columns */}
-          {weekDates.map((date, dayIndex) => (
-            <div key={dayIndex} className="">
-              <div className="">
-                <span className="">{daysOfWeek[dayIndex]}</span>
-                <span className="">{date.getDate()}</span>
-                {date.toDateString() === new Date().toDateString() && (
-                  <span className="">●</span>
-                )}
-              </div>
+            {/* Days Header Container */}
+            <div className="days-header-container">
+              {weekDates.map((date, dayIndex) => {
+                const isToday =
+                  date.toDateString() === new Date().toDateString();
+                const isWeekend = dayIndex === 0 || dayIndex === 6;
 
-              {timeSlots.map((timeSlot) => {
-                const appointment = getAppointmentForSlot(date, timeSlot);
                 return (
                   <div
-                    key={`${dayIndex}-${timeSlot.start_at}`}
-                    className={`${appointment ? 'has-appointment' : ''}`}
+                    key={`header-${dayIndex}`}
+                    className={`day-header-cell ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}`}
                   >
-                    {appointment && (
-                      <div
-                        className={`${appointment.status}`}
-                        onClick={() => handleAppointmentClick(appointment)}
-                        style={{
-                          borderLeft: `4px solid ${getStatusColor(appointment.status)}`,
-                        }}
-                      >
-                        <div
-                          className=""
-                          style={{ color: 'black' }}
-                        >
-                          {appointment.consultant_pattern.working_slot.start_at}{' '}
-                          - {appointment.consultant_pattern.working_slot.end_at}
-                        </div>
-                        <div
-                          className=""
-                          style={{ color: 'black' }}
-                        >
-                          {appointment.customer.full_name}
-                        </div>
-                      </div>
-                    )}
+                    <div className="day-name">{daysOfWeek[dayIndex]}</div>
+                    <div className="day-date">{date.getDate()}</div>
+                    <div className="day-month">Th{date.getMonth() + 1}</div>
+                    {isToday && <div className="today-indicator">●</div>}
                   </div>
                 );
               })}
             </div>
-          ))}
+          </div>
+
+          {/* Calendar Body */}
+          <div className="calendar-body">
+            {timeSlots.map((timeSlot) => (
+              <div key={`slot-${timeSlot.slot_id}`} className="time-slot-row">
+                {/* Time Slot Cell */}
+                <div className="time-slot-cell">
+                  <div className="time-slot-name">
+                    {timeSlot.name.split('-')[0]}
+                  </div>
+                  <div className="time-slot-time">
+                    {timeSlot.start_at.slice(0, 5)} -{' '}
+                    {timeSlot.end_at.slice(0, 5)}
+                  </div>
+                </div>
+
+                {/* Days Container */}
+                <div className="days-container">
+                  {weekDates.map((date, dayIndex) => {
+                    const appointment = getAppointmentForSlot(date, timeSlot);
+                    const isToday =
+                      date.toDateString() === new Date().toDateString();
+                    const isPast = date < new Date().setHours(0, 0, 0, 0);
+                    const isWeekend = dayIndex === 0 || dayIndex === 6;
+
+                    return (
+                      <div
+                        key={`cell-${dayIndex}-${timeSlot.slot_id}`}
+                        className={`day-cell ${appointment ? 'has-appointment' : 'empty'} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''} ${isWeekend ? 'weekend' : ''}`}
+                      >
+                        {appointment ? (
+                          <div
+                            className={`appointment-card ${appointment.status}`}
+                            onClick={() => handleAppointmentClick(appointment)}
+                          >
+                            <div className="appointment-time">
+                              {appointment.consultant_pattern.working_slot.start_at.slice(
+                                0,
+                                5
+                              )}
+                            </div>
+                            <div className="appointment-customer">
+                              {appointment.customer.full_name}
+                            </div>
+                            <div className="appointment-type">Tư vấn</div>
+                          </div>
+                        ) : (
+                          <div className="empty-slot">{/* Empty slot */}</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
