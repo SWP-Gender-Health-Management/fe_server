@@ -83,6 +83,7 @@ const Navbar = ({ onLoginClick }) => {
     'admin': 'Quản trị viên',
     'blog': 'Blog',
     'dat-lich-xet-nghiem': 'Đặt lịch xét nghiệm',
+    'dat-lich-tu-van': 'Đặt lịch tư vấn',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);

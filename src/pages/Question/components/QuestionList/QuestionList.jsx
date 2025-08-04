@@ -39,7 +39,6 @@ const QuestionFilters = ({
         value={searchText}
         onChange={(e) => {
           setSearchText(e.target.value);
-          // Không tự động fetch khi typing để tránh spam API
         }}
         onSearch={(value) => {
           console.log('Search triggered with value:', value);

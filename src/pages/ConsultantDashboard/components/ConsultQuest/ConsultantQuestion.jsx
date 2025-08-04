@@ -22,31 +22,6 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   const accountId = Cookies.get('accountId') || 'default_account_id'; // Lấy accountId từ cookie hoặc giá trị mặc định
   const accessToken = Cookies.get('accessToken'); // Lấy accessToken từ cookie
 
-  // const fetchQuestions = async () => {
-  //   // Simulate fetching questions from an API
-  //   try {
-  //     const responseUnreplied = await axios.get(
-  //       '${API_URL}/question/get-unreplied-questions',
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`
-  //         }
-  //       });
-  //     const responseReplied = await axios.get(
-  //       `${API_URL}/question/get-question-by-id/consultant/${accountId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`
-  //         }
-  //       });
-  //     const unrepliedQuestions = responseUnreplied.data.result || [];
-  //     const repliedQuestions = responseReplied.data.result || [];
-  //     setQuestions([...unrepliedQuestions, ...repliedQuestions]);
-  //   } catch (error) {
-  //     console.error('Error fetching questions:', error);
-  //   }
-  // }
-
   const calculateAge = (dob) => {
     if (!dob) return null;
     const today = new Date();

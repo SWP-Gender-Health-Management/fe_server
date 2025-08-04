@@ -2,6 +2,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
+  background: ;
 }
 
 .blog-header {
@@ -155,7 +156,7 @@
   padding: 4px 8px;
   background: #e5e7eb;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 12px !important;
   font-weight: 500;
   color: #374151;
 }
@@ -163,8 +164,10 @@
 .status-badge {
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 12px !important;
+  font-weight: 200;
+  color: #166534 !important;
+
 }
 
 .status-draft {
