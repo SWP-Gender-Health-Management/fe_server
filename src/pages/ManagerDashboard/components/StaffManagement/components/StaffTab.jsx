@@ -239,23 +239,23 @@ const StaffTab = () => {
     ];
 
     return (
-      <div className="weekly-schedule">
+      <div className="schedule-content">
         <div className="schedule-header">
-          <h3>Lịch làm việc của {selectedStaff?.full_name}</h3>
-          <p>
+          {/* <h3>Lịch làm việc của {selectedStaff?.full_name}</h3> */}
+          {/* <p>
             Vị trí: {selectedStaff?.position} - Bộ phận:{' '}
             {selectedStaff?.department}
-          </p>
+          </p> */}
         </div>
 
         <table className="schedule-table">
           <thead>
-            <tr className="schedule-header-row">
-              <th className="time-column">Ca làm việc</th>
+            <tr>
+              <th>Ca làm việc</th>
               {days.map((day, index) => (
                 <th
                   key={day}
-                  className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}
+                  className={`${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}
                 >
                   {day}
                 </th>
@@ -264,23 +264,23 @@ const StaffTab = () => {
           </thead>
           <tbody>
             {shifts.map((shift) => (
-              <tr key={shift.id} className="schedule-row">
-                <td className="time-slot-label">{shift.time}</td>
+              <tr key={shift.id}>
+                <td>{shift.time}</td>
                 {scheduleKeys.map((day) => (
                   <td
                     key={`${day}-${shift.id}`}
-                    className={`schedule-cell ${day === 'sunday' ? 'day-off' : ''}`}
+                    className={`${day === 'sunday' ? 'day-off' : ''}`}
                   >
                     {day === 'sunday' ? (
                       <span className="day-off-icon">Nghỉ</span>
                     ) : weeklySchedule[day] &&
                       weeklySchedule[day].includes(shift.id) ? (
-                      <div className="scheduled-slot">
+                      <div className="time-slot scheduled">
                         <CheckOutlined className="scheduled-icon" />
                         <span>Làm việc</span>
                       </div>
                     ) : (
-                      <div className="not-scheduled-slot">
+                      <div className="time-slot not-scheduled">
                         <CloseOutlined className="not-scheduled-icon" />
                         <span>Nghỉ</span>
                       </div>
@@ -434,6 +434,8 @@ const StaffTab = () => {
         title={`Xếp lịch làm việc - ${selectedStaff?.full_name}`}
         open={scheduleModalVisible}
         onOk={handleScheduleSubmit}
+        okText="Xác nhận"
+        cancelText="Hủy"
         onCancel={() => {
           setScheduleModalVisible(false);
           setSelectedDate(null);
@@ -447,6 +449,7 @@ const StaffTab = () => {
             <label>Chọn ngày:</label>
             <DatePicker
               onChange={(date) => setSelectedDate(date)}
+              value={selectedDate}
               disabledDate={(current) => {
                 return (current && current.day() === 0) || current < new Date(); // Disable Sundays and past days
               }}
@@ -458,6 +461,7 @@ const StaffTab = () => {
             <label>Chọn ca làm việc:</label>
             <Radio.Group
               value={selectedShift}
+              disabled={!selectedDate}
               onChange={(e) => setSelectedShift(e.target.value)}
               className="shift-radio-group"
             >

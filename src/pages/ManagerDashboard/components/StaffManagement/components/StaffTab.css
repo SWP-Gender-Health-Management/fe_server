@@ -9,3 +9,218 @@
 .staff-tab-action-button {
     width: fit-content;
 }
+
+/* Schedule Modal Styles */
+.schedule-modal .ant-modal-content {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.schedule-modal .ant-modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-bottom: none;
+    padding: 20px 24px;
+}
+
+.schedule-modal .ant-modal-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.schedule-modal .ant-modal-close {
+    color: white;
+    font-size: 18px;
+}
+
+.schedule-modal .ant-modal-close:hover {
+    color: #f0f0f0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.schedule-modal .ant-modal-body {
+    padding: 24px;
+    background-color: #fafafa;
+}
+
+/* Schedule Header */
+.schedule-modal h3 {
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.schedule-modal p {
+    color: #7f8c8d;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+/* Schedule Table */
+.schedule-modal table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-modal thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.schedule-modal th {
+    padding: 16px 12px;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+}
+
+.schedule-modal th:first-child {
+    text-align: left;
+    padding-left: 20px;
+    min-width: 120px;
+}
+
+.schedule-modal td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.schedule-modal td:first-child {
+    text-align: left;
+    padding-left: 20px;
+    font-weight: 500;
+    color: #2c3e50;
+    background-color: #f8f9fa;
+}
+
+.schedule-modal tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Time slot styling */
+.schedule-modal .time-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.schedule-modal .time-slot.scheduled {
+    background-color: #f6ffed;
+    border: 1px solid #b7eb8f;
+    color: #52c41a;
+}
+
+.schedule-modal .time-slot.not-scheduled {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    color: #ff4d4f;
+}
+
+.schedule-modal .scheduled-icon {
+    color: #52c41a;
+    font-size: 14px;
+}
+
+.schedule-modal .not-scheduled-icon {
+    color: #ff4d4f;
+    font-size: 14px;
+}
+
+.schedule-modal .day-off-icon {
+    color: #8c8c8c;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* Sunday column styling */
+.schedule-modal .sunday-column {
+    background-color: #fff2f0;
+    color: #000;
+}
+
+.schedule-modal .day-off {
+    background-color: #fafafa;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .schedule-modal .ant-modal {
+        width: 95% !important;
+        margin: 10px;
+    }
+    
+    .schedule-modal th,
+    .schedule-modal td {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+    
+    .schedule-modal th:first-child,
+    .schedule-modal td:first-child {
+        padding-left: 8px;
+    }
+    
+    .schedule-modal .time-slot {
+        flex-direction: column;
+        gap: 2px;
+    }
+}
+
+/* Animation for modal */
+.schedule-modal .ant-modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for modal */
+.schedule-modal .ant-modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.schedule-modal .ant-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.schedule-modal .ant-modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.schedule-modal .ant-modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.schedule-modal .ant-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
