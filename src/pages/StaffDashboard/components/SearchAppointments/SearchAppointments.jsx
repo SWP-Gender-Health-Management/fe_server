@@ -74,8 +74,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
   const [testResults, setTestResults] = useState({});
   const [resultValue, setResultValue] = useState(0);
 
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
+
   // Mock historical data với nhiều xét nghiệm
   // const mockHistoricalAppointments = [
   //   {
@@ -342,6 +341,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       );
       console.log("result entities: ", result);
       if (result.length > 0) {
+        const accessToken = Cookies.get('accessToken');
         const responseUpdateResult = await axios.post(
           `${API_URL}/staff/update-result`,
           {
@@ -364,6 +364,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       }
 
       if (newStatus !== selectedAppointment.status) {
+        const accessToken = Cookies.get('accessToken');
         const responseUpdateStatus = await axios.post(
           `${API_URL}/staff/update-appointment-status`,
           {

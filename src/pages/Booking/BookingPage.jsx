@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 import LoginRequiredModal from '../../components/LoginRequiredModal/LoginRequiredModal';
 import { createConAppTransaction, createPaymentUrl } from '../../api/conApi';
 
-const accessToken = Cookies.get('accessToken');
+
 const API_URL = 'http://localhost:3000';
 
 const BookingPage = () => {
@@ -77,6 +77,7 @@ const BookingPage = () => {
   const handleBookingSubmit = async (data) => {
     setBookingData(data);
     try {
+      const accessToken = Cookies.get('accessToken');
       const response = await axios.post(
         `${API_URL}/consult-appointment/create-consult-appointment`,
         {
@@ -111,7 +112,10 @@ const BookingPage = () => {
 
         // Lưu trạng thái vào sessionStorage trước khi chuyển hướng
         sessionStorage.setItem('bookingStep', 3);
-        sessionStorage.setItem('selectedDoctor', JSON.stringify(selectedDoctor));
+        sessionStorage.setItem(
+          'selectedDoctor',
+          JSON.stringify(selectedDoctor)
+        );
         sessionStorage.setItem('selectedSlot', JSON.stringify(selectedSlot));
         sessionStorage.setItem('bookingData', JSON.stringify(data));
 
@@ -146,11 +150,11 @@ const BookingPage = () => {
       case 3:
         return (
           <BookingForm
-          doctor={selectedDoctor}
-          slot={selectedSlot}
-          onSubmit={handleBookingSubmit}
-          onBack={() => handleBackToStep(2)}
-          initialData={bookingData} // Truyền dữ liệu ban đầu
+            doctor={selectedDoctor}
+            slot={selectedSlot}
+            onSubmit={handleBookingSubmit}
+            onBack={() => handleBackToStep(2)}
+            initialData={bookingData} // Truyền dữ liệu ban đầu
           />
         );
       case 4:
@@ -188,7 +192,9 @@ const BookingPage = () => {
             <span className="step-title">Hoàn Thành</span>
           </div>
         </div>
-        <div className="booking-content">{isLoggedIn ? renderCurrentStep() : null}</div>
+        <div className="booking-content">
+          {isLoggedIn ? renderCurrentStep() : null}
+        </div>
       </div>
       <LoginRequiredModal
         visible={isLoginModalVisible}

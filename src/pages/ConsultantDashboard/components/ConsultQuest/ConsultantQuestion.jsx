@@ -19,8 +19,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
   useEffect(() => {
     fetchQuestions();
   }, []);
-  const accountId = Cookies.get('accountId') || 'default_account_id'; // Lấy accountId từ cookie hoặc giá trị mặc định
-  const accessToken = Cookies.get('accessToken'); // Lấy accessToken từ cookie
+
 
   const calculateAge = (dob) => {
     if (!dob) return null;
@@ -71,6 +70,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
     };
 
     try {
+      const accessToken = await Cookies.get('accessToken');
       const response = await axios.post(
         `${API_URL}/reply/create-reply`,
         payload,

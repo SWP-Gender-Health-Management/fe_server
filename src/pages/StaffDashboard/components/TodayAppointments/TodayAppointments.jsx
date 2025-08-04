@@ -61,8 +61,7 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
   const [internalDescription, setInternalDescription] = useState('');
   const [testResults, setTestResults] = useState({});
 
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
+
 
   // Mock data với nhiều xét nghiệm
   const mockAppointments = [
@@ -268,6 +267,8 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
       );
       console.log("result entities: ", result);
       if (result.length > 0) {
+        const accessToken = Cookies.get("accessToken");
+        const accountId = Cookies.get("accountId");
         const responseUpdateResult = await axios.post(
           `${API_URL}/staff/update-result`,
           {
@@ -289,7 +290,15 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
         return;
       }
 
-      if (newStatus !== selectedAppointment.status || (internalDescription.trim().length > 0 && (!selectedAppointment.description || selectedAppointment.description.trim() !== internalDescription.trim()))) {
+      if (
+        newStatus !== selectedAppointment.status ||
+        (internalDescription.trim().length > 0 &&
+          (!selectedAppointment.description ||
+            selectedAppointment.description.trim() !==
+            internalDescription.trim()))
+      ) {
+        const accessToken = Cookies.get('accessToken');
+        const accountId = Cookies.get('accountId');
         const responseUpdateStatus = await axios.post(
           `${API_URL}/staff/update-appointment-status`,
           {
@@ -446,7 +455,7 @@ const TodayAppointments = ({ todayAppointments, fetchTodayAppointmentsOfStaff })
     },
     {
       title: 'Đang xử lý',
-      value: appointments.filter((apt) => apt.status === 'in-progress')
+      value: appointments.filter((apt) => apt.status === 'in_progress')
         .length,
       color: '#13c2c2',
       icon: <SyncOutlined />,

@@ -183,8 +183,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       return;
     }
     newBlog.images = newBlog.images.map((image) => image.value);
-    const accountId = await Cookies.get('accountId');
-    const accessToken = await Cookies.get('accessToken');
+ 
 
 
     const formDataToSend = new FormData();
@@ -197,7 +196,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       formDataToSend.append(`images`, file);
     });
     try {
-
+      const accessToken = await Cookies.get('accessToken');
       const response = await axios.post(
         `${API_URL}/blog/create-blog`,
         formDataToSend,
