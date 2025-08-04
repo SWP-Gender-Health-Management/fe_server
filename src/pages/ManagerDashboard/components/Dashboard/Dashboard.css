@@ -108,7 +108,7 @@
 /* Dashboard Main Section */
 .dashboard-main {
   display: grid;
-  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 32px;
   margin-bottom: 32px;
 }
@@ -118,8 +118,6 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(16, 185, 129, 0.1);
 }
@@ -162,8 +160,6 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(16, 185, 129, 0.1);
 }

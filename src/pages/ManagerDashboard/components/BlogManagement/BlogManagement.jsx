@@ -75,7 +75,6 @@ const BlogManagement = () => {
 
 
   const getStatusBadge = (status) => {
-    console.log("status", status);
     const statusConfig = {
       false: { label: 'Chờ duyệt', class: 'status-pending' },
       true: { label: 'Đã duyệt', class: 'status-approved' },
@@ -86,7 +85,7 @@ const BlogManagement = () => {
       class: 'status-default',
     };
     return (
-      <span className={`status-badge-manager ${config.class}`}>{config.label}</span>
+      <span className={`status-badge ${config.class}`}>{config.label}</span>
     );
   };
 
@@ -196,7 +195,7 @@ const BlogManagement = () => {
                 </td>
                 <td>
                   <div className="status-cell">
-                    {getStatusBadge(blog.status.toString())}
+                    {getStatusBadge(blog.status)}
                     {/* <select
                       value={blog.status}
                       onChange={(e) =>
@@ -317,7 +316,7 @@ const BlogManagement = () => {
                 </p>
                 <p>
                   <strong>Trạng thái:</strong>{' '}
-                  {getStatusBadge(selectedBlog.status.toString())}
+                  {getStatusBadge(selectedBlog.status)}
                 </p>
                 <p>
                   <strong>Ngày tạo:</strong>{' '}

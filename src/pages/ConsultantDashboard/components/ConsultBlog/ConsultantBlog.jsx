@@ -19,6 +19,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
   const [imageInput, setImageInput] = useState([]);
   const [majors, setMajors] = useState([]);
 
+
   // Mock blogs data
   useEffect(() => {
     fetchBlogs();
@@ -60,20 +61,24 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       const accountId = await Cookies.get('accountId');
       const accessToken = await Cookies.get('accessToken');
 
-      const response = await axios.get(`${API_URL}/blog/get-major`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}/blog/get-major`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
       setMajors(response.data.result || []);
     } catch (error) {
-      console.error('Error fetching majors:', error);
+      console.error("Error fetching majors:", error);
 
       return;
     }
-  };
+
+  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -146,10 +151,10 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
 
   const handleAddImage = () => {
     if (imageInput.length > 0) {
-      const newImages = Array.from(imageInput).map((file) => ({
+      const newImages = Array.from(imageInput).map(file => ({
         type: 'file',
         value: file,
-        preview: URL.createObjectURL(file), // Tạo URL tạm thời để hiển thị
+        preview: URL.createObjectURL(file) // Tạo URL tạm thời để hiển thị
       }));
       setNewBlog((prev) => ({
         ...prev,
@@ -178,6 +183,9 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       return;
     }
     newBlog.images = newBlog.images.map((image) => image.value);
+    const accountId = await Cookies.get('accountId');
+    const accessToken = await Cookies.get('accessToken');
+
 
     const formDataToSend = new FormData();
     formDataToSend.append('title', newBlog.title);
@@ -189,20 +197,19 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       formDataToSend.append(`images`, file);
     });
     try {
-      const accountId = await Cookies.get('accountId');
-      const accessToken = await Cookies.get('accessToken');
+
       const response = await axios.post(
         `${API_URL}/blog/create-blog`,
         formDataToSend,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-          },
+          }
         }
       );
     } catch (error) {
-      console.error('Error creating blog:', error);
-      alert('Có lỗi xảy ra khi tạo blog. Vui lòng thử lại sau.');
+      console.error("Error creating blog:", error);
+      alert("Có lỗi xảy ra khi tạo blog. Vui lòng thử lại sau.");
       return;
     } finally {
       setNewBlog({
@@ -214,6 +221,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       setShowCreateModal(false);
       fetchBlogs();
     }
+
   };
 
   const handleDeleteBlog = async (blogId) => {
@@ -222,18 +230,21 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
       try {
         const accountId = await Cookies.get('accountId');
         const accessToken = await Cookies.get('accessToken');
-        await axios.delete(`${API_URL}/blog/delete-blog/${blogId}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        await axios.delete(
+          `${API_URL}/blog/delete-blog/${blogId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            }
+          }
+        );
       } catch (error) {
-        console.error('Error deleting blog:', error);
-        alert('Có lỗi xảy ra khi xóa blog. Vui lòng thử lại sau.');
+        console.error("Error deleting blog:", error);
+        alert("Có lỗi xảy ra khi xóa blog. Vui lòng thử lại sau.");
         return;
       } finally {
-        fetchBlogs();
+        fetchBlogs()
       }
     }
   };
@@ -250,10 +261,8 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
 
   const stats = {
     total: blogs.length,
-    published: blogs.filter((b) => b.status === 'true' || b.status === true)
-      .length,
-    pending: blogs.filter((b) => b.status === 'false' || b.status === false)
-      .length,
+    published: blogs.filter((b) => b.status === 'true' || b.status === true).length,
+    pending: blogs.filter((b) => b.status === 'false' || b.status === false).length,
   };
 
   return (
@@ -288,6 +297,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
           </div>
         </div>
 
+
         <div className="stat-card">
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
@@ -295,6 +305,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
             <p>Chờ duyệt</p>
           </div>
         </div>
+
       </div>
 
       {/* Filters and Search */}
@@ -356,8 +367,12 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
 
                 <h3 className="blog-title">{blog.title}</h3>
 
+
+
                 <div className="blog-stats">
-                  <span>📅 {formatDate(blog.created_at)}</span>
+                  <span>
+                    📅 {formatDate(blog.created_at)}
+                  </span>
                 </div>
               </div>
 
@@ -371,17 +386,16 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                 >
                   👁️ Xem
                 </button>
-                {!blog.status && (
-                  <button className="action-btn edit">✏️ Sửa</button>
-                )}
-                {!blog.status && (
-                  <button
-                    className="action-btn delete"
-                    onClick={() => handleDeleteBlog(blog.blog_id)}
-                  >
-                    🗑️ Xóa
-                  </button>
-                )}
+                {!blog.status && <button className="action-btn edit">
+                  ✏️ Sửa
+                </button>
+                }
+                {!blog.status && <button
+                  className="action-btn delete"
+                  onClick={() => handleDeleteBlog(blog.blog_id)}
+                >
+                  🗑️ Xóa
+                </button>}
 
                 {blog.status === 'draft' && (
                   <button
@@ -449,9 +463,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                   }
                   className="form-select"
                 >
-                  <option key={0} value="">
-                    Chọn danh mục
-                  </option>
+                  <option key={0} value="">Chọn danh mục</option>
                   {majors.map((major, index) => (
                     <option key={index} value={major}>
                       {major}
@@ -459,6 +471,8 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                   ))}
                 </select>
               </div>
+
+
 
               <div className="form-group">
                 <label>Nội dung bài viết</label>
@@ -500,9 +514,7 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                     {newBlog.images.map((image, index) => (
                       <div key={index} className="image-preview-item">
                         <img
-                          src={
-                            image.type === 'file' ? image.preview : image.value
-                          }
+                          src={image.type === 'file' ? image.preview : image.value}
                           alt={`Preview ${index + 1}`}
                         />
                         <button
@@ -518,8 +530,12 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                 </div>
               )}
 
+
               <div className="modal-actions">
-                <button className="action-btn save" onClick={handleCreateBlog}>
+                <button
+                  className="action-btn save"
+                  onClick={handleCreateBlog}
+                >
                   💾 Tạo
                 </button>
                 <button
@@ -574,8 +590,12 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                 <h1 className="detail-title">{selectedBlog.title}</h1>
 
                 <div className="detail-stats">
-                  <span>📅 {formatDate(selectedBlog.created_at)}</span>
+                  <span>
+                    📅 {formatDate(selectedBlog.created_at)}
+                  </span>
                 </div>
+
+
 
                 <div className="detail-content">
                   <h4>Nội dung:</h4>
@@ -595,6 +615,8 @@ const ConsultantBlog = ({ blogs = [], fetchBlogs }) => {
                     </div>
                   </div>
                 )}
+
+
               </div>
             </div>
           </div>
