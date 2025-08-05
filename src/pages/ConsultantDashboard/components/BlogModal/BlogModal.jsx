@@ -20,7 +20,7 @@ const BlogModal = ({ blog, onClose, onEdit }) => {
   return (
     <div className="blog-modal-backdrop" onClick={handleBackdropClick}>
       <div className="blog-modal">
-        <div className="modal-header">
+        <div className="blog-modal-header">
           <h2>Chi Tiết Blog</h2>
           <button className="close-btn" onClick={onClose}>
             ✕

@@ -26,7 +26,7 @@ const QuestionForm = ({ onSubmitSuccess }) => {
       return message.warning('Vui lòng điền nội dung câu hỏi!');
     }
 
-    const accessToken = Cookies.getI('accessToken');
+    const accessToken = Cookies.get('accessToken');
     if (!accessToken) {
       return message.warning('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!');
     }

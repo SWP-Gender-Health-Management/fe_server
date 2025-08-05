@@ -188,7 +188,7 @@ const MenstrualPredictorPage = () => {
         {
           start_date: new Date(lastPeriodStart).toISOString().split('T')[0],
           end_date: new Date(lastPeriodEnd).toISOString().split('T')[0],
-          // period_length: cycleLength,
+          // period_length: periodLength,
           note: 'Cập nhật chu kỳ kinh nguyệt từ giao diện người dùng',
         },
         token

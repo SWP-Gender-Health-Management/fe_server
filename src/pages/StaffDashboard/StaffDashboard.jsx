@@ -44,8 +44,7 @@ const StaffDashboard = () => {
   const [todayAppointments, setTodayAppointments] = useState([]);
 
 
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
+  
 
   // Mock staff data
   const [staffData, setStaffData] = useState({});
@@ -74,6 +73,7 @@ const StaffDashboard = () => {
 
   const fetchAppointmentsOfStaff = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
       const appointmentResponse = await axios.get(
         `${API_URL}/staff/get-laborarity-appointment-of-staff`,
         {
@@ -119,6 +119,7 @@ const StaffDashboard = () => {
 
   const fetchTodayAppointmentsOfStaff = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
       const patternResponse = await axios.get(
         `${API_URL}/staff-pattern/get-pattern-by-date`,
         {
@@ -213,6 +214,7 @@ const StaffDashboard = () => {
 
   const fetchStaffData = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
       const viewResponse = await axios.post(
         `${API_URL}/account/view-account`,
         {},
@@ -257,6 +259,8 @@ const StaffDashboard = () => {
 
   const fetchBlogs = async function () {
     try {
+      const accessToken = Cookies.get('accessToken');
+      const accountId = Cookies.get('accountId');
       const response = await axios.get(
         `${API_URL}/blog/get-blog-by-account/${accountId}`,
         {

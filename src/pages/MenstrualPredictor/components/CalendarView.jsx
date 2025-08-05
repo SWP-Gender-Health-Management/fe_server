@@ -50,22 +50,22 @@ const CalendarView = ({
   // Tạo mảng ngày với padding để đảm bảo luôn có 7 cột
   const totalCells = Math.ceil((firstDay + numDays) / 7) * 7;
   const days = [];
-  
+
   // Thêm các ô trống cho ngày đầu tháng
   for (let i = 0; i < firstDay; i++) {
     days.push(null);
   }
-  
+
   // Thêm các ngày trong tháng
   for (let i = 1; i <= numDays; i++) {
     days.push(i);
   }
-  
+
   // Thêm các ô trống để hoàn thành grid 7 cột
   while (days.length < totalCells) {
     days.push(null);
   }
-  
+
   // Debug: Kiểm tra số lượng ngày và cột
   console.log('Calendar Debug:', {
     month,
@@ -97,9 +97,9 @@ const CalendarView = ({
   };
 
   const getDayClass = (day) => {
-    if (!day) return 'calendar-day empty';
+    if (!day) return 'calendar-day-menstrual empty';
 
-    let classes = 'calendar-day';
+    let classes = 'calendar-day-menstrual';
 
     // Check if it's today
     const isToday =
@@ -111,12 +111,12 @@ const CalendarView = ({
     const isPeriod = periodDays.includes(day);
     const isOvulation = ovulationDays.includes(day);
 
-    if (isPeriod) classes += ' period-day';
-    else if (isOvulation) classes += ' ovulation-day';
-    else classes += ' normal-day';
+    if (isPeriod) classes += ' period-day-menstrual';
+    else if (isOvulation) classes += ' ovulation-day-menstrual';
+    else classes += ' normal-day-menstrual';
 
-    if (isToday) classes += ' today';
-    if (selectedDay === day) classes += ' selected';
+    if (isToday) classes += ' today-menstrual';
+    if (selectedDay === day) classes += ' selected-menstrual';
 
     return classes;
   };
@@ -143,33 +143,33 @@ const CalendarView = ({
 
     if (isPeriod) {
       return (
-        <div className="tooltip-content">
-          <div className="tooltip-title period-tooltip">
+        <div className="tooltip-content-menstrual">
+          <div className="tooltip-title-menstrual period-tooltip">
             <HeartOutlined /> Ngày hành kinh
           </div>
-          <div className="tooltip-date">{date}</div>
+          <div className="tooltip-date-menstrual">{date}</div>
         </div>
       );
     }
 
     if (isOvulation) {
       return (
-        <div className="tooltip-content">
-          <div className="tooltip-title ovulation-tooltip">
+        <div className="tooltip-content-menstrual">
+          <div className="tooltip-title-menstrual ovulation-tooltip">
             <FireOutlined /> Ngày rụng trứng
           </div>
-          <div className="tooltip-date">{date}</div>
+          <div className="tooltip-date-menstrual">{date}</div>
         </div>
       );
     }
 
     if (isToday) {
       return (
-        <div className="tooltip-content">
-          <div className="tooltip-title today-tooltip">
+        <div className="tooltip-content-menstrual">
+          <div className="tooltip-title-menstrual today-tooltip">
             <StarOutlined /> Hôm nay
           </div>
-          <div className="tooltip-date">{date}</div>
+          <div className="tooltip-date-menstrual">{date}</div>
         </div>
       );
     }
@@ -178,33 +178,33 @@ const CalendarView = ({
   };
 
   return (
-    <div className="calendar-container">
-      <Card className="calendar-card">
+    <div className="calendar-container-menstrual">
+      <Card className="calendar-card-menstrual">
         {/* Header */}
-        <div className="calendar-header">
-          <div className="calendar-title">
-            <CalendarOutlined className="calendar-icon" />
+        <div className="calendar-header-menstrual">
+          <div className="calendar-title-menstrual">
+            <CalendarOutlined className="calendar-icon-menstrual" />
             <span>Lịch Kinh Nguyệt</span>
           </div>
           <Button
             type="primary"
             icon={<EditOutlined />}
             onClick={onUpdateClick}
-            className="calendar-update-button"
+            className="calendar-update-button-menstrual"
           >
             Cập Nhật
           </Button>
         </div>
 
         {/* Navigation */}
-        <div className="calendar-nav">
+        <div className="calendar-nav-menstrual">
           <Button
             type="text"
             icon={<LeftOutlined />}
             onClick={prevMonth}
-            className="nav-button"
+            className="nav-button-menstrual"
           />
-          <div className="month-year">
+          <div className="month-year-menstrual">
             <span className="month-name">{monthNames[month]}</span>
             <span className="year-number">{year}</span>
           </div>
@@ -212,16 +212,16 @@ const CalendarView = ({
             type="text"
             icon={<RightOutlined />}
             onClick={nextMonth}
-            className="nav-button"
+            className="nav-button-menstrual"
           />
         </div>
 
         {/* Calendar Grid - Cấu trúc table tương tự DoctorSchedule */}
-        <div className="calendar-grid">
+        <div className="calendar-grid-menstrual">
           {/* Day headers - Đảm bảo chỉ hiển thị 7 ngày */}
           {dayNames.slice(0, 7).map((dayName) => (
-            <div key={dayName} className="day-header">
-              <div className="day-name">{dayName}</div>
+            <div key={dayName} className="day-header-menstrual">
+              <div className="day-name-menstrual">{dayName}</div>
             </div>
           ))}
 
@@ -231,7 +231,7 @@ const CalendarView = ({
               key={idx}
               title={getTooltipContent(day)}
               placement="top"
-              overlayClassName="calendar-tooltip"
+              overlayClassName="calendar-tooltip-menstrual"
             >
               <div
                 className={getDayClass(day)}
@@ -244,17 +244,17 @@ const CalendarView = ({
         </div>
 
         {/* Legend */}
-        <div className="calendar-legend">
-          <div className="legend-item">
-            <div className="legend-dot period-dot"></div>
+        <div className="calendar-legend-menstrual">
+          <div className="legend-item-menstrual">
+            <div className="legend-dot-menstrual period-dot-menstrual"></div>
             <span>Kỳ hành kinh</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-dot ovulation-dot"></div>
+          <div className="legend-item-menstrual">
+            <div className="legend-dot-menstrual ovulation-dot-menstrual"></div>
             <span>Ngày rụng trứng</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-dot today-dot"></div>
+          <div className="legend-item-menstrual">
+            <div className="legend-dot-menstrual today-dot-menstrual "></div>
             <span>Hôm nay</span>
           </div>
         </div>

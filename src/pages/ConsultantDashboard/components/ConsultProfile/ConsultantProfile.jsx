@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import './ConsultantProfile.css';
 import { Statistic } from 'antd';
-import { BookOutlined, CheckCircleOutlined, ExperimentOutlined, MessageOutlined, QuestionCircleOutlined, TeamOutlined, TrophyOutlined } from '@ant-design/icons';
+import {
+  BookOutlined,
+  CheckCircleOutlined,
+  ExperimentOutlined,
+  MessageOutlined,
+  QuestionCircleOutlined,
+  TeamOutlined,
+  TrophyOutlined,
+} from '@ant-design/icons';
 
 const ConsultantProfile = ({ consultantData }) => {
   const [activeTab, setActiveTab] = useState('info');
@@ -51,28 +59,28 @@ const ConsultantProfile = ({ consultantData }) => {
   // };
 
   const getDepartment = (role) => {
-    console.log("role: ", role)
+    console.log('role: ', role);
     switch (role) {
-      case "ADMIN":
-        return "Quản trị viên";
-      case "CONSULTANT":
-        return "Bộ phận tư vấn";
-      case "STAFF":
-        return "Phòng xét nghiệm";
-      case "MANAGER":
-        return "Phòng QUản Lý";
-      case "RECEPTIONIST":
-        return "Tiếp tân";
+      case 'ADMIN':
+        return 'Quản trị viên';
+      case 'CONSULTANT':
+        return 'Bộ phận tư vấn';
+      case 'STAFF':
+        return 'Phòng xét nghiệm';
+      case 'MANAGER':
+        return 'Phòng QUản Lý';
+      case 'RECEPTIONIST':
+        return 'Tiếp tân';
       default:
-        return "Khách hàng";
+        return 'Khách hàng';
     }
-  }
+  };
 
   return (
     <div className="consultant-profile">
       {/* Header */}
-      <div className="profile-header">
-        <div className="header-content">
+      <div className="consult-profile-header">
+        <div className="consult-header-content">
           <h2>👤 Hồ sơ cá nhân</h2>
           <p>Thông tin chi tiết về tài khoản và hoạt động của bạn</p>
         </div>
@@ -90,8 +98,8 @@ const ConsultantProfile = ({ consultantData }) => {
             {/* <p className="specialization">{consultantData.specialization}</p> */}
             <div className="rating">
               <span className="rating-value">
-                {consultantData.averageFeedBackRating} ⭐ ({consultantData.totalFeedBack} đánh
-                giá)
+                {consultantData.averageFeedBackRating} ⭐ (
+                {consultantData.totalFeedBack} đánh giá)
               </span>
             </div>
             <div className="contact-info">
@@ -109,9 +117,7 @@ const ConsultantProfile = ({ consultantData }) => {
             <span className="stat-label">Cuộc hẹn</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">
-              {consultantData.publishedBlogs}
-            </span>
+            <span className="stat-number">{consultantData.publishedBlogs}</span>
             <span className="stat-label">Bài viết</span>
           </div>
           <div className="stat-item">
@@ -147,8 +153,8 @@ const ConsultantProfile = ({ consultantData }) => {
       <div className="tab-content">
         {activeTab === 'info' && (
           <div className="info-tab">
-            <div className="info-sections">
-              <div className="info-section">
+            <div className="consult-info-section">
+              <div className="consult-info-section">
                 <h4>📋 Thông tin cơ bản</h4>
                 <div className="info-grid">
                   <div className="info-row">
@@ -167,11 +173,10 @@ const ConsultantProfile = ({ consultantData }) => {
                     <label>Ngày tham gia:</label>
                     <span>{formatDate(consultantData.created_at)}</span>
                   </div>
-
                 </div>
               </div>
 
-              <div className="info-section">
+              <div className="consult-info-section">
                 <h4>🏥 Thông tin chuyên môn</h4>
                 <div className="info-grid">
                   <div className="info-row">
@@ -190,7 +195,6 @@ const ConsultantProfile = ({ consultantData }) => {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         )}
@@ -333,11 +337,12 @@ const ConsultantProfile = ({ consultantData }) => {
                       Trạng thái tài khoản:
                     </span>
                     {consultantData.is_banned ? (
-                      <span className="status-active" style={{color: "red"}} >Bị Ban</span>
+                      <span className="status-active" style={{ color: 'red' }}>
+                        Bị Ban
+                      </span>
                     ) : (
                       <span className="status-active">✅ Đang hoạt động</span>
                     )}
-
                   </div>
                   <div className="security-item">
                     <span className="security-label">Phiên đăng nhập:</span>
@@ -368,7 +373,7 @@ const ConsultantProfile = ({ consultantData }) => {
           </div>
         )}
       </div>
-    </div >
+    </div>
   );
 };
 

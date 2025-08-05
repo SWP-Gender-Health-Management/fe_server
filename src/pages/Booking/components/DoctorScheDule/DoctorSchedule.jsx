@@ -48,7 +48,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
       console.log('Raw start is null/undefined:', rawStart);
       return '';
     }
-    const timeStr = rawStart.length === 5 ? rawStart  : rawStart;
+    const timeStr = rawStart.length === 5 ? rawStart : rawStart;
     return timeStr.slice(0, 5);
   };
 
@@ -147,7 +147,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         console.error('Lỗi khi lấy lịch bác sĩ:', err);
       }
     };
-
+    fetchTimeSlots();
     fetchSchedule();
   }, [doctor.account_id, weekStart]);
 
@@ -210,7 +210,10 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
 
         <div className="doctor-info-header">
           <div className="doctor-avatar-header">
-            <img src={doctor.avatar} alt={doctor.full_name} />
+            <img
+              src={doctor.avatar || `https://ui-avatars.com/api/?name=${doctor.full_name}&background=52c41a&color=fff&size=60`}
+              alt={doctor.full_name}
+            />
             <div className="online-indicator"></div>
           </div>
           <div className="doctor-details">
@@ -287,7 +290,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
                     const isSelected =
                       selectedSlot &&
                       selectedSlot.date.toDateString() ===
-                        date.toDateString() &&
+                      date.toDateString() &&
                       selectedSlot.start_at === time;
 
                     // Xác định class và icon

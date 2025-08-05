@@ -40,8 +40,7 @@ const ConsultantTab = () => {
     sunday: [],
   });
 
-  const accountId = Cookies.get('accountId');
-  const accessToken = Cookies.get('accessToken');
+
 
 
   useEffect(() => {
@@ -95,28 +94,32 @@ const ConsultantTab = () => {
 
   const fetchWeeklySchedule = async () => {
     try {
-      await axios.get(`${API_URL}/manager/get-consultant-pattern-by-week`, {
-        params: {
-          consultant_id: selectedConsultant?.account_id || '',
-          start_date: getStartOfWeek(new Date()),
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => {
-        console.log("Weekly schedule response:", response.data.result);
-        const schedule = response.data.result;
-        setWeeklySchedule({
-          monday: schedule.monday,
-          tuesday: schedule.tuesday,
-          wednesday: schedule.wednesday,
-          thursday: schedule.thursday,
-          friday: schedule.friday,
-          saturday: schedule.saturday,
-          sunday: schedule.sunday,
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      await axios
+        .get(`${API_URL}/manager/get-consultant-pattern-by-week`, {
+          params: {
+            consultant_id: selectedConsultant?.account_id || '',
+            start_date: getStartOfWeek(new Date()),
+          },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
         })
-      });
+        .then((response) => {
+          console.log('Weekly schedule response:', response.data.result);
+          const schedule = response.data.result;
+          setWeeklySchedule({
+            monday: schedule.monday,
+            tuesday: schedule.tuesday,
+            wednesday: schedule.wednesday,
+            thursday: schedule.thursday,
+            friday: schedule.friday,
+            saturday: schedule.saturday,
+            sunday: schedule.sunday,
+          });
+        });
     } catch (error) {
       console.error("Error fetching weekly schedule:", error);
     }
@@ -124,6 +127,7 @@ const ConsultantTab = () => {
 
   const fetchConsultant = async () => {
     try {
+      const accessToken = Cookies.get('accessToken');
       await axios.get(
         `${API_URL}/manager/get-consultants`,
         {
@@ -166,23 +170,36 @@ const ConsultantTab = () => {
 
 
     try {
-      await axios.post(`${API_URL}/manager/create-consultant-pattern`, {
-        consultant_id: selectedConsultant?.account_id || '',
-        date: new Date(selectedDate).toISOString().split('T')[0],
-        working_slot_ids: selectedSlots,
-      }, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => {
-        console.log("Schedule set response:", response.data.result);
-        console.log('Schedule submitted:', {
-          consultant: selectedConsultant,
-          date: selectedDate,
-          slots: selectedSlots,
+      const accountId = Cookies.get('accountId');
+      const accessToken = Cookies.get('accessToken');
+      await axios
+        .post(
+          `${API_URL}/manager/create-consultant-pattern`,
+          {
+            consultant_id: selectedConsultant?.account_id || '',
+            date: new Date(selectedDate).toISOString().split('T')[0],
+            working_slot_ids: selectedSlots,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((response) => {
+          console.log('Schedule set response:', response.data.result);
+          console.log('Schedule submitted:', {
+            consultant: selectedConsultant,
+            date: selectedDate,
+            slots: selectedSlots,
+          });
+          setScheduleModalVisible(false);
+          setSelectedDate(null);
+          setSelectedSlots([]);
+          setSelectedConsultant(null);
         });
-      });
+
     } catch (error) {
       console.error("Error setting consultant pattern:", error);
     } finally {
@@ -226,20 +243,19 @@ const ConsultantTab = () => {
 
 
     return (
-      <div className="weekly-schedule">
+      <div className="schedule-content">
         <div className="schedule-header">
           <h3>Lịch làm việc của {selectedConsultant?.full_name}</h3>
-          {/* <p>Chuyên khoa: {selectedConsultant?.specialty}</p> */}
         </div>
 
         <table className="schedule-table">
           <thead>
-            <tr className="schedule-header-row">
-              <th className="time-column">Thời gian</th>
+            <tr>
+              <th>Thời gian</th>
               {days.map((day, index) => (
                 <th
                   key={day}
-                  className={`day-column ${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}
+                  className={`${scheduleKeys[index] === 'sunday' ? 'sunday-column' : ''}`}
                 >
                   {day}
                 </th>
@@ -248,22 +264,22 @@ const ConsultantTab = () => {
           </thead>
           <tbody>
             {timeSlots.map((slot) => (
-              <tr key={slot.id} className="schedule-row">
-                <td className="time-slot-label">{slot.time}</td>
+              <tr key={slot.id}>
+                <td>{slot.time}</td>
                 {scheduleKeys.map((day) => (
                   <td
                     key={`${day}-${slot.id}`}
-                    className={`schedule-cell ${day === 'sunday' ? 'day-off' : ''}`}
+                    className={`${day === 'sunday' ? 'day-off' : ''}`}
                   >
                     {day === 'sunday' ? (
                       <span className="day-off-icon">Nghỉ</span>
                     ) : weeklySchedule[day].includes(slot.id) ? (
-                      <div className="scheduled-slot">
+                      <div className="time-slot scheduled">
                         <CheckOutlined className="scheduled-icon" />
                         <span>Làm việc</span>
                       </div>
                     ) : (
-                      <div className="not-scheduled-slot">
+                      <div className="time-slot not-scheduled">
                         <CloseOutlined className="not-scheduled-icon" />
                         <span>Nghỉ</span>
                       </div>
@@ -291,6 +307,7 @@ const ConsultantTab = () => {
           />
         </div>
         <select
+          className="select-status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -443,8 +460,11 @@ const ConsultantTab = () => {
             <label>Chọn ngày:</label>
             <DatePicker
               onChange={(date) => setSelectedDate(date)}
+              value={selectedDate}
               disabledDate={(current) => {
-                return current && (current.day() === 0 || current.isBefore(moment())); // Disable Sundays and past days
+                return (
+                  current && (current.day() === 0 || current.isBefore(moment()))
+                ); // Disable Sundays and past days
               }}
               placeholder="Chọn ngày làm việc"
               className="date-picker-field"
@@ -456,6 +476,7 @@ const ConsultantTab = () => {
             <div className="time-slots-container">
               {timeSlots.map((slot) => (
                 <Checkbox
+                  checked={selectedSlots.includes(slot.slot_id)}
                   key={slot.slot_id}
                   onChange={(e) => {
                     if (e.target.checked) {

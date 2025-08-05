@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import {
   useNavigate
 } from 'react-router-dom';
-import { 
+import {
   HomeOutlined,
   CalendarOutlined,
   EditOutlined,
@@ -33,8 +33,7 @@ const ConsultantDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
-  const accessToken = Cookies.get("accessToken");
-  const accountId = Cookies.get("accountId");
+
 
   // Menu items for consultant
   const menuItems = [
@@ -122,6 +121,7 @@ const ConsultantDashboard = () => {
 
   const fetchConsultAppointmentStat = async () => {
     try {
+      const accessToken = Cookies.get("accessToken");
       const appointmentStatResponse = await axios.get(
         `${API_URL}/consult-appointment/get-consult-appointment-stats`,
         {
@@ -146,6 +146,8 @@ const ConsultantDashboard = () => {
   const fetchQuestions = async () => {
     // Simulate fetching questions from an API
     try {
+      const accessToken = Cookies.get("accessToken");
+      const accountId = Cookies.get("accountId");
       const responseUnreplied = await axios.get(
         `${API_URL}/question/get-unreplied-questions`,
         {
@@ -181,6 +183,8 @@ const ConsultantDashboard = () => {
 
   const fetchBlogs = async function () {
     try {
+      const accessToken = Cookies.get("accessToken");
+      const accountId = Cookies.get("accountId");
       // console.log('useEffect has been called!:', accountId);
       // console.log('useEffect has been called!:', accessToken);
       const response = await axios.get(
@@ -200,7 +204,12 @@ const ConsultantDashboard = () => {
           const publishedBlogs = response.data.result.filter((blog) => {
             return blog.status == 'true' || blog.status == true
           }).length;
-          prev = { ...prev, totalBlogs, publishedBlogs, pendingBlogs: totalBlogs - publishedBlogs }
+          prev = {
+            ...prev,
+            totalBlogs,
+            publishedBlogs,
+            pendingBlogs: totalBlogs - publishedBlogs,
+          };
         }
         return prev;
       });
@@ -320,7 +329,7 @@ const ConsultantDashboard = () => {
             appointments={appointments || []}
             fetchWeekAppointment={fetchWeekAppointment}
             consultantData={consultantData || {}}
-            fetchConsultAppointmentStat = {fetchConsultAppointmentStat}
+            fetchConsultAppointmentStat={fetchConsultAppointmentStat}
           />
         );
       case 'blogs':

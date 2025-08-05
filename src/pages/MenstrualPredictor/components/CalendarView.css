@@ -1,11 +1,11 @@
 /* Calendar Container */
-.calendar-container {
+.calendar-container-menstrual {
   width: 100%;
   /* max-width: 900px; */
   margin: 0 auto;
 }
 
-.calendar-card {
+.calendar-card-menstrual {
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: none;
@@ -16,7 +16,7 @@
 
 
 /* Calendar Header */
-.calendar-header {
+.calendar-header-menstrual {
   background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 50%, #ffa8c0 100%);
   padding: 20px 24px;
   display: flex;
@@ -24,7 +24,7 @@
   align-items: center;
 }
 
-.calendar-title {
+.calendar-title-menstrual {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -34,11 +34,11 @@
   margin: 0;
 }
 
-.calendar-icon {
+.calendar-icon-menstrual {
   font-size: 24px;
 }
 
-.calendar-update-button {
+.calendar-update-button-menstrual {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
@@ -53,23 +53,23 @@
   backdrop-filter: blur(10px);
 }
 
-.calendar-update-button:hover {
+.calendar-update-button-menstrual:hover {
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.calendar-update-button:active {
+.calendar-update-button-menstrual:active {
   transform: translateY(0);
 }
 
-.calendar-update-button .anticon {
+.calendar-update-button-menstrual .anticon {
   font-size: 14px;
 }
 
 /* Navigation */
-.calendar-nav {
+.calendar-nav-menstrual {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -78,7 +78,7 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.nav-button {
+.nav-button-menstrual {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -91,33 +91,33 @@
   color: #666;
 }
 
-.nav-button:hover {
+.nav-button-menstrual:hover {
   background: #ff6b9d;
   color: white;
   border-color: #ff6b9d;
   transform: scale(1.05);
 }
 
-.month-year {
+.month-year-menstrual {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
 
-.month-name {
+.month-name-menstrual {
   font-size: 18px;
   font-weight: 600;
   color: #333;
 }
 
-.year-number {
+.year-number-menstrual {
   font-size: 14px;
   color: #666;
 }
 
 /* Calendar Grid - Cấu trúc tương tự DoctorSchedule */
-.calendar-grid {
+.calendar-grid-menstrual {
   display: grid;
   grid-template-columns: repeat(7, 0.5fr) !important;
   gap: 1px;
@@ -129,7 +129,7 @@
 }
 
 /* Day Headers - Tương tự DoctorSchedule */
-.day-header {
+.day-header-menstrual {
   background: linear-gradient(135deg, #337ab7 0%, #1f2b6c 100%);
   padding: 15px 10px;
   text-align: center;
@@ -141,14 +141,14 @@
   justify-content: center;
 }
 
-.day-name {
+.day-name-menstrual {
   font-size: 0.85rem;
   font-weight: 700;
   color: white;
 }
 
 /* Calendar Days - Tương tự DoctorSchedule */
-.calendar-day {
+.calendar-day-menstrual {
   background: white;
   padding: 15px 5px;
   text-align: center;
@@ -165,57 +165,57 @@
   min-height: 70px;
 }
 
-.calendar-day.empty {
+.calendar-day-menstrual.empty-menstrual {
   background: transparent;
   cursor: default;
   border: none;
 }
 
-.calendar-day.normal-day {
+.calendar-day-menstrual.normal-day-menstrual {
   color: #333;
   background: #f8fafc;
 }
 
-.calendar-day.normal-day:hover {
+.calendar-day-menstrual.normal-day-menstrual:hover {
   background: #f0fdf4;
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(255, 107, 157, 0.15);
 }
 
-.calendar-day.period-day {
+.calendar-day-menstrual.period-day-menstrual {
   background: linear-gradient(135deg, #ff6b9d, #e91e63);
   color: white;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
 }
 
-.calendar-day.ovulation-day {
+.calendar-day-menstrual.ovulation-day-menstrual {
   background: linear-gradient(135deg, #ffa726, #ff9800);
   color: white;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
 }
 
-.calendar-day.today {
+.calendar-day-menstrual.today-menstrual {
   border: 2px solid #ff6b9d;
   font-weight: 700;
   background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   color: white;
 }
 
-.calendar-day.today.normal-day {
+.calendar-day-menstrual.today-menstrual.normal-day-menstrual {
   background: linear-gradient(135deg, #ff6b6b, #ff8e53);
   color: white;
 }
 
-.calendar-day.selected {
+.calendar-day-menstrual.selected-menstrual {
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   border: 2px solid #ff6b9d;
 }
 
 /* Legend */
-.calendar-legend {
+.calendar-legend-menstrual {
   display: flex;
   justify-content: center;
   gap: 24px;
@@ -224,7 +224,7 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.legend-item {
+.legend-item-menstrual {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -233,38 +233,38 @@
   font-weight: 500;
 }
 
-.legend-dot {
+.legend-dot-menstrual {
   width: 16px;
   height: 16px;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.legend-dot.period-dot {
+.legend-dot-menstrual.period-dot-menstrual {
   background: linear-gradient(135deg, #ff6b9d, #e91e63);
 }
 
-.legend-dot.ovulation-dot {
+.legend-dot-menstrual.ovulation-dot-menstrual {
   background: linear-gradient(135deg, #ffa726, #ff9800);
 }
 
-.legend-dot.today-dot {
+.legend-dot-menstrual.today-dot-menstrual  {
   background: #ff6b9d;
   border: 2px solid white;
   box-shadow: 0 0 0 2px #ff6b9d;
 }
 
 /* Tooltip Styles */
-.calendar-tooltip .ant-tooltip-content {
+.calendar-tooltip-menstrual .ant-tooltip-content {
   background: rgba(0, 0, 0, 0.85);
   border-radius: 8px;
 }
 
-.tooltip-content {
+.tooltip-content-menstrual {
   text-align: center;
 }
 
-.tooltip-title {
+.tooltip-title-menstrual {
   font-weight: 600;
   margin-bottom: 4px;
   display: flex;
@@ -273,30 +273,30 @@
   gap: 4px;
 }
 
-.tooltip-title.period-tooltip {
+.tooltip-title-menstrual.period-tooltip {
   color: #ff6b9d;
 }
 
-.tooltip-title.ovulation-tooltip {
+.tooltip-title-menstrual.ovulation-tooltip {
   color: #ffa726;
 }
 
-.tooltip-title.today-tooltip {
+.tooltip-title-menstrual.today-tooltip {
   color: #ff6b9d;
 }
 
-.tooltip-date {
+.tooltip-date-menstrual {
   font-size: 12px;
   opacity: 0.8;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .calendar-container {
+  .calendar-container-menstrual {
     max-width: 100%;
   }
 
-  .calendar-header {
+  .calendar-header-menstrual {
     padding: 16px 20px;
     flex-direction: column;
     gap: 12px;
@@ -304,129 +304,129 @@
     
   }
 
-  .calendar-title {
+  .calendar-title-menstrual {
     font-size: 18px;
   }
 
-  .calendar-update-button {
+  .calendar-update-button-menstrual {
     height: 36px;
     padding: 0 12px;
     font-size: 13px;
     background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
   }
 
-  .calendar-grid {
+  .calendar-grid-menstrual {
     margin: 16px;
     gap: 1px;
     min-height: 400px;
     grid-template-columns: repeat(7, 1fr); /* Đảm bảo luôn 7 cột */
   }
 
-  .calendar-day {
+  .calendar-day-menstrual {
     min-height: 60px;
     font-size: 15px;
     padding: 12px 5px;
   }
 
-  .day-header {
+  .day-header-menstrual {
     height: 45px;
     font-size: 13px;
     padding: 12px 6px;
   }
 
-  .calendar-nav {
+  .calendar-nav-menstrual {
     padding: 16px 20px;
   }
 
-  .month-name {
+  .month-name-menstrual {
     font-size: 16px;
   }
 
-  .calendar-legend {
+  .calendar-legend-menstrual {
     gap: 16px;
     padding: 16px 20px;
     flex-wrap: wrap;
   }
 
-  .legend-item {
+  .legend-item-menstrual {
     font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
-  .calendar-header {
+  .calendar-header-menstrual {
     padding: 12px 16px;
   }
 
-  .calendar-title {
+  .calendar-title-menstrual {
     font-size: 16px;
     gap: 8px;
   }
 
-  .calendar-icon {
+  .calendar-icon-menstrual {
     font-size: 20px;
   }
 
-  .calendar-update-button {
+  .calendar-update-button-menstrual {
     height: 32px;
     padding: 0 10px;
     font-size: 12px;
   }
 
-.calendar-update-button.ant-btn-primary{
+.calendar-update-button-menstrual.ant-btn-primary{
     background: linear-gradient(135deg, #ff6b6b, #ff8e53) !important; 
   }
 
-  .calendar-update-button .anticon {
+  .calendar-update-button-menstrual .anticon {
     font-size: 12px;
   }
 
-  .calendar-grid {
+  .calendar-grid-menstrual {
     margin: 12px;
     gap: 1px;
     min-height: 350px;
     grid-template-columns: repeat(7, 1fr); /* Đảm bảo luôn 7 cột */
   }
 
-  .calendar-day {
+  .calendar-day-menstrual {
     min-height: 50px;
     font-size: 14px;
     padding: 10px 4px;
   }
 
-  .day-header {
+  .day-header-menstrual {
     height: 40px;
     font-size: 12px;
     padding: 10px 4px;
   }
 
-  .calendar-nav {
+  .calendar-nav-menstrual {
     padding: 12px 16px;
   }
 
-  .nav-button {
+  .nav-button-menstrual    {
     width: 36px;
     height: 36px;
   }
 
-  .month-name {
+  .month-name-menstrual {
     font-size: 14px;
   }
 
-  .year-number {
+  .year-number-menstrual {
     font-size: 12px;
   }
 
-  .calendar-legend {
+  .calendar-legend-menstrual {
     gap: 12px;
     padding: 12px 16px;
   }
 
-  .legend-item {
+  .legend-item-menstrual {
     font-size: 12px;
   }
 
-  .legend-dot {
+  .legend-dot-menstrual {
     width: 14px;
     height: 14px;
   }
@@ -444,33 +444,33 @@
   }
 }
 
-.calendar-card {
+.calendar-card-menstrual {
   animation: fadeIn 0.5s ease-out;
 }
 
 /* Hover effects */
-.calendar-day:not(.empty):hover {
+.calendar-day-menstrual:not(.empty):hover {
   z-index: 1;
 }
 
-.calendar-day.period-day:hover,
-.calendar-day.ovulation-day:hover {
+.calendar-day-menstrual.period-day:hover,
+.calendar-day-menstrual.ovulation-day:hover {
   transform: scale(1.03);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Focus states for accessibility */
-.calendar-day:focus {
+.calendar-day-menstrual:focus {
   outline: 2px solid #ff6b9d;
   outline-offset: 2px;
 }
 
-.nav-button:focus {
+.nav-button-menstrual:focus {
   outline: 2px solid #ff6b9d;
   outline-offset: 2px;
 }
 
-.calendar-update-button:focus {
+.calendar-update-button-menstrual:focus {
   outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
 }
