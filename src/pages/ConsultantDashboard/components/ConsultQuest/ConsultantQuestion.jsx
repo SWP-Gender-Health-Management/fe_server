@@ -128,7 +128,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
     <div className="consultant-question">
       {/* Header */}
       <div className="question-header">
-        <div className="header-content">
+        <div className="consultBlog-header-content">
           <h2>❓ Hỏi & Đáp</h2>
           <p>Trả lời các câu hỏi từ người dùng một cách chuyên nghiệp</p>
         </div>
@@ -145,7 +145,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
         </div>
       </div>
 
-      <div className="question-content">
+      <div className="consult-question-content">
         {/* Left Panel - Questions List */}
         <div className="questions-panel">
           <div className="panel-header">
@@ -210,10 +210,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
         {/* Right Panel - Question Detail & Answer */}
         <div className="detail-panel">
           {selectedQuestion ? (
-            // <Modal
-            //   open={selectedQuestion}
-            //   onCancel={() => { setSelectedQuestion(null); }}
-            // >
+
             <div className="question-detail">
               <div className="detail-header">
 
