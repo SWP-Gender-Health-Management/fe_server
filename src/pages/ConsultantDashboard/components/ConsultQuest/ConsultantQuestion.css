@@ -47,16 +47,16 @@
   }
 }
 
-.header-content h2 {
+.consultBlog-header-content h2 {
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: linear-gradient(135deg, #f97316, #ea580c) ;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.header-content p {
+.consultBlog-header-content p {
   margin: 0;
   color: #6b7280;
   font-size: 15px;
