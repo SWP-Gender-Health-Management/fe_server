@@ -33,7 +33,7 @@ const LabAppointmentsTab = ({
 }) => {
   // Columns cho bảng lịch hẹn xét nghiệm
 
-  const accessToken = Cookies.get('accessToken');
+  
   const accountId = Cookies.get('accountId');
   const [deleteAppointment, setDeleteAppointment] = useState(null);
   const [refundAppointment, setRefundAppointment] = useState(null);
@@ -79,6 +79,7 @@ const LabAppointmentsTab = ({
       return;
     }
     console.log('feedbackForm: ', feedbackForm);
+    const accessToken = Cookies.get('accessToken');
     try {
       await axios
         .post(
@@ -106,6 +107,7 @@ const LabAppointmentsTab = ({
   };
 
   const handleRefundAppointment = async () => {
+    const accessToken = Cookies.get('accessToken');
     try {
       await axios
         .post(
@@ -131,6 +133,7 @@ const LabAppointmentsTab = ({
   };
 
   const handleCancelAppointment = async (appointmentId) => {
+    const accessToken = Cookies.get('accessToken');
     try {
       await axios
         .put(

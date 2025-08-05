@@ -39,8 +39,7 @@ const ConsultAppointmentsTab = ({
   dayjs,
   fetchConApp,
 }) => {
-  const accessToken = Cookies.get('accessToken');
-  const accountId = Cookies.get('accountId');
+
 
   const [feedbackForm, setFeedbackForm] = useState({
     content: '',
@@ -80,6 +79,7 @@ const ConsultAppointmentsTab = ({
   };
 
   const handleCancelAppointment = async (appointmentId) => {
+    const accessToken = Cookies.get('accessToken');
     try {
       await axios
         .put(
@@ -104,6 +104,7 @@ const ConsultAppointmentsTab = ({
   };
 
   const handleRefundAppointment = async () => {
+    const accessToken = Cookies.get('accessToken');
     try {
       await axios
         .post(
@@ -134,6 +135,7 @@ const ConsultAppointmentsTab = ({
       return;
     }
     console.log('feedbackForm: ', feedbackForm);
+    const accessToken = Cookies.get('accessToken');
     try {
       await axios
         .post(
