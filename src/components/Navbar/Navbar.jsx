@@ -26,22 +26,20 @@ import Logout from '@components/Logout/Logout';
 import { useAuth } from '@context/AuthContext';
 import '@styles/reset.css';
 import NotificationDropdown from '../Notification/NotificationDropdown';
-import api from '@/api/api';
 
 import './Navbar.css';
 
 const API_URL = 'http://localhost:3000';
 
 const Navbar = ({ onLoginClick }) => {
-  const { isLoggedIn, userInfo, onLogout } = useAuth(); // ✅ lấy từ context
+  const { isLoggedIn, userInfo, onLogout } = useAuth();
   const { fullname, role } = userInfo || {};
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLogoutVisible, setIsLogoutVisible] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [blogTitle, setBlogTitle] = useState(null);
-  const [loading, setLoading] = useState(false); // Sửa tên _loading thành loading
+  const [loading, setLoading] = useState(false);
 
   // Handle scroll effect
   useEffect(() => {
@@ -54,39 +52,21 @@ const Navbar = ({ onLoginClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const match = location.pathname.match(/^\/blog\/(\d+)$/);
-    if (match) {
-      const blogId = match[1];
-      const fetchBlogTitle = async () => {
-        try {
-          const res = await api.get(`/blog/get-blog-by-id/${blogId}`);
-          setBlogTitle(res.data.result.title);
-        } catch (error) {
-          console.error('Không lấy được tiêu đề blog:', error);
-          setBlogTitle('Không tìm thấy');
-        }
-      };
-      fetchBlogTitle();
-    }
-  }, [location.pathname]);
+  // const pathDisplayNames = {
+  //   'dich-vu': 'Dịch vụ',
+  //   'tin-tuc': 'Tin tức',
+  //   've-chung-toi': 'Về chúng tôi',
+  //   'lien-he': 'Liên hệ',
+  //   'tai-khoan': 'Tài khoản',
+  //   'chu-ki': 'Theo dõi chu kỳ',
+  //   'hoi-dap': 'Hỏi đáp',
+  //   'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
+  //   'admin': 'Quản trị viên',
+  //   'dat-lich-xet-nghiem': 'Đặt lịch xét nghiệm',
+  //   'dat-lich-tu-van': 'Đặt lịch tư vấn',
+  // };
 
-  const pathDisplayNames = {
-    'dich-vu': 'Dịch vụ',
-    'tin-tuc': 'Tin tức',
-    've-chung-toi': 'Về chúng tôi',
-    'lien-he': 'Liên hệ',
-    'tai-khoan': 'Tài khoản',
-    'chu-ki': 'Theo dõi chu kỳ',
-    'hoi-dap': 'Hỏi đáp',
-    'chu-ky-kinh-nguyet': 'Chu kỳ kinh nguyệt',
-    'admin': 'Quản trị viên',
-    'blog': 'Blog',
-    'dat-lich-xet-nghiem': 'Đặt lịch xét nghiệm',
-    'dat-lich-tu-van': 'Đặt lịch tư vấn',
-  };
-
-  const pathnames = location.pathname.split('/').filter((x) => x);
+  // const pathnames = location.pathname.split('/').filter((x) => x);
 
   // Services dropdown menu
   const servicesMenu = {
@@ -247,10 +227,8 @@ const Navbar = ({ onLoginClick }) => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const userId = Cookies.get('accountId') || 1; // Thay sessionStorage bằng Cookies
-      const res = await axios.get(
-        `${API_URL}/api/notifications?userId=${userId}`
-      );
+      const userId = Cookies.get('accountId') || 1;
+      const res = await axios.get(`${API_URL}/api/notifications?userId=${userId}`);
       setNotifications(res.data || []);
     } catch (err) {
       console.error('Failed to fetch notifications:', err);
@@ -440,56 +418,6 @@ const Navbar = ({ onLoginClick }) => {
             />
           </div>
         </div>
-
-        {/* Breadcrumb - only show on non-home pages */}
-        {pathnames.length > 0 && (
-          <div className="breadcrumb-bar">
-            <div className="breadcrumb-content">
-              <Breadcrumb
-                items={[
-                  {
-                    title: (
-                      <Link to="/" className="breadcrumb-link">
-                        Trang chủ
-                      </Link>
-                    ),
-                  },
-                  ...pathnames.map((name, index) => {
-                    const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-                    if (
-                      index === pathnames.length - 1 &&
-                      pathnames[index - 1] === 'blog' &&
-                      !isNaN(name)
-                    ) {
-                      return {
-                        title: (
-                          <span className="breadcrumb-current">
-                            {blogTitle || 'Đang tải...'}
-                          </span>
-                        ),
-                      };
-                    } else {
-                      const displayName =
-                        pathDisplayNames[name] || name.replace(/-/g, ' ');
-                      return {
-                        title:
-                          index === pathnames.length - 1 ? (
-                            <span className="breadcrumb-current">
-                              {displayName}
-                            </span>
-                          ) : (
-                            <Link to={routeTo} className="breadcrumb-link">
-                              {displayName}
-                            </Link>
-                          ),
-                      };
-                    }
-                  }),
-                ]}
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modal Logout */}
