@@ -27,7 +27,7 @@
 }
 
 /* Header */
-.profile-header {
+.consult-profile-header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
@@ -39,7 +39,7 @@
   overflow: hidden;
 }
 
-.profile-header::before {
+.consult-profile-header::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -64,16 +64,16 @@
   }
 }
 
-.header-content h2 {
+.consult-header-content h2 {
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53); 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.header-content p {
+.consult-header-content p {
   margin: 0;
   color: #6b7280;
   font-size: 15px;
@@ -280,20 +280,16 @@
 }
 
 /* Info Tab */
-.info-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.info-section {
+.consult-info-section {
   background: rgba(249, 250, 251, 0.5);
   border-radius: 16px;
   padding: 25px;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
-.info-section h4 {
+.consult-info-section h4 {
   margin: 0 0 20px 0;
   font-size: 18px;
   font-weight: 600;
@@ -637,7 +633,7 @@
     padding: 25px;
   }
 
-  .info-section,
+  .consult-info-section,
   .settings-section,
   .stat-card {
     padding: 20px;
@@ -717,17 +713,17 @@
     border-radius: 15px;
   }
 
-  .info-sections {
+  .consult-info-sections {
     gap: 20px;
   }
 
-  .info-section,
+  .consult-info-section,
   .settings-section,
   .stat-card {
     padding: 15px;
   }
 
-  .info-section h4,
+  .consult-info-section h4,
   .settings-section h4 {
     font-size: 16px;
   }
