@@ -74,6 +74,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
   const [testResults, setTestResults] = useState({});
   const [resultValue, setResultValue] = useState(0);
 
+
   // Mock historical data với nhiều xét nghiệm
   // const mockHistoricalAppointments = [
   //   {
@@ -163,6 +164,12 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
   useEffect(() => {
     searchAppointments();
   }, [currentPage, pageSize, appointments]);
+
+  useEffect(() => {
+    fetchInputAppointments();
+    setAppointments(inputAppointments);
+    searchAppointments();
+  }, []);
 
   const searchAppointments = async () => {
     setSearchLoading(true);
@@ -336,7 +343,6 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       console.log('result entities: ', result);
       if (result.length > 0) {
         const accessToken = Cookies.get('accessToken');
-        const accountId = Cookies.get('accountId');
         const responseUpdateResult = await axios.post(
           `${API_URL}/staff/update-result`,
           {
@@ -363,7 +369,6 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
 
       if (newStatus !== selectedAppointment.status) {
         const accessToken = Cookies.get('accessToken');
-        const accountId = Cookies.get('accountId');
         const responseUpdateStatus = await axios.post(
           `${API_URL}/staff/update-appointment-status`,
           {
@@ -510,7 +515,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
       <div className="search-appointments">
         {/* Header */}
         <div className="page-header">
-          <div className="header-content">
+          <div className="staff-header-content">
             <h2>Tìm kiếm Lịch hẹn</h2>
             <p>Tra cứu và cập nhật lịch sử các lịch hẹn xét nghiệm</p>
           </div>
@@ -712,10 +717,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
                               <p>{test.result}</p>
                             ) : (
                               <InputNumber
-                                value={null}
-                                // onChange={(e) =>
-                                //   handleInputResult(test.name, e.target.value)
-                                // }
+                                value={testResults[test.name]?.value || null}
                                 onChange={(value) =>
                                   handleInputResult(test.name, value)
                                 }

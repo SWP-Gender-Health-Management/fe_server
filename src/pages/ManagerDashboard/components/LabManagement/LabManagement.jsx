@@ -13,6 +13,8 @@ import {
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+
+
 const API_URL = 'http://localhost:3000';
 
 const LabManagement = () => {
@@ -129,7 +131,6 @@ const LabManagement = () => {
 
   const handleRefund = async (appointmentId) => {
     try {
-      const accountId = Cookies.get('accountId');
       const accessToken = Cookies.get('accessToken');
       await axios
         .put(
@@ -463,7 +464,7 @@ const LabManagement = () => {
               Kết quả xét nghiệm
             </Typography.Title>
             {selectedAppointment.result &&
-            selectedAppointment.result.length > 0 ? (
+              selectedAppointment.result.length > 0 ? (
               <Table
                 dataSource={selectedAppointment.result}
                 rowKey="result_id"

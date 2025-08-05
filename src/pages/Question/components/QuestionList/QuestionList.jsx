@@ -31,15 +31,14 @@ const QuestionFilters = ({
   onSearch,
 }) => {
   return (
-    <div className="question-filter-bar">
+    <div className="ques-filter-bar">
       <Input.Search
         placeholder="Tìm kiếm nội dung câu hỏi..."
-        className="question-search-input"
+        className="ques-search-input"
         allowClear
         value={searchText}
         onChange={(e) => {
           setSearchText(e.target.value);
-          // Không tự động fetch khi typing để tránh spam API
         }}
         onSearch={(value) => {
           console.log('Search triggered with value:', value);
@@ -50,6 +49,7 @@ const QuestionFilters = ({
         value={statusFilter}
         onChange={onStatusChange}
         style={{ width: 180 }}
+        placeholder="Lọc theo trạng thái"
       >
         <Option value="all">Tất cả trạng thái</Option>
         <Option value="answered">Đã trả lời</Option>
@@ -263,7 +263,7 @@ const QuestionList = ({
                   }}
                 >
                   <div
-                    className={`status-indicator ${question.reply ? 'answered' : 'pending'}`}
+                    className={`question-status-indicator ${question.reply ? 'answered' : 'pending'}`}
                     style={{ minWidth: 110 }}
                   >
                     {question.reply ? (

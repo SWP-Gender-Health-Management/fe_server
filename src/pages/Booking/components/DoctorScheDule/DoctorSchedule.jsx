@@ -38,7 +38,7 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
       date.setDate(weekStart.getDate() + i);
       dates.push(date);
     }
-    // console.log('dates: ', dates);
+    console.log('dates: ', dates);
 
     return dates;
   };
@@ -138,7 +138,6 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         }
         setFiltersPatterns(filteredData);
         setSchedule(newSchedule);
-        console.log('newSchedule: ', newSchedule);
         // console.log('Processed schedule:', newSchedule);
 
         // Sau khi có filteredData
@@ -148,7 +147,6 @@ const DoctorSchedule = ({ doctor, onSlotSelect, onBack }) => {
         console.error('Lỗi khi lấy lịch bác sĩ:', err);
       }
     };
-
     fetchTimeSlots();
     fetchSchedule();
   }, [doctor.account_id, weekStart]);

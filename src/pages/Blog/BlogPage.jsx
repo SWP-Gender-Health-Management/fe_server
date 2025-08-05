@@ -18,7 +18,6 @@ export default function BlogPage() {
     try {
       const res = await api.get('/blog/get-all-blogs');
       setBlogs(res.data.result || []);
-      console.log('blogs', res.data.result);
     } catch (err) {
       console.error(err);
     }
@@ -44,12 +43,17 @@ export default function BlogPage() {
     currentPage * postsPerPage
   );
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const categories = [
     { id: 'all', name: 'Tất cả', icon: '📚', count: blogs.length },
     ...Array.from(new Set(blogs.map((b) => b.major))).map((major) => ({
       id: major,
-      name: major,
-      icon: '📌',
+      icon: '•',
+      name: capitalizeFirstLetter(major),
       count: blogs.filter((b) => b.major === major).length,
     })),
   ];
@@ -59,30 +63,31 @@ export default function BlogPage() {
   return (
     <div className="blog-page">
       <div className="blog-container">
-        <aside className="blog-sidebar">
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">Chuyên mục</h3>
-            <div className="category-list">
-              {categories.map((category) => (
-                <div
-                  key={category.id}
-                  className={`category-item ${
-                    selectedCategory === category.id ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedCategory(category.id);
-                    setCurrentPage(1);
-                  }}
-                >
-                  <span className="category-icon">{category.icon}</span>
-                  <span className="category-name">{category.name}</span>
-                  <span className="category-count">({category.count})</span>
-                </div>
-              ))}
+        <div className="blog-layout">
+          <div className="blog-sidebar">
+            <div className="sidebar-section">
+              <h3 className="sidebar-title">Chuyên mục</h3>
+              <div className="category-list">
+                {categories.map((category) => (
+                  <div
+                    key={category.id}
+                    className={`category-item ${
+                      selectedCategory === category.id ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <span className="category-icon">{category.icon}</span>
+                    <span className="category-name">{category.name}</span>
+                    <span className="category-count">({category.count})</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* {featuredPost && (
+            {/* {featuredPost && (
             <div className="sidebar-section">
               <h3 className="sidebar-title">Bài viết nổi bật</h3>
               <div
@@ -115,7 +120,8 @@ export default function BlogPage() {
               </div>
             </div>
           )} */}
-        </aside>
+          </div>
+        </div>
 
         <main className="blog-main">
           <div className="blog-header">
@@ -129,7 +135,7 @@ export default function BlogPage() {
                   setSearchText(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="hero-search-input"
+                className="blog-search-input"
                 aria-label="Tìm kiếm bài viết"
               />
               <Button className="hero-search-btn">🔍</Button>

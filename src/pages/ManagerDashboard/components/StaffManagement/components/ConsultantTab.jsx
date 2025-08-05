@@ -12,14 +12,16 @@ import Cookies from 'js-cookie';
 import './ConsultantTab.css';
 import moment from 'moment/moment';
 
+
+
 const API_URL = 'http://localhost:3000';
+
 
 const ConsultantTab = () => {
   const [searchName, setSearchName] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
-  const [viewScheduleModalVisible, setViewScheduleModalVisible] =
-    useState(false);
+  const [viewScheduleModalVisible, setViewScheduleModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
@@ -38,6 +40,9 @@ const ConsultantTab = () => {
     sunday: [],
   });
 
+
+
+
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
@@ -54,11 +59,11 @@ const ConsultantTab = () => {
                 id: workingSlot.name.split('-')[0].trim(),
                 time: `${workingSlot.start_at.slice(0, 5)} - ${workingSlot.end_at.slice(0, 5)}`,
                 slot_id: workingSlot.slot_id,
-              };
+              }
             })
           )
         ).sort();
-        console.log('Slot Times:', slotTimes);
+        console.log("Slot Times:", slotTimes);
         setTimeSlots(slotTimes);
       } catch (error) {
         console.error('Error fetching Slot:', error);
@@ -69,7 +74,9 @@ const ConsultantTab = () => {
   }, []);
 
   useEffect(() => {
+
     fetchConsultant();
+
   }, [currentPage]);
 
   useEffect(() => {
@@ -114,16 +121,16 @@ const ConsultantTab = () => {
           });
         });
     } catch (error) {
-      console.error('Error fetching weekly schedule:', error);
+      console.error("Error fetching weekly schedule:", error);
     }
-  };
+  }
 
   const fetchConsultant = async () => {
     try {
-      const accountId = Cookies.get('accountId');
       const accessToken = Cookies.get('accessToken');
-      await axios
-        .get(`${API_URL}/manager/get-consultants`, {
+      await axios.get(
+        `${API_URL}/manager/get-consultants`,
+        {
           params: {
             full_name: searchName,
             ...(statusFilter !== 'all' && { is_banned: statusFilter }),
@@ -134,18 +141,19 @@ const ConsultantTab = () => {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
-        })
-        .then((response) => {
-          console.log('Consultant Response:', response.data.result);
-          setConsultants(response.data.result.consultants);
-          setTotalPages(response.data.result.totalPage);
-        });
+        }
+      ).then((response) => {
+        console.log('Consultant Response:', response.data.result);
+        setConsultants(response.data.result.consultants);
+        setTotalPages(response.data.result.totalPage);
+      });
     } catch (error) {
-      console.error('Fetching manager consultant error: ', error);
+      console.error("Fetching manager consultant error: ", error);
     }
-  };
+  }
 
   // Mock weekly schedule data - mảng chứa các slot ID cho mỗi ngày
+
 
   const handleSchedule = (consultant) => {
     setSelectedConsultant(consultant);
@@ -159,6 +167,7 @@ const ConsultantTab = () => {
 
   const handleScheduleSubmit = async () => {
     // Handle schedule submission
+
 
     try {
       const accountId = Cookies.get('accountId');
@@ -190,14 +199,16 @@ const ConsultantTab = () => {
           setSelectedSlots([]);
           setSelectedConsultant(null);
         });
+
     } catch (error) {
-      console.error('Error setting consultant pattern:', error);
+      console.error("Error setting consultant pattern:", error);
     } finally {
       setScheduleModalVisible(false);
       setSelectedDate(null);
       setSelectedSlots([]);
       setSelectedConsultant(null);
     }
+
   };
 
   // const filteredConsultants = consultants.filter((consultant) => {
@@ -229,11 +240,12 @@ const ConsultantTab = () => {
       'sunday',
     ];
 
+
+
     return (
       <div className="schedule-content">
         <div className="schedule-header">
-          {/* <h3>Lịch làm việc của {selectedConsultant?.full_name}</h3> */}
-          {/* <p>Chuyên khoa: {selectedConsultant?.specialty}</p> */}
+          <h3>Lịch làm việc của {selectedConsultant?.full_name}</h3>
         </div>
 
         <table className="schedule-table">
@@ -427,6 +439,7 @@ const ConsultantTab = () => {
             </button>
           </div>
         </div>
+
       </div>
 
       {/* Schedule Modal */}
@@ -476,7 +489,6 @@ const ConsultantTab = () => {
                   }}
                 >
                   {slot.time}
-                  
                 </Checkbox>
               ))}
             </div>

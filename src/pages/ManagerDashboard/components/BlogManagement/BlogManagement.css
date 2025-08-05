@@ -2,6 +2,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
+
 }
 
 .blog-header {
@@ -155,7 +156,7 @@
   padding: 4px 8px;
   background: #e5e7eb;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 12px !important;
   font-weight: 500;
   color: #374151;
 }
@@ -167,6 +168,7 @@
   font-weight: bold;
   color: #fff;
   text-transform: uppercase;
+
 }
 
 .status-draft {

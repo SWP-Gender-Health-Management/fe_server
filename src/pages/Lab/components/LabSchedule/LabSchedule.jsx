@@ -42,8 +42,9 @@ const LabSchedule = () => {
     const fetchSlots = async () => {
       const yyyy = selectedDate.getFullYear();
       const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
-      const dd = String(selectedDate.getDate());
+      const dd = String(selectedDate.getDate()).padStart(2, '0');
       const dateStr = `${yyyy}-${mm}-${dd}`;
+      console.log("dateStr: ", dateStr);
       try {
         const res = await getLabSlotsByDate(dateStr);
         // Lấy đúng data mới

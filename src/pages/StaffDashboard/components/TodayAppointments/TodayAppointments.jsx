@@ -64,6 +64,8 @@ const TodayAppointments = ({
   const [internalDescription, setInternalDescription] = useState('');
   const [testResults, setTestResults] = useState({});
 
+
+
   // Mock data với nhiều xét nghiệm
   const mockAppointments = [
     {
@@ -150,6 +152,7 @@ const TodayAppointments = ({
   ];
 
   useEffect(() => {
+    fetchTodayAppointmentsOfStaff();
     setAppointments(todayAppointments);
   }, []);
 
@@ -263,8 +266,8 @@ const TodayAppointments = ({
       );
       console.log('result entities: ', result);
       if (result.length > 0) {
-        const accessToken = Cookies.get('accessToken');
-        const accountId = Cookies.get('accountId');
+        const accessToken = Cookies.get("accessToken");
+        const accountId = Cookies.get("accountId");
         const responseUpdateResult = await axios.post(
           `${API_URL}/staff/update-result`,
           {
@@ -294,7 +297,7 @@ const TodayAppointments = ({
         (internalDescription.trim().length > 0 &&
           (!selectedAppointment.description ||
             selectedAppointment.description.trim() !==
-              internalDescription.trim()))
+            internalDescription.trim()))
       ) {
         const accessToken = Cookies.get('accessToken');
         const accountId = Cookies.get('accountId');
@@ -450,7 +453,8 @@ const TodayAppointments = ({
     },
     {
       title: 'Đang xử lý',
-      value: appointments.filter((apt) => apt.status === 'in-progress').length,
+      value: appointments.filter((apt) => apt.status === 'in_progress')
+        .length,
       color: '#13c2c2',
       icon: <SyncOutlined />,
     },
@@ -468,12 +472,13 @@ const TodayAppointments = ({
     <div className="today-appointments">
       {/* Header */}
       <div className="page-header">
-        <div className="header-content">
+        <div className="staff-header-content">
           <h2>Lịch hẹn Hôm nay</h2>
           <p>Quản lý các lịch hẹn xét nghiệm trong ngày</p>
         </div>
         {true && (
           <Button
+            className="refresh-butt"
             icon={<ReloadOutlined />}
             onClick={fetchTodayAppointmentsOfStaff}
             loading={loading}
@@ -641,10 +646,7 @@ const TodayAppointments = ({
                               <p>{test.result}</p>
                             ) : (
                               <InputNumber
-                                value={null}
-                                // onChange={(e) =>
-                                //   handleInputResult(test.name, e.target.value)
-                                // }
+                                value={testResults[test.name]?.value || null}
                                 onChange={(value) =>
                                   handleInputResult(test.name, value)
                                 }

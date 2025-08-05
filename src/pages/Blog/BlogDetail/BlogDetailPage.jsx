@@ -31,7 +31,7 @@ function BlogDetailPage() {
       <div className="blog-detail-content">
         <h1 className="blog-detail-title">{blog.title}</h1>
         <div className="blog-detail-img">
-          {blog.images ? (
+        {blog.images ? (
             <>
               {blog.images.map((image) => (
                 <img

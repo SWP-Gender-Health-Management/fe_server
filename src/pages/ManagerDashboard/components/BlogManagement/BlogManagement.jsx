@@ -75,7 +75,6 @@ const BlogManagement = () => {
 
 
   const getStatusBadge = (status) => {
-    console.log("status", status);
     const statusConfig = {
       false: { label: 'Chờ duyệt', class: 'status-pending' },
       true: { label: 'Đã duyệt', class: 'status-approved' },

@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Radio, DatePicker, Tag, Avatar } from 'antd';
-import {
-  SearchOutlined,
-  CalendarOutlined,
-  EyeOutlined,
-  CheckOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
+import { SearchOutlined, CalendarOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+
 
 const API_URL = 'http://localhost:3000';
 
 const StaffTab = () => {
+
+
+
+
   const [searchName, setSearchName] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [scheduleModalVisible, setScheduleModalVisible] = useState(false);
-  const [viewScheduleModalVisible, setViewScheduleModalVisible] =
-    useState(false);
+  const [viewScheduleModalVisible, setViewScheduleModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedShift, setSelectedShift] = useState('morning');
   const [selectedStaff, setSelectedStaff] = useState(null);
@@ -32,27 +30,25 @@ const StaffTab = () => {
     thursday: '',
     friday: '',
     saturday: '',
-    sunday: '',
+    sunday: ''
   });
-  const [staffMembers, setStaffMembers] = useState([
-    {
-      account_id: 1,
-      full_name: 'Sarah Johnson',
-      status: 'active',
-      // avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
-      // position: 'Senior Nurse',
-      // department: 'Women Health',
-      email: 'sarah.johnson@gendercare.com',
-      phone: '(+84) 912-345-678',
-    },
-  ]);
+  const [staffMembers, setStaffMembers] = useState([{
+    account_id: 1,
+    full_name: 'Sarah Johnson',
+    status: 'active',
+    // avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
+    // position: 'Senior Nurse',
+    // department: 'Women Health',
+    email: 'sarah.johnson@gendercare.com',
+    phone: '(+84) 912-345-678'
+  }]);
+
 
   // Mock weekly schedule data
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
-        const accountId = Cookies.get('accountId');
         const accessToken = Cookies.get('accessToken');
         const response = await axios.get(
           `${API_URL}/working-slot/get-slot-by-type/0`,
@@ -73,11 +69,11 @@ const StaffTab = () => {
                 id: workingSlot.name.split('-')[0].trim(),
                 time: `${workingSlot.start_at.slice(0, 5)} - ${workingSlot.end_at.slice(0, 5)}`,
                 slot_id: workingSlot.slot_id,
-              };
+              }
             })
           )
         ).sort();
-        console.log('staff slot Times:', slotTimes);
+        console.log("staff slot Times:", slotTimes);
         setShifts(slotTimes);
       } catch (error) {
         console.error('Error fetching Slot:', error);
@@ -112,7 +108,7 @@ const StaffTab = () => {
     console.log('Schedule submitted:', {
       staff: selectedStaff,
       date: selectedDate,
-      shift: selectedShift,
+      shift: selectedShift
     });
     try {
       const accountId = Cookies.get('accountId');
@@ -136,7 +132,7 @@ const StaffTab = () => {
           console.log('Schedule submitted successfully:', response.data.result);
         });
     } catch (error) {
-      console.error('Error submitting schedule:', error);
+      console.error("Error submitting schedule:", error);
     } finally {
       setScheduleModalVisible(false);
       setSelectedDate(null);
@@ -179,15 +175,14 @@ const StaffTab = () => {
         friday: schedule.friday,
         saturday: schedule.saturday,
         sunday: schedule.sunday,
-      });
+      })
     } catch (error) {
-      console.error('Error fetching weekly schedule:', error);
+      console.error("Error fetching weekly schedule:", error);
     }
   };
 
   const fetchStaff = async () => {
     try {
-      const accountId = Cookies.get('accountId');
       const accessToken = Cookies.get('accessToken');
       const response = await axios.get(`${API_URL}/manager/get-staffs`, {
         params: {
@@ -201,11 +196,11 @@ const StaffTab = () => {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Staff response:', response.data.result);
+      console.log("Staff response:", response.data.result);
       setStaffMembers(response.data.result?.staffs || []);
       setTotalPages(response.data.result?.totalPage);
     } catch (error) {
-      console.error('Error fetching staff:', error);
+      console.error("Error fetching staff:", error);
     }
   };
 
@@ -219,6 +214,7 @@ const StaffTab = () => {
   });
 
   const renderWeeklySchedule = () => {
+
     const days = [
       'Thứ 2',
       'Thứ 3',
@@ -241,11 +237,7 @@ const StaffTab = () => {
     return (
       <div className="schedule-content">
         <div className="schedule-header">
-          {/* <h3>Lịch làm việc của {selectedStaff?.full_name}</h3> */}
-          {/* <p>
-            Vị trí: {selectedStaff?.position} - Bộ phận:{' '}
-            {selectedStaff?.department}
-          </p> */}
+          <h3>Lịch làm việc của {selectedStaff?.full_name}</h3>
         </div>
 
         <table className="schedule-table">
@@ -332,6 +324,7 @@ const StaffTab = () => {
         <table className="management-table">
           <thead>
             <tr>
+
               <th>Tên nhân viên</th>
               {/* <th>Vị trí</th>
               <th>Bộ phận</th> */}
@@ -342,11 +335,9 @@ const StaffTab = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredStaff.map((staff) => (
-              <tr
-                key={staff.id}
-                className={staff.is_banned === true ? 'blocked-row' : ''}
-              >
+            {filteredStaff.map(staff => (
+              <tr key={staff.id} className={staff.is_banned === true ? 'blocked-row' : ''}>
+
                 <td className="name-column">{staff.full_name}</td>
                 {/* <td>{staff.position}</td>
                 <td>{staff.department}</td> */}
@@ -508,4 +499,4 @@ const StaffTab = () => {
   );
 };
 
-export default StaffTab;
+export default StaffTab; 

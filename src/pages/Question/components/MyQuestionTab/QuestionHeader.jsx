@@ -4,7 +4,7 @@ import './QuestionHeader.css';
 
 const QuestionHeader = ({ totalQuestions, answeredCount }) => {
   return (
-    <div className="page-header">
+    <div className="question-page-header">
       <div className="header-content">
         <div className="header-icon">
           <CommentOutlined />
@@ -16,12 +16,12 @@ const QuestionHeader = ({ totalQuestions, answeredCount }) => {
       </div>
       <div className="header-stats">
         <div className="stat-card">
-          <div className="stat-number">{totalQuestions}</div>
-          <div className="stat-label">Tổng câu hỏi</div>
+          <div className="question-stat-number">{totalQuestions}</div>
+          <div className="question-stat-label">Tổng câu hỏi</div>
         </div>
         <div className="stat-card">
-          <div className="stat-number">{answeredCount}</div>
-          <div className="stat-label">Đã trả lời</div>
+          <div className="question-stat-number">{answeredCount}</div>
+          <div className="question-stat-label">Đã trả lời</div>
         </div>
       </div>
     </div>

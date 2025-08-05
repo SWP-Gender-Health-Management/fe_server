@@ -8,18 +8,14 @@ import { Button } from 'antd';
 
 const API_URL = 'http://localhost:3000';
 
-const ConsultantAppointment = ({
-  appointments,
-  fetchWeekAppointment,
-  consultantData,
-  fetchConsultAppointmentStat,
-}) => {
+const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantData, fetchConsultAppointmentStat }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   // const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [reportText, setReportText] = useState('');
+
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -30,11 +26,12 @@ const ConsultantAppointment = ({
         console.log('Slot Response:', response.data.result);
         setTimeSlots(response.data.result || []);
       } catch (error) {
-        console.error('Error fetching Slot:', error);
+        console.error("Error fetching Slot:", error);
         return;
       }
-    };
+    }
     fetchTimeSlots();
+
   }, []);
 
   useEffect(() => {
@@ -89,19 +86,17 @@ const ConsultantAppointment = ({
     return week;
   };
 
+
+
   const getAppointmentsForDate = (date) => {
     return appointments.filter(
-      (apt) =>
-        new Date(apt.consultant_pattern.date).toDateString() ===
-        date.toDateString()
+      (apt) => new Date(apt.consultant_pattern.date).toDateString() === date.toDateString()
     );
   };
 
   const getAppointmentForSlot = (date, timeSlot) => {
     const dayAppointments = getAppointmentsForDate(date);
-    return dayAppointments.find(
-      (apt) => apt.consultant_pattern.working_slot.name === timeSlot.name
-    );
+    return dayAppointments.find((apt) => apt.consultant_pattern.working_slot.name === timeSlot.name);
   };
 
   const handleAppointmentClick = (appointment) => {
@@ -118,15 +113,12 @@ const ConsultantAppointment = ({
 
       const reportForm = {
         app_id: appointment.app_id,
-        name: appointment.customer
-          ? `Báo cáo tư vấn cho ${appointment.customer.full_name}`
-          : 'Báo cáo tư vấn',
-        description: reportText,
-      };
+        name: appointment.customer ? `Báo cáo tư vấn cho ${appointment.customer.full_name}` : 'Báo cáo tư vấn',
+        description: reportText
+      }
 
       try {
-        const accountId = Cookies.get('accountId');
-        const accessToken = Cookies.get('accessToken');
+        const accessToken = Cookies.get("accessToken");
         const response = await axios.post(
           `${API_URL}/consult-report/create-consult-report`,
           reportForm,
@@ -134,35 +126,34 @@ const ConsultantAppointment = ({
             headers: {
               Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json',
-            },
+            }
           }
         );
         console.log('Createed report:', response.data.result);
       } catch (error) {
-        console.error('Error update appointment status:', error);
+        console.error("Error update appointment status:", error);
         return;
       } finally {
         setReportText('');
       }
     }
     try {
-      const accountId = Cookies.get('accountId');
-      const accessToken = Cookies.get('accessToken');
+      const accessToken = Cookies.get("accessToken");
       const response = await axios.put(
         `${API_URL}/consult-appointment/update-consult-appointment/${appointment.app_id}`,
         {
-          status,
+          status
         },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          },
+          }
         }
       );
       console.log('Update Response:', response.data.result);
     } catch (error) {
-      console.error('Error update appointment status:', error);
+      console.error("Error update appointment status:", error);
       return;
     } finally {
       fetchWeekAppointment(selectedDate, false);
@@ -186,6 +177,7 @@ const ConsultantAppointment = ({
     }
   };
 
+
   const formatDate = (date) => {
     return date.toLocaleDateString('vi-VN', {
       weekday: 'long',
@@ -206,6 +198,7 @@ const ConsultantAppointment = ({
         </div>
 
         <div className="header-actions">
+
           <div className="date-navigation">
             <button
               className="nav-btn"
@@ -253,7 +246,6 @@ const ConsultantAppointment = ({
                 const isToday =
                   date.toDateString() === new Date().toDateString();
                 const isWeekend = dayIndex === 0 || dayIndex === 6;
-
                 return (
                   <div
                     key={`header-${dayIndex}`}
@@ -344,7 +336,9 @@ const ConsultantAppointment = ({
         <div className="stat-card-consultant">
           <span className="stat-icon">✅</span>
           <div className="stat-content">
-            <h3>{consultantData.confirmedAppointments || 0}</h3>
+            <h3>
+              {consultantData.confirmedAppointments || 0}
+            </h3>
             <p>Đã xác nhận</p>
           </div>
         </div>
@@ -352,7 +346,9 @@ const ConsultantAppointment = ({
         <div className="stat-card-consultant">
           <span className="stat-icon">⏳</span>
           <div className="stat-content">
-            <h3>{consultantData.pendingAppointments || 0}</h3>
+            <h3>
+              {consultantData.pendingAppointments || 0}
+            </h3>
             <p>Chờ xác nhận</p>
           </div>
         </div>
@@ -360,7 +356,9 @@ const ConsultantAppointment = ({
         <div className="stat-card-consultant">
           <span className="stat-icon">🔄</span>
           <div className="stat-content">
-            <h3>{consultantData.completedAppointments || 0}</h3>
+            <h3>
+              {consultantData.completedAppointments || 0}
+            </h3>
             <p>Đã hoàn thành</p>
           </div>
         </div>
@@ -399,8 +397,7 @@ const ConsultantAppointment = ({
                         .start_at
                     }{' '}
                     đến{' '}
-                    {selectedAppointment.consultant_pattern.working_slot.end_at}
-                  </span>
+                    {selectedAppointment.consultant_pattern.working_slot.end_at}</span>
                 </div>
 
                 <div className="info-row">
@@ -411,6 +408,8 @@ const ConsultantAppointment = ({
                   </div>
                 </div>
 
+
+
                 <div className="info-row">
                   <label>Trạng thái:</label>
                   <span
@@ -419,7 +418,7 @@ const ConsultantAppointment = ({
                       backgroundColor: getStatusColor(
                         selectedAppointment.status
                       ),
-                      color: 'white',
+                      color: "white"
                     }}
                   >
                     {selectedAppointment.status === 'confirmed' &&
@@ -435,16 +434,16 @@ const ConsultantAppointment = ({
                   <div className="info-row">
                     <label>Link Meeting:</label>
                     <Link to={selectedAppointment.gg_meet} target="_blank">
-                      <Button>Meeting</Button>
+                      <Button >
+                        Meeting
+                      </Button>
                     </Link>
                   </div>
                 )}
 
                 <div className="info-row">
                   <label>Vấn đề:</label>
-                  <p className="issue-text">
-                    {selectedAppointment.description}
-                  </p>
+                  <p className="issue-text">{selectedAppointment.description}</p>
                 </div>
 
                 {selectedAppointment.status === 'confirmed' && (
@@ -460,7 +459,6 @@ const ConsultantAppointment = ({
                     />
                   </div>
                 )}
-
                 {selectedAppointment.status === 'completed' &&
                   selectedAppointment.report && (
                     <div className="info-row">
@@ -471,6 +469,8 @@ const ConsultantAppointment = ({
                       </p>
                     </div>
                   )}
+
+
               </div>
 
               <div className="modal-actions">

@@ -39,29 +39,29 @@ const Question = () => {
 
   const fetchMyQuestions = async (
     page = 1,
-    search = searchText,
-    status = statusFilter
+    search = searchText
   ) => {
     if (!isLoggedIn) return;
 
     setLoading(true);
     try {
-      console.log('=== API CALL START ===');
-      console.log('Requesting page:', page);
-      console.log('Search term:', search);
-      console.log('Status filter:', status);
+             console.log('=== API CALL START ===');
+       console.log('Requesting page:', page);
+       console.log('Search term:', search);
 
-      const res = await api.get(
-        `/question/get-question-by-id/customer/${customerId}`,
-        {
-          params: {
-            page: page, // Nếu backend cần page bắt đầu từ 0, thay bằng: page - 1
-            limit: pageSize,
-            search: search || undefined,
-            status: status === 'all' ? undefined : status,
-          },
-        }
-      );
+             const res = await api.get(
+         `/question/get-question-by-id/customer/${customerId}`,
+         {
+           params: {
+             page: page, // Nếu backend cần page bắt đầu từ 0, thay bằng: page - 1
+             limit: pageSize,
+             search: search || undefined,
+             // Tạm thời bỏ status và sort ở backend, xử lý ở frontend
+             // status: status === 'all' ? undefined : status,
+             // sort: sort || undefined,
+           },
+         }
+       );
 
       console.log('API Question Response:', res.data.result);
       console.log(
@@ -93,7 +93,7 @@ const Question = () => {
   useEffect(() => {
     if (isLoggedIn) {
       setCurrentPage(1);
-      fetchMyQuestions(1, '', 'all');
+      fetchMyQuestions(1, '');
     } else {
       setIsLoginModalVisible(true);
     }
@@ -124,7 +124,7 @@ const Question = () => {
       setCurrentPage(1);
       setSearchText('');
       setStatusFilter('all');
-      await fetchMyQuestions(1, '', 'all');
+      await fetchMyQuestions(1, '');
 
       setNewQuestion({ content: '' });
       setActiveTab('my-questions');
@@ -150,19 +150,23 @@ const Question = () => {
 
   // Handler functions for components
   const handleRefresh = () => {
-    fetchMyQuestions(currentPage, searchText, statusFilter);
+    fetchMyQuestions(currentPage, searchText);
   };
 
   const handleSearch = (value) => {
     setCurrentPage(1);
-    fetchMyQuestions(1, value, statusFilter);
+    setSearchText(value); // Cập nhật searchText state
+    fetchMyQuestions(1, value);
   };
 
   const handleStatusChange = (val) => {
     setStatusFilter(val);
     setCurrentPage(1);
-    fetchMyQuestions(1, searchText, val);
+    // Không cần gọi API lại vì filter được xử lý ở frontend
+    // fetchMyQuestions(1, searchText);
   };
+
+
 
   const handlePageChange = async (page) => {
     console.log('=== PAGINATION CLICK ===');
@@ -174,7 +178,7 @@ const Question = () => {
     setCurrentPage(page);
 
     // Gọi API với page mới
-    await fetchMyQuestions(page, searchText, statusFilter);
+    await fetchMyQuestions(page, searchText);
 
     console.log('=== PAGINATION COMPLETE ===');
   };
@@ -185,6 +189,82 @@ const Question = () => {
 
   // Không cần filter ở frontend nữa vì đã filter ở backend
   const displayQuestions = myQuestions;
+
+  // Thêm logic sort ở frontend để đảm bảo hoạt động
+  const getSortedQuestions = (questions, sortType) => {
+    if (!questions || questions.length === 0) return questions;
+    
+    const sortedQuestions = [...questions];
+    
+    switch (sortType) {
+      case 'newest':
+        return sortedQuestions.sort((a, b) => 
+          new Date(b.created_at) - new Date(a.created_at)
+        );
+      case 'oldest':
+        return sortedQuestions.sort((a, b) => 
+          new Date(a.created_at) - new Date(b.created_at)
+        );
+      case 'answered':
+        return sortedQuestions.sort((a, b) => {
+          const aHasReply = !!a.reply;
+          const bHasReply = !!b.reply;
+          if (aHasReply && !bHasReply) return -1;
+          if (!aHasReply && bHasReply) return 1;
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+      case 'pending':
+        return sortedQuestions.sort((a, b) => {
+          const aHasReply = !!a.reply;
+          const bHasReply = !!b.reply;
+          if (!aHasReply && bHasReply) return -1;
+          if (aHasReply && !bHasReply) return 1;
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+      default:
+        return sortedQuestions;
+    }
+  };
+
+  const sortedQuestions = getSortedQuestions(displayQuestions, 'newest');
+
+
+
+  // Kết hợp search và filter
+  const getFilteredAndSearchedQuestions = (questions, status, search) => {
+    if (!questions || questions.length === 0) return questions;
+    
+    let filteredQuestions = questions;
+    
+    // Filter theo status
+    switch (status) {
+      case 'answered':
+        filteredQuestions = questions.filter(q => !!q.reply);
+        break;
+      case 'pending':
+        filteredQuestions = questions.filter(q => !q.reply);
+        break;
+      case 'all':
+      default:
+        filteredQuestions = questions;
+    }
+    
+    // Search trong kết quả đã filter
+    if (search && search.trim()) {
+      const searchLower = search.toLowerCase();
+      filteredQuestions = filteredQuestions.filter(q => 
+        q.content.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    return filteredQuestions;
+  };
+
+  const filteredAndSortedQuestions = getFilteredAndSearchedQuestions(
+    sortedQuestions, 
+    statusFilter, 
+    searchText
+  );
 
   if (!isLoggedIn) {
     return (
@@ -223,25 +303,25 @@ const Question = () => {
         />
 
         <div className="tab-content">
-          {activeTab === 'my-questions' && (
-            <MyQuestionsTab
-              loading={loading}
-              questions={displayQuestions}
-              searchText={searchText}
-              setSearchText={setSearchText}
-              statusFilter={statusFilter}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              totalQuestions={totalQuestions}
-              onRefresh={handleRefresh}
-              onSearch={handleSearch}
-              onStatusChange={handleStatusChange}
-              onPageChange={handlePageChange}
-              formatDate={formatDate}
-              setActiveTab={setActiveTab}
-              userInfo={userInfo}
-            />
-          )}
+                     {activeTab === 'my-questions' && (
+             <MyQuestionsTab
+               loading={loading}
+               questions={filteredAndSortedQuestions}
+               searchText={searchText}
+               setSearchText={setSearchText}
+               statusFilter={statusFilter}
+               currentPage={currentPage}
+               pageSize={pageSize}
+               totalQuestions={totalQuestions}
+               onRefresh={handleRefresh}
+               onSearch={handleSearch}
+               onStatusChange={handleStatusChange}
+               onPageChange={handlePageChange}
+               formatDate={formatDate}
+               setActiveTab={setActiveTab}
+               userInfo={userInfo}
+             />
+           )}
 
           {activeTab === 'ask-question' && (
             <AskQuestionForm
@@ -253,8 +333,6 @@ const Question = () => {
             />
           )}
         </div>
-
-        {/* Removed QuestionDetailModal */}
       </div>
     </div>
   );

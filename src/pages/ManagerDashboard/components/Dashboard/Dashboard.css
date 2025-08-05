@@ -118,10 +118,10 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(16, 185, 129, 0.1);
+  width: 100%;
+  height: 100%;
 }
 
 .chart-container {
@@ -162,10 +162,10 @@
   background: white;
   border-radius: 16px;
   padding: 28px;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(16, 185, 129, 0.1);
+  width: 100%;
+  height: 100%;
 }
 
 .quick-stats-grid {

@@ -15,7 +15,7 @@ const PaymentSuccess = () => {
       <div className="success-container">
         {/* Success Animation */}
         <div className="success-animation">
-          {/* <div className="checkmark">
+      {/* <div className="checkmark">
             <div className="check-icon">
               <span className="icon-line line-tip"></span>
               <span className="icon-line line-long"></span>
