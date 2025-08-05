@@ -165,6 +165,12 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
     searchAppointments();
   }, [currentPage, pageSize, appointments]);
 
+  useEffect(() => {
+    fetchInputAppointments();
+    setAppointments(inputAppointments);
+    searchAppointments();
+  }, []);
+
   const searchAppointments = async () => {
     setSearchLoading(true);
     // console.log("Start to search: ", inputAppointments)
@@ -711,10 +717,7 @@ const SearchAppointments = ({ inputAppointments, fetchInputAppointments }) => {
                               <p>{test.result}</p>
                             ) : (
                               <InputNumber
-                                value={null}
-                                // onChange={(e) =>
-                                //   handleInputResult(test.name, e.target.value)
-                                // }
+                                value={testResults[test.name]?.value || null}
                                 onChange={(value) =>
                                   handleInputResult(test.name, value)
                                 }

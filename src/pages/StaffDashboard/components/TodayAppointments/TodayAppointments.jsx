@@ -152,6 +152,7 @@ const TodayAppointments = ({
   ];
 
   useEffect(() => {
+    fetchTodayAppointmentsOfStaff();
     setAppointments(todayAppointments);
   }, []);
 
@@ -645,10 +646,7 @@ const TodayAppointments = ({
                               <p>{test.result}</p>
                             ) : (
                               <InputNumber
-                                value={null}
-                                // onChange={(e) =>
-                                //   handleInputResult(test.name, e.target.value)
-                                // }
+                                value={testResults[test.name]?.value || null}
                                 onChange={(value) =>
                                   handleInputResult(test.name, value)
                                 }
