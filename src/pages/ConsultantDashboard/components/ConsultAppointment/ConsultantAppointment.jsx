@@ -368,7 +368,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
       {showModal && selectedAppointment && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div
-            className="appointment-modal"
+            className="consult-appointment-modal"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
@@ -378,7 +378,7 @@ const ConsultantAppointment = ({ appointments, fetchWeekAppointment, consultantD
               </button>
             </div>
 
-            <div className="modal-content">
+            <div className="consult-modal-content">
               <div className="appointment-info">
                 <div className="info-row">
                   <label>Khách hàng:</label>

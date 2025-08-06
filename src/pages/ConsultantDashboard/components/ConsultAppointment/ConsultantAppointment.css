@@ -915,7 +915,7 @@
 }
 
 /* Appointment Modal */
-.appointment-modal {
+.consult-appointment-modal {
   background: white;
   border-radius: 20px;
   width: 90%;
@@ -988,7 +988,7 @@
   transform: scale(1.1);
 }
 
-.modal-content {
+.consult-modal-content {
   padding: 30px;
   max-height: 60vh;
   overflow-y: auto;

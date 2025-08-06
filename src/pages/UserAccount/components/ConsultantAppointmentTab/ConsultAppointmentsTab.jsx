@@ -433,8 +433,8 @@ const ConsultAppointmentsTab = ({
           fetchConApp();
         }}
       >
-        <h1>Nếu bạn đã thanh toán, bạn chỉ được hoàn trả 70% sốt tiền!!!</h1>
-        <h1>Bạn có chắc chắn muốn hủy lịch hẹn không</h1>
+        <h3>Nếu bạn đã thanh toán, bạn chỉ được hoàn trả 70% số tiền!!!</h3>
+        <h3>Bạn có chắc chắn muốn hủy lịch hẹn không</h3>
       </Modal>
 
       <Modal

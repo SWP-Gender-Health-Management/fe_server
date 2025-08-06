@@ -71,7 +71,7 @@ const AppointmentModal = ({
           </button>
         </div>
 
-        <div className="modal-content">
+        <div className="appointment-modal-content">
           <div className="appointment-details">
             <div className="detail-section">
               <h3>Thông Tin Cuộc Hẹn</h3>
