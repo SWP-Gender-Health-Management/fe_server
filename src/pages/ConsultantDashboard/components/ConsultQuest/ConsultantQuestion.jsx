@@ -20,32 +20,35 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
     fetchQuestions();
   }, []);
 
-
   const calculateAge = (dob) => {
     if (!dob) return null;
     const today = new Date();
     const dobDate = new Date(dob);
     const age = today.getFullYear() - dobDate.getFullYear();
     const monthDiff = today.getMonth() - dobDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < dobDate.getDate())
+    ) {
       return age - 1;
     }
     return age;
   };
 
   // Filter questions based on tab and search
-  const filteredQuestions = questions
-    .filter((question) => {
-      const matchesTab =
-        filterTab === 'all' ||
-        (filterTab === 'unanswered' && !question.reply) ||
-        (filterTab === 'answered' && question.reply);
+  const filteredQuestions = questions.filter((question) => {
+    const matchesTab =
+      filterTab === 'all' ||
+      (filterTab === 'unanswered' && !question.reply) ||
+      (filterTab === 'answered' && question.reply);
 
-      const matchesSearch =
-        question.content?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-        question.customer?.full_name?.toLowerCase().includes(searchTerm?.toLowerCase());
-      return matchesTab && matchesSearch;
-    })
+    const matchesSearch =
+      question.content?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      question.customer?.full_name
+        ?.toLowerCase()
+        .includes(searchTerm?.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   const stats = {
     total: questions.length,
@@ -63,6 +66,8 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
 
     setIsAnswering(true);
 
+    const accountId = await Cookies.get('accountId');
+
     const payload = {
       ques_id: selectedQuestion.ques_id,
       content: answerText,
@@ -78,18 +83,19 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             contentType: 'application/json',
-          }
+          },
         }
       );
     } catch (error) {
       console.error('Error answering question:', error);
+      setIsAnswering(false);
     } finally {
       setIsAnswering(false);
       setAnswerText('');
       fetchQuestions(); // Refresh questions after answering
       setSelectedQuestion(null); // Clear selected question after answering
     }
-  }
+  };
 
   function getTimeAgo(date) {
     // Chuyển đổi date thành đối tượng Date nếu là chuỗi
@@ -110,7 +116,7 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
       { label: 'ngày', seconds: 86400 },
       { label: 'giờ', seconds: 3600 },
       { label: 'phút', seconds: 60 },
-      { label: 'giây', seconds: 1 }
+      { label: 'giây', seconds: 1 },
     ];
 
     // Tìm khoảng thời gian phù hợp
@@ -183,8 +189,9 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
                   className={`question-item ${selectedQuestion?.ques_id === question.ques_id ? 'selected' : ''} row`}
                   onClick={() => setSelectedQuestion(question)}
                 >
-
-                  <h4 className="question-title col-md-8">{question.content.substring(0, 50)}...</h4>
+                  <h4 className="question-title col-md-8">
+                    {question.content.substring(0, 50)}...
+                  </h4>
 
                   <div className="question-meta col-md-2">
                     <span className="asked-by">👤 {question.askedBy}</span>
@@ -194,7 +201,9 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
                   </div>
 
                   {question.reply && (
-                    <div className="answered-indicator col-md-2">✅ Đã trả lời</div>
+                    <div className="answered-indicator col-md-2">
+                      ✅ Đã trả lời
+                    </div>
                   )}
                 </div>
               ))
@@ -210,17 +219,21 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
         {/* Right Panel - Question Detail & Answer */}
         <div className="detail-panel">
           {selectedQuestion ? (
-
             <div className="question-detail">
               <div className="detail-header">
-
                 <div className="user-info">
                   <div className="user-details">
-                    <span>👤 {selectedQuestion.customer.name || "Customer"}</span>
-                    <span>🎂 {calculateAge(selectedQuestion.customer.dob) || 0} tuổi</span>
+                    <span>
+                      👤 {selectedQuestion.customer.name || 'Customer'}
+                    </span>
+                    <span>
+                      🎂 {calculateAge(selectedQuestion.customer.dob) || 0} tuổi
+                    </span>
                     <span>
                       ⚥{' '}
-                      {selectedQuestion.customer.gender === 'female' ? 'Nữ' : 'Nam'}
+                      {selectedQuestion.customer.gender === 'female'
+                        ? 'Nữ'
+                        : 'Nam'}
                     </span>
                   </div>
                   <div className="question-time">
@@ -285,16 +298,14 @@ const ConsultantQuestion = ({ questions = [], fetchQuestions }) => {
                 </div>
               )}
             </div>
+          ) : (
             // </Modal>
-          )
-            : (
-              <div className="no-selection">
-                <span>💭</span>
-                <h3>Chọn một câu hỏi để xem chi tiết</h3>
-                <p>Nhấp vào câu hỏi bên trái để xem nội dung và trả lời</p>
-              </div>
-            )
-          }
+            <div className="no-selection">
+              <span>💭</span>
+              <h3>Chọn một câu hỏi để xem chi tiết</h3>
+              <p>Nhấp vào câu hỏi bên trái để xem nội dung và trả lời</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

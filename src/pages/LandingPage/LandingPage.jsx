@@ -194,7 +194,7 @@ const LandingPage = () => {
 
   const hospitalImages = [
     {
-      url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=1200&h=600&fit=crop',
+      url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVA_5TuNg7r9z04EOMWPQBKBK_aWmmyIEniw&s',
       title: 'Cơ sở y tế hiện đại',
       subtitle: 'Trang thiết bị y tế tiên tiến nhất',
     },
